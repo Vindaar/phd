@@ -162,6 +162,78 @@ Use the schematic I created for Hendrik's presentation?
 
 Including analytical equation for flux... :)
 
+#+begin_src nim :tangle /tmp/solar_axion_flux.nim
+import unchained, ggplotnim, math, chroma, ginger
+defUnit(keV⁻¹•m⁻²•yr⁻¹)
+defUnit(keV⁻¹•cm⁻²•s⁻¹)
+defUnit(GeV⁻¹)
+
+proc axionFluxPrimakoff(E_a: keV, g_aγ: GeV⁻¹): keV⁻¹•cm⁻²•s⁻¹ =
+  ## dΦ_a/dE taken from paper about first CAST results \cite{PhysRevLett.94.121301}
+  let g₁₀ = g_aγ / 1e-10.GeV⁻¹ # * 10e10.GeV¹ #
+  result = g₁₀^2 * 3.821e10.cm⁻²•s⁻¹•keV⁻¹ * (E_a / 1.keV)^3 / (exp(E_a / (1.103.keV)) - 1)
+
+proc axFluxPerYear(E_a: keV, g_aγ: GeV⁻¹): keV⁻¹•m⁻²•yr⁻¹ =
+  result = axionFluxPrimakoff(E_a, g_aγ).to(keV⁻¹•m⁻²•yr⁻¹)
+
+proc axionFluxPrimakoffMasterThesis(ω: keV, g_ay: GeV⁻¹): keV⁻¹•m⁻²•yr⁻¹ =
+  # axion flux produced by the Primakoff effect
+  # in units of m^(-2) year^(-1) keV^(-1)
+  result = 2.0 * 1e18.keV⁻¹•m⁻²•yr⁻¹ * (g_ay / 1e-12.GeV⁻¹)^2 * pow(ω / 1.keV, 2.450) * exp(-0.829 * ω / 1.keV)
+
+let E = linspace(1e-3, 14.0, 1000)
+let df = seqsToDf(E)
+  .mutate(f{float: "Flux" ~ axionFluxPrimakoff(`E`.keV, 1e-10.GeV⁻¹).float})
+  .mutate(f{float: "FluxYr" ~ axFluxPerYear(`E`.keV, 1e-11.GeV⁻¹).float})
+  .mutate(f{float: "FluxMSc" ~ axionFluxPrimakoffMasterThesis(`E`.keV, 1e-11.GeV⁻¹).float})    
+ggplot(df, aes("E", "Flux")) +
+  geom_line() +
+  geom_line(aes = aes(y = "FluxMSc"), color = some(parseHex("0000FF"))) + 
+  ggtitle("Solar axion flux due to Primakoff production, g_aγ = 10⁻¹⁰·GeV⁻¹") +
+  xlab("Energy [keV]") +
+  #ylab("Axion flux [keV⁻¹·cm⁻²·s⁻¹]") +
+  ylab("Axion flux [keV⁻¹·m⁻²·yr⁻¹]") +  
+  ggsave("/tmp/primakoff_axion_flux.pdf")
+
+ggplot(df.mutate(f{"Flux" ~ `Flux` / 1e10}), aes("E", "Flux")) +
+  geom_line() +
+  #xlab("Energy [keV]", tickFont = font(12.0), margin = 1.5) +
+  xlab(r"\fontfamily{lmss}\selectfont Energy [$\si{\keV}$]", margin = 2.0, font = font(16.0),
+       tickFont = font(16.0)) +
+  xlim(0, 14) + 
+  #ylab("Axion flux [10¹⁰ keV⁻¹·cm⁻²·s⁻¹]", margin = 1.5) +
+  ylab(r"\fontfamily{lmss}\selectfont Axion flux [\SI[print-unity-mantissa=false]{1e10}{\keV^{-1} \cm^{-2} \second^{-1}}]",
+       margin = 2.0,
+       font = font(16.0)) + 
+  #     tickFont = font(12.0)) +
+  #ggtitle(r"Expected solar axion flux, g_aγ = 10⁻¹⁰ GeV⁻¹", titleFont = font(12.0)) +
+  annotate(r"\fontfamily{lmss}\selectfont Expected solar axion flux" &
+    r"\\$g_{aγ} = \SI[print-unity-mantissa=false]{1e-10}{\GeV^{-1}}$", #10⁻¹⁰ GeV⁻¹",
+           x = 6.2, y = 6.2, 
+           font = font(16.0),
+           backgroundColor = transparent) +
+  #ggtitle(r"Expected solar axion flux, $g_{aγ} = \SI{1e-11}{\GeV^{-1}}$", titleFont = font(12.0)) + 
+  #ggsave("/tmp/cristina_primakoff_axion_flux.pdf", width = 400, height = 300) #, useTeX = true, standalone = true)
+  ggsave("/tmp/cristina_primakoff_axion_flux.pdf", useTeX = true, standalone = true)
+  
+
+defUnit(m⁻²•yr⁻¹)  
+echo 1.cm⁻²•s⁻¹.to(m⁻²•yr⁻¹)
+#+end_src
+
+#+RESULTS:
+
+There are different analytical expressions for the solar axion flux
+for Primakoff production. These stem from the fact that a solar model
+is used to model the internal density, temperature, etc. in the Sun to
+compute the photon distribution (essentially the blackbody radiation)
+near the core. From it (after converting via the Primakoff effect) we
+get the axion flux.
+
+Different solar models result in different expressions for the
+flux. The first one uses an older model, while the latter ones use
+newer models.
+
 *** Axion-electron flux
 
 *citations*: Redondo 2013, maybe (Johanna + Sebastian Hoof something?)
