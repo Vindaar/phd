@@ -75,9 +75,12 @@ place funny logos and stuff
 
 #+TOC: headlines 2
 
-* Introduction
 
-* About this thesis (structure)
+# Part 0: Introduction
+
+* Introduction                                                        :Intro:
+
+* About this thesis (structure)                                       :Intro:
 
 Explanation about the thesis structure and introduction of the "full
 thesis document".
@@ -133,7 +136,7 @@ below.
 *TODO*: Have specific marking in (sub)sections if they contain more
 information in extended version?
 
-* TODO List of todos [0/2]
+* TODO List of todos [0/2]                                   :Intro:noexport:
 
 ** TODO Have reference to Firmware used at CAST in each run
 
@@ -144,19 +147,89 @@ information in extended version?
 Find in EDH and include, even if we don't use it. Referenced in X-ray
 finger measurements.
 
-* Theory of axions
+
+** Points of contention
+
+At the moment <2021-07-31 Sat 11:36> my biggest point of uncertainty
+is the whole detector calibration part + how this plays into a
+software framework.
+
+Difficult to come up with good layout at this point. Will be easier
+once more notes are added in each part I think.
+
+* Theory of axions                                                   :Theory:
+
+From a historical standpoint including the strong CP problem, we go
+over to the Peccei-Quinn solution. Another way to look at it is from a
+modern standpoint asking why does the neutron not have a dipole moment?
 
 ** Historical origins
 
-** Strong CP violation
+From electroweak theory we know about CP violation. Standard model for
+strong force is just SU(3) vs. SU(2) for electroweak.
+
+Lagrangian allows mostly the same terms for both forces. This implies
+there should be a strong CP violation. This isn't observed and even
+today theh neutron electric dipole moment is restricted to values
+smaller $d_N \leq 1e-26 \text{? some units}$.
+
+Merge the next section into this one and change title?
+
+** Strong CP problem
 
 Use the schematic I created for Hendrik's presentation?
 
 ** Peccei-Quinn solution
 
+Main Peccei-Quinn paper citation.
+
+Solution by introducing another global U(1) symmetry that is
+spontaneously broken below some energy scale. 
+
+** The axion
+
+Leads to a pseudo Nambu-Goldstone boson that Wilzcek named the Axion
+(ref a pic of axion detergent), as it washes the standard model clean
+of an ugly stain.
+
 ** DFSZ & KSVZ axion models
 
+Further developments lead to more complex axion models that better fit
+with our understanding.
+
+Two main types of models emerged.
+
+** Implications for axion interactions
+
+Axions are apparently not interacting a whole lot, otherwise we'd know
+about them already. Very weak interaction
+
+Main interaction arises due to anomalies in standard model that allow
+for a Fermion loop diagram. That allows for coupling to
+gluons. Effective photon coupling is the result, equivalent to
+Primakoff effect for pions (also an effective coupling!).
+
 ** Solar axion flux
+
+Important for us? How do we detect them.
+
+Have a simple derivation from KG equation? Take a look at Biljana &
+Kreso for simple overview and simplify.
+
+Take KG equation and derive interaction.
+
+Interaction tells us conversion is proportional to B and L. Where are
+strong Bs for long Ls? Solar core.
+Take modern solar model to plot the density profile & especially
+temperature. Density + temperature allows us to compute:
+- number of photons
+- at various photon energies
+
+By wrapping blackbody radiation (ref, 3 sentences about it) present in
+solar core with Primakoff coupling, we get an effective axion flux
+equivalent to:
+
+$dΦ/dE ∝ g_{aγ}² · \text{black body radiation}$
 
 *** Primakoff flux
 
@@ -242,7 +315,23 @@ Expected axion flux combined.
 
 Reference to file storing the results for specific coupling constants.
 
+Much more complicated.
+
+ABC components.
+
+B and C can be expressed analytically.
+
+A cannot, needs opacity project.
+
+Show plot of differential axion flux.
+
+For a derivation of this, consider section about ray tracing. Custom
+computation of A done by Johanna in code developed by her & me in
+*LINK*.
+
 ** TODO possibly add chameleons?
+
+?? will depend on whether 
 
 ** Current bounds on axion couplings
 
@@ -256,7 +345,7 @@ Helioscope bounds.
 
 *TODO*: include newest Chandra results for coupling constant
 
-* Axion helioscopes
+* Axion helioscopes                                                  :Theory:
 
 ** TODO small section about other kinds of experiment?
 
@@ -270,7 +359,7 @@ Data taking periods.
 
 *** BabyIAXO
 
-* Gaseous detectors principles
+* Gaseous detectors principles                                       :Theory:
 
 ** MicroMegas working principle
 
@@ -280,16 +369,66 @@ Take my own sketch and fix it up.
 
 Introduce Timepix. Short introduction to how they are built?
 
-** Christoph detector as example of simple 
+Check Lucian's master thesis for information about Timepix & gaseous
+detector physics. :)
 
-* Septemboard detector
+** Christoph detector as example of simple Timepix based detector
+
+
+* Septemboard detector                                                :Part2:
+
+The first section introduces the reasoning behind building a more
+complicated detector. Existing detector has multiple downsides, seen
+in background rate & detector efficiency.
+
+In the further sections we discuss each additional detector feature in
+detail and explain why it was added / what drawback of the previous
+detector should be improved on.
+
+After we have introduced the detector as a whole we talk about the
+calibrations that are necessary to perform sensible measurements.
+
+** The why
+
+Why do we build such a 'complicated' detector?
+
+Background increases to edges, esp. corners.
+
+Background rate has 
 
 
 ** TODO Render done by Tobi. Exploded view.
 
+*** Cooling system, small motivation?
+
+Flow rate!
+
 ** Scintillator vetoes
 
+Scintillators: remove muons / muon induced X-rays
+
+SiPM: remove orthogonal muons, expected energy ~8 keV.
+
 ** FADC
+
+FADC: required for trigger + some time information of events.
+
+Flash ADC. Fast ADC. 1024 channels, cyclic register.
+
+Used at 1 GHz, i.e. covering ~1 μs?
+
+*** Pedestals
+
+*** Noise sensitive
+
+
+
+** SiN window
+
+Much better sensitivity, especially at low energies, important in
+particular for axion electron & chameleon, not so much Primakoff.
+
+Comparison of different window setups.
 
 ** TODO schematic of whole readout chain
 
@@ -297,7 +436,92 @@ Create a full flow chart of how everything is connected.
 
 We have our notes about where each cable goes etc.
 
-* Detector preparation / study / characterization etc.
+TOS. TOF.
+
+Link to repositories (maybe we can make the Virtex TOS public?) 
+
+Link to TOF firmware.
+
+
+** Detector calibrations etc.
+
+What kind of calibrations exist. How do they work, what do they do
+etc.
+
+From a purely detector standpoint.
+
+Polya distributio goes here somewhere. Related to gaseous detector
+physics & our detector in particular.
+
+* Chapter about analysis principle                                    :Part2:
+
+After introducing detector specific calibrations etc. we can go on to
+what the steps are that are required to turn a calibrated detector
+(one that is sensitive to N electrons essentially) into something that
+can do physics.
+
+Need some chapter that talks about the detector specific details that
+explain how a limit / physics result is obtained.
+
+Take data.
+
+Reconstruct data.
+Compute properties, requires energy calibration etc.
+
+Perform signal / background rejection.
+
+Get background rate + signals in tracking.
+
+Get expected flux from theory.
+
+Get detector efficiencies.
+
+Combine efficiencies & theory flux in raytracing simulation.
+
+Compute 'real' expected signal.
+
+Use suitable limit calculation method to compute a limit.
+
+We can split this into two pieces?:
+
+** How to compute background rate
+
+** How to compute a limit
+
+For =mclimit= use the notes in StatusAndProgress about how limit
+calculation works. Might be good in general, because a lot of it
+applies elsewhere anyway.
+
+* Raytracing - where does this belong? :Part2:
+
+Ray tracing through the detector. 
+
+** Computation of atomic processes :noexport:
+
+Computation of atomic processes done in *CODE*. 
+
+
+
+* Software                                                            :Part2:
+
+Introduce used software for analysis.
+
+Previous code used MarlinTPC (already extended a framework for use for
+gaseous detectors, focus on strips). Additional extension to use our
+new detector features would be beyond the scope of the framework. 
+
+** Nim
+
+Shortly introduce Nim & why it was chosen.
+
+Efficient, productive, gets out of my way.
+
+** TimepixAnalysis
+
+Framework written for data anlysis.
+
+
+* Detector preparation / study / characterization etc.                :Part3:
 
 ** CAST Detector Lab
 
@@ -307,9 +531,24 @@ Detector lab measurements were only performed after the data taking
 period at CAST was over. From a logical standpoint it makes more sense
 to talk about it before though.
 
-* Detector installation at CAST
+Everything required in StatusAndProgress. Will need to redo all plots
+of course.
+
+** Detector calibrations + characterization plots
+
+*** FADC spectrum & threshold
+
+** 55Fe spectra
+
+** Energy calibration, how done?
+
+
+* Detector installation at CAST & data taking                         :Part3:
 
 ** Lead shielding at CAST 
+
+PDF of lead shielding. Extract one image as reference, refer to full
+one in appendix.
 
 ** Installation & setup
 
@@ -318,6 +557,13 @@ to write this back then).
 
 ** X-ray finger runs
 
+2 X-ray finger runs were made. One near beginning, one near end.
+
+Plot of X-ray finger centers.
+
+Mention how this plays into the analysis side, that it means we need
+to adjust the ray tracing.
+
 ** Issues etc. during data taking period
 
 Noise issues, scintillators not working in Run 2.
@@ -325,3 +571,49 @@ Noise issues, scintillators not working in Run 2.
 ** Run 2 and Run 3
 
 Different detector calibrations in each run.
+
+Amount of data in each. Take table from StatusAndProgress.
+
+
+* Background rate computation                                      :Analysis:
+
+** Understanding background rate
+
+3 keV is easy to understand.
+
+8-9 keV is more difficult. 
+
+** Muon calculations :noexport:
+
+Probably not going to make it into final thesis? We'll see, take from
+StatusAndProgress. Maybe shortened version will make it.
+
+* Limit calculation                                                :Analysis:
+
+Using background rate & methods to determine it.
+
+** Compute limit w/ our method (whatever that will finally be)
+
+** Comparison to 2013 limit (using their method)
+
+** Limit calculation using neural networks :PENDING:
+
+
+* Outlook                                                             :Part5:
+
+* Summary & conclusion                                                :Part5:
+
+* Acknowledgments                                                     :Part5:
+
+Thanks to Klaus & group.
+
+Thanks to Araq for building Nim.
+
+Thanks to Nim community, and especially:
+mratsim, Hugo, Clonkk, Andrea Ferreti (alea among others), brentp
+(plotly was a *huge* help in the beginning), Bluenote10 (NimData was
+great), yglukhov (nimpy in particular!!)
+
+
+
+* Appendix                                                         :Appendix:
