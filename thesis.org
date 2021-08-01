@@ -331,7 +331,12 @@ computation of A done by Johanna in code developed by her & me in
 
 ** TODO possibly add chameleons?
 
-?? will depend on whether 
+?? will depend on whether we do a chameleon limit (which we should, as
+our detector is much better here!)
+
+Should be easy after all, as everything is the same as for axions,
+except different flux, raytracing and thus limit calc (from a number
+perspective; concept is the same).
 
 ** Current bounds on axion couplings
 
@@ -347,9 +352,16 @@ Helioscope bounds.
 
 * Axion helioscopes                                                  :Theory:
 
+Introduce axion helioscopes as one of the types of experiments
+proposed by Sikivie in his paper. *CITE SIKIVIE*
+
+Maybe shortly mention other experiments.
+
 ** TODO small section about other kinds of experiment?
 
 ** CERN Axion Solar Telescope (CAST)
+
+Well, this should be pretty obvious.
 
 Basic data.
 
@@ -357,25 +369,69 @@ Data taking periods.
 
 ** International AXion Observatory (IAXO)
 
+Make use of PRC (?) mainly for data, citation both that and first
+proposal.
+
 *** BabyIAXO
 
 * Gaseous detectors principles                                       :Theory:
 
+Gaseous detectors, keep a bit short. Before writing properly read
+Lucian. Best if read Lucian and then write a couple of weeks later.
+
 ** MicroMegas working principle
+
+History of micromegas. Name based on story by Voltaire? Fun fact that
+is missing everywhere!
 
 Take my own sketch and fix it up.
 
 ** Timepix ASIC
 
+The Timepix ASIC (Application Specific Integrated Circuit) is a $256 ×
+256$ pixel ASIC (\SI{50}{\micro\meter} pitch)
+
 Introduce Timepix. Short introduction to how they are built?
+
+Different modes to work with, we use ToT (Time over Threshold). Also:
+ToA (Time of Arrival).
+
+Works at \SI{40}{\mega\Hz}. 
 
 Check Lucian's master thesis for information about Timepix & gaseous
 detector physics. :)
 
+*** Timepix3
+
+Introduce as something for which readout etc. is currently in
+development. Mention improvements so that we can refer back to them in
+our conclusion that having time information would be great.
+
+** GridPix
+
+Build GridPix on top of Timepix. Nikhef paper CITE.
+
+Production nowadays in Berlin IZM. Show sketch of production process?
+Imo should be enough to refer to Lucian's thesis for production
+process. Is there a paper about IZM process? Ask Yevgen & Lucian.
+
+\SI{50}{\micro\meter} pillars (amplification gap). Typical gas gains
+of 2000-5000. 
+
+Polya plot.
+
 ** Christoph detector as example of simple Timepix based detector
 
+In the course of CITE THESIS a first GridPix based detector for axion
+search was developed.
 
-* Septemboard detector                                                :Part2:
+As an example and a reference shown here. The foundation of what is
+done in this thesis.
+
+Not sure if this section is the right place. But: Could add background
+rate achieved by that detector here?
+
+* Septemboard detector                                                :Detector:
 
 The first section introduces the reasoning behind building a more
 complicated detector. Existing detector has multiple downsides, seen
@@ -394,14 +450,12 @@ Why do we build such a 'complicated' detector?
 
 Background increases to edges, esp. corners.
 
-Background rate has 
+Background rate has known peaks. 3 keV for the Argon escape
+peak. Can't do anything about that in current iteration.
 
-
-** TODO Render done by Tobi. Exploded view.
-
-*** Cooling system, small motivation?
-
-Flow rate!
+Peak at 8-9 keV. A mix of a copper peak and orthogonal muons, which
+are expected to emit about 8 keV through 3 cm. More on this later in
+[[Background rate]].
 
 ** Scintillator vetoes
 
@@ -421,14 +475,20 @@ Used at 1 GHz, i.e. covering ~1 μs?
 
 *** Noise sensitive
 
-
-
 ** SiN window
 
 Much better sensitivity, especially at low energies, important in
 particular for axion electron & chameleon, not so much Primakoff.
 
 Comparison of different window setups.
+
+** TODO Render done by Tobi. Exploded view.
+
+*** Cooling system, small motivation?
+
+Show funny occupancy plot of the horrible sparking behavior.
+
+Flow rate!
 
 ** TODO schematic of whole readout chain
 
@@ -442,6 +502,10 @@ Link to repositories (maybe we can make the Virtex TOS public?)
 
 Link to TOF firmware.
 
+TOS needs to talk about data format that was used in V6 TOS. Stupid
+ASCII files. Mention that in hindsight the time should have been
+invested to either use a really dumb binary format (like NIO) or HDF5
+(even if painful from C++).
 
 ** Detector calibrations etc.
 
@@ -450,10 +514,62 @@ etc.
 
 From a purely detector standpoint.
 
-Polya distributio goes here somewhere. Related to gaseous detector
+Polya distribution goes here somewhere. Related to gaseous detector
 physics & our detector in particular.
 
-* Chapter about analysis principle                                    :Part2:
+*** ToT calibration
+
+Required understanding for our charge calibration.
+
+Show function that is being fitted to it.
+
+
+* Software                                                         :Software:
+
+Introduce used software for analysis.
+
+Previous code used MarlinTPC (already extended a framework for use for
+gaseous detectors, focus on strips). Additional extension to use our
+new detector features would be beyond the scope of the framework. 
+
+** Nim
+
+Shortly introduce Nim & why it was chosen.
+
+Efficient, productive, gets out of my way.
+
+** TimepixAnalysis
+
+Framework written for data analysis.
+
+Rewrites Timepix / InGrid related code from MarlinTPC in Nim and
+extends it (e.g. supports Timepix3).
+
+[[https://github.com/Vindaar/TimepixAnalysis]]
+
+After the thesis is published it is possible that this repository will
+become the de facto repository for the thesis and the actual analysis
+code will become its own repository. We'll see.
+
+*** =raw_data_manipulation=
+
+*** =reconstruction=
+
+*** =likelihood=
+
+*** =computeLimit=
+
+*** Other
+
+**** =cdl_spectrum_creation=
+
+**** ...
+
+
+* Chapter about analysis principle                                    :Software:
+
+Can we disentangle this from the purely detector focused things? I'm
+not so sure.
 
 After introducing detector specific calibrations etc. we can go on to
 what the steps are that are required to turn a calibrated detector
@@ -463,10 +579,170 @@ can do physics.
 Need some chapter that talks about the detector specific details that
 explain how a limit / physics result is obtained.
 
-Take data.
+** Take data. Output data is ASCII files
 
-Reconstruct data.
-Compute properties, requires energy calibration etc.
+Parsing of data in format.
+
+Present format.
+#+begin_quote
+Generic header.
+
+Data.
+#+end_quote
+
+Store data in HDF5 files. Not much going on here aside from making it
+fast.
+
+** Reconstruct & calibrate data
+
+Read data from HDF5 files. 
+
+What does reconstruction mean?
+
+Multiple things.
+
+*** 1. perform cluster finding
+
+Present our current two clustering algorithms. 
+
+- dumb search in radius around each pixel (add foot note that the
+  implementation in MarlinTPC had a bug)
+- optional: DBSCAN, short introduction give full reference to
+  implementation.
+
+**** Investigation of buggy clustering in MarlinTPC             :noexport:
+
+*** 2. for each cluster, compute geometric properties
+
+Table of the computed properties.
+
+As they are geometric easy to explain.
+
+Highlight the ones used for likelihood. Done here? 
+
+Show our sketch explaining what each property means from one of the
+talks. Maybe need to fix the radius variable?
+
+
+
+*** 3. (optional / required for analysis) charge calibration
+
+Use Timepix ToT calibration (ref theory section before where we
+explain how it works).
+
+Given ToT calibration apply function to get number of electrons (given
+that we ran in ToT mode).
+
+*** 4. (optional / required for analysis) compute gas gain
+
+Computing gas gain. Polya fit. Explain not fit parameter used, but
+mean of data.
+
+Heavy gas gain variation over time. 
+
+Explain that thus behavior chosen that minimizes effect by binning in
+time.
+
+90 minutes.
+
+Show plot with old way (full runs) vs. new length.
+
+Results in stable operation. This section probably belongs somewhere
+else? 
+
+**** Study for optimal gas gain time length                     :noexport:
+
+
+
+*** 5. (optional / required for analysis) energy computation
+
+Requires: charge calibration, gas gain
+
+Very easy in theory. In practice complicated.
+
+Theoretically, two ways:
+
+1. pixel counting. Due to single electron detection efficiency (or a
+   slight correction for under/overcounting) can just multiply hits by
+   eV per hit
+2. charge calibration plus reference spectrum of 55Fe runs. 
+
+Both cases are very simple *iff* the detector is stable over
+time. Then just take closest 55Fe run and compute correction factor
+for hits / conversion factor from peak in charge values.
+
+But: instability means we need to average over more data.
+
+Compute for all runs.
+
+Fit.
+
+Apply fit.
+
+*** 6. (optional) FADC reconstruction
+
+Apply pedestals.
+
+Determine lowest point. Determine rising / falling times in ns.
+
+Compute other properties.
+
+** Compute reference spectra 
+
+Possibly explain in chapter about CDL? Or talk there only about the
+*data* we took there, but not in detail about *what* this data is *for*?
+
+If so explain here.
+
+** Log file reader to get tracking (maybe no export)
+
+Talk about log file reader (full section definitely :noexport:), used
+to mark times in runs that correspond to tracking.
+
+** Likelihood method
+
+Explain likelihood method in theory (maybe do in section before).
+
+Explain our methods for linear interpolation between the reference
+spectra.
+
+Apply reference data for limit at specific custom software efficiency.
+
+Started at 80% reference and then tweaked for optimal ε = S/√B (or
+something). 
+
+Likelihood method gives us everything we need for background
+rate. Whatever comes out gives us left over clusters.
+
+*** Septem veto
+
+Talk about the septem veto we finally use.
+
+**** Hough transformation experiments                           :noexport:
+
+
+
+*** Scintillator veto
+
+Talk about scintillator veto. Main ideas of course.
+
+*** FADC veto
+
+Explain the veto we use based on FADC.
+
+
+
+*** Comparison with other attempts                               :noexport:
+
+Show the other attempts we did about the different ways to
+interpolate.
+
+
+
+** Compute limit
+
+Limit computation done. Needs to be after ray tracing introduction I'd
+say. Input for theory is required.
 
 Perform signal / background rejection.
 
@@ -492,34 +768,13 @@ For =mclimit= use the notes in StatusAndProgress about how limit
 calculation works. Might be good in general, because a lot of it
 applies elsewhere anyway.
 
-* Raytracing - where does this belong? :Part2:
+* Raytracing - where does this belong?                             :Software:
 
-Ray tracing through the detector. 
+Ray tracing through the detector. Put this before limit calculation stuff?
 
 ** Computation of atomic processes :noexport:
 
 Computation of atomic processes done in *CODE*. 
-
-
-
-* Software                                                            :Part2:
-
-Introduce used software for analysis.
-
-Previous code used MarlinTPC (already extended a framework for use for
-gaseous detectors, focus on strips). Additional extension to use our
-new detector features would be beyond the scope of the framework. 
-
-** Nim
-
-Shortly introduce Nim & why it was chosen.
-
-Efficient, productive, gets out of my way.
-
-** TimepixAnalysis
-
-Framework written for data anlysis.
-
 
 * Detector preparation / study / characterization etc.                :Part3:
 
@@ -539,6 +794,8 @@ of course.
 *** FADC spectrum & threshold
 
 ** 55Fe spectra
+
+Example spectrum. What's the point of these spectra.
 
 ** Energy calibration, how done?
 
@@ -568,14 +825,26 @@ to adjust the ray tracing.
 
 Noise issues, scintillators not working in Run 2.
 
+** Detector behavior over time
+
+Plot of the (known) temperature at PCB from shift forms.
+Unfortunately, most of the high resolution temperature logs were lost due to a
+software bug.
+
+Plot of the peak position of the 55Fe calibration runs.
+
 ** Run 2 and Run 3
 
 Different detector calibrations in each run.
 
 Amount of data in each. Take table from StatusAndProgress.
 
+Run table somewhere in appendix, link to online version.
+
 
 * Background rate computation                                      :Analysis:
+
+Mitigation strategies for detector behavior, e.g. gain variation over time.
 
 ** Understanding background rate
 
@@ -592,16 +861,25 @@ StatusAndProgress. Maybe shortened version will make it.
 
 Using background rate & methods to determine it.
 
+** Axions
+
 ** Compute limit w/ our method (whatever that will finally be)
 
 ** Comparison to 2013 limit (using their method)
 
 ** Limit calculation using neural networks :PENDING:
 
+** TODO Chameleons ?
 
 * Outlook                                                             :Part5:
 
+Timepix3 based detector will be big improvement, as long readout times
+without time information are probably the biggest issue (and partially
+biggest mistake) in the data taking campaign.
+
 * Summary & conclusion                                                :Part5:
+
+
 
 * Acknowledgments                                                     :Part5:
 
