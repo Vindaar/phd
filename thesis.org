@@ -170,6 +170,58 @@ Find in EDH and include, even if we don't use it. Referenced in X-ray
 finger measurements.
 
 
+** TODO fix up schematic of V6 Septemboard connections
+** TODO fix up schematic of MM working principle
+
+The existing schematic is not very clear. Change the drift gap
+behavior and amplification gap one by reversing their drawing
+style. Add some alpha to different regions to highlight amount of
+electrons drifting. Add a text label with O(magnitude)
+
+** TODO insert the first LaTeX + Vega-lite based plot
+
+This gives us an idea of how this will work. For a start I'd say base
+the Vega-lite plots on Github gists. That allows for easy replacement
+for the time being.
+
+** TODO implement nothing ⇒ background rate as reproducible build
+
+This one will be a bit ambitious, but maybe it's a day of work.
+
+*If* we get this working we're at a point where generating other plots
+is just a simple shell command (call script X with args Y), as we will
+have all =Calibration/DataRunsX_Y.h5= files ready somewhere.
+
+Steps:
+*** Setup Nim + all packages of fixed versions (take versions from a TOML file)
+*** Have config file storing paths of raw data + output paths
+*** run raw data, reco, ...
+*** generate CDL datasets
+*** compute logL files
+*** plot background
+
+** TODO find way to host the raw data
+
+We could start by a simple Backblaze B2 hosting.
+
+Pricing is competitive:
+Hosting: 0.005 $/Month/GB
+Download: 0.01 $/GB
+https://www.backblaze.com/b2/cloud-storage-pricing.html
+
+Which is 1.5$ for 300 GB and 3$ to download it. Certainly cheap enough
+to try!
+
+Data to store
+*** All 2017/18 data runs
+**** Run 2
+**** Run 3
+*** Detector calibration files for Run 2, Run 3
+*** FADC pedestal run
+*** X-ray finger runs
+*** All our notes + thesis
+*** Nim code?                                                     :pending:
+
 ** Points of contention
 
 At the moment <2021-07-31 Sat 11:36> my biggest point of uncertainty
