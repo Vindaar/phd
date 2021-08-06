@@ -350,6 +350,8 @@ for a Fermion loop diagram. That allows for coupling to
 gluons. Effective photon coupling is the result, equivalent to
 Primakoff effect for pions (also an effective coupling!).
 
+Write down effective Lagrangian.
+
 ** Solar axion flux
 
 Important for us? How do we detect them.
@@ -376,7 +378,7 @@ $dΦ/dE ∝ g_{aγ}² · \text{black body radiation}$
 
 Including analytical equation for flux... :)
 
-#+begin_src nim :tangle /tmp/solar_axion_flux.nim
+#+begin_src nim :tangle /tmp/solar_axion_flux.nim :results silent
 import unchained, ggplotnim, math, chroma, ginger
 defUnit(keV⁻¹•m⁻²•yr⁻¹)
 defUnit(keV⁻¹•cm⁻²•s⁻¹)
@@ -434,8 +436,6 @@ ggplot(df.mutate(f{"Flux" ~ `Flux` / 1e10}), aes("E", "Flux")) +
 defUnit(m⁻²•yr⁻¹)  
 echo 1.cm⁻²•s⁻¹.to(m⁻²•yr⁻¹)
 #+end_src
-
-#+RESULTS:
 
 There are different analytical expressions for the solar axion flux
 for Primakoff production. These stem from the fact that a solar model
@@ -498,6 +498,54 @@ proposed by Sikivie in his paper. *CITE SIKIVIE*
 
 Maybe shortly mention other experiments.
 
+As discussed in the previous chapter in section [[Solar axion flux]],
+stars are expected to produce significant excess of axions. In 1983
+Pierre Sikivie proposed multiple methods to potentially detect
+axions, one of these making use of this solar axion production. 
+
+From the theory on axions (ref. section [[Implications for axion
+interactions]]) we know there is an effective coupling to the photon
+$g_{aγ}$. This coupling is an equivalent to the Primakoff effect,
+which describes a resonant production of mesons via a Fermion loop in
+strong electromagnetic fields when interacting with a nucleus. In the
+Primakoff effect two photons are present, an incoming real photon and
+a virtual photon of the electromagnetic interaction of the
+nucleus. Axions can take the place of the physical photon, either in
+the initial state or in the final state. In the former case we have an
+axion to photon conversion and in the latter a photon to axion
+conversion.
+
+*DIFFERENTIATE BETWEEN PRIMAKOFF AND INVERSE PRIMAKOFF*
+
+*PUT PRIMAKOFF FEYNMAN DIAGRAM*
+*POSSIBLY MOVE TO THEORY ITSELF AND REFERENCE*
+
+As it turns out, the relevant aspect for the Primakoff effect is not
+the presence of a nucleus, but simply the fact that the nucleus
+provides an electromagnetic field. This means the nucleus can also be
+replaced by - for example - a transverse, constant magnetic field.
+
+*EXPLAIN WHY TRANSVERSE MAGNETIC FIELD IN THEORY*
+
+This fact is the foundation of the helioscope idea. By pointing a
+magnet at the Sun one expects a small fraction of the axions produced
+in the Sun to reconvert to photons in the presence of the magnetic
+field via the inverse Primakoff effect. These photons will carry the
+energy of the original photons that produced the axions, namely the
+energy of photons in the solar core. Essentially black body radiation
+of $\sim\mathcal{O}(\SI{15}{\mega\kelvin}$.
+
+*INSERT FIG BLACKBODY HERE OR IN SOLAR AXION FLUX SECTION*
+
+This means the reconverted photons are mostly in the soft X-ray range
+between \SIrange{1}{7}{\keV}. The first implementation of the
+helioscope idea was the Rochester-Brookhaven-Florida experment *CITE
+2*. It was followed by the SUMICO experiment in Tokyo *CITE 3*. The
+third and only still running helioscope is the CERN Axion Solar
+Telescope (CAST), which we will present in more detail in section [[CERN
+Axion Solar Telescope (CAST)]]. In the final section we will introduce
+the next generation of axion helioscopes, the International AXion
+Observatory (IAXO), section [[International AXion Observatory (IAXO)]].
 ** TODO small section about other kinds of experiment?
 
 ** CERN Axion Solar Telescope (CAST)
