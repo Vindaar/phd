@@ -546,6 +546,60 @@ Telescope (CAST), which we will present in more detail in section [[CERN
 Axion Solar Telescope (CAST)]]. In the final section we will introduce
 the next generation of axion helioscopes, the International AXion
 Observatory (IAXO), section [[International AXion Observatory (IAXO)]].
+
+** Black body radiation in solar core                             :noexport:
+
+Let's compute the black body radiation for the solar core and see if
+it matches the energy spectrum we expect for axions.
+
+Planck's law is defined as *CITE SOMETHING*:
+
+\[
+B_ν(ν, T) = \frac{2hν³}{c²} \frac{1}{e^{hν/kT} - 1}
+\]
+
+where $ν$ is the frequency of the photon and $T$ the temperature in
+Kelvin. $k$ is of course the Boltzmann constant and $h$ the Planck
+constant. Let's see what this looks like for $T =
+\SI{15}{\mega\kelvin}$.
+
+#+begin_src nim
+import ggplotnim, unchained, sequtils
+
+defUnit(s⁻¹)
+defUnit(μs⁻¹)
+defUnit(Watt•Steradian⁻¹•Meter⁻²•NanoMeter⁻¹)
+defUnit(Joule•Meter⁻²•Steradian⁻¹)
+
+let T_sun = 15.MegaKelvin.to(Kelvin)
+
+proc blackBody(ν: s⁻¹, T: Kelvin): Joule•Meter⁻²•Steradian⁻¹ =
+  result = (2 * hp * ν^3 / c^2 / (exp(hp * ν / (k * T)) - 1)).to(Joule•Meter⁻²•Steradian⁻¹)
+
+proc xrayEnergyToFreq(E: keV): s⁻¹ = 
+  ## converts the input energy in keV to a correct frequency
+  result = E.to(Joule) / hp
+echo 1.keV.xrayEnergyToFreq
+
+echo blackBody(1.μs⁻¹.to(s⁻¹), T_sun)
+echo blackBody(1.keV.xrayEnergyToFreq, T_sun)
+
+let energies = linspace(0.01, 16.0, 1000)
+let radiance = energies.mapIt(blackBody(it.keV.xrayEnergyToFreq, T_sun).float)
+let df = seqsToDf(energies, radiance)
+ggplot(df, aes("energies", "radiance")) + 
+  geom_line() + 
+  ggtitle("Black body radiation @ T = 15 Mio. K") +
+  xlab("Energy [keV]") + ylab("Radiance [J•m⁻²•sr⁻¹]") + 
+  ggsave("/tmp/blackbody_sun.pdf")
+
+#+end_src
+
+#+RESULTS:
+| 2.41799e+17 | Second⁻¹                  |
+| 4.60862e-21 | Joule•Meter⁻²•Steradian⁻¹ |
+|     178.526 | Joule•Meter⁻²•Steradian⁻¹ |
+
 ** TODO small section about other kinds of experiment?
 
 ** CERN Axion Solar Telescope (CAST)
