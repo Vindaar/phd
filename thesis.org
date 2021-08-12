@@ -936,12 +936,51 @@ Lupberger, Krieger PhD, Elisa PhD, PDG, some book?...*
 
 *Highlight which reference for what*
 
+The theory sections covered in the following parts all have in common
+that their understanding is required to make certain assumptions in
+the data analysis or *???* 
 
+It should be noted though that no part will be thorough enough to
+stand on its own. Further reading is required in many places. This
+theory section is supposed to serve as a reference for the later parts
+of the thesis.
 
+Of particular interest are all sections that give the theoretical
+foundation for different kinds of background we might measure or the
+understanding of our calibration data.
+
+** TODO cosmic background?
+
+In a paragraph or two introduce cosmic radiation as a source of
+background? I mean it's pretty essential.
+
+*PLOT OF PRIMARY RADIATION*
+
+*SECONDARY MUON PRODUCTION*
+
+*MUON FLUX AT ZENITH*, *MUON FLUX UNDER ANGLE* (cos²)
 
 ** Particle interactions with matter
 
 *** X-rays through matter & gases
+
+Lambert-Beer's law
+
+\[
+I(z) = I_0 e^{-μz}
+\]
+
+gives the intensity of radiation $I(z)$ after traversing through a
+medium with attenuation $μ$ of length $z$, given a starting intensity
+of $I_0$. 
+
+This law is of vital importance for the behavior of X-rays traversing
+through matter, which is needed to compute the detector efficiency.
+
+In addition it is also related to the mean free path of X-rays in a
+gas, which is an important parameter in gaseous detectors to
+understand the absorption efficiency of X-rays of different energies
+and the expected diffusion.
 
 Talk about attenuation length for photons in gases.
 
@@ -950,7 +989,51 @@ Absorption based on density etc. (for our windows)
 Mean free path of photons in gas. (for point of absorption in
 detector + diffusion distance)
 
+*EXAMPLE of ?*
+
 *** Bethe-Bloch equation
+
+Another relevant aspect for gaseous detectors is the energy deposition
+of charged particles. In particular for experiments that sit near the
+surface, a major source of background is due to cosmic radiation,
+with cosmic muons making up *HOW MUCH* the largest fraction of
+radiation at the surface. 
+
+These muons lose energy according to the Bethe-Bloch equation *CITE
+WHAT*, which describes the average energy loss per distance for a
+charged particle with charge $Ne$ in a homogeneous medium with charge
+carriers $Z$. *FIX ME*
+
+This interaction behavior of muons leads to a specific, expected
+energy loss per distance. For argon gas at normal conditions (1 bar,
+20°C, ...) this is shown in fig. *ARGON BETHE*.
+
+*CITE PDG*
+There are multiple different representations of the Bethe-Bloch
+equation mention multiple different ways to write formula.
+
+As the Bethe formula was derived from quantum mechanical perturbation
+theory, higher order corrections can be computed. For our purposes
+here the leading order is enough. The next corrections proportional to
+$Z³$ and $Z⁴$ are called /??/ and /shell correction/ respectively. 
+At higher energies also the density correction by Fermi *CITE* needs
+to be accounted for.
+*SHOW WITH OR WITHOUT. EQUATION WITH, BUT DROP IN CALCS*
+
+Muons arriving at the surface have energies typically above
+\SI{100}{\MeV}. For that reason the higher order corrections are not
+of importance for the study of muons in gaseous detectors.
+
+At each point the formula gives the *expectation value* for the energy
+loss after a distance large enough to include many interactions. In
+each interaction the particle loses energy according to a Landau
+distribution *CITE WHAT*, shown in fig. *LANDAU PLOT*. 
+*EXPLANATION NOT QUITE CORRECT*
+
+*MOVE FOLLOWING TO SEPARATE SECTION LATER (noexport about muon studies?)*
+By taking into account the Bethe formula and a Landau distribution for
+each point, we can compute an expectation for the energy loss for
+muons under typical conditions met in a gaseous detector.
 
 Introduce bethe equation, add a plot we did for our gas. (for muons in particular)
 
@@ -966,16 +1049,58 @@ energy loss. Of course cannot take the mean of the Landau distribution
 due to the long tail. We don't really do that in our muon simulation
 though. 
 
-
 *** X-ray fluorescence
 
 Important for our 3 keV Argon line + 8 keV copper line mainly.
+
+Cosmic muons in their interactions with matter can ionize atoms,
+leading to the possible emission of X-rays if the removed electron is
+part on an inner shell, mostly K (and some L) shell electrons. This
+leads to a form of background based on real X-rays and thus represents
+a kind of background that is impossible to distinguish from any kind
+of axion signal unless external scintillator based vetoes are used.
+*TOO MUCH DETAIL HERE?* *CHECK THE SHELL STUFF, GIVE A MINI TABLE OF
+IMPORTANT ATOMIC LINES!* 
+
+*HAVE TABLE IN STATUS AND PROGRESS*
+
+Of course to be relevant as a form of detector background the material
+must be close to the detector, as the X-rays will otherwise be
+absorbed. This makes the detector material, the gas itself and all
+material in the direction of the detectors' sensitivity a candidate
+for X-ray fluorescence background.
+
+Tab. *TABLE INSERT* contains the different lines of plausible
+materials used for detector construction / etc. *...*
+*ASK TOBI IF TO ADD SOME MATERIAL*
+
+*HOW DOES THIS CORRESPOND TO AUGER ELECTRONS?*
+
+*** Bremsstrahlung
+
+Talk about Bremsstrahlung as a requirement for the CDL data?
+
+
 
 ** Gaseous detector fundamentals
 
 *** Mean free path
 
 See photons above.
+
+Of major importance for the detection of particles in a gaseous
+detector is of course the mean free path. This is the mean length a
+particle traverses in a medium before interactions. For charged
+particles it yields the mean distance between individual interaction
+points, whereas for a photon it gives the mean length the photon
+traverses through the detector before interaction. 
+
+Especially for photons this value is of crucial importance, as it
+tells us at what distance photons will likely convert depending on
+their energy. This is important as it directly affects the possible
+drift distance and thus diffusion available to the generated
+electrons.
+*TOO MUCH DETAIL, AS WE HAVE NOT INTRODUCED DETECTORS YET!!*
 
 *** Diffusion
 
@@ -984,12 +1109,24 @@ based on conversion at specific height.
 
 What effects affect diffusion?
 
+Random walk + a force acting on particles.
+
 *** Drift velocity
 
 Talk about drift velocity of electrons for a given electric
 field. Required to know time scales associated with e.g. muons + FADC,
 time it takes for X-rays to drift (for random coincidences in long
 frames etc.)
+
+*USE FORMULA PDG*
+
+The detector used in this thesis does not make use of magnetic
+fields. Thus, all terms but the first are zero. Further, the electric
+field is constant, leading to the following simplification:
+
+\[
+v = Im an drift velocity
+\]
 
 *** Escape photons / peaks | 55Fe as a typical calibration source
 
