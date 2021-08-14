@@ -1250,6 +1250,8 @@ What effects affect diffusion?
 
 Random walk + a force acting on particles.
 
+*COMPUTE USING PYBOLTZ: https://github.com/UTA-REST/PyBoltz*
+
 *** Drift velocity
 
 Talk about drift velocity of electrons for a given electric
@@ -1263,9 +1265,38 @@ The detector used in this thesis does not make use of magnetic
 fields. Thus, all terms but the first are zero. Further, the electric
 field is constant, leading to the following simplification:
 
+
+Based on the so called 'friction force model' an analytical expression
+for the drift velocity in an electromagnetic field can be written to:
 \[
-v = Im an drift velocity
+\vec{v} = \frac{e}{m_e} \frac{τ}{1 + ω²τ²}\left( \vec{E} + \frac{ωτ}{B}
+(\vec{E} × \vec{B}) + \frac{ω²τ²}{B²}(\vec{E} · \vec{B}) \vec{B} \right)
 \]
+with the electron charge $e$ and mass $m_e$, in an electric field
+$\vec{E}$ and magnetic field $\vec{B}$, given the Lamor frequency 
+$ω = eB / m_e$ and the mean collision time $τ$. \cite{Zyla:2020zbs}
+
+For the typical case in Micromegas detectors without a magnetic field
+$B = 0, ω = 0$ and a constant, homogeneous electric field $E$, this
+reduces to the Townsend expression:
+
+\[
+v = \frac{e E τ}{m_e}
+\]
+
+These can be computed using software packages like MAGBOLTZ (or its
+Python port PyBoltz) that solve the underlying transport equation, the
+Boltzmann equation:
+
+\begin{align}
+  \frac{∂f}{∂t} + \vec{v} \frac{∂}{∂\vec{r}}f + \frac{∂}{∂\vec{v}}\vec{g} &= Q(t) \\
+  \vec{g} &= \left(\frac{e\vec{E}}{m} + \vec{ω} × \vec{v}\right) f
+\end{align}
+*FIX THIS*
+
+*BOLTZMANN EQUATION: https://en.wikipedia.org/wiki/Boltzmann_equation*
+
+*COMPUTE USING PYBOLTZ: https://github.com/UTA-REST/PyBoltz*
 
 *** Escape photons / peaks | 55Fe as a typical calibration source
 
