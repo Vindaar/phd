@@ -54,6 +54,9 @@
 #+LATEX_HEADER: \newcommand{\red}{\textcolor{red}}
 #+LATEX_HEADER: \DeclareSIUnit\year{yr}
 
+#+LATEX_HEADER: \usepackage{biblatex}
+#+LATEX_HEADER: \addbibresource{references.bib}
+
 # HTML Export
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="nimdoc.css" />
 #+OPTIONS: html-style:nil
@@ -82,6 +85,20 @@ Solingen
 
 
 # Part 0: Introduction
+
+* Compile                                                          :noexport:
+
+Compilation at the moment is still a bit broken due to =biber=.
+
+We need to generate the TeX file from Org =C-c C-e l l= to generate
+the TeX file.
+
+Then in terminal:
+#+begin_src sh
+xelatex --shell-escape thesis.tex
+biber thesis
+xelatex --shell-escape thesis.tex
+#+end_src
 
 * Start me                                                         :noexport:
 
@@ -1952,6 +1969,10 @@ mratsim, Hugo, Clonkk, Andrea Ferreti (alea among others), brentp
 great), yglukhov (nimpy in particular!!)
 
 
+# Use biblatex for the bibliography
+# Add bibliography to Table of Contents
+# Comment out this command if your references are printed for each chapter.
+\printbibliography[heading=bibintoc]
 
 * Appendix                                                         :Appendix:
 
@@ -1959,5 +1980,4 @@ great), yglukhov (nimpy in particular!!)
 
 #+LATEX: \listoftables{}
 
-* Bibliography
 
