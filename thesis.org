@@ -1177,13 +1177,9 @@ proc intBethe(e: Element, d_total: cm, E0: eV, dx = 1.μm): eV =
   while d < d_total and result > 0.eV:
     let E_loss: MeV = betheBlochPDG(-1, e.Z, e.M, γ, m_μ) * e.ρ * dx
     result = result - E_loss.to(eV)
-    γ = E_to_γ(result.to(GeV)) #.to(GeV))
+    γ = E_to_γ(result.to(GeV))
     d = d + dx.to(cm)
     totalLoss = totalLoss + E_loss.to(eV)
-  echo "Resulting d is ", d
-  echo "And result ", result
-  echo "Total loss in: ", totalLoss.to(keV)
-  echo "----------\n"
   result = max(0.float, result.float).eV
 
 func argonLabel(): string = "muon_argon_3cm_bethe_loss"
@@ -1209,14 +1205,6 @@ proc plotDetectorAbsorption(element: Element) =
               label = argonLabel())
 plotDetectorAbsorption(Argon)
 #+end_src
-
-#+RESULTS:
-
-# #+begin_center
-# #+CAPTION: Which gives us the following plot
-# #+NAME: argon_energy_loss_3cm_muon
-# 
-# #+end_center
 
 *** X-ray fluorescence
 
