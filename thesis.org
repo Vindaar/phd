@@ -1111,7 +1111,7 @@ We will now compute the energy loss for muons traversing the
 orthogonally to the readout plane (i.e. such that it may look like a
 photon).
 
-#+begin_src nim
+#+begin_src nim :results silent
 import math, macros, unchained, ggplotnim, sequtils, strformat, strutils
 import thesisHelpers
 import ggplotnim / ggplot_vegatex
@@ -1208,6 +1208,7 @@ proc plotDetectorAbsorption(element: Element) =
     scale_x_log10() + scale_y_log10() +
     theme_latex() + 
     ggtitle(r"Energy loss of Muons in \SI{3}{\cm} " & &"{element.name.capitalizeAscii} at CAST conditions") +
+    #ggsave(&"/home/basti/phd/Figs/muonStudies/{element.name}_energy_loss_cast.pdf", useTeX = true, standalone = true)
     ggvegatex(&"/home/basti/phd/Figs/muonStudies/{element.name}_energy_loss_cast",
               caption = argonCaption(),
               label = argonLabel())
