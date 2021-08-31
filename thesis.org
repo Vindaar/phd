@@ -1650,6 +1650,7 @@ SiPM: remove orthogonal muons, expected energy ~8 keV.
 
 Show what hardware. V1792. Picture etc.
 
+*SCHEMATIC OF FADC CLOSING TIMEPIX SHUTTER*
 
 FADC: required for trigger + some time information of events.
 
@@ -1681,13 +1682,17 @@ Flow rate!
 The \textbf{T}imepix \textbf{O}perating \textbf{S}ystem (TOS) is the
 computer-side data acquisition software to read out Timepix based
 detectors. It is an object oriented C++ project, available at *PUSH TO
-GITHUB*. [fn:TOS_versions]
+GITHUB*. [fn:TOS_versions] 
 *ACCORDING TO WIENER VME MANUAL ALL FILES ARE OPEN SOURCE*
 https://wikihost.nscl.msu.edu/S800Doc/lib/exe/fetch.php?media=wiki:manual_vm-usb_9_01_1.pdf
+The project needs to be used in conjunction with the \textbf{T}imepix
+\textbf{O}perating \textbf{F}irmware (TOF), which is a firmware for a
+Xilinx Virtex6 FPGA. The latter controls one or more Timepix ASICs via
+HDMI and communicates with the TOS via Ethernet.
 
 [fn:TOS_versions] There are unfortunately 2 different versions of TOS, as
 development diverged for different readout systems. One version is for
-the Xylinx Virtex 6 (V6) evaluation board and the other for the
+the Xylinx Virtex 6 (V6) ML 605 evaluation board and the other for the
 \textbf{S}calable \textbf{R}eadout \textbf{S}ystem (SRS). The V6
 version can read out only a single detector (with up to 8 Timepix
 ASICs), but supports readout of an Ortec FADC and controlling of a
@@ -1762,7 +1767,7 @@ the implemented functionality is a fully featured HV controller that
 supports all Wiener functionality like grouping different channels to
 ramp up together, trip together etc.
 
-An example of a typical startup procedure is shown in snippet
+An example of a typical startup procedure is shown in listing
 [[TOS_startup_commands]]. Note that most essential commands in TOS also
 have shortened names via numbers, due to historic reasons (TOS
 originally did not have autocompletion or allowed moving the cursor in
@@ -1802,6 +1807,90 @@ user@ingrid-DAQ~/ ./TOS
 > 0 # zero suppression
 > 1 # FADC usage
 > 0 # accept FADC settings
+#+end_src
+
+Data taken with TOS is stored - for historic reasons - in pure ASCII
+files. Two different readout modes (with different output formats) are
+supported. For the following explanation it is assumed the Timepix is
+used in the ToT mode.
+1. full matrix readout: reads out the whole Timepix ASIC and writes a
+   single 256x256 pixel matrix as an ASCII file. 256 lines, each
+   containing space separated ToT values for each pixel.
+2. zero suppressed readout: reads out only those pixels that have ToT
+   values larger than 0. Stores the data in TSV files (tab separated
+   values) =X Y ToT= with an additional header. The header contains a
+   global "run" and "event" header, which contains information about
+   the run the event is taken from and a "chip" header, which contains
+   information about the specific Timepix ASIC being read out (up to 8
+   can be read out at the same time using TOS).
+
+The Timepix is only capable of shutter based readouts. Typically, a
+fixed shutter is used. The readout is complicated for the case of
+using an FADC, in which case an FADC signal can be used as an external
+trigger to close the shutter early. This will be further explained in
+the FADC section, [[FADC]].
+*REWRITE THIS PART, REFER TO SCHEMATIC ABOUT TIMEPIX*
+
+As for our purposes most events are extremely sparse (< 500 pixels
+active) the zero suppressed readout is the only relevant readout
+mode. An example of the file type produced in this mode is in listing
+[[zero_suppressed_readout]].
+
+#+CAPTION: Example of an event read out in zero suppressed readout mode. The ASCII output data
+#+CAPTION: consists of a global run and event header (indicated by =##=), a chip header (indicated by 
+#+CAPTION: =#= and actual data in format =X Y ToT= values. Each chip header is followed by
+#+CAPTION: by all active pixels on that chip in the event.
+#+NAME: zero_suppressed_readout
+#+begin_src sh
+## [General]
+## runNumber:        339
+## runTime:       	 7200
+## runTimeFrames: 	 0
+## pathName:         data/runs/Run_339_190218-10-36
+## dateTime:         2019-02-18.10:36:34
+## numChips:         7
+## shutterTime:      2
+## shutterMode:      verylong
+## runMode:          0
+## fastClock:        0
+## externalTrigger:  0
+## [Event]
+## eventNumber:      2
+## useHvFadc:    	 1
+## fadcReadout:    	 1
+## szint1ClockInt:	 0
+## szint2ClockInt:	 0
+## fadcTriggerClock: 647246
+# chipNumber: 0
+# chipName:   E 6 W69
+# numHits:    0
+# chipNumber: 1
+# chipName:   K 6 W69
+# numHits:    0
+# chipNumber: 2
+# chipName:   H 9 W69
+# numHits:    2
+106	160	75
+211	142	2
+# chipNumber: 3
+# chipName:   H 10 W69
+# numHits:    23
+238	154	51
+242	153	18
+...
+# chipNumber: 4
+# chipName:   G 10 W69
+# numHits:    0
+# chipNumber: 5
+# chipName:   D 9 W69
+# numHits:    0
+# chipNumber: 6
+# chipName:   L 8 W69
+# numHits:    4
+139	254	146
+166	233	11810
+234	203	11810
+70	57	315
 #+end_src
 
 Working principle of TOS.
