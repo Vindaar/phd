@@ -1676,11 +1676,11 @@ Flow rate!
 The \textbf{T}imepix \textbf{O}perating \textbf{S}ystem (TOS) is the
 computer-side data acquisition software to read out Timepix based
 detectors. It is an object oriented C++ project, available at *PUSH TO
-GITHUB*.
+GITHUB*. [fn:TOS_versions]
 *ACCORDING TO WIENER VME MANUAL ALL FILES ARE OPEN SOURCE*
 https://wikihost.nscl.msu.edu/S800Doc/lib/exe/fetch.php?media=wiki:manual_vm-usb_9_01_1.pdf
 
-\footnote{There are unfortunately 2 different versions of TOS, as
+[fn:TOS_versions] There are unfortunately 2 different versions of TOS, as
 development diverged for different readout systems. One version is for
 the Xylinx Virtex 6 (V6) evaluation board and the other for the
 \textbf{S}calable \textbf{R}eadout \textbf{S}ystem (SRS). The V6
@@ -1689,7 +1689,8 @@ ASICs), but supports readout of an Ortec FADC and controlling of a
 Wiener HV module via VME. The SRS version instead supports neither of
 these additional features, but supports multiple detectors at the same
 time. The detector used in this thesis is read out using the Virtex 6
-board.}
+board.
+
 
 *ADD FULL NAME OF V6 BOARD*
 
@@ -1701,6 +1702,102 @@ different classes for the different software pieces:
   of the software, sitting between the console and lower layers.
 - =FPGA=: A class representing the functionality required to control
   the FPGA on the Virtex 6 evaluation board.
+- =Chip=: A class representing each Timepix ASIC and its
+  functionality.
+- =HFManager=: A class unifying the FADC & Wiener HV controls as they are
+  both controlled via USB, installed in a VME crate. This class
+  contains individual attributes that contain explicit classes for
+  these two devices. The name is shortened for 'High Voltage and FADC Manager'.
+  - =V1729=: A class representing the Ortec Flash ADC.
+  - =HV*=: Multiple classes representing HV channels, groups and more.
+- =MCP2210=: A class representing the PT1000 temperature sensors
+  installed on the detector via a MCP2210 micro controller.
+
+In general TOS is a fully command line driven software package, with
+its own REPL (Return, Evaluate, Print, Loop; the name for an
+interactive terminal process, which takes commands that are evaluated
+and returns to the terminal). It brings all the expected features one
+might wish from a REPL, including auto completion, history lookup,
+emacs style keybindings and more.
+
+The aforementioned =HFManager= and the temperature sensors are
+optional pieces that are not required for basic Timepix
+operation. Their functionality has to be activated via a manual
+command, =ActivateHFM=. This triggers the USB connection to the VME
+crate and tries to find the Wiener HV module as well as the Ortec FADC
+in the crate. Additionally, the temperature sensors are attempted to
+be found (via a secondary, optional USB connection). If the latter are
+found a continuous temperature logging begins. Outside of actual data
+taking the temperature is logged into the internal =log= directory of
+the TOS directory as =temp_log.txt=. [fn:temp_logs_lost]
+
+[fn:temp_logs_lost] This default temperature logging location was also
+used as an unintended fallback mechanism during data taking, if the HV
+of the detector was considered out of certain bounds. Unfortunately,
+the bounds checking was faulty which is why it was disabled manually
+during data taking at CAST, as it triggered data taking aborts. This
+however triggered a secondary code path for the temperature logging,
+storing it in that default location. As an effect the majority of CAST
+temperature logging data has been lost, as most of it was overwritten
+several times. About daily manual temperature measurements are still
+left and show acceptable temperature values. Precise correlations with
+certain detector behaviors are unfortunately impossible. The two
+different code paths for the temperature logging are essentially a bug
+in the code that was never intended, stemming from the fact that
+temperature logging must be done to a 'global' location outside of
+data taking (as no data taking specific directory exists). Due to how
+the temperature logging and HV & FADC controls were added to TOS,
+these things were more entangled than necessary. A more thorough
+testing period of the detector and software package should have been
+performed, but was not in scope.
+
+
+The HV controls are specific to Wiener HV power supplies. In principle
+the implemented functionality is a fully featured HV controller that
+supports all Wiener functionality like grouping different channels to
+ramp up together, trip together etc.
+
+An example of a typical startup procedure is shown in snippet
+[[TOS_startup_commands]]. Note that most essential commands in TOS also
+have shortened names via numbers, due to historic reasons (TOS
+originally did not have autocompletion or allowed moving the cursor in
+text input, making typing complex names cumbersome and error prone),
+which is why many of the inputs are simple numbers.
+
+#+CAPTION: An example of the typical startup routine of TOS for a background data taking measurement at CAST
+#+CAPTION: for the Septemboard based GridPix detector.
+#+LABEL: TOS_startup_commands
+#+begin_src sh
+user@ingrid-DAQ~/ ./TOS
+> 7 # number of chips
+> 4 # preload
+> SetChipIDOffset
+> 190
+> lf # load FSR values for the chips
+> # 7 times enter to load default paths
+> uma # create a uniform matrix for all chips
+> 1 # Matrix settings
+> 0
+> 1
+> 1
+> 0
+> LoadThreshold # load threshold equalisation files
+> 4 # write matrix
+> 3 # read out
+> 3 # 2nd readout to make sure pixels are 'empty'
+> ActivateHFM # startup HV & FADC controls
+> SetFadcSettings # load the FADC settings
+> Run # start a data taking run
+> 1 # run time via # frames
+> 0
+> 0
+> 0
+> 2 # shutter range select
+> 30 # shutter time select
+> 0 # zero suppression
+> 1 # FADC usage
+> 0 # accept FADC settings
+#+end_src
 
 Working principle of TOS.
 
