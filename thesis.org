@@ -1936,7 +1936,155 @@ From a purely detector standpoint.
 Polya distribution goes here somewhere. Related to gaseous detector
 physics & our detector in particular.
 
+Before a Timepix based detector can be used for data taking, different
+calibrations have to be performed.
+
+We will discuss the main calibrations that are performed, starting
+with a =THS= optimization (sec. [[=THS= optimization]]) , followed by the threshold
+equalization (sec [[Threshold equalization]]). Third is an S-Curve scan
+(sec. [[S-Curve scan]]) and finally the ToT calibration, section [[ToT
+calibration]]. In these the first 3 are calibrations that are used to
+set different DACs on the Timepix to 'good' values. The last
+calibration on the other hand is one to *interpret* the ToT values in
+amounts of charge.
+
+In principle there are many other calibrations one could perform, as
+the Timepix has *CHECK NUMBER* 10 different DACs. Most are used with
+default values that are seen in *TABLE OF CALIBRATION*.
+
+These calibrations are mainly explained to give context for the used
+detector calibrations at CAST. All calibrations can be found in appendix *APPEND CALIBRATIONS*.
+
+*** =THS= optimization
+
+The =THS= DAC is one of the available DACs on the Timepix ASIC. It's
+purpose is to change the behavior of another DAC, the *WHAT IS THIS
+CALLED* which is present on each pixel. A change in the =THS= DAC
+yields a change in the relative range of the *PIXEL THR DAC*. 
+
+If the =THS= DAC is set too low *CHECK*, the 4 bit DAC on each pixel
+will be too coarse for a fine adjustment. If it is too high, not
+enough range will be available to adjust each pixel to an equal noise
+/ sensitivity level.
+
+The calibration works by scanning a range of =THL= values (the global
+threshold DAC) through a subset of 4096 pixels on the given chip using
+pixel DAC values of 0 for all these pixels and doing the same at the
+maximum value of 15 for each pixel. For each of these two cases we can
+compute a histogram of the number of active pixels given different
+=THL= values. The resulting histogram will be a Gaussian around a
+specific =THL= value. An ideal =THS= value is such that these two
+Gaussians overlap at the 3σ level (*OR RMS?*), as it means the range
+of the 4 bit DAC is large enough to adjust all pixels to be at the
+same level in the threshold equalization (next calibration).
+
+*INSERT SOMEWHERE* For each =THL= value the shutter is opened
+shortly. If a pixel has a too low threshold, it will register random
+noise as a ToT signal. After closing the shutter the pixels will be
+read out and the resulting values are used. *bla*
+
+The actual calibration starts from a user given =THS= value and
+computes the two mentioned histograms. Then the =THS= value is halved
+and the same histograms are computed again. As the =THS= DAC is
+linear, the distance between the two histograms is computed for the
+first and second =THS= value. Then using a linear interpolation the
+ideal 3σ is computed and set.
+
+_Note:_ for this calibration the =THL= range to scan is another user given
+input. All that matters for this range is to make sure the real
+threshold of the pixels lies within that range (such that the two
+Gaussians are fully within that range).
+
+*PSEUDO CODE ALGORITHM?*
+
+*PLOT OF THESE TWO HISTOGRAMS. SHOW MAYBE IDEALIZED EXAMPLE OF BAD THS
+AND GOOD THS VALUE*
+
+*LOOK AT TOS CODE AGAIN*
+
+*CROSS CHECK THE NAMES ETC*
+
+*** Threshold equalization
+
+The threshold equalization requires the =THS= optimization to be done
+correctly. Its goal is to set each pixel DAC such that, in theory,
+each pixel has exactly the same =THL= threshold value.
+
+Essentially, the algorithm walks over all pixels and scans a user
+given =THL= range while changing the pixel DACs for each pixel to move
+the threshold to the same value.
+
+After equalization each pixel should in theory have the same threshold.
+
+*UNDERSTAND THIS ALGORITHM*
+
+*** S-Curve scan
+
+The S-Curve scan is one of 2 different ways to determine the optimal
+=THL= value. 
+
+It works by injecting charges onto each pixel and checking the pixel
+response of each pixel at different =THL= values. Below a certain
+=THL= value all pixels will respond to the injected charge. At some
+point certain pixels will be insensitive to the induced charge and a
+90° rotated "S" will form. By fitting an error function to this S an
+ideal =THL= value can be deduced. 
+
+An alternative to this method is to simply scan all =THL= values by
+hand and look at the number of pixels active. For a correctly
+equalized chip a sharp drop off of noisy pixels should be visible at a
+certain threshold. In principle the =THL= value at which no more
+pixels are noisy is the ideal =THL= value.
+
+However, one major issue of determining the threshold is one of
+shutter lengths, which complicates this idealized view. Each Timepix
+pixel has an electronic noise charge (ENC) of *CHECK THIS*
+electrons. Of course the behavior of the charges on the pixels are
+statistically distributed. For the different calibrations typically
+very short shutter opening times are used to get fast
+calibrations. For practical data takings at experiments like CAST,
+very long shutter times on the order of $\mathcal{O}(> \SI{1}{\s})$ are
+used however. Due to the statistical nature of noise, a =THL= value
+that is noise less may not be fully noise free for long
+shutters. Therefore, one often uses =THL= values that are slightly
+larger (i.e. ~5 values larger of the 10 bit DAC). 
+
+In this sense the S-Curve scan is a good cross check for whether the
+=THL= value seems sensible, but in practice a =THL= scan with a longer
+shutter time is more useful. 
+
+*PLOT OF SCURVE SCANS*
+
+*APPENDIX ALL SCURVE SCANS FOR CAST DATA TAKING*
+
 *** ToT calibration
+
+The final calibration that is crucial to interpret the data received
+from each Timepix ASIC is the ToT (\textbf{T}ime \textbf{o}ver
+\textbf{T}hreshold) calibration. It is needed to interpret the ToT
+values recorded by each pixel as a charge, i.e. a number of recorded
+electrons.
+
+This is done by injecting charges onto the individual
+pixels. Capacitors are present to inject very precise voltage bursts
+onto the pixels. By knowing the capacitance and the voltage induced on
+them, the number of injected electrons can be easily calculated from
+
+\[
+Q = C U.
+\]
+
+By varying the injected charge and recording the resulting ToT values
+of the pixels a relation between electrons and ToT values is
+determined.
+
+The resulting relationship is a $\mathrm{sqrt}$ function:
+
+\[
+f(ToT) = \sqrt{x} ... stuff
+\]
+
+An example of a ToT calibration of one chip is shown in fig. *ToT CALIB*.
 
 Required understanding for our charge calibration.
 
