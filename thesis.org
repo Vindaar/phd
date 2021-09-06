@@ -1786,11 +1786,74 @@ Comparison of different window setups.
 :PROPERTIES:
 :CUSTOM_ID: sec:septemboard
 :END:
+
+The main motivation for extending the readout area from a single chip
+to a 7 chip readout is to reduce background towards the outer sides of
+the chip, in particular in the corners. Against common intuition
+however, it also plays a role for events, which have cluster centers
+near the center of the readout. The latter is due to gas ionization
+being a statistical process. In particular in lower energy events,
+tracks may have gaps in them large enough to avoid being detected as a
+single cluster.
+*THE LATTER NEEDS MORE WORDING ELSEWHERE / CLUSTERING ALGORITHM EXPL /
+SEPTEM VETO*
+
+Fig. [[cluster_centers_likelihood]] shows a heatmap of all cluster centers
+during roughly \SI{2000}{\hour} of background data after passing these
+clusters through a likelihood based cut method aiming to filter out
+X-ray like clusters. It is clearly visible that the further a cluster
+center is towards the chip edges, and especially the corners, the more
+likely it is to be considered an X-ray like cluster. This has an easy
+geometric explanation. Consider a perfect track traversing over the
+whole chip. In this case it is clearly eccentric. Move the same track
+such that its center is in one of the corners and rotate it by
+\SI{45}{\degree} and suddenly the majority of the track won't be
+detected on the chip anymore. Instead something roughly circular
+remains visible, 'fooling' the likelihood method. For a schematic
+illustrating this, see fig *SHOW CUT OFF FROM ONE OF MY TALKS* .
+
+\input{~/phd/Figs/backgroundClusters/background_cluster_centers.tex}
+*TODO: NEED CAPTION AND LABEL FOR BACKGROUND CLUSTERS*
+
+*** Compute the cluster backgrounds                              :noexport:
+
+To compute these cluster backgrounds, we need the following
+ingredients:
+- the fully reconstructed data files =DataRuns201*_Reco.h5= 
+- the prepared CDL data from the 2019 dataset
+  =calibration-cdl_2019.h5= and the X-ray reference datasets that
+  define the X-ray like properties.
+- apply the likelihood method to all background events in one of the
+  files (gives enough statistics) to get a resulting file containing
+  only passed clusters *over the whole chip*.
+
+With the resulting file we can then use
+[[file:~/CastData/ExternCode/TimepixAnalysis/Plotting/plotBackgroundClusters/plotBackgroundClusters.nim]]
+to plot these cluster centers.
+
+Assuming the reconstructed data files are found in *...* and the CDL
+data files in *...*, let's generate the data after likelihood method:
+#+begin_src sh
+~/CastData/ExternCode/TimepixAnalysis/Analysis/ingrid/likelihood ~/CastData/data/DataRuns2017_Reco.h5 --h5out /tmp/lhood_2017_full_chip.h5 \
+  --altCdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+  --altRefFile ~/CastData/data/CDL_2019/XrayReferenceFile2018.h5 \
+  --cdlYear=2018 --region=crAll 
+#+end_src
+
+Now we can create the plot:
+#+begin_src sh
+cd ~/CastData/ExternCode/TimepixAnalysis/Plotting/plotBackgroundClusters
+nim c -d:danger --threads:on plotBackgroundClusters.nim
+./plotBackgroundClusters -f /tmp/lhood_2017_full_chip.h5 --useTikZ
+#+end_src
+
+
 ** TODO Render done by Tobi. Exploded view.
 :PROPERTIES:
 :CUSTOM_ID: sec:full_septemboard_detector
 :END:
 
+*AS LAST SECTION?*
 *** Cooling system, small motivation?
 
 Show funny occupancy plot of the horrible sparking behavior.
