@@ -1744,6 +1744,54 @@ SiPM: remove orthogonal muons, expected energy ~8 keV.
 :CUSTOM_ID: sec:fadc
 :END:
 
+As the Timepix is read out in a shutter based fashion and typical
+shutter lengths for low rate experiments are long compared to the rate
+of cosmic muons, the scintillators introduced in previous section
+require an external trigger to close the Timepix shutter early if a
+signal is measured on the Timepix. This is one the main purposes of
+the \text{f}lash \textbf{a}nalog to \textbf{d}igital
+\textbf{c}onverter (FADC) that is part of the detector.
+
+The specific FADC used for the detector is an Caen V1792a *WHICH
+REVISION?*. It runs at a frequency of \SI{1}{\GHz} and has a cyclic
+register with \num{10240} channels. This means it covers the last
+$\sim\SI{10}{\micro\second}$ at any time. The raw signal decoupled from
+the grid is first fed into an Ortec pre-amplifier, which slightly
+integrates and shapes the signal as well as amplifies it. For a
+detailed introduction to this FADC system, see the thesis of
+A. Deisting *CITE DEISTING*.
+
+*HAVE PRE AMPLIFIER BEFORE FADC. ORTEC*
+
+The analogue signal measured by the FADC is the induced signal on the
+grid of the central GridPix (introduced in detail in section
+[[#sec:septemboard]]) via a small capacitor in parallel to the high
+voltage line. For a schematic of the circuit see fig. *CIRCUIT FIGURE*
+When a primary electron traverses through a hole in the grid and
+is amplified, the back flowing ions induce a small voltage spike on
+top of the constant high voltage applied to the grid. This signal -
+the envelope of possibly many primary electrons - is measured by the
+FADC.
+
+This signal can be used for two distinct things:
+1. it may be used as a trigger to close the shutter of the ongoing
+   event. Ideally, we want to only measure a single physical event
+   within one shutter window. A long shutter time can statistically
+   result in multiple events happening, which the FADC trigger helps
+   to alleviate.
+2. By nature of the signal production & drift properties of the
+   primary electrons before they reach the grid, the signal shape can
+   theoretically be used to determine a rough longitudinal shape of
+   the event. The length of the FADC event should be proportional to
+   the size of the primary electron cloud distribution along the
+   'vertical' detector axis. 
+
+The former allows us to reduce the number of events with multiple
+physical events and acts as a trigger for the scintillators. This in
+turn means possible muon induced X-ray fluorescence can be vetoed. The
+latter potentially allows to differentiate between a muon traversing
+orthogonally through the readout plane and an X-ray due to their
+longitudinal shape difference.
 
 *** Aim
 
@@ -1761,11 +1809,29 @@ Explain shortly how the raw data is converted to something useful.
 
 *** Description
 
-*** Pedestals
+*** Pedestals & signal reconstruction
 
 Yes, this needs to be about essentially a FADC calibration.
 
+Before the FADC data can be used, the raw data needs to be converted
+from the internal, cyclic representation into a 10240 long array.
+
+...
+
+By default each channel of the FADC has an arbitrary value in the
+range between \num{0} to \num{10000}. This needs to be corrected for
+by taking a so called 'pedestal run'. It is simply a readout of the
+FADC in the absence of any signal. This pedestal run then is
+subtracted from each actual FADC event to remove the pedestal
+baseline. 
+
 *** Noise sensitive
+
+Because of the small amplitude of the associated signals induced on
+the grid, electromagnetic interference is a serious issue with this
+FADC setup. Ideally, the detector should be installed in a Faraday
+cage and a short, shielded LEMO cable should be used to connect it to
+the 
 
 ** SiN window
 :PROPERTIES:
