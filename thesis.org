@@ -2417,6 +2417,13 @@ After the thesis is published it is possible that this repository will
 become the de facto repository for the thesis and the actual analysis
 code will become its own repository. We'll see.
 
+*THESE SECTIONS MUST BE MERGED WITH THE ANALYSIS BELOW*. Maybe let
+this chapter simply be a high level overview: introduce Nim and the
+why. Mention the TimepixAnalysis repo only as a "this is the code for
+the analysis, the details of which will be explained in the next
+section? In that case one might merge the whole chapter with the next
+one and simply have these as the introductory part of the chapter.
+
 *** =raw_data_manipulation=
 
 *LINK TO HDF5 FORMAT IF FIRST TIME MENTIONING*
@@ -2451,18 +2458,23 @@ In addition the tool also supports input from HDF5 files containing
 the raw data from a Timepix3 detector. That data is parsed and
 reprocessed into the same kind of file structure.
 
-#+begin_src 
+#+CAPTION: Usage of the =raw_data_manipulation= tool. Input is in the form of a run directory / a directory
+#+CAPTION: containing multiple run directories. The parsed output is stored in compressed HDF5 files.
+#+NAME: list:raw_data_manipulation_help
+#+begin_src shell-session
 Version: 13809be built on: 2021-05-07 at 00:53:39
   InGrid raw data manipulation.
 
 Usage:
   raw_data_manipulation <folder> [options]
   raw_data_manipulation <folder> --runType <type> [options]
-  raw_data_manipulation <folder> --out=<name> [--nofadc] [--runType=<type>] [--ignoreRunList] [options]
+  raw_data_manipulation <folder> --out=<name> [--nofadc] \
+    [--runType=<type>] [--ignoreRunList] [options]
   raw_data_manipulation <folder> --nofadc [options]
   raw_data_manipulation --tpx3 <H5File> [options]
   raw_data_manipulation --tpx3 <H5File> --runType <type> [options]
-  raw_data_manipulation --tpx3 <H5File> --runType <type> --out=<name> [options]
+  raw_data_manipulation --tpx3 <H5File> --runType <type> --out=<name> \
+    [options]
   raw_data_manipulation -h | --help
   raw_data_manipulation --version
 
@@ -2484,10 +2496,71 @@ Options:
   -h --help           Show this help
   --version           Show version.
 #+end_src
-#+CAPTION: Usage of the =raw_data_manipulation= tool. Input is in the form of a run directory / a directory
-#+CAPTION: containing multiple run directories. The parsed output is stored in compressed HDF5 files. 
 
 *** =reconstruction=
+:PROPERTIES:
+:CUSTOM_ID: sec:reconstruction
+:END:
+
+After the raw data has been converted to storage in HDF5, the
+=reconstruction= tool is used to start the actual analysis of the
+data.
+
+As the name implies, the first stage of data analysis is in the form
+of reconstructing the basic properties of each event. In this stage
+all events are processed in a multithreaded way. A cluster finding
+algorithm is applied to each event on each chip separately, splitting
+a single event into possibly multiple clusters. Clusters are defined
+based on a certain notion of distance (the details depend on the
+clustering algorithm used). The multiple clusters from a single event
+are then treated fully equally for the rest of the analysis. The fact
+that they originate from the same event has no further relevance (with
+a slight exception for one veto technique, which utilizes clustering
+over multiple chips, more on that in section [[sec:septem_veto]]).
+
+For the individual clusters geometric properties will be
+computed. These are the long and short axis, the eccentricity as well
+as the statistical moments up to kurtosis along the long and short
+axis. The full list is shown in tab. [[tab:geometric_properties]].
+
+#+CAPTION: Table of all the (mostly) geometric properties of a single cluster computed during the
+#+CAPTION: =reconstruction= tool. All but the likelihood, charge and energy properties are computed
+#+CAPTION: during the first pass of the tool.
+#+NAME: tab:geometric_properties
+| Property                  | Meaning                                                          |
+|---------------------------+------------------------------------------------------------------|
+| igCenterX                 | =x= position of cluster center                                   |
+| igCenterY                 | =y= position of cluster center                                   |
+| igHits                    | number of pixels in cluster                                      |
+| igEventNumber             | event number cluster is from                                     |
+| igEccentricity            | eccentricity of the cluster                                      |
+| igSkewnessLongitudinal    | skewness along long axis                                         |
+| igSkewnessTransverse      | skewness along short axis                                        |
+| igKurtosisLongitudinal    | kurtosis along long axis                                         |
+| igKurtosisTransverse      | kurtosis along short axis                                        |
+| igLength                  | size along long axis                                             |
+| igWidth                   | size along short axis                                            |
+| igRmsLongitudinal         | RMS along long axis                                              |
+| igRmsTransverse           | RMS along short axis                                             |
+| igLengthDivRmsTrans       | length divided by transverse RMS                                 |
+| igRotationAngle           | rotation angle of long axis over chip coordinate system          |
+| igEnergyFromCharge        | energy of cluster computed from its charge                       |
+| igLikelihood              | likelihood value for cluster                                     |
+| igFractionInTransverseRms | fraction of pixels within radius of transverse RMS around center |
+| igTotalCharge             | integrated charge of total cluster in electrons                  |
+| igNumClusters             |                                                                  |
+| igFractionInHalfRadius    | fraction of pixels in half radius around center                  |
+| igRadiusDivRmsTrans       | radius divided by transverse RMS                                 |
+| igRadius                  | radius of cluster                                                |
+| igLengthDivRadius         | length divided by radius                                         |
+
+The properties are computed here:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366
+and here:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569
+
+*NOTE:* How should we take care of linking to our code? Of course need
+tagged version that corresponds to stuff in the thesis, but beyond that?
 
 Second step of analysis, performs most of the major steps.
 
@@ -2497,6 +2570,8 @@ Second step of analysis, performs most of the major steps.
 - energy calibration
 - gas gain computation
 - ...
+
+
 
 *** =likelihood=
 
@@ -2520,6 +2595,14 @@ tools dealing with other data, e.g. log files of the CAST experiment.
 
 
 * Chapter about analysis principle                                 :Software:
+
+*NOTE:* We need to better understand how to:
+- explain the theoretical foundations of what we do, e.g. cluster
+  finding algorithms. Certain things, e.g. cluster finding algos could
+  also just go to the appendix. Interesting, but technically just a detail.
+- introduce the software stack we use
+- introduce the physics for the calibration (e.g. ToT calib, ...)
+- explain the algorithms used in the software
 
 Can we disentangle this from the purely detector focused things? I'm
 not so sure.
@@ -2668,8 +2751,61 @@ Likelihood method gives us everything we need for background
 rate. Whatever comes out gives us left over clusters.
 
 *** Septem veto
+:PROPERTIES:
+:CUSTOM_ID: sec:septem_veto
+:END:
 
 Talk about the septem veto we finally use.
+
+In the septem veto the main idea is to go back to the raw data for any
+event, which contains a cluster on the central chip, which is
+signal-like based on the likelihood method presented above. For these,
+a so called 'septem event' is built based on the raw pixel data of all
+chips. This is simply an 'event' in the same notion as understood by
+the =reconstruction= tool (c/f [[sec:reconstruction]]), i.e. a two
+dimensional array of the ToT values. Except in this case it is not a
+$256 \times 256$ array, but rather a $3 \cdot 256 \times 3 \cdot 256$
+array, where the full septemboard detector is merged into a single
+event without any spacing between the chips (more on that below). 
+
+These septem events are then pushed through the whole reconstruction
+and calibration pipeline. Thanks to starting from an event that now
+includes information that was previously not taken into account (pixel
+activity outside the center chip), the cluster finding algorithm can
+detect larger clusters than previously. This can change the shape of
+the cluster that was previously considered signal like. In the case
+that this cluster now looks more like background, it will be vetoed by
+this technique.
+
+The decision to merge the different chips into a single event
+*without* any spacing between the chips is made to ensure good cluster
+finding. The spacing between chips is of course a dead zone where no
+activity can be measured. For a cluster finding algorithm this may
+cause a cutoff that should not happen, as the information is simply
+not *available*. Ideally, one could imagine an algorithm that
+interpolates data between the chips based on the information on the
+two neighboring chips. But this is too experimental. 
+
+If there is data on the neighboring chip, it is extremely likely there
+was ionization between the chips as well, meaning the merging of the
+chips "only" makes the event less eccentric than the physical
+event. If there is no data on the neighboring chip, the merging has no
+effect, the cluster will simply look the same as in the original
+single chip event. 
+
+This excludes two possibilities:
+1. a physical event may have no active pixels between the chips, despite
+   having active pixels on both chip borders. This is extremely
+   unlikely, if the events are significantly close to the border. The
+   main case of this would be two real X-rays (extremely low
+   probability) or either of the clusters is a track parallel to
+   border of the chip. 
+2. a more likely loss information for events without information on
+   the neighboring chips, despite the physical event being more
+   eccentric than the recorded one. This is a real limitation that
+   cannot be worked around.
+
+**** Explain why no spacing between chips
 
 **** Hough transformation experiments                           :noexport:
 
