@@ -2357,6 +2357,10 @@ shutter time is more useful.
 *APPENDIX ALL SCURVE SCANS FOR CAST DATA TAKING*
 
 *** ToT calibration
+:PROPERTIES:
+:CUSTOM_ID: sec:tot_calibration
+:END:
+
 
 The final calibration that is crucial to interpret the data received
 from each Timepix ASIC is the ToT (\textbf{T}ime \textbf{o}ver
@@ -2388,6 +2392,14 @@ An example of a ToT calibration of one chip is shown in fig. *ToT CALIB*.
 Required understanding for our charge calibration.
 
 Show function that is being fitted to it.
+
+*** Pólya distribution & gas gain
+:PROPERTIES:
+:CUSTOM_ID: sec:polya_distribution
+:END:
+
+Explain how all charge values combined as a histogram generate a
+~Pólya distribution from which we can deduce the gas gain.
 
 
 * Software                                                         :Software:
@@ -2560,15 +2572,26 @@ and here:
 https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569
 
 *NOTE:* How should we take care of linking to our code? Of course need
-tagged version that corresponds to stuff in the thesis, but beyond that?
+tagged version that corresponds to stuff in the thesis, but beyond
+that?
+
+
+After all geometrical properties have been computed, the next step is
+to apply the ToT calibration (sec. [[sec:tot_calibration]]) to the ToT
+values of all clusters, resulting in the equivalent charge in
+electrons. The charge values for all recorded pixels are then used to
+compute a histogram, which roughly follows a Pólya distribution
+(sec. [[sec:polya_distribution]]). From the mean value of that
+distribution a value for the gas gain is obtained, which is a
+necessary input to perform an energy calibration for each cluster.
 
 Second step of analysis, performs most of the major steps.
 
 - cluster finding
 - calculation of geometric properties
 - charge calibration
-- energy calibration
 - gas gain computation
+- energy calibration
 - ...
 
 
