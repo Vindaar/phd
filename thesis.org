@@ -1641,6 +1641,202 @@ Unphysicality, fix by rescaling, χ² min + 4 thing
 *UPDATE*: good that we now understand how this actually works,
 i.e. integrate the posterior probability (likelihood * prior / normalization)
 
+*** Maths from =status=
+
+The maths of the log likelihood expression we use, is mostly straight
+forward.
+
+A likelihood function is purely defined as the product of the
+individual probabilities for each 'channel' in our measurement. That
+way the likelihood gives us the total probability to get this exact
+measurement outcome out of all possible outcomes.
+
+If we start from a likelihood ratio of the signal + background
+hypothesis over the pure background hypothesis, in the binned case we
+can derive the formula used in the Nature paper from first
+principles. The number of measured counts in each bin is simply a
+Poisson distribution:
+
+\[
+P_{\text{Pois}}(k; λ) = \frac{λ^k e^{-λ}}{k!}
+\]
+
+for each bin an expected number of counts $λ$ (the mean) then means a probability given $P$
+for a "measured" number of counts $k$. Combining multiple "channels"
+is then simply the product of these individual channels, giving us the
+likelihood for one experiment:
+
+\[
+\mathcal{L} = \prod_i P_{i, \text{Pois}}(k; λ) = \prod_i \frac{λ_i^{k_i} e^{-λ_i}}{k_i!}
+\]
+
+Applying this to the previously mentioned likelihood ratio $Q$ gives
+us:
+
+\[
+Q = \frac{\prod_i P_{i, \text{Pois}}(n_i; s_i + b_i)}{\prod_i P_{i, \text{Pois}}(n_i; b_i)} =
+  \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)} }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i}}
+\]
+
+where $n_i$ is simply the number of measured candidates within the
+signal sensitive region in each bin $i$. Typically each bin might be a
+bin in energy, but it can be any kind of "bin" as long as each bin
+corresponds to something that follows a Poisson distribution. We will
+make use of this fact in a bit.
+
+This can be interpreted as an extended likelihood function, as the
+ratio of two Poisson distributions does not satisfy the normalization
+condition:
+
+\[
+\int_{-∞}^{∞}P\, \mathrm{d}x = 1
+\]
+
+anymore. Instead we have:
+
+\[
+\int_{-∞}^{∞}Q\, \mathrm{d}x = N
+\]
+
+where $N$ can be interpreted as a hypothetical number of total number
+of counts measured in the experiment; the starting point of the
+definition of the extended maximum likelihood estimation.
+
+From here we derive the logarithm of the expression to get the
+numerically more stable $\ln \mathcal{L}$ expression:
+
+#+NAME: eq:likelihood_1_plus_s_over_b_form
+\begin{align*}
+\ln \mathcal{Q} &= \ln \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
+  &= \sum_i \ln \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
+  &= \sum_i \ln \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  - \ln \frac{b_i^{n_i}}{n_i!} e^{-b_i}  \\
+  &= \sum_i n_i \ln (s_i + b_i) - \ln n_i! - (s_i + b_i) - (n_i \ln b_i - \ln n_i! -b_i)  \\
+  &= \sum_i n_i \ln (s_i + b_i) - (s_i + b_i) - n_i \ln b_i + b_i  \\
+  &= \sum_i n_i \ln (s_i + b_i) - (s_i + b_i - b_i) - n_i \ln b_i  \\
+  &= \sum_i n_i \ln \left(\frac{s_i + b_i}{b_i}\right) - s_i  \\
+  &= -s_{\text{tot}} + \sum_i n_i \ln \left(\frac{s_i + b_i}{b_i} \right) \\
+  &\text{or alternatively} \\
+  &= -s_{\text{tot}} + \sum_i n_i \ln \left(1 + \frac{s_i}{b_i} \right) \\
+\end{align*}
+
+here $s_{\text{tot}}$ represents the total number of "signal" like
+counts expected (in our case total number of expected photons due to
+axion conversion).
+
+The last two lines show us that all that is really important is that
+the normalization of $s_i$ and $b_i$ are the same. The absolute
+normalization (e.g. if it's $\si{keV⁻¹}$ or absolute counts etc.) plays no
+role as that will be a constant multiplier. That constant can always
+be neglected in the total likelihood (a constant only moves the logL
+curve up / down, but does not change its maximum!).
+
+Coming back to the "channels" / the binning: if we choose our bins
+such that they are bins in time, so small that each bin either
+contains 0 or 1 count, we reduce this to our desired unbinned log
+likelihood, if we start from the second to last line above and drop
+the constant $-\ln b_i$ term:
+
+\[
+\ln \mathcal{L} = -R_{\text{tot}} + \sum_{\text{candidates}} \ln(s_i + b_i)
+\]
+where the sum now runs over each candidate instead of the abstract
+"channels".
+
+With an understanding of where the formula comes from, we can more
+safely make statements about what the shape of the logL curve is going
+to look like. For that it is important to realize that:
+- $-R_{\text{tot}}$ depends on $g_{ae²}$, $-R_{\text{tot}}(g_{ae²})$
+- $s_i$ depends on $g_{ae²}$, $\vec{x}$ and the cluster energy $E$,
+  $s_i(g_{ae²}, \vec{x}, E)$
+- $b_i$ only depends on the cluster energy $E$
+
+This means $b_i$ for all intents and purposes is constant under a
+change of the coupling constant for a fixed set of candidate
+clusters. For a scan over logL this is precisely given.
+
+Now let's consider what each part's contribution will look like as a
+logL curve:
+
+1. $-R_{\text{tot}}$: the total number of counts depends on the axion
+   flux, the tracking time and the total detection efficiencies. The
+   latter two are simply constants when integrating over the region of
+   interest in energy, namely \SIrange{0}{10}{\keV}. The axion flux
+   scales as:
+   \[
+   f(g') = f(g) \frac{g^{\prime 2}}{g²}
+   \]
+   i.e. a squared rescaling of the flux. Given that we scan the logL
+   space in $g_{ae²}$, this means the total flux (the integral of $f$
+   over all energies) just scales linearly with $g_{ae²}$.
+   Due to the minus sign in front, the result is plainly a line with
+   negative slope going through the origin at $g_{ae²} = 0$.
+2. $b_i$: the background hypothesis is a function only depending on
+   the energy of each cluster (and implicitly on the relevant area and
+   tracking time). For a fixed set of candidates during a $g_{ae²}$
+   scan, its contribution is plainly constant.
+3. $s_i$: this is the complicated one. It not only depends on
+   $g_{ae²}$, but also the energy $E$ and more importantly the
+   position of the cluster center $\vec{x}$. The latter is used for
+   the effective flux at each position on the chip that is expected
+   from axion conversion after focusing of the X-ray telescope.
+   In principle the cluster center positions are constant for a single
+   scan of $g_{ae²}$. This means effectively the signal $s_i$ behaves
+   exactly like $R_{\text{tot}}$ under $g_{ae²}$. The resulting
+   behavior is thus also linear, except with a positive slope.
+   The big difference between $s_i$ and $R_{\text{tot}}$ however is
+   that $R_{\text{tot}}$ is integrated over all energies, whereas
+   $s_i$ is only evaluated at specific energies (in keV⁻¹).
+
+Combining these three facts we expect to find some maximum somewhere,
+where the $R_{\text{tot}}$ term and the $s_i$ term cancel each
+other. The $b_i$ term only contributes an offset (which however
+depends on the candidates, which is why it cannot be ignored!).
+
+This brings us to a particular problem:
+What happens if the candidates are all located outside of the axion
+sensitive region? In that case their contribution will be zero, due to
+the position dependency of $\vec{x}$. This leads to a pure
+$R_{\text{tot}}$ negative slope on top of a constant background $b_i$.
+In this case the logL curve does *not* have a maximum! And in cases
+where arbitrarily little contribution is had, there *will* be a
+maximum somewhere, but it will be very far into the unphysical range,
+at which point the 1σ width (based on logL_max - 0.5) yield a width
+that leads to a physical limit at 0 (due to the gaussian CDF being
+essentially 1 many σ away from the center).
+
+Given our statistics of $O(30)$ candidates in our tracking time, this
+presents a problem. For toy experiments there is a high chance of
+getting precisely that problem. A large number of candidates (70 - 90%
+maybe) will be outside the sensitive region, resulting in no good way
+to determine the limit.
+
+*** Further expl: Bayes integral *AFTER MAIL FROM IGOR ON <2021-10-03 Sun>*:
+
+Essentially saying that we simply integrate over and demand:
+
+0.95 = ∫_-∞^∞ L(g_ae²) Π(g_ae²) / L_0 d(g_ae²)
+
+where L is the likelihood function (*not* the ln L!), Π is the prior
+that is used to exclude the unphysical region of the likelihood phase
+space, i.e. it is:
+
+Π(g_ae²) = { 0 if g_ae² < 0, 1 if g_ae² >= 0 }
+
+And L_0 is simply a normalization constant to make sure the integral
+is normalized to 1.
+
+Thus, the integral reduces to the physical range:
+
+0.95 = ∫_0^∞ L(g_ae²) / L_0 d(g_ae²)
+
+where the 0.95 is, due to normalization, simply the requirement of a
+95% confidence limit.
+
+With this out of the way I implemented this into the limit calculation
+code as the =lkBayesScan= limit.
+
+
+
 * Septemboard detector                                             :Detector:
 
 The first section introduces the reasoning behind building a more
