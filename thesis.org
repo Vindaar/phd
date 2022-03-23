@@ -4104,6 +4104,592 @@ Mitigation strategies for detector behavior, e.g. gain variation over time.
 Probably not going to make it into final thesis? We'll see, take from
 StatusAndProgress. Maybe shortened version will make it.
 
+** FROM IAXO TDR PART: Analysis software & background rate
+
+*NOTE*: This needs to be split up into a part that explains the vetoes
+& the parts that show the achieved background rates. Also needs more
+explanation on most topics, e.g. how likelihood cut works.
+
+
+To achieve the desired background rates both special hardware features
+as well sophisticated software features are required.
+
+The main hardware features beyond the general ability to achieve
+single electron efficiency and thus reconstruct the geometric event
+shapes and their energies, are:
+- scintillators allowing to tag likely background induced X-rays
+- either in case of pure ToT & shutter based readout: an FADC reading
+  out the induced signal on the grid to act as a trigger and provide
+  longitudinal shape information
+  or in case of the GridPix3, which allows ToT and ToA readout at the
+  same time, in a stream based manner: ToA information yields
+  precise longitudinal shape information and allows to perform offline
+  time based clustering
+- multiple GridPix around the central 'main' GridPix to clarify event
+  shapes of either sparse events or events near the edge of the chip
+
+Each of these requires specific methods to achieve a background
+reduction. In the following each aspect will be explained separately
+and their possible effect is shown based on a GridPix1 based detector,
+which was deployed at CAST in 2017 and 2018.
+
+*TODO*: write summary of following sections
+
+*** Analysis software
+
+Data reconstruction and analysis of GridPix data is performed with the
+[[https://github.com/Vindaar/TimepixAnalysis][TimepixAnalysis]] framework, written in the [[https://nim-lang.org][Nim programming language]].
+
+The software is capable of reading GridPix1 data from multiple readout
+systems as well as GridPix3 data.
+
+In addition to providing a full analysis readout chain, from raw data
+parsing, to clustering and characterisation of individual cluster
+properties, it provides a large number of convenience tools and
+plotting utilities.
+
+*** Basic background rate
+:PROPERTIES:
+:CUSTOM_ID: sec:likelihood_method
+:END:
+
+
+As a reference first the background rate achievable using only a
+single GridPix1 without any additional features will be discussed.
+
+The detection principle of the GridPix detector implies physically
+different kinds of events will have different geometrical shapes.
+
+*TODO:* merge these into a subfig environment or something
+
+#+begin_center
+#+CAPTION: Example event of a $^{55}\text{Fe}$ X-ray photon taken with the
+#+CAPTION: GridPix1 detector at CAST. The event shape is mostly spherical
+#+CAPTION: as there is a single point of origin for the photo-electron.
+#+CAPTION: Diffusion as a random process yields the shape.
+[[~/org/Figs/statusAndProgress/exampleEvents/calibration_event_run266_chip3_event5791_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Example background event taken with the GridPix1 event at CAST.
+#+CAPTION: A typical track like shape is visible, likely from a muon with
+#+CAPTION: some additional interaction. The irregular shape is caused by
+#+CAPTION: background events not having a single origin, but rather ionizing
+#+CAPTION: the gas at many points on their path through the detector.
+#+CAPTION: *TODO MAYBE CHANGE EVENT*
+[[~/org/Figs/statusAndProgress/exampleEvents/background_event_run267_chip3_event1456_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.pdf]]
+#+end_center
+
+Combined caption (once merged):
+
+Use the individual captions as is, with references to a) and b).  On
+the left hand side of each plot, a list of all geometric properties
+and their values that are calculated for the visible clusters is
+shown. Some of these properties are used for the classification of
+events into signal and background like events.
+
+The method to distinguish the two types of events, is based on a
+likelihood cut. X-ray data taken at multiple energies (possibly taken
+with an X-ray tube) are used to define reference distributions for
+(currently) 3 different geometrical variables:
+1. the eccentricity $ε$ of the cluster, determined by
+   computing the long and short axis of the two dimensional cluster and
+   then computing the ratio of the RMS of the projected positions of
+   all active pixels within the cluster along each axis.
+2. the fraction of all pixels within a circle of the radius of one
+   transverse RMS from the cluster center, $f$.
+3. the length of the cluster (full extension along the long axis)
+   divided by the transverse RMS, $l$. 
+
+These variables are obviously highly correlated, but still provide a
+very good separation between the typical shapes of X-rays and
+background events. They mainly characterize the "spherical-ness" as
+well as the density near the center of the cluster, which is precisely
+the intuitive sense in which these type of events differ.
+
+*TODO*: rewrite / remove parts of the ln L part. Don't use ln
+The reference distributions are then treated as a probability density,
+specifically the likelihood for a cluster to be "X-ray-like". For one
+property $i$ we thus define a likelihood $\mathcal{L}_i(x_i)$, where $x_i$ is the
+value of the property $i$. This gives us the total likelihood:
+
+\[
+\mathcal{L}(ε, f, l) = \mathcal{L}_{ε}(ε) \cdot \mathcal{L}_{f}(f)
+\cdot \mathcal{L}_l(l)
+\]
+
+where the subscript is denoting the individual likelihood distribution
+and the argument corresponds to the individual value of each property.
+
+#+begin_comment
+Due to numerical issues dealing with very small probabilities, instead
+of using the raw likelihood $\mathcal{L}$, instead the negative log is
+used:
+
+\[
+-\ln \mathcal{L}(ε, f, l) = - \ln \mathcal{L}_ε(ε) - \ln \mathcal{L}_f(f)- \ln \mathcal{L}_l(l)
+\]
+
+For the GridPix1 detector, data with 8 different X-ray energies (via
+multiple targets and filters with an X-ray tube) was taken. Each of
+these energies first define the X-ray property in a fixed energy
+range. Consider fig. [[fig:eccentrility_mn]] for an example comparing the
+distribution for the eccentricity of the X-ray data around
+$\SI{6}{keV}$ for X-ray vs. background like data.
+
+As only 8 energies is problematic for multiple reasons (e.g. discontinuities of the
+properties at the interval boundaries), for each cluster with energy $E_i$ a linear
+interpolation of the reference distributions between the nearest two
+neighboring distributions is performed.
+#+end_comment
+
+To finally classify events as signal or background, one then sets a
+desired "software efficiency" $ε_{\text{eff}}$, which is defined as:
+\[
+ε_{\text{eff}} = \frac{∫_0^{L} \mathcal{L}(ε, f, l) \, \mathrm{d} L'}{∫_0^{∞} \mathcal{L}(ε, f, l) \, \mathrm{d} L'}
+\]
+where $L'$ denotes a specific $\mathcal{L}$ value, which yields the
+desired $ε_{\text{eff}}$.
+#+begin_comment
+In practical terms one computes the
+normalized cumulative sum of the log likelihood and searches for the point at
+which the desired $ε_{\text{eff}}$ is reached.
+#+end_comment
+
+The software efficiency commonly used and for all figures presented
+below is $\SI{80}{\percent}$.
+
+With the software efficiency defined, the $-\ln\mathcal{L}$ of each
+cluster is simply computed using the linear interpolation of the log
+likelihood distribution determined based on the cluster energy. A
+cluster is considered a signal if its $L$ is smaller than the $L$
+computed for the desired $ε_{\text{eff}}$ at the energy of the cluster.
+
+Using this approach for the GridPix1 data taken at CAST, a background
+rate shown in fig. [[fig:background_rate_eff80_only_center]] is achieved.
+
+#+begin_center
+#+CAPTION: Background rate achieved based on the $\ln\mathcal{L}$ method at
+#+CAPTION: $ε_{\text{eff}} = \SI{80}{\percent}$ using the GridPix1 CAST 2017/18 data
+#+CAPTION: without the application of any vetoes.
+#+NAME: fig:background_rate_eff80_only_center
+[[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_no_vetoes.pdf]]
+#+end_center
+
+*** Scintillators as vetoes
+
+*TODO*: rewrite this paragraph in context of full chapter
+The usage of scintillators (ideally 4π around the whole detector
+setup) can be very helpful to reduce the background rate further. The
+likelihood method presented in the previous section is capable of
+separating X-rays from background events. However, given the
+required background levels, cosmic induced X-ray fluorescence plays a
+significant role in the datasets. A muon that excites a piece of the
+detector material, which as a result emits an X-ray cannot be
+separated from a desired X-ray originating from an axion.
+
+A scintillator setup can be used to tag events. For a fully
+encapsulated detector, any (at least) muon induced X-ray would be
+preceded by a signal in one (or multiple) scintillators. As such, if
+the time $t_s$ between the scintillator trigger and the time of activity
+recorded with the GridPix is small enough, the two are likely to be in
+real coincidence.
+
+In addition the scintillator triggers are only taken into account for
+clusters, which are signal like. If one applies a strict cut on $t_s$,
+for example $400\,\text{clock cycles}$ at \SI{40}{MHz} ($\SI{10}{μs}$,
+the value used for the GridPix1 detector at CAST), the rate of random
+coincidences should be extremely low (or in other words the added dead
+time is minuscule). The cutoff of $\SI{10}{μs}$ for the GridPix1 is
+chosen as that is the order of the time scale associated with the maximum drift
+time in the gas volume, which is of course much longer than any
+fluorescence related time scales.
+
+The resulting improvement of the background rate is shown in
+fig. [[fig:background_rate_scinti_veto]], albeit only for the end of 2018
+data as the scintillator trigger was not working correctly before.
+
+#+begin_center
+#+CAPTION: Background rate achieved based on the addition of a scintillator cut veto
+#+CAPTION: of $\SI{10}{μs}$ for any cluster that initially passes the log likelihood
+#+CAPTION: cut. Improvements are relatively small, which is mainly due to the relatively
+#+CAPTION: small coverage of the veto scintillator used & generally low expected rates of
+#+CAPTION: indcued signal like events.
+#+NAME: fig:background_rate_scinti_veto
+[[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2018_scinti_veto.pdf]]
+#+end_center
+
+*** FADC / ToA as veto
+
+Beyond the usage of a likelihood method for geometrically X-ray like
+signals and scintillators to suppress X-ray fluorescence, another
+background is expected at helioscope experiments, in particular during
+solar tracking periods.
+
+Even for an almost fully 4π coverage of scintillators around the
+detector setup, there is exactly one part that is never covered: the
+window of the detector towards the magnet bore.
+
+The distribution of muons at surface level follow a roughly
+$\cos²(θ)$ distribution ($θ$ the zenith angle). During background
+taking times (i.e. magnet is horizontal), few muons are expected to
+reach the detector via the magnet bore ($θ \approx
+\SI{90}{\degree}$). During solar tracking the expected rate is
+expected to increase as the magnet is pointed upwards.
+
+Muons entering in such a way traverse the gas volume orthogonally to
+the readout plane. The projection on the readout is thus also roughly
+spherical (same as an X-ray). The speed of the muon compared to the
+time scale of gas diffusion & clock speed of the readout electronic
+means that a muon ionizes the gas along its path effectively
+instantly.
+
+*TODO*: likely remove part 1, then rewrite text accordingly
+Two distinctions can be made between X-rays and such muons:
+1. (hard to detect) Each ionized electron undergoes diffusion along
+   its path to the readout plane. Those that are ionized far away from
+   the readout yield large diffusion, whereas those close to the
+   readout barely any. Assuming a constant ionization per distance,
+   this implies the muon track is formed like a cone. The electrons
+   arriving at the readout first are almost exactly on the muon path
+   and the later ones have more and more diffusion.  In a setup with a
+   GridPix3, which allows for ToA readout this effect may be visible
+   (yet to be tested). With the CAST GridPix1 setup, which used an
+   FADC for the induced grid signal, this is not visible, as there is
+   no relation between pixel positions and time information.
+2. The effective instant ionization implies that such an cluster has a
+   'duration' that is equivalent to the drift velocity times the gas
+   volume height. For a typical GridPix setup of height $\SI{3}{cm}$
+   with an Argon/Isobutane gas mixture, this implies times of
+   $\mathcal{O}(\SI{2}{μs})$. Compared to that the duration of an
+   X-ray is roughly the equivalent of the geometrical size in the
+   readout plane, which for the same conditions is
+   $\mathcal{O}(\SI{3}{mm})$, expressed as a time under the drift
+   velocity.
+   Thus, if the duration of a cluster is reasonably well known, this
+   can easily separate the two types of clusters.
+
+For a Argon/Isobutane mixture at $\SI{1050}{mbar}$ the energy
+deposition of most muons will be in the range of
+$\SIrange{8}{10}{keV}$, which in any case is outside of the main
+region of interest for axion searches.
+
+Note: for a detector with an almost perfect 4π coverage, the
+scintillators *behind* the detector would of course trigger for such
+muons. Indeed, it is likely that using that information would already
+be enough to remove such events. A discrimination based on time
+information yields a more certain result than a large scintillator
+might, which (even if to a small degree) does introduce random
+coincidences.
+
+In an test background run using a GridPix3, which was pointed towards
+the zenith, 50 clusters remained after the likelihood cut. Using the
+duration of the clusters, another 15 could be removed, showing the
+usefulness of the approach.
+
+*TODO: get correct numbers!*
+
+*** Outer GridPix as veto - 'septem veto'
+
+The final hardware feature that is used to improve the background
+rate, is the outer ring of GridPix. The size of large clusters is a
+significant fraction of a single GridPix. This means that depending on
+the cluster center position, parts of the cluster may very well be
+outside of the chip. While the most important area of the chip is the
+center area (due to the X-ray optics focusing the axion induced
+X-rays), misalignment and the extended nature of the 'axion image'
+mean that a significant portion of the chip should be as low in
+background as possible.
+
+Fig. [[fig:background_clusters_no_septem_veto]] shows the cluster centers
+based on the background data taken at CAST in 2017 and 2018 remaining
+after the likelihood cut. Evidently, the cluster density is
+significantly lower in the center area than towards the edges and in
+particular the corners. The closer the cluster center is to the edges,
+the higher the chance that parts of it are cut off. In particular,
+cutting of from a track like cluster most likely *reduces* the length
+and thus makes the cluster *more* spherical.
+
+#+begin_center
+#+CAPTION: Each point represents the cluster center of a single cluster that passes
+#+CAPTION: the likelihood cut. The color scale in addition represents whether multiple
+#+CAPTION: cluster centers were on the same pixel. The data is the full 2017/18 background
+#+CAPTION: data. It is very evident that the gold region (marked as a square) has the
+#+CAPTION: lowest background. From there towards the edges and in particular the corners
+#+CAPTION: the background increases significantly. This is mostly a geometric effect,
+#+CAPTION: for which an example can be seen in fig. [[fig:example_clusters_septem_veto]].
+#+CAPTION: *TODO ADD THE GOLD REGION OUTLINE*
+#+NAME: fig:background_clusters_no_septem_veto
+#+end_center
+
+Normally the individual chips are treated as separate in the analysis
+chain. The 'septem veto' is the name for an additional veto step,
+which can be optionally applied to the center chip. With it, each
+cluster that is considered signal like based on the likelihood cut,
+will be analysed in a second step. The full event is reconstructed
+again from the beginning, but this time as an event covering *all* 7
+chips. This allows the cluster finding algorithm to detect clusters
+beyond the center chip boundaries. After finding all clusters, the
+normal cluster reconstruction to compute all properties is done
+again. Finally, for each cluster in the event again the likelihood
+value is computed and compared with the likelihood cut. If now all
+clusters whose center is on the central chip are considered
+background-like, the event is vetoed (because the initial signal-like
+cluster turned out to be part of a larger cluster).
+
+An example that shows two clusters on the center chip, one of which
+was initially interpreted as a signal like event before being vetoed
+by the 'septem veto', is shown in
+fig. [[fig:example_clusters_septem_veto]]. The colors indicate the
+clusters each pixel belongs to according to the cluster finding
+algorithm. As the chips are treated separately initially, there are
+two clusters found on the center chip. The purple and cyan cluster
+"portions" of the center chip. The purple part passes the likelihood
+cut (X-rays at such low energies are much less spherical on average;
+same diffusion, but less electrons) initially, which triggers the
+'septem veto'. A full 7 GridPix event reconstruction shows the
+additional parts of the two clusters. The purple cluster is finally
+rejected.
+
+It is a good example, as it shows a cluster that is still relatively
+close to the center, and yet still 'connects' to another chip.
+
+#+begin_center
+#+CAPTION: An example event showing all 7 GridPix of the CAST GridPix1 detector.
+#+CAPTION: The outlines are the boundaries of each chip (without the real spacing between
+#+CAPTION: them) and the color of each point indicates the cluster which it is part of
+#+CAPTION: according to the cluster finder.
+#+CAPTION: Initially the purple cluster (center chip portion) passes the log likelihood cut
+#+CAPTION: (i.e. is signal like), but is vetoed by the 'septem veto'
+#+CAPTION: as there are more pixels outside the center chip that are part of this cluster.
+#+CAPTION: The cyan cluster in the bottom left of the center chip is in addition a good example of
+#+CAPTION: how in particular cutting a track in the corners leads to a much more spherical
+#+CAPTION: cluster.
+#+NAME: fig:example_clusters_septem_veto
+[[~/org/Figs/statusAndProgress/exampleEvents/background_septem_vetoed.pdf]]
+#+end_center
+
+The background rate with the septem veto is shown in
+fig. [[fig:background_rate_septem_veto]], where we see that most of the
+improvement is in the lower energy range $< \SI{2}{keV}$. This is the
+most important region for the solar axion flux for the axion-electron coupling.
+
+#+begin_center
+#+CAPTION: Background rate achieved based on the 'septem veto' (in addition to the
+#+CAPTION: scintillator cut) for the full 2017/18 dataset within the center
+#+CAPTION: $\SI[parse-numbers=false]{5 \times 5}{mm²}$. Significant improvement in the
+#+CAPTION: $< \SI{2}{keV}$ range, which is most important for axion-electron coupling solar
+#+CAPTION: flux.
+#+NAME: fig:background_rate_septem_veto
+[[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_scinti_veto_septem_veto.pdf]]
+#+end_center
+
+*** 'Line veto' 
+
+There is one more further optional step, dubbed the 'line veto', which
+checks whether there are clusters whose long axis "points at" the
+cluster that passed the log likelihood cut. The idea being that there
+is a high chance that such clusters are correlated, especially because
+ionization is an inherently statistical process. An example of an
+event being vetoed by the 'line veto' is shown in
+fig. [[fig:example_clusters_line_veto]].
+
+#+begin_center
+#+CAPTION: Example event, which highlights the use case of the 'line veto'. The
+#+CAPTION: blue cluster in the upper chip is eccentric and its long axis 'points'
+#+CAPTION: towards the red center cluster (which initially passes the $\ln\mathcal{L}$ cut).
+#+CAPTION: The black circle is a measure for the radius of the center cluster. If the
+#+CAPTION: line of the eccentric cluster cuts the circle, the cluster is vetoed.
+#+NAME: fig:example_clusters_line_veto
+[[~/org/Figs/statusAndProgress/exampleEvents/background_event_vetoed_by_lineveto.pdf]]
+#+end_center
+
+Applying this veto to the full center chip improves the amount of
+background significantly over the background seen in
+fig. [[fig:background_clusters_no_septem_veto]]. The equivalent plot using
+the septem veto is seen in fig. [[fig:background_clusters_septem_veto]].
+
+#+begin_center
+#+CAPTION: The equivalent figure to fig. [[fig:background_clusters_no_septem_veto]] but including
+#+CAPTION: the 'septem veto'. The main improvement happens towards the corners. In total the
+#+CAPTION: number of background clusters drops by a factor of 4, from $\sim\num{43000}$ to
+#+CAPTION: $\sim\num{9600}$.
+#+CAPTION: *TODO THIS INCLUDES THE LINE VETO. COMPARISON SHOULD BE SHOWN LATER!*
+#+NAME: fig:background_clusters_septem_veto
+[[~/org/Figs/statusAndProgress/IAXO_TDR/background_clusters_2017_2018_septemveto_lineveto.pdf]]
+#+end_center
+
+In total this is a reduction of a factor of 4 over the whole chip. But
+even in the center most region (a square of the center \SI{25}{mm²})
+sees an improvement, especially at low energies. 
+
+*** Final background rate using all vetoes
+
+All the vetoes discussed above yield a very good improvement of the
+background rate, shown in fig. [[fig:background_rate_all_vetoes]], which
+contains the comparisons of all vetoes discussed above. Each veto
+builds on the previous ones.
+
+The background rate between $\SIrange{0}{8}{keV}$ ends up at
+$<\SI{1.1e-5}{keV⁻¹ cm⁻² s⁻¹}$. While the vetoes allow for a good
+reduction over the initial background rate (in particular over the
+whole chip, as seen in fig. [[fig:background_clusters_septem_veto]], the
+limitations of the achieved background needs to be discussed in the
+context of a GridPix3 based detector with 7 GridPix.
+
+First of all the main features visible in the background rate are of
+course the argon fluorescence line at around $\SI{3}{keV}$ and the
+copper fluorescence lines at $\sim\SIrange{8}{9}{keV}$. There are two
+main ways to excite these lines:
+1. via cosmics
+2. via radioactive impurities of the detector material
+These also split into two groups:
+1. the inducing particle induces these *within* the sensitive area of
+   the readout (only possible for the excitation of the argon line or
+   the copper of the anode)
+2. the inducing particle induces these *outside* the sensitive area of
+   the readout
+   
+In the first case the GridPix1 detector runs into a severe limitation
+due to its readout. The readout of the Timepix1 is shutter based. The
+combination of 7 such GridPix1 leads to a significantly long readout
+time, which is why a shutter length of about $\SI{2.4}{s}$ was chosen
+for the data taking at CAST. As we only had an FADC to trigger and
+thus close the shutter prematurely for the center chip, the long time
+scales mean the chance of random coincidences of events on the outer
+chips is significant. For example a muon that traverses over the outer
+chips, but neither fulfills the septem or line veto, there is no way
+to be certain whether the cluster seen on the center chip is
+correlated or not. While an aggressive "no activity on outer chips
+allowed" veto is possible, it severely increases the dead time due to
+the long shutter times. This particular case is perfectly resolved by
+the usage of the GridPix3, as that version not only
+allows for a data driven readout resolving the problem of long
+shutter times, but also allows for *simultaneous* readout of ToT and
+ToA. So with a GridPix3 detector such random coincidences are reduced
+to 'real' random coincidences, which are of the time scale of the
+physical processes we are interested in.
+
+The second case will remain an issue even with a GridPix3 based
+detector. *However*, passive mitigation of this is possible by
+using a different gas mixture (e.g. xenon based) to avoid the
+argon fluorescence line altogether.
+
+*TODO*: once merged, replace/add radiopure talk with reference to
+corresponding section
+Further, the GridPix3 detector will be built using radiopure
+materials. This should significantly reduce the amount of induced
+fluorescence to those parts that are cosmic induced. And finally the
+cosmic induced events will also be further reduced by usage of a fully
+covering scintillator veto system.
+
+All of these combinations should lead to a significant improvement of
+the background rate. 
+
+#+begin_center
+#+CAPTION: Background rate in the center $\SI[parse-numbers=false]{5 \times 5}{mm²}$ region using
+#+CAPTION: the full 2017/18 GridPix1 dataset from CAST. Each successive veto, applied in the order
+#+CAPTION: in which they are explained above is shown cumulatively. The 'line veto' contains all
+#+CAPTION: discussed vetoes. It yields a background rate in the region between $\SIrange{0}{8}{keV}$ of
+#+CAPTION: $<\SI{1.1e-5}{keV⁻¹ cm⁻² s⁻¹}$.
+#+NAME: fig:background_rate_all_vetoes
+[[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_scinti_veto_septem_veto_line_veto.pdf]]
+#+end_center
+
+*** Neural network based classification
+
+The likelihood cut based method presented in section
+[[#sec:likelihood_method]] works well, but does not use the full potential
+of the data. It mainly uses length / eccentricity related properties,
+which are hand picked and ignores the possible separation power of all
+other properties.
+
+Multiple different ways to use all separation power exist. One
+promising approach is the usage of artificial neural networks (ANN). A
+multi-layer perceptron (MLP; (*reference something?*) ) is a simple ANN model, which consists of an
+input and output layer plus N fully connected hidden layers. By
+training such a network on the already computed geometric properties
+of the clusters, computational requirements remain relatively
+moderate.
+
+As a reference an MLP was trained (implementation [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Tools/NN_playground/train_ingrid.nim][here]]) on a mix of
+X-ray reference data (as signal-like training data) and a subset of
+the CAST background data. The implementation was done using [[https://github.com/scinim/flambeau][Flambeu]], a
+wrapper for [[https://pytorch.org/][libtorch]], using the following parameters:
+
+- Input neurons: 12
+- Hidden layers: 1
+- Neurons on hidden layer: 500
+- Output neurons: 2
+- Activation function: =ReLU= (Rectified linear unit) (*ref?*)
+- Gradient algorithm: Stochastic Gradient Descent (SGD) (*ref?*)
+- Learning rate: 0.005
+- Momentum: 0.2
+- Batch size: 100 
+
+The 12 input neurons were fed with all geometric properties that do
+not scale directly with the energy (no number of active pixels or
+direct energy) or position on the chip (as the training data is skewed
+towards the center).
+
+This is considered a "reference" implementation, as it is essentially
+the simplest ANN layout possible. As a comparison to the likelihood
+method the receiver operating characteristic (ROC) curves (*REFERENCE
+SOMETHING*) for the different
+X-ray reference datasets is used. The signal and background data used
+for each case (likelihood and MLP) is the test dataset used to test
+the MLP performance after training. Fig. [[fig:roc_curves_logl_mlp]] shows
+these ROC curves with the line style indicating the method and the
+color corresponding to the different targets and thus different
+fluorescence lines. The improvement in background rejection at a fixed signal efficiency
+exceeds $\SI{10}{\percent}$ at multiple energies.
+
+The usage of such neural networks is plainly a replacement for the
+likelihood cut method used to detect the initial cluster candidates
+and during classification of the septem/line veto. It does not replace
+any of the vetoes, as these include information outside the center
+chip, which is not available for the neural network (training and
+validation becomes much more complicated if all chips were to be used,
+due to the random coincidence problem mentioned in a previous section).
+
+#+begin_center
+#+CAPTION: ROC curves for the comparison of the likelihood cut method (solid lines) to the
+#+CAPTION: MLP predictions (dashed lines), colored by the different targets used to generate the
+#+CAPTION: reference datasets. The background data used for each target corresponds to background
+#+CAPTION: clusters in an energy range around the fluorescence line.
+#+CAPTION: The MLP visibly outperforms the likelihood cut method in all energies. At the same
+#+CAPTION: signal efficiency (x axis) a significantly higher background rejection is achieved.
+#+NAME: fig:roc_curves_logl_mlp
+[[~/org/Figs/statusAndProgress/neuralNetworks/roc_curve_mlp_vs_likelihood_split_by_target_1000_epochs_no_energy_hits.pdf]]
+#+end_center
+
+**** Combination of NN w/ vetoes
+
+[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/NN_playground/predict_event.nim]]
+
+#+begin_src sh
+./predict_event ~/CastData/ExternCode/TimepixAnalysis/resources/LikelihoodFiles/lhood_2017_crGold_septemveto_lineveto_dbscan.h5 \
+                ~/CastData/ExternCode/TimepixAnalysis/resources/LikelihoodFiles/lhood_2018_crGold_septemveto_lineveto_dbscan.h5 \
+  --lhood --cutVal 3.2 --totalTime 3400
+#+end_src
+
+Within 0 - 8 keV:
+6.413398692810459e-6 keV⁻¹•cm⁻²•s⁻¹
+Within 0 - 2.8 & 4.0 - 8.0 keV:
+4.133025759323338e-6 keV⁻¹•cm⁻²•s⁻¹
+
+yields
+
+[[~/org/Figs/statusAndProgress/neuralNetworks/background_rate_after_logl_septemveto_lineveto_and_mlp.pdf]]
+
+
+
+*** Example using GridPix3 data
+
+Maybe separate, maybe merged into the other sections.
+
+
+
 * Limit calculation                                                :Analysis:
 
 If we decide to present different limits, we should have one section
