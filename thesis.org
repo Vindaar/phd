@@ -1646,6 +1646,9 @@ In the end it is highly dependent on a Frequentist vs. Bayesian
 approach to statistics.
 
 ** Limit computation methods
+:PROPERTIES:
+:CUSTOM_ID: sec:stats:limit_method
+:END:
 
 Describe log L and χ² distribution and how to compute limit.
 
@@ -3154,6 +3157,9 @@ of course.
 *** FADC spectrum & threshold
 
 ** 55Fe spectra
+:PROPERTIES:
+:CUSTOM_ID: sec:preparation:55fe
+:END:
 
 Example spectrum. What's the point of these spectra.
 
@@ -4716,9 +4722,178 @@ Using background rate & methods to determine it.
 *Need* to show the log L phase space according to Igor. Well, that
 seems useful anyway.
 
+*TODO* somewhere explain what an expected vs. a real limit is.
+
+** Limit calculation method
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:limit_method
+:END:
+
+The limit calculation method is based on the approach presented in
+\cite{cast_nature}, with modifications to better suit the GridPix
+detector and make the method more generic (under exchange of the
+model to be studied).
+
+We will now go through the ingredients for the limit method one by
+one. The final likelihood including nuisance parameters we evaluate is
+(see section [[#sec:stats:limit_method]] for the derivation):
+
+\[
+\mathcal{L}_{SBM} = ∫_{-∞}^∞∫_{-∞}^∞∫_{-∞}^∞∫_{-∞}^∞ \exp(-s'_{\text{tot}}) \cdot \prod_i \left(1 +
+\frac{s_i''}{b_i'}\right) \cdot
+\exp\left[-\frac{θ_b²}{2 σ_b²} - \frac{θ_s²}{2 σ_s²} -
+\frac{θ_x²}{2 σ_x²} - \frac{θ_y²}{2 σ_y²} \right]
+\, \mathrm{d}\,θ_b \mathrm{d}\,θ_s \mathrm{d}\,θ_x \mathrm{d}\,θ_y.
+\]
+where primed symbols refer to the base symbol with a modification due
+to the value of the corresponding nuisance parameter, i.e.
+$x' = x(1 + θ_x)$. The double primed $s_i''$ not only includes $θ_s$,
+but also the position dependent nuisance parameters $θ_x$ and $θ_y$
+(see again the previous section).
+
+The inputs required to compute a likelihood value are (with the
+relevant parameters):
+- a set of candidate clusters (either from the real solar tracking or
+  randomly sampled ones) with cluster centers at $(x_i, y_i)$ and
+  associated energies $E_i$ (over which the product $i$ runs).
+- the solar axion flux produced the model to be analyzed, as a
+  function of energy (depending on $g_{ae}$ and $g_{aγ}$, but the
+  $g_{aγ}$ contribution can be ignored for certain choices of $g_{ae}$
+  and $g_{aγ}$.
+- the conversion probability of axions in a magnetic field (depending
+  on $g_{aγ}$.
+- the efficiency of the X-ray optics as a function of energy $E$.
+- the transmission probability of X-rays through the detector window
+  as a function of $E$ and the entrance position $(x, y)$.
+- the absorption probability of X-rays in the used Argon gas as a
+  function of energy $E$.
+- the average depth $\langle d \rangle$ at which the X-rays produce a photo-electron in
+  the Argon gas for the expected flux of converted solar axions (after
+  propagation through the X-ray optics and detector window).
+- the resulting flux of axion induced X-rays as a function of the
+  position $(x, y)$ on the detector, depending on $g_{ae}$.
+- the expected background rate at any position $(x, y)$ in the
+  detector and any energy $E$.
+
+From here we will go through each of these contributions to explain
+how each is obtained and what they look like.
+
+- [ ] Should we here essentially just refer back to the "theory like"
+  sections before where each of these ingredients is already
+  introduced? At least for things like Argon absorption / detection
+  efficiency etc. those will certainly be presented before. That means
+  by showing them here again, we essentially show the same thing
+  again.
+  For things like the background interpolation that I would just
+  introduce "somewhere here".
+
+  One option would be: for all where it _makes sense_, have a big
+  "inputs plot" (maybe a facet, or a =ggmulti= plot) of all inputs we
+  have?
+  Then again, here we mainly present the *technique* still. So for
+  example the final candidates wouldn't show up here. But ok, it's
+  *only* the candidates that actually changes.
+
+*** Candidates
+
+The candidates are the X-ray like clusters remaining after the background
+rejection algorithm has been applied for the data during the solar
+tracking. For the computation of the expected limit the set of
+candidates is drawn from the background rate distribution via sampling
+from a Poisson distribution with the mean of the background rate.
+
+A set of toy candidates is shown in
+fig. [[fig:limit:toy_candidates]]. Each point represents one toy candidate
+at its cluster center position. The color scale represents the energy
+of each cluster in \si{keV}.
+
+#+ATTR_LATEX: :width 0.8\textwidth
+#+CAPTION: A set of toy candidates drawn from the background rate using a Poisson distribution
+#+CAPTION: with mean of the background rate at different positions and energies. Each point is
+#+CAPTION: the center of a cluster with the color scale showing the energy of that cluster.
+#+CAPTIOn: *TODO:* REPLACE THE PLOT!
+#+NAME: fig:limit:toy_candidates
+[[~/org/Figs/statusAndProgress/limitCalculation/problematic_candidates_syst_uncert_limit.pdf]]
+
+*** Solar axion flux [0/3]
+
+The solar axion flux for the model to be studied must be known both as
+a function of energy $E$ and also as a differential flux as a function
+of the solar radius to produce the expected axion image via raytracing
+(see sec. [[#sec:raytracing]]).
+
+This means in principle we require knowledge about the production as
+shown in the heatmap of fig. [[fig:limit:axion_production_heatmap]]. (Move
+this to theory?)
+
+- [ ] generate heatmap of production as function of energy and solar
+  radius
+- [ ] or show here just the signal?
+- [ ] the idea being here that we highlight what one needs to replace
+  in order to compute a limit of something else possibly (which then
+  allows us later to have a section "axion-photon" or "chameleon"
+  where we just present the inputs "see sec. blub, here's the
+  production heatmap" kind of deal
+
+*** Conversion probability
+
+The conversion probability of the arriving axions is simply a constant
+factor, depending on $g_{aγ}$, see section
+[[#sec:theory:axion_conversion]] for the derivation from the general
+formula.
+
+For the numbers of the CAST magnet we therefore get:
+
+- [ ] show equation again
+- [ ] show parameters used (L, B, $g_{aγ}$
+- [ ] compute the number for the fixed coupling
+
+*** Telescope efficiency
+
+Refer back to section that describes the LLNL telescope!
+
+- [ ] plot of the effective area
+- [ ] explain how the effective area is converted to an efficiency
+  
+*** Window transmission
+
+- [ ] compute window transmission with =xrayAttenuation=
+
+*** Average absorption depth of X-rays
+
+*** Raytracing axion image
+
+*** Background 
+
+*** Systematics
+
+Talk about the systematics. The different systematics used, the table
+of systematics.
+
+
+
+**** Derivation of the systematics                              :noexport:
+
+Copy over from =[status]=. 
+
+*** Expected limit, MC toy sampling
+
+*** MCMC to sample the distribution
+
 ** Axions
 
 *** Axion-electron coupling
+
+**** The candidates
+
+Unblinding the data, the solar tracking candidates left after
+application of the likelihood cut method and vetoes, are shown in
+fig. [[fig:limit:solar_track_candidates]].
+
+All other inputs for the limit calculation remains the same as
+presented in the previous section sec. [[#sec:limit:limit_method]].
+
+- [ ] insert plot of solar tracking candidates!
 
 *** Axion-photon coupling
 
