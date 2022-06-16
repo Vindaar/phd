@@ -4860,11 +4860,73 @@ factor, depending on $g_{aγ}$, see section
 [[#sec:theory:axion_conversion]] for the derivation from the general
 formula.
 
-For the numbers of the CAST magnet we therefore get:
+The simplified expression for coherent conversion in a constant
+magnetic field \footnote{Note that in a perfect analysis one would
+compute the conversion in a realistic magnetic field, as the field
+strength is not perfectly homogeneous. That would require a very
+precise field map of the magnet. In addition the calculations for
+axion conversions in inhomogeneous magnetic fields is significantly
+more complicated. As far as I understand it requires essentially a
+"path integral like" approach of all possible paths through the
+magnet, where each path sees different, varying field strengths. Due
+to the small size of the LHC dipole prototype magnet and general
+stringent requirements for homogeneity this is not done for this
+analysis. However, likely for future (Baby)IAXO analyses this will be
+necessary.} is
 
-- [ ] show equation again
-- [ ] show parameters used (L, B, $g_{aγ}$
-- [ ] compute the number for the fixed coupling
+\[
+P(g_{aγ}, B, L) = \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2
+\]
+where the relevant numbers for the CAST magnet are:
+- $B = \SI{9}{T}$
+- $L = \SI{9.26}{m}$
+and in the basic axion-electron analysis a fixed axion-photon coupling
+of $g_{aγ} = \SI{1e-12}{\per\Giga\electronvolt}$.
+
+Looking closely at the units of this expression, the equation as it is
+written uses natural units. This requires either conversion of the
+equation into SI units by adding the "missing" constants or converting
+the SI units into natural units. As the result is a unit less number,
+the latter approach is simpler.
+
+The conversion factors from Tesla and meter to natural units are as follows:
+#+begin_src nim :results raw
+import unchained
+echo "Conversion factor Tesla: ", 1.T.toNaturalUnit()
+echo "Conversion factor Meter: ", 1.m.toNaturalUnit()
+#+end_src
+
+#+RESULTS:
+Conversion factor Tesla: 195.353 ElectronVolt²
+Conversion factor Meter: 5.06773e+06 ElectronVolt⁻¹
+
+*TODO*: Move this out of the thesis and just show the numbers in text?
+Keep the "derivation / computation" for the "full" version (:noexport:
+?).
+
+As such, the resulting conversion probability ends up as:
+
+#+begin_src nim :results raw
+import unchained, math
+echo "9 T    = ", 9.T.toNaturalUnit()
+echo "9.26 m = ", 9.26.m.toNaturalUnit()
+echo "P = ", pow( 1e-12.GeV⁻¹ * 9.T.toNaturalUnit() * 9.26.m.toNaturalUnit() / 2.0, 2.0)
+#+end_src
+
+#+RESULTS:
+9 T    = 1758.18 ElectronVolt²
+9.26 m = 4.69272e+07 ElectronVolt⁻¹
+P = 1.701818225891982e-21
+
+\begin{align}
+P(g_{aγ}, B, L) &= \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2 \\
+               &= \left(\frac{\SI{1e-12}{\per GeV} \cdot \SI{1758.18}{eV^2} \cdot \SI{4.693e7}{eV}}{2}\right)^2 \\
+               &= 1.702e-21
+\end{align}
+
+Note that this is of the same (inverse) order of magnitude as the flux
+of solar axions ($\sim10^{21}$ in some sensible unit of time), meaning
+the experiment expects $\mathcal{O}(1)$ counts, which is sensible.
 
 *** Telescope efficiency
 
