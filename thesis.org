@@ -4943,7 +4943,7 @@ Refer back to section that describes the LLNL telescope!
 
 *** Raytracing axion image
 
-*** Background
+*** Background [0/6]
 
 The background must be evaluated at the position and energy of each
 cluster candidate. As the background is not constant in energy or
@@ -4956,13 +4956,34 @@ fig. [[fig:limit:background_clusters]] where each point is a cluster
 center with the color indicating its energy (similar to the candidates
 plot further up).
 
+Figures:
+1. background clusters
+2. (optional) plot showing "selection" of clusters based on
+   =queryBallPoint=? I.e. show all clusters in grey, radius & then in
+   color those that are in the radius?
+3. background "interpolation" based purely on query ball point of raw
+   data, at a slice of energy.
+4. in a facet with 3 show same after normalization?
+5. show effect of area cutoff correction. Also results in a "final"
+   background rate interpolated.
+
+
+Highlight:
+So what? This allows us to evaluate the background rate correctly on
+the full chip! Generic ALPs can be studied this way, as we don't have
+to manually define regions on the chip with specific backgrounds etc.!
+One of the fundamental points about making this whole procedure generic.
+
 - [ ] explain using k-d tree to efficiently look up "neighbors" at any
-  point (x, y, E)
+  point (x, y, E). In particular explain how energy works. Not taken
+  into account in distance aside from whether inside. So gaussian
+  weighting only in x/y.
+  
 - [ ] use number & distance to these points to compute a weighted
   number of elements in desired "radius"
 - [ ] potentially rescale number based on area cut off due to edges of
-  the chip
-- [ ] renormalize from an effective "number" of clusters to a rate
+  the chip. how does this work.
+- [ ] renormalize from an effective "number" of clusters to a rate. . how does rescaling work.
 
 - [ ] explain how the integration works etc, copy from sections
   [[sec:correct_inter_cutoff]] and [[sec:limit:gaussian_weight_normalization]]
@@ -4971,7 +4992,19 @@ plot further up).
 - [ ] *TODO*: check the integration of the gaussian weight again. Is
   that really correct??!! Ahh, it might be correct. What we try to do
   is not to compute anything related to the actual neighbors found in
-  the radius, but rather to get the "equivalent area" of the weighted data!
+  the radius, but rather to get the "equivalent area" of the weighted
+  data!
+
+
+**** Sampling of background interpolation
+
+Take interpolation. For sampling purposes we need to sample from
+background according to rate. How?
+Take a grid in x, y, E of N grid cells. Take background in those
+volumes & normalize to # counts in tracking time. Then Poisson sample
+from that as mean. Sample an (x, y, E) "position" in that cube.
+
+10x10x20 ? cells used. Plot of the cells, normalized to counts.
 
 *** Systematics
 
@@ -4984,9 +5017,26 @@ of systematics.
 
 Copy over from =[status]=. 
 
-*** Expected limit, MC toy sampling
+*** Putting it all together
+
+First: show the basic algorithm in pseudo code to compute a likelihood
+value for a set of parameters ($g_{ae}²$, and the $θ$ values).
+
+- expected rate,
+- nuisance parameter penalty terms
+- loop over candidates, for each candidate
+  - compute signal
+  - compute background
+  -> combine
+
+From here either integrate out $θ$ manually, or sample via MCMC. Goes
+straight to next section.  
 
 *** MCMC to sample the distribution
+
+*** Expected limit, MC toy sampling
+
+
 
 ** Axions
 
