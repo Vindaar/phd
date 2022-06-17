@@ -837,6 +837,9 @@ comparison for certain aspects in this thesis.
 #+end_center
 
 *** Lawrence Livermore National Laboratory (LLNL) telescope
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:llnl_telescope
+:END:
 
 Up to 2014 there was only a single X-ray telescope in use at CAST. In
 August 2014 a second X-ray optics was installed on the second bore
@@ -880,10 +883,17 @@ in chapter [[Raytracing - where does this belong?]]. *CITE JOHANNA*
 #+CAPTION: The data for the LLNL telescope is extracted from fig. 3 in \cite{llnl_telescope_first_cast_results},
 #+CAPTION: whereas for the ABRIXAS telescope it is extracted from the red line in fig. 4
 #+CAPTION: of \cite{CAST_telescope_ccd}.
-#+CAPTION: *FIX ME AND THINK ABOUT TRANSMISSION VS EFFICIENCY*
+#+CAPTION: *FIX ME (REPLACE BY DATA FROM 0 TO 10 AND THINK ABOUT TRANSMISSION VS EFFICIENCY*
 #+NAME: telescope_efficiency_comparison_mpe_llnl
 [[~/org/Figs/statusAndProgress/llnl_mpe_transmission_comparison.pdf]]
 #+end_center
+
+#+begin_comment
+Note: Refer to DTU thesis
+[[/home/basti/org/Papers/llnl_telescope_optimizations_phdthesis_for_DTU_orbit.pdf]]
+around page 65 (and shortly before for effective area definition; and
+another eff area def on page 7). 
+#+end_comment
 
 *** Best limits
 
@@ -4921,7 +4931,7 @@ P = 1.701818225891982e-21
 \begin{align}
 P(g_{aγ}, B, L) &= \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2 \\
                &= \left(\frac{\SI{1e-12}{\per GeV} \cdot \SI{1758.18}{eV^2} \cdot \SI{4.693e7}{eV}}{2}\right)^2 \\
-               &= 1.702e-21
+               &= \num{1.702e-21}
 \end{align}
 
 Note that this is of the same (inverse) order of magnitude as the flux
@@ -4932,12 +4942,52 @@ the experiment expects $\mathcal{O}(1)$ counts, which is sensible.
 
 Refer back to section that describes the LLNL telescope!
 
-- [ ] plot of the effective area
-- [ ] explain how the effective area is converted to an efficiency
-  
-*** Window transmission
+The X-ray telescope further has a direct impact not only on the shape
+of the axion signal on the readout, but also the total number of
+X-rays transmitted. The effective transmission of an X-ray telescope
+is significantly lower than in the optical range. This is typically
+quoted using the term "effective area". In section
+[[#sec:cast:llnl_telescope]] the effective area of the two X-ray optics
+used at CAST in shown.
 
+The term effective area refers to the equivalent area a perfect X-ray
+telescope would cover. As such, the real efficiency $ε_{\text{tel}}$ can be computed by
+the ratio of the effective area $A_{\text{eff}}$ and the total area of the optic $A_{\text{tel}}$.
+
+\[
+ε_{\text{tel}}(E) = \frac{A_{\text{eff}}(E)}{A_{\text{tel}}}
+\]
+
+where the effective area $A_{\text{eff}}$ depends on the energy
+\footnote{Note that $ε_{\text{tel}}$ here is the average effective
+efficiency of the full telescope and *not* the reflectivity of a
+single shell. As a Wolter I optic requires two reflections
+$ε_{\text{tel}}$ is equivalent to the reflectivity squared
+$R²$. Individual reflectivities of shells are further complicated by
+the fact that different shells receive parallel light under different
+angles, which means the reflectivity varies between shells. Therefore
+this is a measure for the average efficiency.}. In case of the CAST
+the relevant total area is not actually the cross-sectional area of
+the optic itself, but rather the exposed area due to the diameter of
+the magnet coldbore. With a coldbore diameter of $d_{\text{cb}} = \SI{43}{mm}$ the
+effective area can be converted to $ε_{\text{tel}}$.
+
+The resulting effective area is shown in
+fig. [[fig:limit:window_trans_telescope_eff]] in the next section together
+with the window transmission and gas absorption.
+
+*** Window transmission and Argon gas absorption
+
+The detector entrance window is the next point affecting the possible
+signal to be detected. The windows, as explained in section
+[[#sec:detector:windows]] are made from $\SI{300}{nm}$ thick silicon
+nitride
+
+
+
+- [ ] plot of the effective area
 - [ ] compute window transmission with =xrayAttenuation=
+- [ ] compare with Henke  
 
 *** Average absorption depth of X-rays
 
