@@ -1641,227 +1641,6 @@ rate achieved by that detector here?
 - background over chip (latter comes later??)
 
 
-
-
-* Statistics & limit calculations
-
-In a physics experiment after performing all measurements there comes
-the question of "did I measures something and do I want to compute
-some confidence interval on an observable or did I measure nothing and
-want to set a limit on the observable?"
-
-These questions can be answered in a variety of different ways. 
-
-In the end it is highly dependent on a Frequentist vs. Bayesian
-approach to statistics.
-
-** Limit computation methods
-:PROPERTIES:
-:CUSTOM_ID: sec:stats:limit_method
-:END:
-
-Describe log L and χ² distribution and how to compute limit.
-
-Unphysicality, fix by rescaling, χ² min + 4 thing
-*UPDATE*: good that we now understand how this actually works,
-i.e. integrate the posterior probability (likelihood * prior / normalization)
-
-*** Maths from =status=
-
-The maths of the log likelihood expression we use, is mostly straight
-forward.
-
-A likelihood function is purely defined as the product of the
-individual probabilities for each 'channel' in our measurement. That
-way the likelihood gives us the total probability to get this exact
-measurement outcome out of all possible outcomes.
-
-If we start from a likelihood ratio of the signal + background
-hypothesis over the pure background hypothesis, in the binned case we
-can derive the formula used in the Nature paper from first
-principles. The number of measured counts in each bin is simply a
-Poisson distribution:
-
-\[
-P_{\text{Pois}}(k; λ) = \frac{λ^k e^{-λ}}{k!}
-\]
-
-for each bin an expected number of counts $λ$ (the mean) then means a probability given $P$
-for a "measured" number of counts $k$. Combining multiple "channels"
-is then simply the product of these individual channels, giving us the
-likelihood for one experiment:
-
-\[
-\mathcal{L} = \prod_i P_{i, \text{Pois}}(k; λ) = \prod_i \frac{λ_i^{k_i} e^{-λ_i}}{k_i!}
-\]
-
-Applying this to the previously mentioned likelihood ratio $Q$ gives
-us:
-
-\[
-Q = \frac{\prod_i P_{i, \text{Pois}}(n_i; s_i + b_i)}{\prod_i P_{i, \text{Pois}}(n_i; b_i)} =
-  \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)} }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i}}
-\]
-
-where $n_i$ is simply the number of measured candidates within the
-signal sensitive region in each bin $i$. Typically each bin might be a
-bin in energy, but it can be any kind of "bin" as long as each bin
-corresponds to something that follows a Poisson distribution. We will
-make use of this fact in a bit.
-
-This can be interpreted as an extended likelihood function, as the
-ratio of two Poisson distributions does not satisfy the normalization
-condition:
-
-\[
-\int_{-∞}^{∞}P\, \mathrm{d}x = 1
-\]
-
-anymore. Instead we have:
-
-\[
-\int_{-∞}^{∞}Q\, \mathrm{d}x = N
-\]
-
-where $N$ can be interpreted as a hypothetical number of total number
-of counts measured in the experiment; the starting point of the
-definition of the extended maximum likelihood estimation.
-
-From here we derive the logarithm of the expression to get the
-numerically more stable $\ln \mathcal{L}$ expression:
-
-#+NAME: eq:likelihood_1_plus_s_over_b_form
-\begin{align*}
-\ln \mathcal{Q} &= \ln \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
-  &= \sum_i \ln \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
-  &= \sum_i \ln \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  - \ln \frac{b_i^{n_i}}{n_i!} e^{-b_i}  \\
-  &= \sum_i n_i \ln (s_i + b_i) - \ln n_i! - (s_i + b_i) - (n_i \ln b_i - \ln n_i! -b_i)  \\
-  &= \sum_i n_i \ln (s_i + b_i) - (s_i + b_i) - n_i \ln b_i + b_i  \\
-  &= \sum_i n_i \ln (s_i + b_i) - (s_i + b_i - b_i) - n_i \ln b_i  \\
-  &= \sum_i n_i \ln \left(\frac{s_i + b_i}{b_i}\right) - s_i  \\
-  &= -s_{\text{tot}} + \sum_i n_i \ln \left(\frac{s_i + b_i}{b_i} \right) \\
-  &\text{or alternatively} \\
-  &= -s_{\text{tot}} + \sum_i n_i \ln \left(1 + \frac{s_i}{b_i} \right) \\
-\end{align*}
-
-here $s_{\text{tot}}$ represents the total number of "signal" like
-counts expected (in our case total number of expected photons due to
-axion conversion).
-
-The last two lines show us that all that is really important is that
-the normalization of $s_i$ and $b_i$ are the same. The absolute
-normalization (e.g. if it's $\si{keV⁻¹}$ or absolute counts etc.) plays no
-role as that will be a constant multiplier. That constant can always
-be neglected in the total likelihood (a constant only moves the logL
-curve up / down, but does not change its maximum!).
-
-Coming back to the "channels" / the binning: if we choose our bins
-such that they are bins in time, so small that each bin either
-contains 0 or 1 count, we reduce this to our desired unbinned log
-likelihood, if we start from the second to last line above and drop
-the constant $-\ln b_i$ term:
-
-\[
-\ln \mathcal{L} = -R_{\text{tot}} + \sum_{\text{candidates}} \ln(s_i + b_i)
-\]
-where the sum now runs over each candidate instead of the abstract
-"channels".
-
-With an understanding of where the formula comes from, we can more
-safely make statements about what the shape of the logL curve is going
-to look like. For that it is important to realize that:
-- $-R_{\text{tot}}$ depends on $g_{ae²}$, $-R_{\text{tot}}(g_{ae²})$
-- $s_i$ depends on $g_{ae²}$, $\vec{x}$ and the cluster energy $E$,
-  $s_i(g_{ae²}, \vec{x}, E)$
-- $b_i$ only depends on the cluster energy $E$
-
-This means $b_i$ for all intents and purposes is constant under a
-change of the coupling constant for a fixed set of candidate
-clusters. For a scan over logL this is precisely given.
-
-Now let's consider what each part's contribution will look like as a
-logL curve:
-
-1. $-R_{\text{tot}}$: the total number of counts depends on the axion
-   flux, the tracking time and the total detection efficiencies. The
-   latter two are simply constants when integrating over the region of
-   interest in energy, namely \SIrange{0}{10}{\keV}. The axion flux
-   scales as:
-   \[
-   f(g') = f(g) \frac{g^{\prime 2}}{g²}
-   \]
-   i.e. a squared rescaling of the flux. Given that we scan the logL
-   space in $g_{ae²}$, this means the total flux (the integral of $f$
-   over all energies) just scales linearly with $g_{ae²}$.
-   Due to the minus sign in front, the result is plainly a line with
-   negative slope going through the origin at $g_{ae²} = 0$.
-2. $b_i$: the background hypothesis is a function only depending on
-   the energy of each cluster (and implicitly on the relevant area and
-   tracking time). For a fixed set of candidates during a $g_{ae²}$
-   scan, its contribution is plainly constant.
-3. $s_i$: this is the complicated one. It not only depends on
-   $g_{ae²}$, but also the energy $E$ and more importantly the
-   position of the cluster center $\vec{x}$. The latter is used for
-   the effective flux at each position on the chip that is expected
-   from axion conversion after focusing of the X-ray telescope.
-   In principle the cluster center positions are constant for a single
-   scan of $g_{ae²}$. This means effectively the signal $s_i$ behaves
-   exactly like $R_{\text{tot}}$ under $g_{ae²}$. The resulting
-   behavior is thus also linear, except with a positive slope.
-   The big difference between $s_i$ and $R_{\text{tot}}$ however is
-   that $R_{\text{tot}}$ is integrated over all energies, whereas
-   $s_i$ is only evaluated at specific energies (in keV⁻¹).
-
-Combining these three facts we expect to find some maximum somewhere,
-where the $R_{\text{tot}}$ term and the $s_i$ term cancel each
-other. The $b_i$ term only contributes an offset (which however
-depends on the candidates, which is why it cannot be ignored!).
-
-This brings us to a particular problem:
-What happens if the candidates are all located outside of the axion
-sensitive region? In that case their contribution will be zero, due to
-the position dependency of $\vec{x}$. This leads to a pure
-$R_{\text{tot}}$ negative slope on top of a constant background $b_i$.
-In this case the logL curve does *not* have a maximum! And in cases
-where arbitrarily little contribution is had, there *will* be a
-maximum somewhere, but it will be very far into the unphysical range,
-at which point the 1σ width (based on logL_max - 0.5) yield a width
-that leads to a physical limit at 0 (due to the gaussian CDF being
-essentially 1 many σ away from the center).
-
-Given our statistics of $O(30)$ candidates in our tracking time, this
-presents a problem. For toy experiments there is a high chance of
-getting precisely that problem. A large number of candidates (70 - 90%
-maybe) will be outside the sensitive region, resulting in no good way
-to determine the limit.
-
-*** Further expl: Bayes integral *AFTER MAIL FROM IGOR ON <2021-10-03 Sun>*:
-
-Essentially saying that we simply integrate over and demand:
-
-0.95 = ∫_-∞^∞ L(g_ae²) Π(g_ae²) / L_0 d(g_ae²)
-
-where L is the likelihood function (*not* the ln L!), Π is the prior
-that is used to exclude the unphysical region of the likelihood phase
-space, i.e. it is:
-
-Π(g_ae²) = { 0 if g_ae² < 0, 1 if g_ae² >= 0 }
-
-And L_0 is simply a normalization constant to make sure the integral
-is normalized to 1.
-
-Thus, the integral reduces to the physical range:
-
-0.95 = ∫_0^∞ L(g_ae²) / L_0 d(g_ae²)
-
-where the 0.95 is, due to normalization, simply the requirement of a
-95% confidence limit.
-
-With this out of the way I implemented this into the limit calculation
-code as the =lkBayesScan= limit.
-
-
-
 * Septemboard detector                                             :Detector:
 
 The first section introduces the reasoning behind building a more
@@ -2631,574 +2410,6 @@ Show function that is being fitted to it.
 
 Explain how all charge values combined as a histogram generate a
 ~Pólya distribution from which we can deduce the gas gain.
-
-
-* Software                                                         :Software:
-
-Introduce used software for analysis.
-
-Previous code used MarlinTPC (already extended a framework for use for
-gaseous detectors, focus on strips). Additional extension to use our
-new detector features would be beyond the scope of the framework. 
-
-** Nim
-
-Shortly introduce Nim & why it was chosen.
-
-Efficient, productive, gets out of my way.
-
-** TimepixAnalysis
-
-Framework written for data analysis.
-
-Rewrites Timepix / InGrid related code from MarlinTPC in Nim and
-extends it (e.g. supports Timepix3).
-
-[[https://github.com/Vindaar/TimepixAnalysis]]
-
-After the thesis is published it is possible that this repository will
-become the de facto repository for the thesis and the actual analysis
-code will become its own repository. We'll see.
-
-*THESE SECTIONS MUST BE MERGED WITH THE ANALYSIS BELOW*. Maybe let
-this chapter simply be a high level overview: introduce Nim and the
-why. Mention the TimepixAnalysis repo only as a "this is the code for
-the analysis, the details of which will be explained in the next
-section? In that case one might merge the whole chapter with the next
-one and simply have these as the introductory part of the chapter.
-
-*** =raw_data_manipulation=
-
-*LINK TO HDF5 FORMAT IF FIRST TIME MENTIONING*
-
-The first step of the analysis pipeline is essentially just a parsing
-stage of the data generated by TOS (see section [[sec:tos_output_format]]
-for an explanation of it) and storing it in a compressed HDF5 data
-file.
-
-The program is fed with a directory containing a TOS run, i.e. a
-single data taking period ranging typically from minutes to days in
-length, or a directory that itself contains multiple TOS run directories.
-
-All data files contained in a run directory will then be parsed in a
-multithreaded way. The files are memory mapped and parsed in parallel
-into a =Run= data structure, which itself contains =Event= structures.
-
-Depending on the designated run type of a file, some slight
-processing steps are performed. *WHAT?*
-
-If FADC files are present in a directory, these will also be parsed
-into =FadcEvent= structures in a similar fashion.
-
-Each run is then written into the output HDF5 file as a group. The
-meta data about each run and event are stored as attributes and
-additional datasets, respectively.
-
-An example structure of a resulting HDF5 file is shown in:
-*EXAMPLE LAYOUT WITH EXAMPLE ATTRIBUTES AND DATASETS?*
-
-In addition the tool also supports input from HDF5 files containing
-the raw data from a Timepix3 detector. That data is parsed and
-reprocessed into the same kind of file structure.
-
-#+CAPTION: Usage of the =raw_data_manipulation= tool. Input is in the form of a run directory / a directory
-#+CAPTION: containing multiple run directories. The parsed output is stored in compressed HDF5 files.
-#+NAME: list:raw_data_manipulation_help
-#+begin_src shell-session
-Version: 13809be built on: 2021-05-07 at 00:53:39
-  InGrid raw data manipulation.
-
-Usage:
-  raw_data_manipulation <folder> [options]
-  raw_data_manipulation <folder> --runType <type> [options]
-  raw_data_manipulation <folder> --out=<name> [--nofadc] \
-    [--runType=<type>] [--ignoreRunList] [options]
-  raw_data_manipulation <folder> --nofadc [options]
-  raw_data_manipulation --tpx3 <H5File> [options]
-  raw_data_manipulation --tpx3 <H5File> --runType <type> [options]
-  raw_data_manipulation --tpx3 <H5File> --runType <type> --out=<name> \
-    [options]
-  raw_data_manipulation -h | --help
-  raw_data_manipulation --version
-
-Options:
-  --tpx3 <H5File>     Convert data from a Timepix3 H5 file to TPA format
-  --runType=<type>    Select run type (Calib | Back | Xray)
-                      The following are parsed case insensetive:
-                      Calib = {"calib", "calibration", "c"}
-                      Back = {"back", "background", "b"}
-                      Xray = {"xray", "xrayfinger", "x"}
-  --out=<name>        Filename of output file
-  --nofadc            Do not read FADC files
-  --ignoreRunList     If set ignores the run list 2014/15 to indicate
-                      using any rfOldTos run
-  --overwrite         If set will overwrite runs already existing in the
-                      file. By default runs found in the file will be skipped.
-                      HOWEVER: overwriting is assumed, if you only hand a
-                      run folder!
-  -h --help           Show this help
-  --version           Show version.
-#+end_src
-
-*** =reconstruction=
-:PROPERTIES:
-:CUSTOM_ID: sec:reconstruction
-:END:
-
-After the raw data has been converted to storage in HDF5, the
-=reconstruction= tool is used to start the actual analysis of the
-data.
-
-As the name implies, the first stage of data analysis is in the form
-of reconstructing the basic properties of each event. In this stage
-all events are processed in a multithreaded way. A cluster finding
-algorithm is applied to each event on each chip separately, splitting
-a single event into possibly multiple clusters. Clusters are defined
-based on a certain notion of distance (the details depend on the
-clustering algorithm used). The multiple clusters from a single event
-are then treated fully equally for the rest of the analysis. The fact
-that they originate from the same event has no further relevance (with
-a slight exception for one veto technique, which utilizes clustering
-over multiple chips, more on that in section [[sec:septem_veto]]).
-
-For the individual clusters geometric properties will be
-computed. These are the long and short axis, the eccentricity as well
-as the statistical moments up to kurtosis along the long and short
-axis. The full list is shown in tab. [[tab:geometric_properties]].
-
-#+CAPTION: Table of all the (mostly) geometric properties of a single cluster computed during the
-#+CAPTION: =reconstruction= tool. All but the likelihood, charge and energy properties are computed
-#+CAPTION: during the first pass of the tool.
-#+NAME: tab:geometric_properties
-| Property                  | Meaning                                                          |
-|---------------------------+------------------------------------------------------------------|
-| igCenterX                 | =x= position of cluster center                                   |
-| igCenterY                 | =y= position of cluster center                                   |
-| igHits                    | number of pixels in cluster                                      |
-| igEventNumber             | event number cluster is from                                     |
-| igEccentricity            | eccentricity of the cluster                                      |
-| igSkewnessLongitudinal    | skewness along long axis                                         |
-| igSkewnessTransverse      | skewness along short axis                                        |
-| igKurtosisLongitudinal    | kurtosis along long axis                                         |
-| igKurtosisTransverse      | kurtosis along short axis                                        |
-| igLength                  | size along long axis                                             |
-| igWidth                   | size along short axis                                            |
-| igRmsLongitudinal         | RMS along long axis                                              |
-| igRmsTransverse           | RMS along short axis                                             |
-| igLengthDivRmsTrans       | length divided by transverse RMS                                 |
-| igRotationAngle           | rotation angle of long axis over chip coordinate system          |
-| igEnergyFromCharge        | energy of cluster computed from its charge                       |
-| igLikelihood              | likelihood value for cluster                                     |
-| igFractionInTransverseRms | fraction of pixels within radius of transverse RMS around center |
-| igTotalCharge             | integrated charge of total cluster in electrons                  |
-| igNumClusters             |                                                                  |
-| igFractionInHalfRadius    | fraction of pixels in half radius around center                  |
-| igRadiusDivRmsTrans       | radius divided by transverse RMS                                 |
-| igRadius                  | radius of cluster                                                |
-| igLengthDivRadius         | length divided by radius                                         |
-
-The properties are computed here:
-https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366
-and here:
-https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569
-
-*NOTE:* How should we take care of linking to our code? Of course need
-tagged version that corresponds to stuff in the thesis, but beyond
-that?
-
-
-After all geometrical properties have been computed, the next step is
-to apply the ToT calibration (sec. [[sec:tot_calibration]]) to the ToT
-values of all clusters, resulting in the equivalent charge in
-electrons. The charge values for all recorded pixels are then used to
-compute a histogram, which roughly follows a Pólya distribution
-(sec. [[sec:polya_distribution]]). From the mean value of that
-distribution a value for the gas gain is obtained, which is a
-necessary input to perform an energy calibration for each cluster.
-
-Second step of analysis, performs most of the major steps.
-
-- cluster finding
-- calculation of geometric properties
-- charge calibration
-- gas gain computation
-- energy calibration
-- ...
-
-
-
-*** =likelihood=
-
-Apply likelihood method for background suppression.
-
-*** =computeLimit=
-
-Computes the limit *NOT THE ONE USED*
-
-*** Other
-
-**** =cdl_spectrum_creation=
-
-Generates the data from the CDL data that is used as X-ray reference
-data for the likelihood method.
-
-**** ...
-
-Many other tools are present. Mainly different plotting tools and
-tools dealing with other data, e.g. log files of the CAST experiment.
-
-
-* Chapter about analysis principle                                 :Software:
-
-*NOTE:* We need to better understand how to:
-- explain the theoretical foundations of what we do, e.g. cluster
-  finding algorithms. Certain things, e.g. cluster finding algos could
-  also just go to the appendix. Interesting, but technically just a detail.
-- introduce the software stack we use
-- introduce the physics for the calibration (e.g. ToT calib, ...)
-- explain the algorithms used in the software
-
-Can we disentangle this from the purely detector focused things? I'm
-not so sure.
-
-After introducing detector specific calibrations etc. we can go on to
-what the steps are that are required to turn a calibrated detector
-(one that is sensitive to N electrons essentially) into something that
-can do physics.
-
-Need some chapter that talks about the detector specific details that
-explain how a limit / physics result is obtained.
-
-** Take data. Output data is ASCII files
-
-Parsing of data in format.
-
-Present format.
-#+begin_quote
-Generic header.
-
-Data.
-#+end_quote
-
-Store data in HDF5 files. Not much going on here aside from making it
-fast.
-
-** Reconstruct & calibrate data
-
-Read data from HDF5 files. 
-
-What does reconstruction mean?
-
-Multiple things.
-
-*** 1. perform cluster finding
-
-Present our current two clustering algorithms. 
-
-- dumb search in radius around each pixel (add foot note that the
-  implementation in MarlinTPC had a bug)
-- optional: DBSCAN, short introduction give full reference to
-  implementation.
-
-**** Investigation of buggy clustering in MarlinTPC             :noexport:
-
-*** 2. for each cluster, compute geometric properties
-
-Table of the computed properties.
-
-As they are geometric easy to explain.
-
-Highlight the ones used for likelihood. Done here? 
-
-Show our sketch explaining what each property means from one of the
-talks. Maybe need to fix the radius variable?
-
-
-
-*** 3. (optional / required for analysis) charge calibration
-
-Use Timepix ToT calibration (ref theory section before where we
-explain how it works).
-
-Given ToT calibration apply function to get number of electrons (given
-that we ran in ToT mode).
-
-*** 4. (optional / required for analysis) compute gas gain
-
-Computing gas gain. Polya fit. Explain not fit parameter used, but
-mean of data.
-
-Heavy gas gain variation over time. 
-
-Explain that thus behavior chosen that minimizes effect by binning in
-time.
-
-90 minutes.
-
-Show plot with old way (full runs) vs. new length.
-
-Results in stable operation. This section probably belongs somewhere
-else? 
-
-**** Study for optimal gas gain time length                     :noexport:
-
-
-
-*** 5. (optional / required for analysis) energy computation
-
-Requires: charge calibration, gas gain
-
-Very easy in theory. In practice complicated.
-
-Theoretically, two ways:
-
-1. pixel counting. Due to single electron detection efficiency (or a
-   slight correction for under/overcounting) can just multiply hits by
-   eV per hit
-2. charge calibration plus reference spectrum of 55Fe runs. 
-
-Both cases are very simple *iff* the detector is stable over
-time. Then just take closest 55Fe run and compute correction factor
-for hits / conversion factor from peak in charge values.
-
-But: instability means we need to average over more data.
-
-Compute for all runs.
-
-Fit.
-
-Apply fit.
-
-*** 6. (optional) FADC reconstruction
-
-Apply pedestals.
-
-Determine lowest point. Determine rising / falling times in ns.
-
-Compute other properties.
-
-** Compute reference spectra 
-
-Possibly explain in chapter about CDL? Or talk there only about the
-*data* we took there, but not in detail about *what* this data is *for*?
-
-If so explain here.
-
-** Log file reader to get tracking (maybe no export)
-
-Talk about log file reader (full section definitely :noexport:), used
-to mark times in runs that correspond to tracking.
-
-** Likelihood method
-
-Explain likelihood method in theory (maybe do in section before).
-
-Explain our methods for linear interpolation between the reference
-spectra.
-
-Apply reference data for limit at specific custom software efficiency.
-
-Started at 80% reference and then tweaked for optimal ε = S/√B (or
-something). 
-
-Likelihood method gives us everything we need for background
-rate. Whatever comes out gives us left over clusters.
-
-*** Septem veto
-:PROPERTIES:
-:CUSTOM_ID: sec:septem_veto
-:END:
-
-Talk about the septem veto we finally use.
-
-In the septem veto the main idea is to go back to the raw data for any
-event, which contains a cluster on the central chip, which is
-signal-like based on the likelihood method presented above. For these,
-a so called 'septem event' is built based on the raw pixel data of all
-chips. This is simply an 'event' in the same notion as understood by
-the =reconstruction= tool (c/f [[sec:reconstruction]]), i.e. a two
-dimensional array of the ToT values. Except in this case it is not a
-$256 \times 256$ array, but rather a $3 \cdot 256 \times 3 \cdot 256$
-array, where the full septemboard detector is merged into a single
-event without any spacing between the chips (more on that below). 
-
-These septem events are then pushed through the whole reconstruction
-and calibration pipeline. Thanks to starting from an event that now
-includes information that was previously not taken into account (pixel
-activity outside the center chip), the cluster finding algorithm can
-detect larger clusters than previously. This can change the shape of
-the cluster that was previously considered signal like. In the case
-that this cluster now looks more like background, it will be vetoed by
-this technique.
-
-The decision to merge the different chips into a single event
-*without* any spacing between the chips is made to ensure good cluster
-finding. The spacing between chips is of course a dead zone where no
-activity can be measured. For a cluster finding algorithm this may
-cause a cutoff that should not happen, as the information is simply
-not *available*. Ideally, one could imagine an algorithm that
-interpolates data between the chips based on the information on the
-two neighboring chips. But this is too experimental. 
-
-If there is data on the neighboring chip, it is extremely likely there
-was ionization between the chips as well, meaning the merging of the
-chips "only" makes the event less eccentric than the physical
-event. If there is no data on the neighboring chip, the merging has no
-effect, the cluster will simply look the same as in the original
-single chip event. 
-
-This excludes two possibilities:
-1. a physical event may have no active pixels between the chips, despite
-   having active pixels on both chip borders. This is extremely
-   unlikely, if the events are significantly close to the border. The
-   main case of this would be two real X-rays (extremely low
-   probability) or either of the clusters is a track parallel to
-   border of the chip. 
-2. a more likely loss information for events without information on
-   the neighboring chips, despite the physical event being more
-   eccentric than the recorded one. This is a real limitation that
-   cannot be worked around.
-
-**** Explain why no spacing between chips
-
-**** Hough transformation experiments                           :noexport:
-
-
-
-*** Scintillator veto
-
-Talk about scintillator veto. Main ideas of course.
-
-*** FADC veto
-
-Explain the veto we use based on FADC.
-
-
-
-*** Comparison with other attempts                               :noexport:
-
-Show the other attempts we did about the different ways to
-interpolate.
-
-** Compute limit
-
-Limit computation done. Needs to be after ray tracing introduction I'd
-say. Input for theory is required.
-
-Perform signal / background rejection.
-
-Get background rate + signals in tracking.
-
-Get expected flux from theory.
-
-Get detector efficiencies.
-
-Combine efficiencies & theory flux in raytracing simulation.
-
-Compute 'real' expected signal.
-
-Use suitable limit calculation method to compute a limit.
-
-We can split this into two pieces?:
-
-** How to compute background rate
-
-** How to compute a limit
-
-For =mclimit= use the notes in StatusAndProgress about how limit
-calculation works. Might be good in general, because a lot of it
-applies elsewhere anyway.
-
-Describe unbinned likelihood method from Nature paper adapted to our
-work. We can plot some funny plots explaining how it works.
-
-* Raytracing - where does this belong?                             :Software:
-
-Ray tracing through the detector. Put this before limit calculation stuff?
-
-The whole theoretical side needs to be described in the theory chapter
-in [[Axion-electron flux]]. Then here we can just describe how one
-implements this (in particular in the noexport section). 
-
-*PLOT OF MIRROR SHELLS*
-
-*AXION ELECTRON IMAGE*
-
-*PRIMAKOFF IMAGE*
-
-*CHAMELEON IMAGE*
-
-*NUMBERS FOR FLUX FRACTION ENCOUNTERED WHERE*
-
-** TODO Can we finish our interactive ray tracer?
-
-Need:
-- light sources (4h of work at most)
-- cylinders, hyperboloids, paraboloids as objects (once we figure out
-  one, the rest should be relatively easy)
-- placing different telescope layers etc. (2h)
-
-In theory this *should* be possible as an extensive weekend project!
-I'd say this is definitely worth it.
-
-
-** Computation of atomic processes :noexport:
-
-Computation of atomic processes done in *CODE*. 
-
-
-
-
-* Detector preparation / study / characterization etc.                :Part3:
-
-There are two different kinds of calibrations used for the data taking
-campaign at CAST. One is a data taking campaign behind an X-ray tube
-at the CAST Detector Lab (CDL) to characterize the geometric
-properties of X-rays at different energies (as the foundation for
-discrimination methods), discussed in section
-[[#sec:preparation:cdl]]. The second are measurements using a
-$^{55}\text{Fe}$ source installed on a pneumatic manipulatior at CAST
-to perform regular calibration runs to monitor the detector behavior
-and serve as a basis for the energy calibration of events, see
-section [[#sec:preparation:55fe]].
-
-*NOTE*: Should we therefore maybe split up the section rather by type
-of calibration? Certainly clearer that way. Only question is how to
-best present the other calibrations then (FADC, scintillators).
-
-** CAST Detector Lab
-:PROPERTIES:
-:CUSTOM_ID: sec:preparation:cdl
-:END:
-
-Measurements for X-ray reference data
-
-Detector lab measurements were only performed after the data taking
-period at CAST was over. From a logical standpoint it makes more sense
-to talk about it before though.
-
-Everything required in StatusAndProgress. Will need to redo all plots
-of course.
-
-** Detector calibrations + characterization plots
-
-*** FADC spectrum & threshold [/]
-
-- [ ] show spectra
-- [ ] show 55Fe spectrum of FADC data
-- [ ] apply Savitzky Golay filter to FADC spectra & describe
-- [ ] train NN on FADC data and see what we can gain <- this goes
-  towards analysis chapter of course!
-  Best use a CNN with 1D input data & kernel!  
-
-** 55Fe spectra
-:PROPERTIES:
-:CUSTOM_ID: sec:preparation:55fe
-:END:
-
-Example spectrum. What's the point of these spectra.
-
-** Energy calibration, how done?
 
 
 * Detector installation at CAST & data taking                         :Part3:
@@ -4142,6 +3353,582 @@ Amount of data in each. Take table from StatusAndProgress.
 Run table somewhere in appendix, link to online version.
 
 
+
+
+* Detector preparation / study / characterization etc.                :Part3:
+
+There are two different kinds of calibrations used for the data taking
+campaign at CAST. One is a data taking campaign behind an X-ray tube
+at the CAST Detector Lab (CDL) to characterize the geometric
+properties of X-rays at different energies (as the foundation for
+discrimination methods), discussed in section
+[[#sec:preparation:cdl]]. The second are measurements using a
+$^{55}\text{Fe}$ source installed on a pneumatic manipulatior at CAST
+to perform regular calibration runs to monitor the detector behavior
+and serve as a basis for the energy calibration of events, see
+section [[#sec:preparation:55fe]].
+
+*NOTE*: Should we therefore maybe split up the section rather by type
+of calibration? Certainly clearer that way. Only question is how to
+best present the other calibrations then (FADC, scintillators).
+
+** CAST Detector Lab
+:PROPERTIES:
+:CUSTOM_ID: sec:preparation:cdl
+:END:
+
+Measurements for X-ray reference data
+
+Detector lab measurements were only performed after the data taking
+period at CAST was over. From a logical standpoint it makes more sense
+to talk about it before though.
+
+Everything required in StatusAndProgress. Will need to redo all plots
+of course.
+
+** Detector calibrations + characterization plots
+
+*** FADC spectrum & threshold [/]
+
+- [ ] show spectra
+- [ ] show 55Fe spectrum of FADC data
+- [ ] apply Savitzky Golay filter to FADC spectra & describe
+- [ ] train NN on FADC data and see what we can gain <- this goes
+  towards analysis chapter of course!
+  Best use a CNN with 1D input data & kernel!  
+
+** 55Fe spectra
+:PROPERTIES:
+:CUSTOM_ID: sec:preparation:55fe
+:END:
+
+Example spectrum. What's the point of these spectra.
+
+** Energy calibration, how done?
+
+
+
+* Chapter about analysis principle                                 :Software:
+
+*NOTE:* We need to better understand how to:
+- explain the theoretical foundations of what we do, e.g. cluster
+  finding algorithms. Certain things, e.g. cluster finding algos could
+  also just go to the appendix. Interesting, but technically just a detail.
+- introduce the software stack we use
+- introduce the physics for the calibration (e.g. ToT calib, ...)
+- explain the algorithms used in the software
+
+Can we disentangle this from the purely detector focused things? I'm
+not so sure.
+
+After introducing detector specific calibrations etc. we can go on to
+what the steps are that are required to turn a calibrated detector
+(one that is sensitive to N electrons essentially) into something that
+can do physics.
+
+Need some chapter that talks about the detector specific details that
+explain how a limit / physics result is obtained.
+
+- [ ] turn the ingrid reconstruction schematic into a generalized flow chart?
+
+** Take data. Output data is ASCII files
+
+Parsing of data in format.
+
+Present format.
+#+begin_quote
+Generic header.
+
+Data.
+#+end_quote
+
+Store data in HDF5 files. Not much going on here aside from making it
+fast.
+
+** Reconstruct & calibrate data
+
+Read data from HDF5 files. 
+
+What does reconstruction mean?
+
+Multiple things.
+
+*** 1. perform cluster finding
+
+Present our current two clustering algorithms. 
+
+- dumb search in radius around each pixel (add foot note that the
+  implementation in MarlinTPC had a bug), based on *rectangular*
+  search, not circular
+- optional: DBSCAN, short introduction give full reference to
+  implementation.
+
+**** Investigation of buggy clustering in MarlinTPC             :noexport:
+
+*** 2. for each cluster, compute geometric properties
+
+Table of the computed properties.
+
+As they are geometric easy to explain.
+
+Highlight the ones used for likelihood. Done here? 
+
+Show our sketch explaining what each property means from one of the
+talks. Maybe need to fix the radius variable?
+
+
+
+*** 3. (optional / required for analysis) charge calibration
+
+Use Timepix ToT calibration (ref theory section before where we
+explain how it works).
+
+Given ToT calibration apply function to get number of electrons (given
+that we ran in ToT mode).
+
+*** 4. (optional / required for analysis) compute gas gain
+
+Computing gas gain. Polya fit. Explain not fit parameter used, but
+mean of data.
+
+Heavy gas gain variation over time. 
+
+Explain that thus behavior chosen that minimizes effect by binning in
+time.
+
+90 minutes.
+
+Show plot with old way (full runs) vs. new length.
+
+Results in stable operation. This section probably belongs somewhere
+else? 
+
+**** Study for optimal gas gain time length                     :noexport:
+
+
+
+*** 5. (optional / required for analysis) energy computation
+
+Requires: charge calibration, gas gain
+
+Very easy in theory. In practice complicated.
+
+Theoretically, two ways:
+
+1. pixel counting. Due to single electron detection efficiency (or a
+   slight correction for under/overcounting) can just multiply hits by
+   eV per hit
+2. charge calibration plus reference spectrum of 55Fe runs. 
+
+Both cases are very simple *iff* the detector is stable over
+time. Then just take closest 55Fe run and compute correction factor
+for hits / conversion factor from peak in charge values.
+
+But: instability means we need to average over more data.
+
+Compute for all runs.
+
+Fit.
+
+Apply fit.
+
+*** 6. (optional) FADC reconstruction
+
+Apply pedestals.
+
+Determine lowest point. Determine rising / falling times in ns.
+
+Compute other properties.
+
+** Compute reference spectra 
+
+Possibly explain in chapter about CDL? Or talk there only about the
+*data* we took there, but not in detail about *what* this data is *for*?
+
+If so explain here.
+
+** Log file reader to get tracking (maybe no export)
+
+Talk about log file reader (full section definitely :noexport:), used
+to mark times in runs that correspond to tracking.
+
+** Likelihood method
+
+Explain likelihood method in theory (maybe do in section before).
+
+Explain our methods for linear interpolation between the reference
+spectra.
+
+Apply reference data for limit at specific custom software efficiency.
+
+Started at 80% reference and then tweaked for optimal ε = S/√B (or
+something). 
+
+Likelihood method gives us everything we need for background
+rate. Whatever comes out gives us left over clusters.
+
+*** Septem veto
+:PROPERTIES:
+:CUSTOM_ID: sec:septem_veto
+:END:
+
+Talk about the septem veto we finally use.
+
+In the septem veto the main idea is to go back to the raw data for any
+event, which contains a cluster on the central chip, which is
+signal-like based on the likelihood method presented above. For these,
+a so called 'septem event' is built based on the raw pixel data of all
+chips. This is simply an 'event' in the same notion as understood by
+the =reconstruction= tool (c/f [[sec:reconstruction]]), i.e. a two
+dimensional array of the ToT values. Except in this case it is not a
+$256 \times 256$ array, but rather a $3 \cdot 256 \times 3 \cdot 256$
+array, where the full septemboard detector is merged into a single
+event without any spacing between the chips (more on that below). 
+
+These septem events are then pushed through the whole reconstruction
+and calibration pipeline. Thanks to starting from an event that now
+includes information that was previously not taken into account (pixel
+activity outside the center chip), the cluster finding algorithm can
+detect larger clusters than previously. This can change the shape of
+the cluster that was previously considered signal like. In the case
+that this cluster now looks more like background, it will be vetoed by
+this technique.
+
+The decision to merge the different chips into a single event
+*without* any spacing between the chips is made to ensure good cluster
+finding. The spacing between chips is of course a dead zone where no
+activity can be measured. For a cluster finding algorithm this may
+cause a cutoff that should not happen, as the information is simply
+not *available*. Ideally, one could imagine an algorithm that
+interpolates data between the chips based on the information on the
+two neighboring chips. But this is too experimental. 
+
+If there is data on the neighboring chip, it is extremely likely there
+was ionization between the chips as well, meaning the merging of the
+chips "only" makes the event less eccentric than the physical
+event. If there is no data on the neighboring chip, the merging has no
+effect, the cluster will simply look the same as in the original
+single chip event. 
+
+This excludes two possibilities:
+1. a physical event may have no active pixels between the chips, despite
+   having active pixels on both chip borders. This is extremely
+   unlikely, if the events are significantly close to the border. The
+   main case of this would be two real X-rays (extremely low
+   probability) or either of the clusters is a track parallel to
+   border of the chip. 
+2. a more likely loss information for events without information on
+   the neighboring chips, despite the physical event being more
+   eccentric than the recorded one. This is a real limitation that
+   cannot be worked around.
+
+**** Explain why no spacing between chips
+
+**** Hough transformation experiments                           :noexport:
+
+
+
+*** Scintillator veto
+
+Talk about scintillator veto. Main ideas of course.
+
+*** FADC veto
+
+Explain the veto we use based on FADC.
+
+
+
+*** Comparison with other attempts                               :noexport:
+
+Show the other attempts we did about the different ways to
+interpolate.
+
+** Compute limit
+
+Limit computation done. Needs to be after ray tracing introduction I'd
+say. Input for theory is required.
+
+Perform signal / background rejection.
+
+Get background rate + signals in tracking.
+
+Get expected flux from theory.
+
+Get detector efficiencies.
+
+Combine efficiencies & theory flux in raytracing simulation.
+
+Compute 'real' expected signal.
+
+Use suitable limit calculation method to compute a limit.
+
+We can split this into two pieces?:
+
+** How to compute background rate
+
+** How to compute a limit
+
+For =mclimit= use the notes in StatusAndProgress about how limit
+calculation works. Might be good in general, because a lot of it
+applies elsewhere anyway.
+
+Describe unbinned likelihood method from Nature paper adapted to our
+work. We can plot some funny plots explaining how it works.
+
+
+* Software                                                         :Software:
+
+Introduce used software for analysis.
+
+Previous code used MarlinTPC (already extended a framework for use for
+gaseous detectors, focus on strips). Additional extension to use our
+new detector features would be beyond the scope of the framework. 
+
+** Nim
+
+Shortly introduce Nim & why it was chosen.
+
+Efficient, productive, gets out of my way.
+
+** TimepixAnalysis
+
+Framework written for data analysis.
+
+Rewrites Timepix / InGrid related code from MarlinTPC in Nim and
+extends it (e.g. supports Timepix3).
+
+[[https://github.com/Vindaar/TimepixAnalysis]]
+
+After the thesis is published it is possible that this repository will
+become the de facto repository for the thesis and the actual analysis
+code will become its own repository. We'll see.
+
+*THESE SECTIONS MUST BE MERGED WITH THE ANALYSIS BELOW*. Maybe let
+this chapter simply be a high level overview: introduce Nim and the
+why. Mention the TimepixAnalysis repo only as a "this is the code for
+the analysis, the details of which will be explained in the next
+section? In that case one might merge the whole chapter with the next
+one and simply have these as the introductory part of the chapter.
+
+*** =raw_data_manipulation=
+
+*LINK TO HDF5 FORMAT IF FIRST TIME MENTIONING*
+
+The first step of the analysis pipeline is essentially just a parsing
+stage of the data generated by TOS (see section [[sec:tos_output_format]]
+for an explanation of it) and storing it in a compressed HDF5 data
+file.
+
+The program is fed with a directory containing a TOS run, i.e. a
+single data taking period ranging typically from minutes to days in
+length, or a directory that itself contains multiple TOS run directories.
+
+All data files contained in a run directory will then be parsed in a
+multithreaded way. The files are memory mapped and parsed in parallel
+into a =Run= data structure, which itself contains =Event= structures.
+
+Depending on the designated run type of a file, some slight
+processing steps are performed. *WHAT?*
+
+If FADC files are present in a directory, these will also be parsed
+into =FadcEvent= structures in a similar fashion.
+
+Each run is then written into the output HDF5 file as a group. The
+meta data about each run and event are stored as attributes and
+additional datasets, respectively.
+
+An example structure of a resulting HDF5 file is shown in:
+*EXAMPLE LAYOUT WITH EXAMPLE ATTRIBUTES AND DATASETS?*
+
+In addition the tool also supports input from HDF5 files containing
+the raw data from a Timepix3 detector. That data is parsed and
+reprocessed into the same kind of file structure.
+
+#+CAPTION: Usage of the =raw_data_manipulation= tool. Input is in the form of a run directory / a directory
+#+CAPTION: containing multiple run directories. The parsed output is stored in compressed HDF5 files.
+#+NAME: list:raw_data_manipulation_help
+#+begin_src shell-session
+Version: 13809be built on: 2021-05-07 at 00:53:39
+  InGrid raw data manipulation.
+
+Usage:
+  raw_data_manipulation <folder> [options]
+  raw_data_manipulation <folder> --runType <type> [options]
+  raw_data_manipulation <folder> --out=<name> [--nofadc] \
+    [--runType=<type>] [--ignoreRunList] [options]
+  raw_data_manipulation <folder> --nofadc [options]
+  raw_data_manipulation --tpx3 <H5File> [options]
+  raw_data_manipulation --tpx3 <H5File> --runType <type> [options]
+  raw_data_manipulation --tpx3 <H5File> --runType <type> --out=<name> \
+    [options]
+  raw_data_manipulation -h | --help
+  raw_data_manipulation --version
+
+Options:
+  --tpx3 <H5File>     Convert data from a Timepix3 H5 file to TPA format
+  --runType=<type>    Select run type (Calib | Back | Xray)
+                      The following are parsed case insensetive:
+                      Calib = {"calib", "calibration", "c"}
+                      Back = {"back", "background", "b"}
+                      Xray = {"xray", "xrayfinger", "x"}
+  --out=<name>        Filename of output file
+  --nofadc            Do not read FADC files
+  --ignoreRunList     If set ignores the run list 2014/15 to indicate
+                      using any rfOldTos run
+  --overwrite         If set will overwrite runs already existing in the
+                      file. By default runs found in the file will be skipped.
+                      HOWEVER: overwriting is assumed, if you only hand a
+                      run folder!
+  -h --help           Show this help
+  --version           Show version.
+#+end_src
+
+*** =reconstruction=
+:PROPERTIES:
+:CUSTOM_ID: sec:reconstruction
+:END:
+
+After the raw data has been converted to storage in HDF5, the
+=reconstruction= tool is used to start the actual analysis of the
+data.
+
+As the name implies, the first stage of data analysis is in the form
+of reconstructing the basic properties of each event. In this stage
+all events are processed in a multithreaded way. A cluster finding
+algorithm is applied to each event on each chip separately, splitting
+a single event into possibly multiple clusters. Clusters are defined
+based on a certain notion of distance (the details depend on the
+clustering algorithm used). The multiple clusters from a single event
+are then treated fully equally for the rest of the analysis. The fact
+that they originate from the same event has no further relevance (with
+a slight exception for one veto technique, which utilizes clustering
+over multiple chips, more on that in section [[sec:septem_veto]]).
+
+For the individual clusters geometric properties will be
+computed. These are the long and short axis, the eccentricity as well
+as the statistical moments up to kurtosis along the long and short
+axis. The full list is shown in tab. [[tab:geometric_properties]].
+
+#+CAPTION: Table of all the (mostly) geometric properties of a single cluster computed during the
+#+CAPTION: =reconstruction= tool. All but the likelihood, charge and energy properties are computed
+#+CAPTION: during the first pass of the tool.
+#+NAME: tab:geometric_properties
+| Property                  | Meaning                                                          |
+|---------------------------+------------------------------------------------------------------|
+| igCenterX                 | =x= position of cluster center                                   |
+| igCenterY                 | =y= position of cluster center                                   |
+| igHits                    | number of pixels in cluster                                      |
+| igEventNumber             | event number cluster is from                                     |
+| igEccentricity            | eccentricity of the cluster                                      |
+| igSkewnessLongitudinal    | skewness along long axis                                         |
+| igSkewnessTransverse      | skewness along short axis                                        |
+| igKurtosisLongitudinal    | kurtosis along long axis                                         |
+| igKurtosisTransverse      | kurtosis along short axis                                        |
+| igLength                  | size along long axis                                             |
+| igWidth                   | size along short axis                                            |
+| igRmsLongitudinal         | RMS along long axis                                              |
+| igRmsTransverse           | RMS along short axis                                             |
+| igLengthDivRmsTrans       | length divided by transverse RMS                                 |
+| igRotationAngle           | rotation angle of long axis over chip coordinate system          |
+| igEnergyFromCharge        | energy of cluster computed from its charge                       |
+| igLikelihood              | likelihood value for cluster                                     |
+| igFractionInTransverseRms | fraction of pixels within radius of transverse RMS around center |
+| igTotalCharge             | integrated charge of total cluster in electrons                  |
+| igNumClusters             |                                                                  |
+| igFractionInHalfRadius    | fraction of pixels in half radius around center                  |
+| igRadiusDivRmsTrans       | radius divided by transverse RMS                                 |
+| igRadius                  | radius of cluster                                                |
+| igLengthDivRadius         | length divided by radius                                         |
+
+The properties are computed here:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366
+and here:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569
+
+*NOTE:* How should we take care of linking to our code? Of course need
+tagged version that corresponds to stuff in the thesis, but beyond
+that?
+
+
+After all geometrical properties have been computed, the next step is
+to apply the ToT calibration (sec. [[sec:tot_calibration]]) to the ToT
+values of all clusters, resulting in the equivalent charge in
+electrons. The charge values for all recorded pixels are then used to
+compute a histogram, which roughly follows a Pólya distribution
+(sec. [[sec:polya_distribution]]). From the mean value of that
+distribution a value for the gas gain is obtained, which is a
+necessary input to perform an energy calibration for each cluster.
+
+Second step of analysis, performs most of the major steps.
+
+- cluster finding
+- calculation of geometric properties
+- charge calibration
+- gas gain computation
+- energy calibration
+- ...
+
+
+
+*** =likelihood=
+
+Apply likelihood method for background suppression.
+
+*** =computeLimit=
+
+Computes the limit *NOT THE ONE USED*
+
+*** Other
+
+**** =cdl_spectrum_creation=
+
+Generates the data from the CDL data that is used as X-ray reference
+data for the likelihood method.
+
+**** ...
+
+Many other tools are present. Mainly different plotting tools and
+tools dealing with other data, e.g. log files of the CAST experiment.
+
+
+
+* Raytracing - where does this belong?                             :Software:
+
+Ray tracing through the detector. Put this before limit calculation stuff?
+
+The whole theoretical side needs to be described in the theory chapter
+in [[Axion-electron flux]]. Then here we can just describe how one
+implements this (in particular in the noexport section). 
+
+*PLOT OF MIRROR SHELLS*
+
+*AXION ELECTRON IMAGE*
+
+*PRIMAKOFF IMAGE*
+
+*CHAMELEON IMAGE*
+
+*NUMBERS FOR FLUX FRACTION ENCOUNTERED WHERE*
+
+** TODO Can we finish our interactive ray tracer?
+
+Need:
+- light sources (4h of work at most)
+- cylinders, hyperboloids, paraboloids as objects (once we figure out
+  one, the rest should be relatively easy)
+- placing different telescope layers etc. (2h)
+
+In theory this *should* be possible as an extensive weekend project!
+I'd say this is definitely worth it.
+
+
+** Computation of atomic processes :noexport:
+
+Computation of atomic processes done in *CODE*. 
+
+
+
+
 * Background rate computation                                      :Analysis:
 
 Mitigation strategies for detector behavior, e.g. gain variation over time.
@@ -4758,6 +4545,222 @@ Using background rate & methods to determine it.
 seems useful anyway.
 
 *TODO* somewhere explain what an expected vs. a real limit is.
+** Statistics & limit calculations
+
+In a physics experiment after performing all measurements there comes
+the question of "did I measures something and do I want to compute
+some confidence interval on an observable or did I measure nothing and
+want to set a limit on the observable?"
+
+These questions can be answered in a variety of different ways. 
+
+In the end it is highly dependent on a Frequentist vs. Bayesian
+approach to statistics.
+
+*** Limit computation methods
+:PROPERTIES:
+:CUSTOM_ID: sec:stats:limit_method
+:END:
+
+Describe log L and χ² distribution and how to compute limit.
+
+Unphysicality, fix by rescaling, χ² min + 4 thing
+*UPDATE*: good that we now understand how this actually works,
+i.e. integrate the posterior probability (likelihood * prior / normalization)
+
+**** Maths from =status=
+
+The maths of the log likelihood expression we use, is mostly straight
+forward.
+
+A likelihood function is purely defined as the product of the
+individual probabilities for each 'channel' in our measurement. That
+way the likelihood gives us the total probability to get this exact
+measurement outcome out of all possible outcomes.
+
+If we start from a likelihood ratio of the signal + background
+hypothesis over the pure background hypothesis, in the binned case we
+can derive the formula used in the Nature paper from first
+principles. The number of measured counts in each bin is simply a
+Poisson distribution:
+
+\[
+P_{\text{Pois}}(k; λ) = \frac{λ^k e^{-λ}}{k!}
+\]
+
+for each bin an expected number of counts $λ$ (the mean) then means a probability given $P$
+for a "measured" number of counts $k$. Combining multiple "channels"
+is then simply the product of these individual channels, giving us the
+likelihood for one experiment:
+
+\[
+\mathcal{L} = \prod_i P_{i, \text{Pois}}(k; λ) = \prod_i \frac{λ_i^{k_i} e^{-λ_i}}{k_i!}
+\]
+
+Applying this to the previously mentioned likelihood ratio $Q$ gives
+us:
+
+\[
+Q = \frac{\prod_i P_{i, \text{Pois}}(n_i; s_i + b_i)}{\prod_i P_{i, \text{Pois}}(n_i; b_i)} =
+  \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)} }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i}}
+\]
+
+where $n_i$ is simply the number of measured candidates within the
+signal sensitive region in each bin $i$. Typically each bin might be a
+bin in energy, but it can be any kind of "bin" as long as each bin
+corresponds to something that follows a Poisson distribution. We will
+make use of this fact in a bit.
+
+This can be interpreted as an extended likelihood function, as the
+ratio of two Poisson distributions does not satisfy the normalization
+condition:
+
+\[
+\int_{-∞}^{∞}P\, \mathrm{d}x = 1
+\]
+
+anymore. Instead we have:
+
+\[
+\int_{-∞}^{∞}Q\, \mathrm{d}x = N
+\]
+
+where $N$ can be interpreted as a hypothetical number of total number
+of counts measured in the experiment; the starting point of the
+definition of the extended maximum likelihood estimation.
+
+From here we derive the logarithm of the expression to get the
+numerically more stable $\ln \mathcal{L}$ expression:
+
+#+NAME: eq:likelihood_1_plus_s_over_b_form
+\begin{align*}
+\ln \mathcal{Q} &= \ln \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
+  &= \sum_i \ln \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
+  &= \sum_i \ln \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  - \ln \frac{b_i^{n_i}}{n_i!} e^{-b_i}  \\
+  &= \sum_i n_i \ln (s_i + b_i) - \ln n_i! - (s_i + b_i) - (n_i \ln b_i - \ln n_i! -b_i)  \\
+  &= \sum_i n_i \ln (s_i + b_i) - (s_i + b_i) - n_i \ln b_i + b_i  \\
+  &= \sum_i n_i \ln (s_i + b_i) - (s_i + b_i - b_i) - n_i \ln b_i  \\
+  &= \sum_i n_i \ln \left(\frac{s_i + b_i}{b_i}\right) - s_i  \\
+  &= -s_{\text{tot}} + \sum_i n_i \ln \left(\frac{s_i + b_i}{b_i} \right) \\
+  &\text{or alternatively} \\
+  &= -s_{\text{tot}} + \sum_i n_i \ln \left(1 + \frac{s_i}{b_i} \right) \\
+\end{align*}
+
+here $s_{\text{tot}}$ represents the total number of "signal" like
+counts expected (in our case total number of expected photons due to
+axion conversion).
+
+The last two lines show us that all that is really important is that
+the normalization of $s_i$ and $b_i$ are the same. The absolute
+normalization (e.g. if it's $\si{keV⁻¹}$ or absolute counts etc.) plays no
+role as that will be a constant multiplier. That constant can always
+be neglected in the total likelihood (a constant only moves the logL
+curve up / down, but does not change its maximum!).
+
+Coming back to the "channels" / the binning: if we choose our bins
+such that they are bins in time, so small that each bin either
+contains 0 or 1 count, we reduce this to our desired unbinned log
+likelihood, if we start from the second to last line above and drop
+the constant $-\ln b_i$ term:
+
+\[
+\ln \mathcal{L} = -R_{\text{tot}} + \sum_{\text{candidates}} \ln(s_i + b_i)
+\]
+where the sum now runs over each candidate instead of the abstract
+"channels".
+
+With an understanding of where the formula comes from, we can more
+safely make statements about what the shape of the logL curve is going
+to look like. For that it is important to realize that:
+- $-R_{\text{tot}}$ depends on $g_{ae²}$, $-R_{\text{tot}}(g_{ae²})$
+- $s_i$ depends on $g_{ae²}$, $\vec{x}$ and the cluster energy $E$,
+  $s_i(g_{ae²}, \vec{x}, E)$
+- $b_i$ only depends on the cluster energy $E$
+
+This means $b_i$ for all intents and purposes is constant under a
+change of the coupling constant for a fixed set of candidate
+clusters. For a scan over logL this is precisely given.
+
+Now let's consider what each part's contribution will look like as a
+logL curve:
+
+1. $-R_{\text{tot}}$: the total number of counts depends on the axion
+   flux, the tracking time and the total detection efficiencies. The
+   latter two are simply constants when integrating over the region of
+   interest in energy, namely \SIrange{0}{10}{\keV}. The axion flux
+   scales as:
+   \[
+   f(g') = f(g) \frac{g^{\prime 2}}{g²}
+   \]
+   i.e. a squared rescaling of the flux. Given that we scan the logL
+   space in $g_{ae²}$, this means the total flux (the integral of $f$
+   over all energies) just scales linearly with $g_{ae²}$.
+   Due to the minus sign in front, the result is plainly a line with
+   negative slope going through the origin at $g_{ae²} = 0$.
+2. $b_i$: the background hypothesis is a function only depending on
+   the energy of each cluster (and implicitly on the relevant area and
+   tracking time). For a fixed set of candidates during a $g_{ae²}$
+   scan, its contribution is plainly constant.
+3. $s_i$: this is the complicated one. It not only depends on
+   $g_{ae²}$, but also the energy $E$ and more importantly the
+   position of the cluster center $\vec{x}$. The latter is used for
+   the effective flux at each position on the chip that is expected
+   from axion conversion after focusing of the X-ray telescope.
+   In principle the cluster center positions are constant for a single
+   scan of $g_{ae²}$. This means effectively the signal $s_i$ behaves
+   exactly like $R_{\text{tot}}$ under $g_{ae²}$. The resulting
+   behavior is thus also linear, except with a positive slope.
+   The big difference between $s_i$ and $R_{\text{tot}}$ however is
+   that $R_{\text{tot}}$ is integrated over all energies, whereas
+   $s_i$ is only evaluated at specific energies (in keV⁻¹).
+
+Combining these three facts we expect to find some maximum somewhere,
+where the $R_{\text{tot}}$ term and the $s_i$ term cancel each
+other. The $b_i$ term only contributes an offset (which however
+depends on the candidates, which is why it cannot be ignored!).
+
+This brings us to a particular problem:
+What happens if the candidates are all located outside of the axion
+sensitive region? In that case their contribution will be zero, due to
+the position dependency of $\vec{x}$. This leads to a pure
+$R_{\text{tot}}$ negative slope on top of a constant background $b_i$.
+In this case the logL curve does *not* have a maximum! And in cases
+where arbitrarily little contribution is had, there *will* be a
+maximum somewhere, but it will be very far into the unphysical range,
+at which point the 1σ width (based on logL_max - 0.5) yield a width
+that leads to a physical limit at 0 (due to the gaussian CDF being
+essentially 1 many σ away from the center).
+
+Given our statistics of $O(30)$ candidates in our tracking time, this
+presents a problem. For toy experiments there is a high chance of
+getting precisely that problem. A large number of candidates (70 - 90%
+maybe) will be outside the sensitive region, resulting in no good way
+to determine the limit.
+
+**** Further expl: Bayes integral *AFTER MAIL FROM IGOR ON <2021-10-03 Sun>*:
+
+Essentially saying that we simply integrate over and demand:
+
+0.95 = ∫_-∞^∞ L(g_ae²) Π(g_ae²) / L_0 d(g_ae²)
+
+where L is the likelihood function (*not* the ln L!), Π is the prior
+that is used to exclude the unphysical region of the likelihood phase
+space, i.e. it is:
+
+Π(g_ae²) = { 0 if g_ae² < 0, 1 if g_ae² >= 0 }
+
+And L_0 is simply a normalization constant to make sure the integral
+is normalized to 1.
+
+Thus, the integral reduces to the physical range:
+
+0.95 = ∫_0^∞ L(g_ae²) / L_0 d(g_ae²)
+
+where the 0.95 is, due to normalization, simply the requirement of a
+95% confidence limit.
+
+With this out of the way I implemented this into the limit calculation
+code as the =lkBayesScan= limit.
 
 ** Limit calculation method
 :PROPERTIES:
