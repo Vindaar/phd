@@ -4532,6 +4532,18 @@ Maybe separate, maybe merged into the other sections.
 
 * Limit calculation                                                :Analysis:
 
+
+In a physics experiment after performing all measurements there comes
+the question of "did I measures something and do I want to compute
+some confidence interval on an observable or did I measure nothing and
+want to set a limit on the observable?"
+
+These questions can be answered in a variety of different ways. 
+
+In the end it is highly dependent on a Frequentist vs. Bayesian
+approach to statistics.
+
+#+begin_comment
 If we decide to present different limits, we should have one section
 (maybe in theory) where we present our methodology and then compute
 the limits based on that method for each of the different cases:
@@ -4545,32 +4557,38 @@ Using background rate & methods to determine it.
 seems useful anyway.
 
 *TODO* somewhere explain what an expected vs. a real limit is.
-** Statistics & limit calculations
+#+end_comment
 
-In a physics experiment after performing all measurements there comes
-the question of "did I measures something and do I want to compute
-some confidence interval on an observable or did I measure nothing and
-want to set a limit on the observable?"
-
-These questions can be answered in a variety of different ways. 
-
-In the end it is highly dependent on a Frequentist vs. Bayesian
-approach to statistics.
-
-*** Limit computation methods
+** Generic limit calculation method
 :PROPERTIES:
 :CUSTOM_ID: sec:stats:limit_method
 :END:
 
+
+We will now present a limit calculation method that is based on the
+limit presented in \cite{cast_nature}, but extended to provide a fully
+generic limit calculation method that requires no restriction to
+specific regions of interest.
+
+The likelihood function used in \cite{cast_nature} is
+#+NAME: eq:nature_likelihood_function
+\begin{align}
+\ln \mathcal{L} = -R_T + \sum_i^n \ln R(E_i, d_i, \vec{x}_i) 
+\end{align}
+where $R_T$ is the total expected signal and $R$ the sum of signal and
+background contributions. The details will be explained further down.
+
+First we will derive the Bayesian method and discuss the individual contributions.
+
+#+begin_comment
 Describe log L and χ² distribution and how to compute limit.
 
 Unphysicality, fix by rescaling, χ² min + 4 thing
 *UPDATE*: good that we now understand how this actually works,
 i.e. integrate the posterior probability (likelihood * prior / normalization)
+#+end_comment
 
-**** Maths from =status=
-
-The maths of the log likelihood expression we use, is mostly straight
+The maths of the likelihood expression we use, is mostly straight
 forward.
 
 A likelihood function is purely defined as the product of the
@@ -4578,16 +4596,20 @@ individual probabilities for each 'channel' in our measurement. That
 way the likelihood gives us the total probability to get this exact
 measurement outcome out of all possible outcomes.
 
-If we start from a likelihood ratio of the signal + background
-hypothesis over the pure background hypothesis, in the binned case we
-can derive the formula used in the Nature paper from first
-principles. The number of measured counts in each bin is simply a
-Poisson distribution:
+If we start from a likelihood ratio \footnote{Likelihood ratio simply
+means taking a ratio of two different likelihood functions.} of the
+signal + background hypothesis over the pure background hypothesis, in
+the binned case we can derive formula [[#eq:nature_likelihood_function]]
+from first principles. The number of measured counts in each bin is
+simply a Poisson distribution:
+
+#+begin_comment
+Clarify what a "bin" refers to and what "channels" are. 
+#+end_comment
 
 \[
 P_{\text{Pois}}(k; λ) = \frac{λ^k e^{-λ}}{k!}
 \]
-
 for each bin an expected number of counts $λ$ (the mean) then means a probability given $P$
 for a "measured" number of counts $k$. Combining multiple "channels"
 is then simply the product of these individual channels, giving us the
@@ -4606,7 +4628,7 @@ Q = \frac{\prod_i P_{i, \text{Pois}}(n_i; s_i + b_i)}{\prod_i P_{i, \text{Pois}}
 \]
 
 where $n_i$ is simply the number of measured candidates within the
-signal sensitive region in each bin $i$. Typically each bin might be a
+signal sensitive region in each bin $i$. Typically, each bin might be a
 bin in energy, but it can be any kind of "bin" as long as each bin
 corresponds to something that follows a Poisson distribution. We will
 make use of this fact in a bit.
@@ -4679,10 +4701,10 @@ to look like. For that it is important to realize that:
 
 This means $b_i$ for all intents and purposes is constant under a
 change of the coupling constant for a fixed set of candidate
-clusters. For a scan over logL this is precisely given.
+clusters. For a scan over $\ln\mathcal{L}$ this is precisely given.
 
 Now let's consider what each part's contribution will look like as a
-logL curve:
+$\ln\mathcal{L}$ curve:
 
 1. $-R_{\text{tot}}$: the total number of counts depends on the axion
    flux, the tracking time and the total detection efficiencies. The
@@ -4713,6 +4735,11 @@ logL curve:
    The big difference between $s_i$ and $R_{\text{tot}}$ however is
    that $R_{\text{tot}}$ is integrated over all energies, whereas
    $s_i$ is only evaluated at specific energies (in keV⁻¹).
+
+#+begin_comment
+Rephrase this whole part & remove the confusion, as it's now fully
+understood how to approach it.
+#+end_comment
 
 Combining these three facts we expect to find some maximum somewhere,
 where the $R_{\text{tot}}$ term and the $s_i$ term cancel each
@@ -4762,7 +4789,7 @@ where the 0.95 is, due to normalization, simply the requirement of a
 With this out of the way I implemented this into the limit calculation
 code as the =lkBayesScan= limit.
 
-** Limit calculation method
+** Extending the method for systematic uncertainties
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:limit_method
 :END:
@@ -4771,6 +4798,11 @@ The limit calculation method is based on the approach presented in
 \cite{cast_nature}, with modifications to better suit the GridPix
 detector and make the method more generic (under exchange of the
 model to be studied).
+
+#+begin_comment
+Extend this by the derivation for the marginal likelihood that shows
+how one gets to the shown equation from what's shown in the previous section.
+#+end_comment
 
 We will now go through the ingredients for the limit method one by
 one. The final likelihood including nuisance parameters we evaluate is
@@ -4977,7 +5009,7 @@ $ε_{\text{tel}}$ is equivalent to the reflectivity squared
 $R²$. Individual reflectivities of shells are further complicated by
 the fact that different shells receive parallel light under different
 angles, which means the reflectivity varies between shells. Therefore
-this is a measure for the average efficiency.}. In case of the CAST
+this is a measure for the average efficiency.}. In case of CAST
 the relevant total area is not actually the cross-sectional area of
 the optic itself, but rather the exposed area due to the diameter of
 the magnet coldbore. With a coldbore diameter of $d_{\text{cb}} = \SI{43}{mm}$ the
@@ -5161,5 +5193,6 @@ great), @yglukhov (nimpy in particular!!)
 #+LATEX: \listoffigures{}
 
 #+LATEX: \listoftables{}
+
 
 
