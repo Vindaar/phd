@@ -2437,8 +2437,10 @@ electrons.
 
 This is done by injecting charges onto the individual
 pixels. Capacitors are present to inject very precise voltage bursts
-onto the pixels. By knowing the capacitance and the voltage induced on
-them, the number of injected electrons can be easily calculated from
+onto the pixels. In case of the Timepix 1, each pixel uses a
+capacitance of \SI{8}{fF} \cite{timepix_manual}. Knowing the
+capacitance and the voltage induced on them, the number of injected
+electrons can be easily calculated from
 
 \[
 Q = C U.
@@ -2446,15 +2448,53 @@ Q = C U.
 
 By varying the injected charge and recording the resulting ToT values
 of the pixels a relation between electrons and ToT values is
-determined.
+determined:
 
-The resulting relationship is a $\mathrm{sqrt}$ function:
+#+begin_comment
+  ## calculates the charge in electrons from the TOT value, based on the TOT calibration
+  ## from MarlinTPC:
+  ## measured and fitted is ToT[clock cycles] in dependency of TestPuseHeight [mV]
+  ## fit function is:
+  ##   ToT[clock cycles] = a*TestPuseHeight [mV]  + b - ( c / (TestPuseHeight [mV] -t) )
+  ## isolating TestPuseHeight gives:
+  ##   TestPuseHeight [mV] = 1/(2*a) * (ToT[clock cycles] - (b - a*t) +
+  ##                         SQRT( (ToT[clock cycles] - (b - a*t))^2 +
+  ##                               4*(a*b*t + a*c - a*t*ToT[clock cycles]) ) )
+  ## conversion from charge to electrons:
+  ##   electrons = 50 * testpulse[mV]
+  ## so we have:
+  ## Charge[electrons] = 50 / (2*a) * (ToT[clock cycles] - (b - a*t) +
+  ##                     SQRT( (ToT[clock cycles] - (b - a*t))^2 +
+  ##                           4*(a*b*t + a*c - a*t*ToT[clock cycles]) ) )
+#+end_comment
 
 \[
-f(ToT) = \sqrt{x} ... stuff
+f(p) = a p + b - \frac{c}{p - t}
 \]
+where $a, b, c$ and $t$ are parameters to be determined via a
+numerical fit and $p$ is the test pulse height in \si{mV}.
 
-An example of a ToT calibration of one chip is shown in fig. *ToT CALIB*.
+As such, inverting the relation this can be used to compute a charge
+for a given =ToT= value: 
+
+\[
+f(\mathrm{ToT}) = \frac{α}{2 a} \left( \mathrm{ToT} - (b - a t) +
+\sqrt{ \left( \mathrm{ToT} - (b - a t) \right)^2 + 4 (a b t + a c - a
+t \mathrm{ToT} ) } \right)
+\]
+where $\mathrm{ToT} is the time over threshold value recorded for a
+pixel, the constants $a, b, c, t$ the fit parameters determined above
+and $α$ the conversion factor relating the number of electrons from a
+pulse height of $\SI{1}{mV}$. 
+
+An example of a ToT calibration of one chip is shown in fig. *ToT
+CALIB*.
+
+#+ATTR_LATEX: :width 0.8\textwidth
+#+NAME: fig:septem:tot_calibration_example
+#+CAPTION: Example of a ToT calibration measurement for the chip *INSERT CHIP*
+#+CAPTION: as it was done for the CAST data taking period 2. *TODO: REPLACE BY TikZ!*
+[[~/phd/Figs/tot_calib_3.pdf]]
 
 Required understanding for our charge calibration.
 
