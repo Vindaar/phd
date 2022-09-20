@@ -1214,14 +1214,616 @@ understanding of our calibration data.
 :CUSTOM_ID: sec:cosmic_radiation
 :END:
 
-In a paragraph or two introduce cosmic radiation as a source of
-background? I mean it's pretty essential.
+*TODO*: Move this to a section _after_ particles through matter, as
+this is essentially an application of that.
+
+Cosmic radiation refers to two aspects of a related
+phenomenon. Primary cosmic radiation is the radiation arriving at
+Earth from the Sun, galactic and extragalactic sources. The main
+contribution are highly energetic protons, but other long lived
+elementary particles and nuclei also contribute to a lesser
+extent. Cosmic rays are isotropic at most energies, because of the
+influence of galactic magnetic fields. Their energies range from
+$\SI{1e9}{eV}$ up to $\SI{1e21}{eV}$. It is generally assumed that
+particles below \SI{1e18}{eV} are of mainly galactic origin, whereas
+the above is dominated by extragalactic sources. The flux of the
+primary cosmic rays generally follows a power law
+distribution. Different contributions follow a generally similar power
+law. \cite{Zyla:2020zbs} (chapter on cosmic rays)
+
+When cosmic rays interact with the molecules of Earth's atmosphere,
+mesons are produced, mainly pions. Neutral pions generate showers of
+photons and electron-positron pairs. Charged pions on the other hand
+decay into muons and anti muon-neutrinos. Muons are produced over
+electrons in this case, due to chirality. As they are more massive
+than electrons they have a larger component of the opposite chirality
+than their neutrino partner, which is necessary for this 'forbidden'
+decay due to angular momentum conservation.
+
+They are produced at an altitude of roughly $\SI{15}{km}$. A large
+fraction of them reaches Earth's surface as they are highly
+relativistic. Their spectrum is described by a convolution of the
+production energy, their energy loss due to ionization in the
+atmosphere and possible decay.
+
+Muons are of interest in the context of helioscope experiments, as
+they present a dominant source of background, especially in gaseous
+detectors (directly and indirectly due to fluorescence). And because
+current helioscope experiments are built near the surface, little
+attenuation of muon flux happens. Therefore, a good understanding of
+the expected muon flux is required.
+
+Above $\SI{100}{GeV}$ muon decay is negligible. At those energies the
+muon flux at the surface strictly follows the same power law as the
+primary cosmic ray flux. Following Gaisser \cite{gaisser2016cosmic},
+in this regime it can be described by
+
+#+NAME: eq:theory:muon_flux_gaisser
+\begin{equation}
+\frac{\mathrm{d}N_μ}{\mathrm{d}E_μ \mathrm{d}Ω} \approx \frac{0.14
+E_μ^{-2.7}}{\si{\centi\meter\squared \second \steradian \giga\electronvolt}} \times \left[ \frac{1}{1 + \frac{1.1
+E_μ \cos ϑ}{\SI{115}{GeV}}} + \frac{0.054}{1 + \frac{1.1 E_μ \cos
+ϑ}{\SI{850}{GeV}}} \right]
+\end{equation}
+
+where the first term in parenthesis is the pion and the second the
+kaon contribution.
+
+For lower energies, \cite{doi:10.1142/S0217751X18501750} provide a set
+of fitted functions based on [[#eq:theory:muon_flux_gaisser]] with a
+single power law
+
+\[
+I(E, θ) = I_0 N (E_0 + E)^{-n} \left(1 + \frac{E}{ε}\right)^{-1} D(θ)^{-(n - 1)},
+\]
+
+where $I_0$, the intensity under zenith angle, and
+$ε$ is another fit parameter for the replacement of the separate meson
+masses in eq. [[#eq:theory:muon_flux_gaisser]]. $D(θ)$ is the path length
+through the atmosphere under an angle $θ$ from the zenith. $N$ is a
+normalization constant given by
+
+\[
+N = (n - 1) (E_0 + E_c)^{n-1},
+\]
+
+where $n$ corresponds to the effective power of the cosine behavior
+and is the final fit parameter. $E_0$ accounts for the energy loss due
+to interactions in the atmosphere and $E_c$ is the lowest energy given
+in a data set.
+
+If the Earth is assumed flat, it is $D(θ) = 1/\cosθ$ (which is often
+assumed for simplicity and is a reasonable approximation as long as
+only angles close to $θ = 0$ are considered). To describe a trajectory
+through Earth's curved atmosphere $D(θ)$ can be written as:
+
+\[
+D(θ) = \sqrt{
+  \left(
+    \frac{R²}{d²} \cos² θ + 2\frac{R}{d} + 1
+  \right)
+} -
+  \frac{R}{d}\cos θ
+\]
+where $R$ is the Earth radius, $d$ the vertical path length (i.e. the
+height at which the muon is created) and $θ$ the zenith angle.
+
+While this parametrization is very useful to describe the few specific
+datasets shown in \cite{doi:10.1142/S0217751X18501750} and provides a
+way to fit any measured muon flux at a specific location, it is
+limited in applicability to arbitrary locations, altitudes and
+angles. For that an approach that does not require a fit to a dataset
+is preferable, namely by utilizing the a combination of the
+approximation by Gaisser, eq. [[#eq:theory:muon_flux_gaisser]], and the
+interaction of muons with the atmosphere. As such, we modify the
+equation for the intensity $I$ to the following:
+
+\[
+I(E, θ) = I_0 (n-1) (E_θ(E, θ) + E_c)^{n-1} (E_θ(E, θ) + E)^{-n} \left[ \frac{1}{1 + \frac{1.1
+E_μ \cos ϑ}{\SI{115}{GeV}}} + \frac{0.054}{1 + \frac{1.1 E_μ \cos
+ϑ}{\SI{850}{GeV}}} \right] D(θ)^{-(n - 1)},
+\]
+
+where we take $n = 3$ exactly. One could put in the best fit for the
+general cosine behavior under zenith angles, $n = n_{\text{fit}} + 1$,
+but for simplicity we just use 3 here. Take $E_θ(E, θ)$ to be the
+energy of a muon left from initial energy $E$ at generation in the
+upper atmosphere after transporting it through the atmosphere under
+the angle $θ$. The transport must take into account the density change
+using the barometric height formula of the atmosphere. Transport is
+done using the Bethe-Bloch equation as introduced in
+sec. [[#sec:theory:bethe_bloch]] assuming an atmosphere made up of
+nitrogen, oxygen and argon. As such we remove all parameters except
+an initial intensity $I_0$, which can be set to the best fit of the
+integrated muon flux at the zenith angle at sea level. In the
+following figures we simply use $I_0 = \SI{90}{\per\meter\squared
+\per\steradian \per\second}$. Figure [[fig:theory:muon_flux_surface]]
+shows the expected differential muon flux using these parameters for
+different angles at sea level. On the left the initial energy of the
+muons is shown before transporting through the atmosphere. For each
+angle the lines cut off at the energy below which the muon would
+likely stopped by the atmosphere according to its energy loss per
+distance. On the right we see the same final energy of the same muons
+at the surface. The lines are cut to the lowest muon energy that was
+calculated for which more than \SI{1}{GeV} was left at the
+surface. These numbers match reasonably well with different datasets
+for different locations under different angles, but they should *not*
+be considered as more than a starting point for a general expectation.
+
+#+CAPTION: Differential muon flux at sea level for different zenith angles.
+#+CAPTION: Left shows the initial energy of the muon. The cut-off corresponds to the
+#+CAPTION: lowest energy transported through the atmosphere. Right shows the
+#+CAPTION: final muon energy at the surface, with the lowest computed value above
+#+CAPTION: $\SI{1}{GeV}$ shown. 
+#+NAME: fig:theory:muon_flux_surface
+\begin{figure}[htpb]
+  \centering
+  \begin{subfigure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{~/phd/Figs/muons/initial_energy_vs_flux_and_angle_cosmic_muons.pdf}
+  \end{subfigure}
+  \begin{subfigure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{~/phd/Figs/muons/final_energy_vs_flux_and_angle_cosmic_muons.pdf}
+  \end{subfigure}
+\end{figure}
+
+Because of their large energies, muons behave as minimally ionizing
+particles (MIPS), which means their mean energy loss is more or less
+independent of the muon's energy. They are in the trough of the
+Bethe-Bloch equation, see sec. [[#sec:theory:bethe_bloch]]. This means the
+exact energy of each muon is irrelevant and for background studies
+only the actual rate of muons is important.
 
 *PLOT OF PRIMARY RADIATION*
 
 *SECONDARY MUON PRODUCTION*
 
 *MUON FLUX AT ZENITH*, *MUON FLUX UNDER ANGLE* (cos²)
+
+*REFERENCE TO MUON CHIRALITY OVER ELECTRON PROD*
+
+*** Calculation of muon angular / energy dependence at surface   :noexport:
+
+The code here is directly based on code written in my notes
+[[file:~/org/Doc/StatusAndProgress.org]] being tangled into a file
+=/tmp/muon_flux.nim=. 
+
+#+begin_src nim :results silent :tangle /home/basti/phd/code/muons.nim
+import math, macros, unchained
+import seqmath, ggplotnim, sequtils, strformat
+
+let K = 4 * π * N_A * r_e^2 * m_e * c^2 # usually in: [MeV mol⁻¹ cm²]
+
+defUnit(cm³•g⁻¹)
+defUnit(J•m⁻¹)
+defUnit(cm⁻³)
+defUnit(g•mol⁻¹)
+defUnit(MeV•g⁻¹•cm²)
+defUnit(mol⁻¹)
+defUnit(keV•cm⁻¹)
+defUnit(g•cm⁻³)
+
+proc electronDensity(ρ: g•cm⁻³, Z, A: UnitLess): cm⁻³ =
+  result = N_A * Z * ρ / (A * M_u.to(g•mol⁻¹))
+
+proc I[T](z: float): T =
+  ## approximation
+  #result = 188.0.eV.to(T) # 188.0 eV from NIST table #10 * z * 1e-6
+  result = (10.eV * z).to(T)
+
+proc calcβ(γ: UnitLess): UnitLess =
+  result = sqrt(1.0 - 1.0 / (γ^2))
+
+proc betheBloch(z, Z: UnitLess,
+                   A: g•mol⁻¹,
+                   γ: UnitLess,
+                   M: kg): MeV•g⁻¹•cm² =
+  ## result in MeV cm² g⁻¹ (normalized by density)
+  ## z: charge of particle
+  ## Z: charge of particles making up medium
+  ## A: atomic mass of particles making up medium
+  ## γ: Lorentz factor of particle
+  ## M: mass of particle in MeV (or same mass as `m_e` defined as)
+  let β = calcβ(γ)
+  let W_max = 2 * m_e * c^2 * β^2 * γ^2 /
+    (1 + 2 * γ * m_e / M + (m_e / M)^2)
+  let lnArg = 2 * m_e * c^2 * β^2 * γ^2 * W_max / (I[Joule](Z)^2)
+  result = (K * z^2 * Z / A * 1.0 / (β^2) * (
+    0.5 * ln(lnArg) - β^2
+  )).to(MeV•g⁻¹•cm²)
+
+proc density(p: mbar, M: g•mol⁻¹, temp: Kelvin): g•cm⁻³ =
+  ## returns the density of the gas for the given pressure.
+  ## The pressure is assumed in `mbar` and the temperature (in `K`).
+  ## The default temperature corresponds to BabyIAXO aim.
+  ## Returns the density in `g / cm^3`
+  let gasConstant = 8.314.J•K⁻¹•mol⁻¹ # joule K^-1 mol^-1
+  let pressure = p.to(Pa) # pressure in Pa
+  # factor 1000 for conversion of M in g / mol to kg / mol
+  result = (pressure * M / (gasConstant * temp)).to(g•cm⁻³)
+
+proc E_to_γ(E: GeV): UnitLess =
+  result = E.to(Joule) / (m_μ * c^2) + 1
+
+proc γ_to_E(γ: UnitLess): GeV =
+  result = ((γ - 1) * m_μ * c^2).to(GeV)
+
+type
+  Element = object
+    Z: UnitLess
+    M: g•mol⁻¹
+    A: UnitLess # numerically same as `M`
+    ρ: g•cm⁻³
+proc initElement(Z: UnitLess, M: g•mol⁻¹, ρ: g•cm⁻³): Element =
+  Element(Z: Z, M: M, A: M.UnitLess, ρ: ρ)
+
+# molar mass. Numerically same as relative atomic mass
+let M_Ar = 39.95.g•mol⁻¹
+let ρAr = density(1050.mbar, M_Ar, temp = 293.15.K)
+let Argon = initElement(18.0.UnitLess, 39.95.g•mol⁻¹, ρAr)
+
+proc intBethe(e: Element, d_total: cm, E0: eV, dx = 1.μm): eV =
+  ## integrated energy loss of bethe formula after `d` cm of matter
+  ## and returns the energy remaining
+  var γ: UnitLess = E_to_γ(E0.to(GeV))
+  var d: cm
+  result = E0
+  var totalLoss = 0.eV
+  while d < d_total and result > 0.eV:
+    let E_loss: MeV = betheBloch(-1, e.Z, e.M, γ, m_μ) * e.ρ * dx
+    result = result - E_loss.to(eV)
+    γ = E_to_γ(result.to(GeV))
+    d = d + dx.to(cm)
+    totalLoss = totalLoss + E_loss.to(eV)
+  result = max(0.float, result.float).eV
+
+proc plotDetectorAbsorption() =
+  let E_float = logspace(-2, 2, 1000)
+  let energies = E_float.mapIt(it.GeV)
+  let E_loss = energies.mapIt(
+    (it.to(eV) - intBethe(Argon, 3.cm, it.to(eV))).to(keV).float
+  )
+  let df = toDf(E_float, E_loss)
+  ggplot(df, aes("E_float", "E_loss")) +
+    geom_line() +
+    xlab("μ Energy [GeV]") + ylab("ΔE [keV]") +
+    scale_x_log10() + scale_y_log10() +
+    ggtitle("Energy loss of Muons in 3 cm Ar at CAST conditions") +
+    ggsave("/home/basti/phd/Figs/muons/ar_energy_loss_cast.pdf")
+plotDetectorAbsorption()
+
+let Atmosphere = @[(0.78084, initElement(7.0.UnitLess, 14.006.g•mol⁻¹, 1.2506.g•dm⁻³.to(g•cm⁻³))), # N2
+                   (0.20964, initElement(8.0.UnitLess, 15.999.g•mol⁻¹, 1.429.g•dm⁻³.to(g•cm⁻³))),  # O2
+                   (0.00934, initElement(18.0.UnitLess, 39.95.g•mol⁻¹, 1.784.g•dm⁻³.to(g•cm⁻³)))]  # Ar
+
+proc plotMuonBethe() =
+  let E_float = logspace(-2, 2, 1000)
+  let energies = E_float.mapIt(it.GeV)
+  var dEdxs = newSeq[float]()
+  for e in energies:
+    var dEdx = 0.0.MeV•g⁻¹•cm²
+    for elTup in Atmosphere:
+      let (w, element) = elTup
+      let γ = E_to_γ(e)
+      dEdx += w * betheBloch(-1, element.Z, element.M, γ, m_μ)
+    dEdxs.add dEdx.float
+  let df = toDf(E_float, dEdxs)
+  ggplot(df, aes("E_float", "dEdxs")) +
+    geom_line() +
+    xlab("μ Energy [GeV]") + ylab("dE/dx [MeV•g⁻¹•cm²]") +
+    scale_x_log10() + scale_y_log10() +
+    ggtitle("Energy loss of Muons in atmosphere") +
+    ggsave("/home/basti/phd/Figs/muons/energy_loss_muons_atmosphere.pdf")  
+plotMuonBethe()
+#if true: quit()
+import math, unchained, ggplotnim, sequtils
+
+const R_Earth = 6371.km
+func distanceAtmosphere(θ: Radian, d: KiloMeter = 36.6149.km): UnitLess =
+  ## NOTE: The default value for `d` is not to be understood as a proper height. It.s an
+  ## approximation based on a fit to get `R_Earth / d = 174`!
+  result = sqrt((R_Earth / d * cos(θ))^2 + 2 * R_Earth / d + 1) - R_Earth / d * cos(θ)
+
+defUnit(cm⁻²•s⁻¹•sr⁻¹)  
+defUnit(m⁻²•s⁻¹•sr⁻¹)
+proc muonFlux(E: GeV, θ: Radian, E₀, E_c: GeV,
+              I₀: m⁻²•s⁻¹•sr⁻¹,
+              ε: GeV): m⁻²•s⁻¹•sr⁻¹ =
+  const n = 3.0
+  let N = (n - 1) * pow((E₀ + E_c).float, n - 1)
+  result = I₀ * N * pow((E₀ + E).float, -n) *
+    #pow((1 + E / ε).float, -1) *
+    ( ( 1.0 / (1 + 1.1 * E * cos(θ) / 115.GeV).float) + (0.054 / (1 + 1.1 * E * cos(θ) / 850.GeV).float) ) * 
+    pow(distanceAtmosphere(θ), -(n - 1))
+
+from numericalnim/integrate import simpson
+proc plotE_vs_flux(θ: Radian, E₀, E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV,
+                   suffix = "") =
+  let energies = linspace(E_c.float, 100.0, 1000)
+  let E = energies.mapIt(it.GeV)
+  let flux = E.mapIt(muonFlux(it, θ, E₀, E_c, I₀, ε).float) # .to(cm⁻²•s⁻¹•sr⁻¹)
+  let df = toDf(energies, flux)
+
+  echo "Integrated flux: ", simpson(flux, energies)
+  
+  ggplot(df, aes("energies", "flux")) +
+    geom_line() +
+    xlab("Energy [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+    scale_x_log10() + scale_y_log10() +
+    ggtitle(&"Flux dependency on the energy of muons at θ = {θ.to(°)}{suffix}") +
+    ggsave(&"/home/basti/phd/Figs/muons/energy_vs_flux_cosmic_muons{suffix}.pdf")
+plotE_vs_flux(0.Radian,
+              2.5.GeV, #4.29.GeV,
+              0.5.GeV, 70.7.m⁻²•s⁻¹•sr⁻¹, 854.GeV)
+
+
+let E₀ = 25.0.GeV
+let I₀ = 90.0.m⁻²•s⁻¹•sr⁻¹
+let E_c = 1.GeV
+let ε = 2000.GeV
+
+proc plotFlux_at_CAST() =
+  let energies = linspace(0.5, 100.0, 1000)
+  let E = energies.mapIt(it.GeV)
+  let flux = E.mapIt(muonFlux(it, 88.0.degToRad.Radian, E₀, E_c, I₀, ε).float)
+  let df = toDf(energies, flux)
+  ggplot(df, aes("energies", "flux")) +
+    geom_line() +
+    xlab("Energy [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+    scale_x_log10() + scale_y_log10() +
+    ggtitle("Flux dependency on the energy at θ = 88° at CAST altitude") +
+    ggsave("/home/basti/phd/Figs/muons/flux_at_cast_88_deg.pdf")
+plotFlux_at_CAST()
+
+proc computeMeanEnergyLoss() =
+  let energies = linspace(0.5, 100.0, 1000)
+  let E = energies.mapIt(it.GeV)
+  let flux = E.mapIt(muonFlux(
+    it, 88.0.degToRad.Radian, E₀, E_c, I₀, ε).float
+  )
+  let E_loss = E.mapIt(
+    (it.to(eV) - intBethe(Argon, 3.cm, it.to(eV))).to(keV).float
+  )
+  let fluxSum = flux.sum
+  let df = toDf(energies, E_loss, flux)
+      .mutate(f{"flux" ~ `flux` / fluxSum},
+              f{"AdjFlux" ~ `E_loss` * `flux`})
+  echo "Mean energy loss: ", df["AdjFlux", float].sum
+computeMeanEnergyLoss()
+
+proc computeHeight(S: Meter, θ: Radian): KiloMeter =
+  ## For given remaining distance distance along the path of a muon
+  ## `S` (see fig. 1 in 1606.06907) computes the remaining height above
+  ## ground. Formula is the result of inverting eq. 7 to `d` using quadratic
+  ## formula. Positive result, because negative is negative.
+  result = (-1.0 * R_Earth + sqrt(R_Earth^2 + S^2 + 2 * S * R_Earth * cos(θ)).m).to(km)
+
+import algorithm
+defUnit(K•m⁻¹)
+proc barometricFormula(h: KiloMeter): g•cm⁻³ =
+  let hs = @[0.0.km, 11.0.km]
+  let ρs = @[1.225.kg•m⁻³, 0.36391.kg•m⁻³]
+  let Ts = @[288.15.K, 216.65.K]
+  let Ls = @[-1.0 * 0.0065.K•m⁻¹, 0.0.K•m⁻¹]
+  let M_air = 0.0289644.kg•mol⁻¹
+  let R = 8.3144598.N•m•mol⁻¹•K⁻¹
+  let g_0 = 9.80665.m•s⁻²
+  let idx = hs.mapIt(it.float).lowerBound(h.float) - 1
+  case idx
+  of 0:
+    # in Troposphere, using regular barometric formula for denities
+    let expArg = g_0 * M_air / (R * Ls[idx])
+    result = (ρs[idx] * pow(Ts[idx] / (Ts[idx] + Ls[idx] * (h - hs[idx])), expArg)).to(g•cm⁻³)
+  of 1:
+    # in Tropopause, use equation valid for L_b = 0
+    result = (ρs[idx] * exp(-1.0 * g_0 * M_air * (h - hs[idx]) / (R * Ts[idx]))).to(g•cm⁻³)
+  else: doAssert false, "Invalid height! Outside of range!"
+
+proc intBetheAtmosphere(E: GeV, θ: Radian, dx = 10.cm): eV =
+  ## integrated energy loss using Bethe formula for muons generated at
+  ## `15.km` under an angle of `θ` to the observer for a muon of energy
+  ## `E`.
+  # Main contributions in Earth's atmosphere
+  let elements = Atmosphere
+  var γ: UnitLess = E_to_γ(E.to(GeV))
+  result = E.to(eV)
+  var totalLoss = 0.eV
+  let h_muon = 15.km # assume creation happens in `15.km`
+  let S = h_muon.to(m) * distanceAtmosphere(θ.rad, d = h_muon)
+  var S_prime = S
+  while S_prime > 0.m and result > 0.eV:
+    let h = computeHeight(S_prime, θ)
+    let ρ_at_h = barometricFormula(h)
+    var E_loss = 0.0.MeV
+    for eTup in elements: # compute the weighted contribution of the element fraction
+      let (w, e) = eTup
+      E_loss += w * betheBloch(-1, e.Z, e.M, γ, m_μ) * ρ_at_h * dx
+    result = result - E_loss.to(eV)
+    S_prime = S_prime - dx
+    γ = E_to_γ(result.to(GeV))
+    totalLoss = totalLoss + E_loss.to(eV)
+  echo "total Loss ", totalLoss.to(GeV)
+  result = max(0.float, result.float).eV
+
+block MuonLimits:
+  let τ_μ = 2.1969811.μs
+  # naively this means given some distance `s` the muon can
+  # traverse `s = c • τ_μ` (approximating its speed by `c`) before
+  # it has decayed with a 1/e chance
+  # due to special relativity this is extended by γ
+  let s = c * τ_μ
+  echo s
+  # given production in 15 km, means
+  let h = 15.km
+  echo h / s
+  # so a reduction of (1/e)^22. So 0.
+  # now it's not 15 km but under an angle `θ = 88°`.
+  let R_over_d = 174.UnitLess
+  let n = 3.0
+  let E₀ = 25.0.GeV
+  let I₀ = 90.0.m⁻²•s⁻¹•sr⁻¹
+  let E_c = 1.GeV
+  let ε = 2000.GeV
+
+  # distance atmospher gives S / d, where `d` corresponds to our `h` up there
+  let S = h * distanceAtmosphere(88.0.degToRad.rad)
+  # so about 203 km
+  # so let's say 5 * mean distance is ok, means we ned
+  let S_max = S / 5.0
+  # so need a `γ` such that `s` is stretched to `S_max`
+  let γ = S_max / s
+  echo γ
+  # ouch. Something has to be wrong. γ of 61?
+
+  # corresponds to an energy loss of what?
+  let Nitrogen = initElement(7.0.UnitLess, 14.006.g•mol⁻¹, 1.2506.g•dm⁻³.to(g•cm⁻³))
+  echo "================================================================================"
+  echo "Energy left: ", intBethe(Nitrogen, S.to(cm), 6.GeV.to(eV), dx = 1.m.to(μm)).to(GeV)
+  proc print(E: GeV, θ: Radian) =
+    let left = intBetheAtmosphere(E, θ = θ).to(GeV)
+    echo "E = ", E, ", θ = ", θ, ", Bethe = ", E - left
+  print(6.GeV, 0.Radian)
+  #print(200.GeV, 0.Radian)  
+  #print(200.GeV, 88.°.to(Radian))
+  #print(200.GeV, 75.°.to(Radian))
+
+  let E_loss75 = 100.GeV - intBetheAtmosphere(100.GeV, 75.°.to(Radian)).to(GeV)
+  plotE_vs_flux(75.°.to(Radian),
+                E_loss75, #23.78.GeV, #25.GeV, #E_loss75,
+                1.0.GeV,
+                90.m⁻²•s⁻¹•sr⁻¹, #65.2.m⁻²•s⁻¹•sr⁻¹,
+                2000.GeV, # 854.GeV,
+                "_at_75deg")
+
+  
+  echo "S@75° = ", h * distanceAtmosphere(75.0.degToRad.rad, d = 15.0.km)
+  echo "================================================================================"  
+echo E_to_γ(4.GeV)
+echo E_to_γ(0.GeV)
+
+proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV,
+                              suffix = "") =
+  ## Generates a plot of the muon flux vs energy for a fixed set of different
+  ## angles.
+  ##
+  ## The energy loss is computed using a fixed 
+  let energies = logspace(log10(E_c.float), 2.float, 100)
+  let angles = linspace(0.0, 80.0, 9)
+  block CalcLossEachMuon:
+    var df = newDataFrame()
+    for angle in angles:
+      let E = energies.mapIt(it.GeV)
+      let θ = angle.°.to(Radian)
+      var flux = newSeq[float]()
+      var E_initials = newSeq[float]()
+      var E_lefts = newSeq[float]()
+      for e in E:
+        let E_left = intBetheAtmosphere(e, θ).to(GeV)
+        if E_left <= 0.0.GeV:
+          echo "Skipping energy : ", e, " as muon was lost in atmosphere"
+          continue
+        elif E_left <= E_c:
+          echo "Skipping energy : ", e, " as muon has less than E_c = ", E_c, " energy left"
+          continue
+        let E₀ = e - E_left
+        flux.add muonFlux(e, θ, E₀, E_c, I₀, ε).float
+        E_initials.add e.float        
+        E_lefts.add E_left.float
+      let dfLoc = toDf({E_initials, E_lefts, flux, "angle [°]" : angle})
+      df.add dfLoc
+    ggplot(df, aes("E_initials", "flux", color = factor("angle [°]"))) +
+      geom_line() +
+      xlab("Initial energy [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+      scale_x_log10() + scale_y_log10() +
+      ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
+      ggsave(&"/home/basti/phd/Figs/muons/initial_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
+  
+    ggplot(df, aes("E_lefts", "flux", color = factor("angle [°]"))) +
+      geom_line() +
+      xlab("Energy at surface [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+      scale_x_log10() + scale_y_log10() +
+      ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
+      ggsave(&"/home/basti/phd/Figs/muons/final_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
+  block StaticLoss:
+    var df = newDataFrame()
+    for angle in angles:
+      let E = energies.mapIt(it.GeV)
+      let θ = angle.°.to(Radian)
+      let E₀ = 100.GeV - intBetheAtmosphere(100.GeV, 0.0.Radian).to(GeV)    
+      let flux = E.mapIt(muonFlux(it, θ, E₀, E_c, I₀, ε).float)
+      let dfLoc = toDf({energies, flux, "angle [°]" : angle})
+      df.add dfLoc
+    ggplot(df, aes("energies", "flux", color = factor("angle [°]"))) +
+      geom_line() +
+      xlab("Energy [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+      scale_x_log10() + scale_y_log10() +
+      ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
+      ggsave(&"/home/basti/phd/Figs/muons/energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
+
+
+#proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV,
+#                              suffix = "") =
+#  ## Generates a plot of the integrated muon flux vs angles for a fixed set of different
+#  ## energies.
+#  let angles = linspace(0.0, 90.0, 100)
+#  var df = newDataFrame()
+#  let energies = linspace(E_c.float, 100.0, 1000)
+#  let E = energies.mapIt(it.GeV)
+#  for angle in angles:
+#    let θ = angle.°.to(Radian)
+#    let E₀ = 100.GeV - intBetheAtmosphere(100.GeV, θ).to(GeV)
+#    let flux = E.mapIt(muonFlux(it, θ, E₀, E_c, I₀, ε).float) 
+#    let dfLoc = toDf({energies, flux, "angle [°]" : angle})
+#    df.add dfLoc
+#  ggplot(df, aes("energies", "flux", color = factor("angle [°]"))) +
+#    geom_line() +
+#    xlab("Energy [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+#    scale_x_log10() + scale_y_log10() +
+#    ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
+#    ggsave(&"/home/basti/phd/Figs/muons/energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
+    
+block MuonBehavior:
+  plotE_vs_flux_and_angles(1.0.GeV, 90.m⁻²•s⁻¹•sr⁻¹, 854.GeV)
+
+  
+
+import random, algorithm
+proc sampleFlux(samples = 1_000_000): DataFrame =
+  randomize(1337)
+  let energies = linspace(0.5, 100.0, 10000)
+  let E = energies.mapIt(it.GeV)
+  let flux = E.mapIt(muonFlux(it, 88.0.degToRad.Radian, E₀, E_c, I₀, ε).float)
+  # given flux compute CDF
+  let fluxCS = flux.cumSum()
+  let fluxCDF = fluxCS.mapIt(it / fluxCS[^1])
+  var losses = newSeq[float]()
+  var energySamples = newSeq[float]()
+  for i in 0 ..< samples:
+    # given the fluxCDF sample different energies, which correspond to the
+    # distribution expected at CAST
+    let idx = fluxCdf.lowerBound(rand(1.0))
+    let E_element = E[idx]
+    # given this energy `E` compute the loss
+    let loss = (E_element.to(eV) - intBethe(Argon, 3.cm, E_element.to(eV), dx = 50.μm)).to(keV).float
+    losses.add loss
+    #echo "Index ", i, " yields energy ", E_element, " and loss ", loss
+    energySamples.add E_element.float
+  let df = toDf(energySamples, losses)
+  ggplot(df, aes("losses")) +
+    geom_histogram(bins = 300) +
+    margin(top = 2) +
+    xlim(5, 15) +
+    ggtitle(&"Energy loss of muon flux at CAST based on MC sampling with {samples} samples") +
+    ggsave("/home/basti/phd/Figs/muons/sampled_energy_loss.pdf")
+  ggplot(df, aes("energySamples")) +
+    geom_histogram(bins = 300) +
+    margin(top = 2) +
+    ggtitle(&"Sampled energies for energy loss of muon flux at CAST") +
+    ggsave("/home/basti/phd/Figs/muons/sampled_energy_for_energy_loss.pdf")
+
+discard sampleFlux()
+#+end_src
 
 ** Particle interactions with matter
 
@@ -1255,6 +1857,9 @@ detector + diffusion distance)
 *EXAMPLE of ?*
 
 *** Bethe-Bloch equation
+:PROPERTIES:
+:CUSTOM_ID: sec:theory:bethe_bloch
+:END:
 
 Another relevant aspect for gaseous detectors is the energy deposition
 of charged particles. In particular for experiments that sit near the
@@ -1306,6 +1911,10 @@ $Z³$ and $Z⁴$ are called /??/ and /shell correction/ respectively.
 At higher energies also the density correction by Fermi *CITE* needs
 to be accounted for.
 *SHOW WITH OR WITHOUT. EQUATION WITH, BUT DROP IN CALCS*
+
+
+*REPHRASE* instead focus on fact that they lose > 2 GeV instead of
+talking about typical muon energies.
 
 Muons arriving at the surface have energies typically above
 \SI{100}{\MeV}. For that reason the higher order corrections are not
