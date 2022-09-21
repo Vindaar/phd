@@ -648,32 +648,32 @@ proc axionFluxPrimakoffMasterThesis(ω: keV, g_ay: GeV⁻¹): keV⁻¹•m⁻²�
 
 let E = linspace(1e-3, 14.0, 1000)
 let df = seqsToDf(E)
-  .mutate(f{float: "Flux" ~ axionFluxPrimakoff(`E`.keV, 1e-10.GeV⁻¹).float})
+  .mutate(f{float: "Flux" ~ axionFluxPrimakoff(`E`.keV, 1e-11.GeV⁻¹).float})
   .mutate(f{float: "FluxYr" ~ axFluxPerYear(`E`.keV, 1e-11.GeV⁻¹).float})
   .mutate(f{float: "FluxMSc" ~ axionFluxPrimakoffMasterThesis(`E`.keV, 1e-11.GeV⁻¹).float})    
 ggplot(df, aes("E", "Flux")) +
   geom_line() +
-  geom_line(aes = aes(y = "FluxMSc"), color = some(parseHex("0000FF"))) + 
-  ggtitle("Solar axion flux due to Primakoff production, g_aγ = 10⁻¹⁰·GeV⁻¹") +
+  #geom_line(aes = aes(y = "FluxMSc"), color = some(parseHex("0000FF"))) + 
+  ggtitle("Solar axion flux due to Primakoff production, g_aγ = 10⁻¹¹·GeV⁻¹") +
   xlab("Energy [keV]") +
   #ylab("Axion flux [keV⁻¹·cm⁻²·s⁻¹]") +
   ylab("Axion flux [keV⁻¹·m⁻²·yr⁻¹]") +  
   ggsave("/tmp/primakoff_axion_flux.pdf")
 
-ggplot(df.mutate(f{"Flux" ~ `Flux` / 1e10}), aes("E", "Flux")) +
+ggplot(df.mutate(f{"Flux" ~ `Flux` / 1e8}), aes("E", "Flux")) +
   geom_line() +
   #xlab("Energy [keV]", tickFont = font(12.0), margin = 1.5) +
   xlab(r"\fontfamily{lmss}\selectfont Energy [$\si{\keV}$]", margin = 2.0, font = font(16.0),
        tickFont = font(16.0)) +
   xlim(0, 14) + 
   #ylab("Axion flux [10¹⁰ keV⁻¹·cm⁻²·s⁻¹]", margin = 1.5) +
-  ylab(r"\fontfamily{lmss}\selectfont Axion flux [\SI[print-unity-mantissa=false]{1e10}{\keV^{-1} \cm^{-2} \second^{-1}}]",
+  ylab(r"\fontfamily{lmss}\selectfont Axion flux [\SI[print-unity-mantissa=false]{1e11}{\keV^{-1} \cm^{-2} \second^{-1}}]",
        margin = 2.0,
        font = font(16.0)) + 
   #     tickFont = font(12.0)) +
   #ggtitle(r"Expected solar axion flux, g_aγ = 10⁻¹⁰ GeV⁻¹", titleFont = font(12.0)) +
   annotate(r"\fontfamily{lmss}\selectfont Expected solar axion flux" &
-    r"\\$g_{aγ} = \SI[print-unity-mantissa=false]{1e-10}{\GeV^{-1}}$", #10⁻¹⁰ GeV⁻¹",
+    r"\\$g_{aγ} = \SI[print-unity-mantissa=false]{1e-11}{\GeV^{-1}}$", #10⁻¹⁰ GeV⁻¹",
            x = 6.2, y = 6.2, 
            font = font(16.0),
            backgroundColor = transparent) +
