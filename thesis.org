@@ -1409,6 +1409,71 @@ ggplot(df, aes("Energy [keV]", "Trans", color = "Element")) +
 
 *** X-ray reflectivity & scattering
 
+The same atomic scattering factors $f₁$ and $f₂$ introduced in section
+[[#sec:theory:xray_matter_gas]] for the attenuation can also be used to
+compute the reflectivity of X-rays under shallow angles.
+
+By defining the combined scattering factor
+
+\[
+f(E) = f₁(E) + i f₂(E)
+\]
+
+at energy $E$, the refractive index $n$ of a medium can be computed using
+
+\[
+n(E) = 1 - r_e \frac{λ²}{2π} \sum_i n_{ai} f_i(E)
+\]
+
+where $n_{ai}$ is the number density of the $i$-th compound of the
+medium.
+
+Then, in what is essentially an application of Snell's law, the
+reflectivity can be expressed as
+
+*TODO: FIX THIS UP LIKELY TO INCLUDE SURFACE ROUGHNESS. ALSO LOOK AT
+XRAY DATA BOOKLET FOR IT AGAIN*
+
+\[
+R = \left| \frac{k_m - k_p}{k_m + k_p} \right|²
+\]
+
+where $k_m$ and $k_p$ are
+
+\[
+k_m = \sqrt{k² - (k \cos{θ})²}
+\]
+
+and
+
+\[
+k_p = \sqrt{ k² n² - (k \cos{θ})² }
+\]
+
+defined via the wave number $k$, which itself is computed via
+
+\[
+k = 2π \sin{θ} / λ.
+\]
+
+This can be generalized to multiple layers of material on a substrate
+and including a surface roughness. Combined these provide the essence
+for a realistic computation of the efficiency of an X-ray telescope
+mirror shell.
+
+This is also implemented in [fn:scinim_xrayAttenuation]
+\cite{Schmidt_xrayAttenuation_2022} and [fn:henke_gov]
+\cite{henke1993x} also provides an online calculator for such
+reflectivities. 
+
+
+[fn:henke_gov] https://henke.lbl.gov/optical_constants/ 
+
+[fn:scinim_xrayAttenuation] https://github.com/SciNim/xrayAttenuation
+Note: at the time of writing this, multi layers are not yet
+implemented and the reflectivity code still has to be cleaned up.
+
+
 *** Bethe-Bloch equation
 :PROPERTIES:
 :CUSTOM_ID: sec:theory:bethe_bloch
@@ -1416,23 +1481,24 @@ ggplot(df, aes("Energy [keV]", "Trans", color = "Element")) +
 
 Another relevant aspect for gaseous detectors is the energy deposition
 of charged particles. In particular for experiments that sit near the
-surface, a major source of background is due to cosmic radiation,
-with cosmic muons making up *HOW MUCH* the largest fraction of
-radiation at the surface. 
+surface, a major source of background is due to cosmic radiation, with
+cosmic muons making up more than \SI{95}{\percent} \cite{Zyla:2020zbs}
+of radiation (aside from neutrinos) at the surface, see
+sec. [[#sec:theory:cosmic_radiation]].
 
-These muons lose energy according to the Bethe-Bloch equation *CITE
-WHAT*, which describes the average energy loss per distance for a
-charged particle with charge $Ne$ in a homogeneous medium with charge
-carriers $Z$. *FIX ME* \cite{Zyla:2020zbs}
+These muons lose energy according to the Bethe-Bloch equation, which
+describes the average energy loss per distance for a charged particle
+with charge $z$ in a homogeneous medium with charge carriers $Z$. \cite{Zyla:2020zbs}
 
 \begin{equation}
+  \label{eq:theory:bethe_bloch_eq}
   \left\langle -\frac{\mathrm{d}E}{\mathrm{d}x}\right\rangle = 
     K z² \frac{Z}{A} \frac{1}{β²} \left[ 
       \frac{1}{2} \ln\frac{2m_e c² β² γ² W_{\text{max}}}{I²} - β² - \frac{δ(βγ)}{2} 
     \right]
 \end{equation}
 where the different variables are as follows: 
-*TURN INTO TABLE*
+*TURN INTO TABLE?*
 - $K = 4π N_A r_e² m_e c² = \SI{0.307075}{\MeV \mol^{-1} \cm²}$
 - $N_A = \SI{6.022 140 857(74)e23}{\mol^{-1}}$: Avogadro's number
 - $r_e = e² / 4π ε_0 m_e c² = \SI{2.817 940 3227(19)}{fm}$: classical
@@ -1451,7 +1517,8 @@ where the different variables are as follows:
 
 This interaction behavior of muons leads to a specific, expected
 energy loss per distance. For argon gas at normal conditions (1 bar,
-20°C, ...) this is shown in fig. *ARGON BETHE*.
+20°C, ...) this is shown in
+fig. *FIG BETHE*. 
 
 *CITE PDG*
 There are multiple different representations of the Bethe-Bloch
