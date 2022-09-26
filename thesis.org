@@ -1897,19 +1897,6 @@ materials used for detector construction / etc. *...*
 | 95 | Am      | —         | —         | —        | 14,617.2 | 14,411.9  | 18,852.0 | 17,676.5 | 22,065.2 | —       |
 |----+---------+-----------+-----------+----------+----------+-----------+----------+----------+----------+---------|
 
-
-Of course to be relevant as a form of detector background the material
-must be close to the detector, as the X-rays will otherwise be
-absorbed. This makes the detector material, the gas itself and all
-material in the direction of the detectors' sensitivity a candidate
-for X-ray fluorescence background.
-
-Tab. *TABLE INSERT* contains the different lines of plausible
-materials used for detector construction / etc. *...*
-*ASK TOBI IF TO ADD SOME MATERIAL*
-
-*HOW DOES THIS CORRESPOND TO AUGER ELECTRONS?*
-
 *** Bremsstrahlung
 
 Talk about Bremsstrahlung as a requirement for the CDL data?
@@ -2790,6 +2777,8 @@ Random walk + a force acting on particles.
 
 *** Drift velocity
 
+*MENTION MOLECULAR GASES HAVE HIGHER DRIFT VELOCITY*
+
 Talk about drift velocity of electrons for a given electric
 field. Required to know time scales associated with e.g. muons + FADC,
 time it takes for X-rays to drift (for random coincidences in long
@@ -2834,24 +2823,91 @@ Boltzmann equation:
 
 *COMPUTE USING PYBOLTZ: https://github.com/UTA-REST/PyBoltz*
 
-*** Escape photons / peaks | 55Fe as a typical calibration source
+*** Gas amplification, avalanche effect
 
-Explain escape photons, escape peaks, how that gives us an escape peak
-in the 55Fe spectra as well as a line at 3 keV in our background data.
+*FIX TYPING OF POLYA DISTRIBUTION*
 
-Explain Fe ↦ Mn excited ↦ Mn + γ and what spectrum looks like
+In order to turn the individual electrons into a measurable signal,
+gaseous detectors use some kind of gas amplification stage. Details
+vary, but it is usually a region in the gas volume close to the
+readout with a very strong electric field (multiple $si{kV.cm^-1}$)
+such that each electron causes many secondary ionizations, leading to
+an avalanche effect. In case of the detectors described in this
+thesis, amplification factors between \numrange{2000}{4500} are
+desired.
 
+The statistical distribution describing the number of electrons after
+gas amplification is the Polya distribution
 
-*** Why expect ~26 eV for argon
+\[
+p(x) = \frac{N}{G} \frac{(1 + θ)^{1 + θ}}{Γ(1 + θ)}
+\left(\frac{x}{G}\right)^θ \exp{- \frac{(1 + θ) x}{G}}
+\]
 
-Talk about ionization energy vs. the actual mean energy loss for a
-single ionization. Argon ionization energy is only like 15 eV or so,
-but effective one is 26.
+where $N$ is a normalization constant, $θ$ is another parameter
+performing scaling of the distribution and $G$ is the effective gas
+gain. $Γ$ refers to the gamma function. It is to note that the term
+"polya distribution" in this context is different from other
+mathematical definitions, in which polya distribution usually means a
+negative binomial distribution. The above definition goes back to
+Alkhazov \cite{alkhazov1970statistics} and in slight variations is
+commonly used. Due to the complexity of this definition, care needs to
+be taken when performing numerical fits to data with this function
+(using bounded parameters and preferring more general non-linear
+optimization routines instead of a normal Levenberg-Marquardt
+approach).
 
-Leads to our 226 or so primary electrons for our 55Fe spectra.
+The largest impacts on the expected gas amplification have the
+electric field, the choice of gas and the temperature of the
+gas. While the former two parameters are comparatively easy to
+control, the temperature in the amplification region may vary and is
+hard to measure. As such depending on the detector details and
+application, gas gain variations are expected and corrections based on
+a running gas gain value may be necessary.
 
+If it fits here, Polya distribution to describe avalanche effect.
+
+What gas properties affect the gas gain? Temperature, density etc.
+
+Gas gain.
 
 *** Energy resolution
+
+Because of the statistical processes associated with the full
+detection method used in gaseous detectors, even a perfect delta like
+signal in energy, will lead to a natural spread of the measured
+signal. The convolution of different ionization yields, potential
+losses and gas gain variation all contribute to such a spread.
+
+
+
+As such a typical measure of interest for gaseous detectors is the
+energy resolution, which is commonly defined by
+
+\[
+ΔE = \frac{\text{FWHM}(E)}{E}
+\]
+
+which is to say the full-width-half maximum (FWHM) of the distribution
+of a line at given energy $E$. Typical values for the energy
+resolution are smaller than \SI{15}{\percent}.
+
+If the absolute magnitude of the FWHM at a given energy is constant,
+which at least is partially reasonable, as the width is not fully due
+to energy dependent effects, the energy resolution is proportional to
+$1/E$. 
+
+*THINK ABOUT REPHRASING THIS / GIVING A VALUE FOR IDEAL RESOLUTION?*
+(See Alkhazov paper maybe?)
+
+The Fano factor, defined by the variance over the mean of a
+distribution $F = σ² / μ$ (typically within some time window), helps
+to improve the ideal energy resolution. It arises in the associated
+statistical processes, because there are a finite number of possible
+interactions, which limits the statistics. *CHECK IF SENTENCE
+CORRECT!* In practice the energy
+resolution of gaseous detectors is usually limited by other effects. 
+
 
 What is energy resolution, definition.
 
@@ -2859,18 +2915,46 @@ E / σ_E or something like this.
 
 Why important for our detector.
 
+*WRITE SOMETHING FANO?* See Sauli about it. Section 7.5 on energy
+resolution and section 3.6 about photo ionization of X-rays.
+
 Fano factors are related to this! Theory and observation
 disagree. Fano factor fixes this by doing a scaling. Related to the
 fact that theory assumes a perfectly statistical process, but reality
 has fixed number of possible interactions, hence not really perfect statistics.
 
-*** Gas amplification, avalanche effect
+*** Escape photons / peaks | 55Fe as a typical calibration source
 
-If it fits here, Polya distribution to describe avalanche effect.
+Finally, gaseous detectors need to be calibrated, monitored and
+tested. This is commonly done with a $^{55}\text{Fe}$
+source. $^{55}\text{Fe}$ is a radioactive isotope of iron, which
+decays under inverse beta decay to $^{55}\text{Mn}$. Due to the
+required restructuring of the electronic shells, the manganese is in
+an excited state. While the emission of an Auger electron with
+$\SI{5.19}{keV}$ dominates with a probability of \SI{60}{\percent}, as
+an X-ray source the $Kα₁$ and $Kα₂$ lines with combined energies of
+about $\SI{5.9}{keV}$ are of note.
 
-What gas properties affect the gas gain? Temperature, density etc.
+When using such a $^{55}\text{Fe}$ source as a calibration source for
+an argon filled gaseous detector, the \SI{5.9}{keV} photons will
+produce a photo-electron in argon. If this electron fully releases its
+energy via further ionizations, the 'photopeak' will be observed at
+around $\SI{5.9}{keV}. If however another photon is produced with an
+energy below the $K 1s$ energy of argon of $\SI{3.2}{keV}$ it has a
+very long absorption length in the gas volume
+(cf. fig. [[fig:theory:transmission_examples]]), for example a photon
+produced via $Kα₁$ or $Kα₂$ of argon, both at about
+$\SI{2.95}{keV}$. This can cause such a photon to easily escape over
+the active detection region, especially if the sensitive region of the
+detector is comparatively small.
 
-Gas gain.
+Explain escape photons, escape peaks, how that gives us an escape peak
+in the 55Fe spectra as well as a line at 3 keV in our background data.
+
+Explain Fe ↦ Mn excited ↦ Mn + γ and what spectrum looks like
+
+*INSERT EXAMPLE FIGURE OF SPECTRUM*
+
 
 ** Micromegas working principle
 
@@ -3051,7 +3135,7 @@ The first general improvement is the addition of two scintillators for
 veto purposes. While both have slightly different goals, each is there
 to help with the removal of muon signals in the detector or muon
 induced events (for example X-ray fluorescence). Given that cosmic
-muons (ref. section [[#sec:cosmic_radiation]]) dominate the background by
+muons (ref. section [[#sec:theory:cosmic_radiation]]) dominate the background by
 flux, statistically there is a high chance of muons creating X-ray
 like signatures in the detector (more on that below). By tagging muons
 before they interact near the detector, these can be correlated with
@@ -3172,6 +3256,8 @@ Explain shortly how the raw data is converted to something useful.
 *** Pedestals & signal reconstruction
 
 Yes, this needs to be about essentially a FADC calibration.
+
+*ALL THE SIGNAL RECONSTRUCTION GOES TO A CHAPTER LATER WHERE WE EXPLAIN INGRID RECO*
 
 Before the FADC data can be used, the raw data needs to be converted
 from the internal, cyclic representation into a 10240 long array.
