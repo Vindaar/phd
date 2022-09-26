@@ -1609,14 +1609,14 @@ though.
 
 \input{~/phd/Figs/muonStudies/ar_energy_loss_cast.tex}
 
-**** Bethe equation for muons traversing \SI{3}{\cm} of argon gas 
+**** Bethe equation for muons traversing \SI{3}{\cm} of argon gas :noexport:
 
 We will now compute the energy loss for muons traversing the
 \SI{3}{\cm} of argon gas that are seen by a muon traversing
 orthogonally to the readout plane (i.e. such that it may look like a
 photon).
 
-#+begin_src nim :results silent
+#+begin_src nim :results silent :tangle /home/basti/phd/code/bethe_bloch.nim
 import math, macros, unchained, ggplotnim, sequtils, strformat, strutils
 import thesisHelpers
 import ggplotnim / ggplot_vegatex
@@ -1630,6 +1630,8 @@ defUnit(g•mol⁻¹)
 defUnit(MeV•g⁻¹•cm²)
 defUnit(mol⁻¹)
 defUnit(keV•cm⁻¹)
+defUnit(g•cm⁻³)
+defUnit(g•cm⁻²)
 
 proc I[T](z: float): T =
   ## use Bloch approximation for all but Argon (better use tabulated values!)
@@ -1639,7 +1641,7 @@ proc I[T](z: float): T =
 proc calcβ(γ: UnitLess): UnitLess =
   result = sqrt(1.0 - 1.0 / (γ^2))
 
-proc betheBlochPDG(z, Z: UnitLess, A: g•mol⁻¹, γ: UnitLess, M: kg): MeV•g⁻¹•cm² =
+proc betheBloch(z, Z: UnitLess, A: g•mol⁻¹, γ: UnitLess, M: kg): MeV•g⁻¹•cm² =
   ## result in MeV cm² g⁻¹ (normalized by density)
   ## z: charge of particle
   ## Z: charge of particles making up medium
@@ -1652,6 +1654,22 @@ proc betheBlochPDG(z, Z: UnitLess, A: g•mol⁻¹, γ: UnitLess, M: kg): MeV•
   result = (K * z^2 * Z / A * 1.0 / (β^2) * (
    0.5 * ln(lnArg) - β^2
   )).to(MeV•g⁻¹•cm²)
+
+proc mostProbableLoss(z, Z: UnitLess, A: g•mol⁻¹, γ: UnitLess,
+                      x: g•cm⁻²): keV =
+  ## Computes the most probable value, corresponding to the peak of the Landau
+  ## distribution, that gives rise to the Bethe-Bloch formula.
+  ##
+  ## Taken from PDG chapter 'Passage of particles through matter' equation
+  ## `34.12` in 'Fluctuations in energy loss', version 2020).
+  ##
+  ## `x` is the "thickness". Density times length, `x = ρ * d`. The other parameters
+  ## are as in `betheBloch` above.
+  let β = calcβ(γ)
+  let ξ = K / 2.0 * Z / A * z*z * (x / (β*β))
+  const j = 0.200
+  let I = I[Joule](Z)
+  result = (ξ * ( ln((2 * m_e * c^2 * β^2 * γ^2).to(Joule) / I) + ln(ξ.to(Joule) / I) + j - β^2)).to(keV) # - δ*(β*γ)
 
 proc density(p: mbar, M: g•mol⁻¹, temp: Kelvin): g•cm⁻³ =
   ## returns the density of the gas for the given pressure.
@@ -1677,7 +1695,8 @@ proc initElement(name: string, Z: UnitLess, M: g•mol⁻¹, ρ: g•cm⁻³): E
   Element(name: name, Z: Z, M: M, A: M.UnitLess, ρ: ρ)
 
 let M_Ar = 39.95.g•mol⁻¹ # molar mass. Numerically same as relative atomic mass
-let ρAr = density(1050.mbar, M_Ar, temp = 293.15.K)
+#let ρAr = density(1050.mbar, M_Ar, temp = 293.15.K)
+let ρAr = density(1013.mbar, M_Ar, temp = 293.15.K)
 let Argon = initElement("ar", 18.0.UnitLess, 39.95.g•mol⁻¹, ρAr)
 
 proc intBethe(e: Element, d_total: cm, E0: eV, dx = 1.μm): eV =
@@ -1688,28 +1707,37 @@ proc intBethe(e: Element, d_total: cm, E0: eV, dx = 1.μm): eV =
   result = E0
   var totalLoss = 0.eV
   while d < d_total and result > 0.eV:
-    let E_loss: MeV = betheBlochPDG(-1, e.Z, e.M, γ, m_μ) * e.ρ * dx
+    let E_loss: MeV = betheBloch(-1, e.Z, e.M, γ, m_μ) * e.ρ * dx
     result = result - E_loss.to(eV)
     γ = E_to_γ(result.to(GeV))
     d = d + dx.to(cm)
     totalLoss = totalLoss + E_loss.to(eV)
   result = max(0.float, result.float).eV
 
-func argonLabel(): string = "muon_argon_3cm_bethe_loss"
+func argonLabel(): string = "fig:theory:muon_argon_3cm_bethe_loss"
 
+## TODO: add in the most probable value calc!  
 func argonCaption(): string = 
-  result = r"Mean energy loss of muons in \SI{3}{\cm} of argon at conditions in use in " &
-    r"GridPix detector at CAST. \SI{1050}{mbar} of chamber pressure at room temperature." &
+  result = r"Mean energy loss via Bethe-Bloch (red) equation of muons in \SI{3}{\cm} of argon at " &
+    r"conditions in use in GridPix detector at CAST. \SI{1050}{mbar} of chamber pressure at room " &
+    r"temperature. Note that the mean is skewed by events that transfer a large amount of energy, " &
+    r"but are very rare! As such care must be taken interpreting the numbers. Blue shows the most " &
+    r"probable energy loss, based on the peak of the Landau-Vavilov distribution underlying the " &
+    r"Bethe-Bloch mean value." &
     interactiveVega(argonLabel())
 
 proc plotDetectorAbsorption(element: Element) =
   let E_float = logspace(-2, 2, 1000)
   let energies = E_float.mapIt(it.GeV)
   let E_loss = energies.mapIt((it.to(eV) - intBethe(element, 3.cm, it.to(eV))).to(keV).float)
-  let df = seqsToDf(E_float, E_loss)
-  ggplot(df, aes("E_float", "E_loss")) +
+  let E_lossMP = energies.mapIt(mostProbableLoss(-1, element.Z, element.M, E_to_γ(it), ρ_Ar * 3.cm).float)
+  let df = seqsToDf({E_float, "Bethe-Bloch (BB)" : E_loss, "Most probable (MP)" : E_lossMP})
+    .gather(["Bethe-Bloch (BB)", "Most probable (MP)"], "Type", "Value")
+  ggplot(df, aes("E_float", "Value", color = "Type")) +
     geom_line() +
-    xlab(r"μ Energy [\si{\GeV}]") + ylab(r"$-\left\langle \frac{\mathrm{d}E}{\mathrm{d}x}\right\rangle$ [\si{\keV}]") +
+    #xlab(r"μ Energy [\si{\GeV}]") + ylab(r"$-\left\langle \frac{\mathrm{d}E}{\mathrm{d}x}\right\rangle$ [\si{\keV}]") +
+    xlab(r"μ Energy [\si{\GeV}]") +
+    ylab(r"$-\left\langle \frac{\mathrm{d}E}{\mathrm{d}x}\right\rangle$ (BB), $Δ_p$ (MP) [\si{\keV}]") +
     scale_x_log10() + scale_y_log10() +
     theme_latex() + 
     ggtitle(r"Energy loss of Muons in \SI{3}{\cm} " & &"{element.name.capitalizeAscii} at CAST conditions") +
@@ -1718,25 +1746,48 @@ proc plotDetectorAbsorption(element: Element) =
               caption = argonCaption(),
               label = argonLabel())
 plotDetectorAbsorption(Argon)
+
+proc plotMostProbable(e: Element) =
+  let E_float = logspace(-1.5, 2, 1000)
+  let energies = E_float.mapIt(it.GeV)
+  let E_loss = energies.mapIt(mostProbableLoss(-1, e.Z, e.M, E_to_γ(it), ρ_Ar * 3.cm))
+  let df = toDf({"E_loss" : E_loss.mapIt(it.float), E_float})
+  ggplot(df, aes("E_float", "E_loss")) +
+    geom_line() +
+    scale_x_log10() + 
+    xlab("Energy [GeV]") + ylab("Most probable loss [keV]") +
+    ggsave("/tmp/most_probable_loss.pdf")
+plotMostProbable(Argon)
 #+end_src
 
 *** X-ray fluorescence
 
-Important for our 3 keV Argon line + 8 keV copper line mainly.
-
 Cosmic muons in their interactions with matter can ionize atoms,
 leading to the possible emission of X-rays if the removed electron is
-part on an inner shell, mostly K (and some L) shell electrons. This
+part of an inner shell, mostly K (and some L) shell electrons. This
 leads to a form of background based on real X-rays and thus represents
 a kind of background that is impossible to distinguish from any kind
 of axion signal unless external scintillator based vetoes are used.
 *TOO MUCH DETAIL HERE?* *CHECK THE SHELL STUFF, GIVE A MINI TABLE OF
-IMPORTANT ATOMIC LINES!* 
+IMPORTANT ATOMIC LINES!*
+
+Important for our 3 keV Argon line + 8 keV copper line mainly.
 
 Different lines of different materials are listed in
 tab. [[tab_all_xray_fluorescence]], with a focus on elements that are
 likely to be present in or around a detector.
 
+Of course to be relevant as a form of detector background the material
+must be close to the detector, as the X-rays will otherwise be
+absorbed. This makes the detector material, the gas itself and all
+material in the direction of the detectors' sensitivity a candidate
+for X-ray fluorescence background.
+
+Tab. *TABLE INSERT* contains the different lines of plausible
+materials used for detector construction / etc. *...*
+*ASK TOBI IF TO ADD SOME MATERIAL*
+
+*HOW DOES THIS CORRESPOND TO AUGER ELECTRONS?*
 
 *TODO: REMOVE UNNECESSARY LINES*
 #+NAME: tab_all_xray_fluorescence
