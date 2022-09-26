@@ -124,10 +124,18 @@ the TeX file.
 
 Then in terminal:
 #+begin_src sh
-xelatex --shell-escape thesis.tex
+lualatex --shell-escape thesis.tex
 biber thesis
-xelatex --shell-escape thesis.tex
+lualatex --shell-escape thesis.tex
 #+end_src
+
+Or better yet, let =latexmk= take care of it:
+#+begin_src
+latexmk -pvc -pdf -view=none -shell-escape -pdflatex=lualatex thesis.tex
+#+end_src
+
+it watches the file and automatically recompiles if the file changed
+on disc.
 
 * Start me                                                         :noexport:
 
