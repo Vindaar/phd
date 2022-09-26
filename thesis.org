@@ -857,25 +857,25 @@ Kelvin. $k$ is of course the Boltzmann constant and $h$ the Planck
 constant. Let's see what this looks like for $T =
 \SI{15}{\mega\kelvin}$.
 
-#+begin_src nim
+#+begin_src nim :tangle /home/basti/phd/code/black_body_sun_core.nim
 import ggplotnim, unchained, sequtils
 
-defUnit(s⁻¹)
-defUnit(μs⁻¹)
+#defUnit(s⁻¹)
+#defUnit(μs⁻¹)
 defUnit(Watt•Steradian⁻¹•Meter⁻²•NanoMeter⁻¹)
 defUnit(Joule•Meter⁻²•Steradian⁻¹)
 
 let T_sun = 15.MegaKelvin.to(Kelvin)
 
 proc blackBody(ν: s⁻¹, T: Kelvin): Joule•Meter⁻²•Steradian⁻¹ =
-  result = (2 * hp * ν^3 / c^2 / (exp(hp * ν / (k * T)) - 1)).to(Joule•Meter⁻²•Steradian⁻¹)
+  result = (2 * hp * ν^3 / c^2 / (exp(hp * ν / (k_B * T)) - 1)).to(Joule•Meter⁻²•Steradian⁻¹)
 
 proc xrayEnergyToFreq(E: keV): s⁻¹ = 
   ## converts the input energy in keV to a correct frequency
   result = E.to(Joule) / hp
 echo 1.keV.xrayEnergyToFreq
 
-echo blackBody(1.μs⁻¹.to(s⁻¹), T_sun)
+echo blackBody(1.μHz.to(Hz), T_sun)
 echo blackBody(1.keV.xrayEnergyToFreq, T_sun)
 
 let energies = linspace(0.01, 16.0, 1000)
@@ -889,9 +889,6 @@ ggplot(df, aes("energies", "radiance")) +
 #+end_src
 
 #+RESULTS:
-| 2.41799e+17 | Second⁻¹                  |
-| 4.60862e-21 | Joule•Meter⁻²•Steradian⁻¹ |
-|     178.526 | Joule•Meter⁻²•Steradian⁻¹ |
 
 
 ** TODO small section about other kinds of experiment?
