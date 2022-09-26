@@ -2108,14 +2108,16 @@ defUnit(MeV•g⁻¹•cm²)
 defUnit(mol⁻¹)
 defUnit(keV•cm⁻¹)
 defUnit(g•cm⁻³)
+defUnit(g•cm⁻²)
 
 proc electronDensity(ρ: g•cm⁻³, Z, A: UnitLess): cm⁻³ =
   result = N_A * Z * ρ / (A * M_u.to(g•mol⁻¹))
 
 proc I[T](z: float): T =
-  ## approximation
-  #result = 188.0.eV.to(T) # 188.0 eV from NIST table #10 * z * 1e-6
-  result = (10.eV * z).to(T)
+  ## use Bloch approximation for all but Argon (better use tabulated values!)
+  # 188.0 eV from NIST table 
+  result = if z == 18.0: 188.0.eV.to(T) 
+           else: (10.eV * z).to(T)
 
 proc calcβ(γ: UnitLess): UnitLess =
   result = sqrt(1.0 - 1.0 / (γ^2))
@@ -2137,6 +2139,22 @@ proc betheBloch(z, Z: UnitLess,
   result = (K * z^2 * Z / A * 1.0 / (β^2) * (
     0.5 * ln(lnArg) - β^2
   )).to(MeV•g⁻¹•cm²)
+
+proc mostProbableLoss(z, Z: UnitLess, A: g•mol⁻¹, γ: UnitLess,
+                      x: g•cm⁻²): keV =
+  ## Computes the most probable value, corresponding to the peak of the Landau
+  ## distribution, that gives rise to the Bethe-Bloch formula.
+  ##
+  ## Taken from PDG chapter 'Passage of particles through matter' equation
+  ## `34.12` in 'Fluctuations in energy loss', version 2020).
+  ##
+  ## `x` is the "thickness". Density times length, `x = ρ * d`. The other parameters
+  ## are as in `betheBloch` above.
+  let β = calcβ(γ)
+  let ξ = K / 2.0 * Z / A * z*z * (x / (β*β))
+  const j = 0.200
+  let I = I[Joule](Z)
+  result = (ξ * ( ln((2 * m_e * c^2 * β^2 * γ^2).to(Joule) / I) + ln(ξ.to(Joule) / I) + j - β^2)).to(keV) # - δ*(β*γ)
 
 proc density(p: mbar, M: g•mol⁻¹, temp: Kelvin): g•cm⁻³ =
   ## returns the density of the gas for the given pressure.
@@ -2325,11 +2343,14 @@ proc barometricFormula(h: KiloMeter): g•cm⁻³ =
     result = (ρs[idx] * exp(-1.0 * g_0 * M_air * (h - hs[idx]) / (R * Ts[idx]))).to(g•cm⁻³)
   else: doAssert false, "Invalid height! Outside of range!"
 
+import random
+randomize(43)
 proc intBetheAtmosphere(E: GeV, θ: Radian, dx = 10.cm): eV =
   ## integrated energy loss using Bethe formula for muons generated at
   ## `15.km` under an angle of `θ` to the observer for a muon of energy
   ## `E`.
   # Main contributions in Earth's atmosphere
+  const τ = 2.19618.μs # muon half life
   let elements = Atmosphere
   var γ: UnitLess = E_to_γ(E.to(GeV))
   result = E.to(eV)
@@ -2344,6 +2365,24 @@ proc intBetheAtmosphere(E: GeV, θ: Radian, dx = 10.cm): eV =
     for eTup in elements: # compute the weighted contribution of the element fraction
       let (w, e) = eTup
       E_loss += w * betheBloch(-1, e.Z, e.M, γ, m_μ) * ρ_at_h * dx
+
+    ## Add step for radioactive decay of muon.
+    ## - given `dx` compute likelihood of decay
+    ## - eigen time of muon: dx / v = dt. dτ = dt / γ
+    ## - muon decay is λ = 1 / 2.2e-6s
+    let β = calcβ(γ)
+    # compute effective time in lab frame
+    let δt = dx / (β * c)
+    # compute eigen time
+    let δτ = δt / γ
+    # probability of a decay in this time frame
+    let p = pow(1 / math.E, δτ / τ)
+    # decay with likelihood `p`
+    #echo "γ = ", γ, " yields ", p, " in δτ ", δτ, " for energy ", E
+    if rand(1.0) < (1.0 - p):
+      echo "Particle decayed after: ", S_prime
+      return 0.eV
+          
     result = result - E_loss.to(eV)
     S_prime = S_prime - dx
     γ = E_to_γ(result.to(GeV))
@@ -2487,71 +2526,258 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
 #    scale_x_log10() + scale_y_log10() +
 #    ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
 #    ggsave(&"/home/basti/phd/Figs/muons/energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
-    
-block MuonBehavior:
-  plotE_vs_flux_and_angles(1.0.GeV, 90.m⁻²•s⁻¹•sr⁻¹, 854.GeV)
 
-  
+# different angles!      
+#block MuonBehavior:
+#  plotE_vs_flux_and_angles(1.0.GeV, 90.m⁻²•s⁻¹•sr⁻¹, 854.GeV)
+
+proc unbinnedCdf(x: seq[float]): (seq[float], seq[float]) =
+  ## Computes the CDF of unbinned data
+  var cdf = newSeq[float](x.len)
+  for i in 0 ..< x.len:
+    cdf[i] = i.float / x.len.float
+  result = (x.sorted, cdf)
 
 import random, algorithm
 proc sampleFlux(samples = 1_000_000): DataFrame =
   randomize(1337)
-  let energies = linspace(0.5, 100.0, 10000)
+  let energies = linspace(0.1, 100.0, 100_000)
+  #let energies = logspace(0, 2, 1000)
   let E = energies.mapIt(it.GeV)
   let flux = E.mapIt(muonFlux(it, 88.0.degToRad.Radian, E₀, E_c, I₀, ε).float)
   # given flux compute CDF
   let fluxCS = flux.cumSum()
+  let fluxCS_sorted = flux.sorted.cumSum()
   let fluxCDF = fluxCS.mapIt(it / fluxCS[^1])
-  var losses = newSeq[float]()
+  let fluxCDF_sorted = fluxCS_sorted.mapIt(it / fluxCS_sorted[^1])
+
+  let (data, cdf) = unbinnedCdf(flux)
+
+  let dfX = toDf(energies, fluxCS, fluxCS_sorted, fluxCDF, fluxCDF_sorted)
+  ggplot(dfX, aes("energies", "fluxCS")) +
+    geom_line() +
+    ggsave("/t/cumsum_test.pdf")
+  ggplot(dfX, aes("energies", "fluxCDF")) +
+    geom_line() +
+    ggsave("/t/cdf_test.pdf")    
+  ggplot(dfX, aes("energies", "fluxCS_sorted")) +
+    geom_line() +
+    ggsave("/t/cumsum_sorted_test.pdf")    
+  ggplot(dfX, aes("energies", "fluxCDF_sorted")) +
+    geom_line() +
+    ggsave("/t/cdf_sorted_test.pdf")
+
+  ggplot(toDf(data, cdf), aes("data", "cdf")) +
+    geom_line() +
+    ggsave("/t/unbinned_cdf.pdf")
+  
+  #if true: quit()
+  var lossesBB = newSeq[float]()
+  var lossesMP = newSeq[float]()
   var energySamples = newSeq[float]()
+
+  let dedxmin = 1.519.MeV•cm²•g⁻¹
+  echo "Loss = ", (dedxmin * Argon.ρ * 3.cm).to(keV)
+  
   for i in 0 ..< samples:
     # given the fluxCDF sample different energies, which correspond to the
     # distribution expected at CAST
     let idx = fluxCdf.lowerBound(rand(1.0))
     let E_element = E[idx]
     # given this energy `E` compute the loss
-    let loss = (E_element.to(eV) - intBethe(Argon, 3.cm, E_element.to(eV), dx = 50.μm)).to(keV).float
-    losses.add loss
+    let lossBB = (E_element.to(eV) - intBethe(Argon, 3.cm, E_element.to(eV), dx = 50.μm)).to(keV).float
+    lossesBB.add lossBB
+    let lossMP = mostProbableLoss(-1, Argon.Z, Argon.M, E_Element.E_to_γ(), Argon.ρ * 3.cm)
+    lossesMP.add lossMP.float
     #echo "Index ", i, " yields energy ", E_element, " and loss ", loss
     energySamples.add E_element.float
-  let df = toDf(energySamples, losses)
-  ggplot(df, aes("losses")) +
-    geom_histogram(bins = 300) +
+  let df = toDf(energySamples, lossesBB, lossesMP)
+    .gather(["lossesBB", "lossesMP"], "Type", "Value")
+  ggplot(df, aes("Value", fill = "Type")) +
+    geom_histogram(bins = 300, hdKind = hdOutline, alpha = 0.5, position = "identity") +
     margin(top = 2) +
     xlim(5, 15) +
     ggtitle(&"Energy loss of muon flux at CAST based on MC sampling with {samples} samples") +
     ggsave("/home/basti/phd/Figs/muons/sampled_energy_loss.pdf")
+
   ggplot(df, aes("energySamples")) +
     geom_histogram(bins = 300) +
     margin(top = 2) +
     ggtitle(&"Sampled energies for energy loss of muon flux at CAST") +
     ggsave("/home/basti/phd/Figs/muons/sampled_energy_for_energy_loss.pdf")
+  let (samples, bins) = histogram(energySamples, bins = 300)
+  let dfH = toDf({"bins" : bins[0 ..< ^1], samples})
+    .filter(f{`bins` > 0.0 and `samples`.float > 0.0})
+  ggplot(dfH, aes("bins", "samples")) +
+    geom_line() +
+    scale_x_log10() + 
+    margin(top = 2) +
+    ggtitle(&"Sampled energies for energy loss of muon flux at CAST") +
+    ggsave("/home/basti/phd/Figs/muons/sampled_energy_for_energy_loss_manual.pdf")
 
-discard sampleFlux()
+  ggplot(toDf(energies, flux), aes("energies", "flux")) +
+    geom_line() +
+    scale_x_log10() +
+    ggsave("/tmp/starting_data_e_flux.pdf")
+
+  ggplot(toDf(energies, flux), aes("energies", "flux")) +
+    geom_line() +
+    ggsave("/tmp/linear_starting_data_e_flux.pdf")
+    
+
+discard sampleFlux(samples = 1_000_000)
 #+end_src
 
 
 ** Gaseous detector fundamentals
 
+*HOW TO START CHAPTER / SECTION?*
+
+Gaseous detectors consist of a volume filled with some kind of
+gas. Usually a noble gas with a small amount of molecular gas. Some
+kind of entrance window allows the particles to be detected to
+enter. An electric field is applied over the gas volume, strong enough
+to cause electron-ion pairs created by ionization of the incoming
+particles to drift to opposite ends of the volume. At least on the
+side of the anode (where the electrons arrive), a readout of some form
+is installed to measure the time of arrival, amount of collected
+charge and / or the position of the electrons. Depending on the
+details, this in principle allows for a 3D reconstruction of the
+initial event in the gas volume. The details of choice of detector
+gas, applied electric fields, gas volume dimensions and types of
+readout have a very large impact on the applications a detector is
+useful for. In the following we will focus on the physics concepts
+required for gaseous detectors with few \si{cm} long drift volumes and
+high spatial resolution readouts.
+
+
+
+
+Note: this section covers the basic fundamentals that will be later
+referenced in the thesis. For a much more in-depth understanding of
+these concepts, see references \cite{sauli2014gaseous} and \cite{kolanoski2020particle}!
+
+
+Write a few general things about gaseous detectors here. I.e. contain
+usually mainly a noble gas, with some quencher for rotational and
+vibrational modes. These 'cool' the electrons down so that they are in
+the Townsend minimum and effectively increases the drift velocity.
+
+Electric fields should be strong enough to let electrons and ions
+drift in opposite directions and have a fast enough drift velocity,
+but low enough to not cause further ionization.
+
 *** Mean free path
+
+*NOTE*: This is already explained for X-rays in the previous
+section. Do we need this concept in some more detail? Otherwise we can
+also remove it later. 
 
 See photons above.
 
 Of major importance for the detection of particles in a gaseous
-detector is of course the mean free path. This is the mean length a
-particle traverses in a medium before interactions. For charged
-particles it yields the mean distance between individual interaction
-points, whereas for a photon it gives the mean length the photon
-traverses through the detector before interaction. 
+detector is the mean free path. This is the mean length a particle
+traverses in a medium before interactions. For charged particles it
+yields the mean distance between individual interaction points,
+whereas for a photon it gives the mean length the photon traverses
+through the detector before interaction.
 
 Especially for photons this value is of crucial importance, as it
 tells us at what distance photons will likely convert depending on
-their energy. This is important as it directly affects the possible
-drift distance and thus diffusion available to the generated
-electrons.
-*TOO MUCH DETAIL, AS WE HAVE NOT INTRODUCED DETECTORS YET!!*
+their energy. This is described by the absorption length as mentioned
+in section [[#sec:theory:xray_matter_gas]]. This is important as it
+directly affects the possible drift distance and thus diffusion
+available to the generated electrons.  *TOO MUCH DETAIL, AS WE HAVE
+NOT INTRODUCED DETECTORS YET!!*
+
+*** Ionization energy and average energy per electron-ion pair
+
+*FIND GOOD REFERENCES* beyond these two. Better would be a primary
+like reference. \cite{bronic1992relation, doi:10.1080/00223131.2014.974710} 
+
+Why expect ~26 eV for argon
+
+Talk about ionization energy vs. the actual mean energy loss for a
+single ionization. Argon ionization energy is only like 15 eV or so,
+but effective one is 26.
+
+Leads to our 226 or so primary electrons for our 55Fe spectra.
+
+In order to understand the signals detected by a gaseous detector the
+average number of electrons created by an incident particle should be
+known. Denoted by the $W$-value, it is defined by
+
+\[
+W = \frac{I}{\langle N \rangle} 
+\]
+
+where $I$ is the mean ionization energy of the gas and $\langle N
+\rangle$ the average number of electron-ion pairs generated per
+interaction. This number is usually smaller one, \numrange{0.6}{0.7}
+for noble gases and even below \num{0.5} for molecular gases. Not all
+energy of the incoming particle is always deposited in the form of
+generation of, for example, a photoelectron. Other forms of energy
+loss are possible. In molecular gases vibrational and rotational modes
+offer even more possibilities, resulting in the smaller values.
+
+The mean excitation energy of an element is the weighted combination
+of the most likely energy levels the element is ionized from. The
+exact values are dependent on the specific element and tabulated
+values like from NIST \cite{hubbell1996nist}. Above some $Z$ a
+rough approximation of $I = \SI{10}{eV} Z$ can be substituted,
+developed by Bloch \cite{bloch1933bremsvermogen}.
+
+The precise number for $W$ strongly depends on the used gas mixture
+and typically requires experimental measurements to determine or Monte
+Carlo based simulations. Tools for Monte Carlo simulations include
+GEANT4 \cite{GEANT4:2002zbu} [fn:geant4] and MCNelectron
+\cite{doi:10.1080/00223131.2014.974710} [fn:mcn_electron]. These are
+based on atomic excitation cross sections, which are well tabulated in
+projects like ENDF \cite{brown2018endf} (citation for latest data
+release) [fn:endf_website] and LXCat \cite{pancheshnyi2012lxcat,
+pitchford2017lxcat, carbone2021data} [fn:lxcat_website].
+
+# Note: there is also MCNP6 https://mcnp.lanl.gov/ which I will
+# conveniently *not* mention, as it is under ridiculous US export
+# regulations and therefore the source code is not visible for non US
+# citizens. Screw that.
+
+[fn:geant4] [[https://geant4.cern.web.ch]]
+
+[fn:mcn_electron] http://web.vu.lt/ff/a.poskus/mcnelectron/
+
+[fn:endf_website] https://www.nndc.bnl.gov/endf-b8.0/index.html
+
+[fn:lxcat_website] [[https://lxcat.net]]
+
+[fn:w_value_fano_factor] Interestingly, there is an empirical somewhat
+linear relationship between the W-value as shown here and the Fano
+factor \cite{bronic1992relation}.
+*NOTE*: Given how Fano discovered / described Fano noise, it's maybe
+not quite surprising that this is related! 
+
 
 *** Diffusion
+
+*SEE Hilke2020 FOR OVERVIEW OF DIFFUSION MATH*
+
+Diffusion is the process of the random walk of electrons either in
+longitudinal or transverse (orthogonal to the electric field)
+direction they exhibit, when drifting towards the readout. Depending
+on the specific detector technology, some transverse diffusion may be
+a desired property. For long drift distances, magnetic fields can be
+used to significantly reduce the transverse diffusion.
+
+For a point like source of multiple electrons, after diffusion of some
+distance a 2 dimensional gaussian distribution will be expected.
+
+Transverse diffusion depends, as one expects from a 2D random walk,
+via the square root of the drift distance.
+
+In general for precise numbers, numerical simulations using a tool
+like Magboltz must be performed or measurements taken.
+
+
 
 Describe diffusion based on gas. Needed to get expected photon size
 based on conversion at specific height.
