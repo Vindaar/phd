@@ -3032,14 +3032,53 @@ history, see *CITE WHAT?*
 ** Timepix ASIC
 
 The Timepix ASIC (Application Specific Integrated Circuit) is a $256 ×
-256$ pixel ASIC (\SI{50}{\micro\meter} pitch)
+256$ pixel ASIC (\SI{55}{\micro\meter} pitch), based on the Medipix
+ASIC developed for medical imaging applications by the Medipix
+Collaboration \cite{medipix}. The pixels are distributed over an
+active area of $\num{1.4}\times\SI{1.4}{\cm^2}$. Each pixel contains a charge
+sensitive amplifier, a single threshold discriminator and a
+$\SI{14}{bit}$ pseudo random counting logic. It requires use of an
+external clock, in the range of \SIrange{10}{150}{MHz}, with
+\SI{40}{MHz} being typical clock frequency for the use cases described
+in this thesis.
 
-Introduce Timepix. Short introduction to how they are built?
+A picture of a Timepix ASIC is shown in
+fig. [[fig:detector:timepix_asic]].
 
-Different modes to work with, we use ToT (Time over Threshold). Also:
-ToA (Time of Arrival).
+#+CAPTION: Picture of a Timepix ASIC
+#+NAME: fig:detector:timepix_asic
+#+ATTR_LATEX: :width 0.4\textwidth
+[[~/phd/Figs/timepix_gold.png]]
 
-Works at \SI{40}{\mega\Hz}. 
+*INSERT TIMEPIX FIGURE?*
+
+The Timepix uses a shutter based readout, either with a fixed shutter
+time or using an external trigger to close a frame. Each pixel further
+can work in four different modes:
+
+- hit counting mode / single hit mode: simply counts the number of
+  times the threshold of a pixel was crossed (or whether a pixel was
+  activated once in single hit mode).
+- \textbf{T}ime \textbf{o}ver \textbf{T}hreshold (ToT): In the ToT
+  mode the counter of a pixel will count the number of clock cycles
+  that the charge on the pixel exceeds the set threshold, which is set
+  by an $\SI{8}{bit}$ \textbf{D}igital to \textbf{A}nalog
+  \textbf{C}onverter (DAC) while the shutter is open. ToT is
+  equivalent to the collected charge of each pixel.
+- \textbf{T}ime \textbf{o}f \textbf{A}rrival (ToA): The ToA mode
+  records the number of clock cycles from
+
+  *DOES TOA IN TPX1 START FROM SHUTTER OPEN OR START FROM PIXEL HIT?*
+  
+  starts counting the clock cycles from the first time the charge
+  exceeds the set threshold until the shutter closes. Thus, it allows
+  to calculate the time at which the pixel first crossed the
+  threshold.
+
+After the shutter is closed in the Timepix, the readout is performed
+during which the detector is effectively dead. For a single Timepix
+the readout takes about *HOW MANY?* ms. 
+
 
 Check Lucian's master thesis for information about Timepix & gaseous
 detector physics. :)
