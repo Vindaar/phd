@@ -3658,42 +3658,185 @@ fig. [[fig:detector:scintillator_fadc_shutter_close]].
 
 - [ ] *COPY OVER SECTION ABOUT MUONS / TOA INFO FROM IAXO TDR TEXT?*
 
-
-...
-
-By default each channel of the FADC has an arbitrary value in the
-range between \num{0} to \num{10000}. This needs to be corrected for
-by taking a so called 'pedestal run'. It is simply a readout of the
-FADC in the absence of any signal. This pedestal run then is
-subtracted from each actual FADC event to remove the pedestal
-baseline. 
-
-*** Noise sensitive
-
-Because of the small amplitude of the associated signals induced on
-the grid, electromagnetic interference is a serious issue with this
-FADC setup. Ideally, the detector should be installed in a Faraday
-cage and a short, shielded LEMO cable should be used to connect it to
-the 
-
-** SiN window
+** SiN window [/]
 :PROPERTIES:
-:CUSTOM_ID: sec:sin_window
+:CUSTOM_ID: sec:detector:sin_window
 :END:
 
+Next up, a major limitation of the previous detector was its limited
+combined efficiency below $\SI{2}{keV}$, due to its \SI{2}{μm} Mylar
+window. Therefore, the next improvement for the new detector is an
+ultra-thin silicon nitride \ce{Si_3 N_4} window of \SI{300}{nm}
+thickness and \SI{14}{mm} diameter, developed by Norcada™ *WEBSITE*. A
+strongback support structure consisting of 4 lines of \SI{200}{μm}
+thick and \SI{500}{μm} wide \ce{Si_3 N_4}, helps to support a pressure
+difference of up to \SI{1.5}{bar}. On the outer side a \SI{20}{nm}
+thin layer of aluminum is coated to allow the window to be part of the
+detector cathode. The strongback occludes about \SI{17}{\percent} of
+the full window area. In reality it is slightly more, as the
+strongbacks become somewhat wider towards the edges. In the center
+most region they are straight and in the center $\num{5} \times
+\SI{5}{mm²}$ area, they occlude \SI{22.2}{\percent}.
 
-*** Aim
+Fig. \subref{fig:detector:strongback_structure_mc} shows the idealized strongback
+structure without a widening towards the edges of the
+window. Fig. \subref{fig:detector:window_image} shows an image of one such
+window under testing conditions in the laboratory, as it withstands a
+pressure difference of \SI{1.5}{bar}.
 
-Much better sensitivity, especially at low energies, important in
-particular for axion electron & chameleon, not so much Primakoff.
+*FIX REFERENCE TO INLINE LATEX LABELS!*
 
-Comparison of different window setups.
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{./Figs/SiN_window_occlusion.png}
+    \caption{Window strongback schematic}
+    \label{fig:detector:strongback_structure_mc}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{./Figs/300nm_SiN_holds.jpg}
+    \label{fig:detector:window_image}
+    \caption{Image}
+  \end{subfigure}
+  \label{fig:detector:window_image_and_strongback}
+  \caption{\subref{fig:detector:strongback_structure_mc} shows an idealized schematic of the
+    window strongback based on a simple MC simulation. \SI{22.2}{\percent} of the area inside the
+    inner $\num{5} \times \SI{5}{mm^2}$ area (black square) are occluded.
+    \subref{fig:detector:window_image} shows an image of one such window while testing in the
+    laboratory, if it holds \SI{1.5}{\bar}.
+  }
+\end{figure}
 
-*** Description
+- [ ] *POSSIBLY UPDATE IMAGE OF WINDOW*
+
+As the main purpose is the increase of transmission at low energies,
+let's compare the transmission between the mylar window of the old
+detector and the new \ce{Si_3 N_4}
+window. Fig. [[fig:detector:window_efficiency_comparison]] shows the
+transmission of the two different window setups in the energy range
+below \SI{3}{keV}. The \ce{Si_3 N_4} window shows a significant
+increase in transmission below \SI{2}{keV}, which is very important
+for the sensitivity in solar axion-electron and chameleon searches,
+which both peak near \SI{1}{keV} in their solar flux. The window alone
+significantly increases the signal to noise ratio of these physics searches.
+
+#+CAPTION: Comparison of the transmission of a \SI{2}{μm} Mylar window and a
+#+CAPTION: \SI{300}{nm} \ce{Si_3 N_4} window. The efficiency gains become
+#+CAPTION: more and more pronounced the lower the energy is, aside from the
+#+CAPTION: absorption edge of carbon at around \SI{250}{eV} and above about
+#+CAPTION: \SI{1.75}{keV}. In the interesting range around \SI{1}{keV} significant
+#+CAPTION: transmission gains are achieved.
+#+NAME: fig:detector:window_efficiency_comparison
+[[~/phd/Figs/detector/window_transmisson_comparison.pdf]]
+
+*** Calculation of strongback window structure plot :noexport:
+
+#+begin_src nim :tangle code/window_strongback.nim
+## Super dumb MC sampling over the entrance window using the Johanna's code from `raytracer2018.nim`
+## to check the coverage of the strongback of the 2018 window
+##
+## Of course one could just color areas based on the analytical description of where the
+## strongbacks are, but this is more interesting and looks fun. The good thing is it also
+## allows us to easily compute the fraction of pixels within and outside the strongbacks.
+import ggplotnim, random, chroma
+proc colorMe(y: float): bool =
+  const
+    stripDistWindow = 2.3  #mm
+    stripWidthWindow = 0.5 #mm
+  if abs(y) > stripDistWindow / 2.0 and
+     abs(y) < stripDistWindow / 2.0 + stripWidthWindow or
+     abs(y) > 1.5 * stripDistWindow + stripWidthWindow and
+     abs(y) < 1.5 * stripDistWindow + 2.0 * stripWidthWindow:
+    result = true
+  else:
+    result = false
+
+proc sample() =
+  randomize(423)
+  const nmc = 5_000_000
+  let black = color(0.0, 0.0, 0.0)
+  var dataX = newSeqOfCap[float](nmc)
+  var dataY = newSeqOfCap[float](nmc)
+  var inside = newSeqOfCap[bool](nmc)
+  for idx in 0 ..< nmc:
+    let x = rand(-7.0 .. 7.0)
+    let y = rand(-7.0 .. 7.0)
+    if x*x + y*y < 7.0 * 7.0:
+      dataX.add x
+      dataY.add y
+      inside.add colorMe(y)
+  let df = toDf(dataX, dataY, inside)
+  echo "A fraction of ", df.filter(f{`inside` == true}).len / df.len, " is occluded by the strongback"
+  let dfGold = df.filter(f{abs(idx(`dataX`, float)) <= 2.25 and
+                           abs(idx(`dataY`, float)) <= 2.25})
+  echo "Gold region: A fraction of ", dfGold.filter(f{`inside` == true}).len / dfGold.len, " is occluded by the strongback"
+  ggplot(df, aes("dataX", "dataY", fill = "inside")) +
+    geom_point(size = 1.0) +
+    # draw the gold region as a black rectangle
+    geom_linerange(aes = aes(y = 0, x = 2.25, yMin = -2.25, yMax = 2.25), color = "black") +
+    geom_linerange(aes = aes(y = 0, x = -2.25, yMin = -2.25, yMax = 2.25), color = "black") +
+    geom_linerange(aes = aes(x = 0, y = 2.25, xMin = -2.25, xMax = 2.25), color = "black") +
+    geom_linerange(aes = aes(x = 0, y = -2.25, xMin = -2.25, xMax = 2.25), color = "black") +
+    xlab("x [mm]") + ylab("y [mm]") +
+    ggtitle("Idealized schematic of the window layout. Strongback in red.") +
+    ggsave("/home/basti/phd/Figs/SiN_window_occlusion.png", width = 1150, height = 1000)
+sample()
+#+end_src
+
+#+RESULTS:
+
+*** Calculation of transmission efficiency [0/1] :noexport:
+
+Let's calculate the transmission for =Si₃N₄= and Mylar windows using
+[[https://github.com/SciNim/xrayAttenuation][=xrayTransmission=]].
+
+#+begin_src nim :tangle /home/basti/phd/code/window_transmission_comparison.nim
+import std / strutils
+import xrayAttenuation, ggplotnim
+# generate a compound of silicon and nitrogen with correct number of atoms
+let Si₃N₄ = compound((Si, 3), (N, 4))
+#Si₃N₄.plotTransmission(3.44.g•cm⁻³, 300.nm.to(Meter))
+# instantiate Mylar
+let mylar = compound((C, 10), (H, 8), (O, 4))
+# mylar.plotTransmission(1.4.g•cm⁻³, 2.μm.to(Meter), energyMax = 3.0)
+
+echo mylar.name()
+echo Si₃N₄.name()
+# define energies in which to compute the transmission
+# (we don't start at 0, as at 0 energy the parameters are not well defined)
+let energies = linspace(1e-2, 3.0, 1000)
+
+proc compTrans[T: AnyCompound](el: T, ρ: g•cm⁻³, length: Meter): DataFrame =
+  result = toDf({ "Energy [keV]" : energies })
+    .mutate(f{float: "μ" ~ el.attenuationCoefficient(idx("Energy [keV]").keV).float},
+            f{float: "Trans" ~ transmission(`μ`.cm²•g⁻¹, ρ, length).float},
+            f{"Compound" <- el.name()})
+var df = newDataFrame()
+# compute transmission for Si₃N₄ (known density and desired length)
+df.add Si₃N₄.compTrans(3.44.g•cm⁻³, 300.nm.to(Meter))
+# and for 2μm of mylar
+df.add mylar.compTrans(1.4.g•cm⁻³, 2.μm.to(Meter))
+# create a plot for the transmissions
+echo df
+let dS = r"$\SI{300}{nm}$" #pretty(300.nm, 3, short = true)
+let dM = r"$\SI{2}{\micro\meter}$" #pretty(2.μm, 1, short = true)
+let si = r"$\mathrm{Si}₃\mathrm{N}₄$"
+ggplot(df, aes("Energy [keV]", "Trans", color = "Compound")) +
+  geom_line() +
+  xlab("Energy [keV]") + ylab("Transmission") +
+  xlim(0.0, 3.0) + 
+  ggtitle(r"Transmission examples of $# $# and $# Mylar" % [dS, si, dM]) +
+  ggsave("/home/basti/phd/Figs/detector/window_transmisson_comparison.pdf",
+         #width = 800, height = 600,
+         useTex = true, standalone = true) 
+#+end_src
+
 
 ** Septemboard - 6 GridPixes around a center one
 :PROPERTIES:
-:CUSTOM_ID: sec:septemboard
+:CUSTOM_ID: sec:detector:septemboard
 :END:
 
 The main motivation for extending the readout area from a single chip
