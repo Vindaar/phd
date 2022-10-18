@@ -3422,30 +3422,9 @@ latter potentially allows to differentiate between a muon traversing
 orthogonally through the readout plane and an X-ray due to their
 longitudinal shape difference.
 
-*** Aim
 
-Show what hardware. V1792. Picture etc.
 
-*SCHEMATIC OF FADC CLOSING TIMEPIX SHUTTER*
 
-FADC: required for trigger + some time information of events.
-
-Flash ADC. Fast ADC. 1024 channels, cyclic register.
-
-Used at 1 GHz, i.e. covering ~1 μs?
-
-Explain shortly how the raw data is converted to something useful.
-
-*** Description
-
-*** Pedestals & signal reconstruction
-
-Yes, this needs to be about essentially a FADC calibration.
-
-*ALL THE SIGNAL RECONSTRUCTION GOES TO A CHAPTER LATER WHERE WE EXPLAIN INGRID RECO*
-
-Before the FADC data can be used, the raw data needs to be converted
-from the internal, cyclic representation into a 10240 long array.
 
 ...
 
@@ -4086,7 +4065,39 @@ Show function that is being fitted to it.
 Explain how all charge values combined as a histogram generate a
 ~Pólya distribution from which we can deduce the gas gain.
 
-* Detector installation at CAST & data taking                         :Part3:
+  
+
+* Data reconstruction
+#+LATEX: \minitoc
+** FADC
+
+*** Pedestals & signal reconstruction
+
+Yes, this needs to be about essentially a FADC calibration.
+
+*ALL THE SIGNAL RECONSTRUCTION GOES TO A CHAPTER LATER WHERE WE EXPLAIN INGRID RECO*
+
+Before the FADC data can be used, the raw data needs to be converted
+from the internal, cyclic representation into a 10240 long array.
+
+...
+
+By default each channel of the FADC has an arbitrary value in the
+range between \num{0} to \num{10000}. This needs to be corrected for
+by taking a so called 'pedestal run'. It is simply a readout of the
+FADC in the absence of any signal. This pedestal run then is
+subtracted from each actual FADC event to remove the pedestal
+baseline. 
+
+*** Noise sensitive
+
+Because of the small amplitude of the associated signals induced on
+the grid, electromagnetic interference is a serious issue with this
+FADC setup. Ideally, the detector should be installed in a Faraday
+cage and a short, shielded LEMO cable should be used to connect it to
+the 
+
+
 
 * Detector installation at CAST & data taking                         :Part3:
 #+LATEX: \minitoc
