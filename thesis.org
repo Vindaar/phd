@@ -3928,14 +3928,584 @@ nim c -d:danger --threads:on plotBackgroundClusters.nim
 ./plotBackgroundClusters -f /tmp/lhood_2017_full_chip.h5 --useTikZ
 #+end_src
 
-
 *** GENERAL
 
 *REFERENCE* that schematic of how everything is connected is explained
 in the detector @ CAST? Or explain it here, then refer back?
 
+** Water cooling and temperature readout for the septemboard [0/1]
 
-** TODO Render done by Tobi. Exploded view.
+During development of the septemboard one particular set of problems
+manifested. While testing a prototype board with 5 active GridPix in a
+gaseous detector, the readout was plagued by excessive noise
+problems. The detector exhibited a large number of frames with more
+than \num{4096} active pixels (the limit for a zero suppressed
+readout) and common pixel values of \num{11810} indicating overrun ToT
+counters. On an occupancy (sum of all active pixels) of the individual
+chips, it is quite visible the data is clearly not due to cosmic
+background. Fig. [[fig:detector:occupancy_sparking_run_241]] shows such an
+occupancy with the color scale topping out at the $80^{\text{th}}$
+percentile of the counts for each chip individually. The chip in the
+bottom left shows a large number of sparks (overlapping half ellipses
+pointing downwards) at the top end. Especially the center chip in the
+top row shows highly structured activity, which is in contrast to the
+expectation of a homogeneous occupancy for a normal background
+run. In addition on all chips some level of general noise on certain
+pixels is visible (some being clearly more active than others
+resulting in a scatter of 'points').
+
+#+CAPTION: Occupancy of a testing background run with $\mathcal{O}(\SI{1}{s})$ long frames
+#+CAPTION: using septemboard F during development without any kind of cooling.
+#+NAME: fig:detector:occupancy_sparking_run_241
+[[~/phd/Figs/detector/sparking/sparking_occupancy_80_quantile_run_241.pdf]]
+
+The intermediate board and carrier board used during these tests were
+the first boards equipped with two PT1000 temperature sensors. One on
+the bottom side of the carrier board and another on the intermediate
+board. Each is read out using a =MAX31685= micro controllers. Both of
+which are communicated with via a =MCP2210= USB-to-SPI micro
+controllers over a single USB port on the intermediate board. The
+single =MCP2210= communicates with both temperature sensors via the
+Serial Peripheral Interface (SPI). In the run shown in
+fig. [[fig:detector:occupancy_sparking_run_241]] the temperature sensors
+were not functional yet, as the readout software was not written
+yet. The required logic was added to the Timepix Operating System
+(TOS), the readout software of the detector, motivated by this noise
+activity to monitor the temperature before and during a data taking
+period. The temperature on the carrier board indicated temperatures on
+the order of \SI{75}{\degree\celsius} in background runs similar to
+the one of fig. [[fig:detector:occupancy_sparking_run_241]]. One way to
+get a measure for the noise like activity seen on the detector is to
+look at the rate of active pixels over time. With values well above
+numbers expected due to background, excess temperature seemed a
+possible cause for the issues. As no proper cooling mechanism was
+available, a regular desk fan was placed pointing at the detector when
+it was run without any kind of shielding. This saw the temperature
+under the carrier board drop from \SI{76}{\degree\celsius} down to
+\SI{68}{\degree\celsius}. As a result the majority of noise
+disappeared as can be seen in
+fig. \ref{fig:detector:sparking_run_with_fan_mean_hits} with the
+temperature curve during the full run in
+fig. \ref{fig:detector:sparking_run_with_fan_temps}. [fn:detector_sparking_run_268] [fn:detector_troubleshooting]
+
+The features visible in the occupancy plots are thus likely multiple
+different artifacts due to too high temperatures. A mixture of real
+sparks (bottom left chip in
+fig. [[fig:detector:occupancy_sparking_run_241]]), instabilities that
+possibly affect either voltages for the pixels (and thus change the
+thresholds of each pixel). As the temperature is measured on the
+bottom side of the carrier board, temperatures in the amplification
+region are likely significantly higher. As the gas gain is
+proportional to the temperature, it is possible slight height
+differences of the InGrid cause local amplification events, similar to
+a photomultiplier tube. 
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{./Figs/detector/sparking/temperature_sparking_run_268.pdf}
+    \caption{Temperature}
+    \label{fig:detector:sparking_run_with_fan_temps}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{./Figs/detector/sparking/mean_hit_rate_sparking_run_268.pdf}
+    \label{fig:detector:sparking_run_with_fan_mean_hits}
+    \caption{Mean hit rate}
+  \end{subfigure}
+  \label{fig:detector:sparking_run_with_fan}
+  \caption{\subref{fig:detector:sparking_run_with_fan_temps} shows the temperature on the bottom side of the
+    carrier board ('septem') and intermediate board ('IMB') during the background run. The point at which
+    the desk fan is placed next to the detector is clearly visible by the \SI{8}{\degree\celsius} drop in
+    temperature from about \SI{76}{\degree\celsius} to \SI{68}{\degree\celsius}. 
+    \subref{fig:detector:sparking_run_with_fan_mean_hits} shows the mean hit rate of each of the 5 chips
+    installed on the carrier board at the time during the same run. The placement of the desk fan is easily
+    visible as a reduction in mean rate on all chips.
+  }
+\end{figure}
+
+Following this a bespoke water cooling was designed made from
+oxygen-free copper with *X MM* holes for water to circulate through
+the copper body. The body has the same diameter as the intermediate
+board and is installed right below. The water circulation is handled
+by an off-the-shelf pump and radiator from
+Alphacool [fn:detector_alphacool] intended for water cooling setups
+for desktop computers. The pump manages a water flow rate of about
+\SI{0.3}{\liter\per\minute} through the small holes in the copper. In
+common operation the temperatures on the carrier board are between
+\SIrange{45}{50}{\degree\celsius} and noise free operation is
+possible. 
+
+- [ ] *REF TOBI THESIS & UPCOMING PAPER*
+
+
+
+
+
+
+- [ ] *REFERENCE CODE TO TEMP READOUT?*
+
+[fn:detector_troubleshooting] The realization that the issues are
+purely due to temperature effects was only after several months of
+eliminating many other options, both on the software as well as the
+hardware side. In particular power supply instabilities were long
+considered to be a source of problems. While they possibly also had an
+impact, better power supplies were built with larger capacitors to
+better deal with large variations in required power. 
+
+[fn:detector_alphacool] https://www.alphacool.com/
+
+[fn:detector_sparking_run_268] See the full thesis version for the
+occupancy of the run with temperature readout in the subsection
+after this if interested.
+
+*** Sparking behavior :noexport:
+
+See the mails containing "Septem F" (among other things) for the
+information about sparking behavior. From that we can also deduce the
+run numbers of the noisy runs (run 241 is one of them); just keep in
+mind that the run numbers are overlapping with some CAST run numbers,
+as for CAST we started again at 0.
+
+Specific run path of noisy run used in occupancy plot above:
+=Run_241_170216-13-49=
+So run from February 2017.
+
+
+Let's plot the temperature during the sparking run in which we
+installed the fan.
+
+This is essentially a reproducible version of the following plot:
+[[file:~/org/Figs/temps_plot_septemF_76_68deg_1s.pdf]]
+#+begin_src nim :tangle /home/basti/phd/code/sparking_temperature.nim
+import ggplotnim, times
+
+const path = "/mnt/1TB/CAST/2017/development/Run_268_170418-05-43/temp_log.txt"
+
+proc p(x: string): DateTime =
+  result = x.parse("YYYY-MM-dd'.'HH:mm:ss", local())
+let df = readCsv(path, sep = '\t', skipLines = 2, colNames = @["IMB", "Septem", "DateTime"])
+  .filter(f{string -> bool: p(`DateTime`) < initDateTime(19, mApr, 2017, 0, 0, 0, 0, local())})
+  .gather(@["IMB", "Septem"], "Type", "Temperature")
+  .mutate(f{"Timestamp" ~ p(`DateTime`).toTime().toUnix()})
+
+## XXX: fix plotting of string columns as date scales, due to discrete / continuous mismatch and lacking
+## `dataScale` field
+ggplot(df, aes("Timestamp", "Temperature", color = "Type")) +
+  geom_line() +
+  # scale_x_continuous() +
+  ggtitle("Temperature during run on 2017/04/18 in which fan was placed next to detector") + 
+  xlab("Time of day") + ylab("Temperature [°C]") +
+  margin(top = 2.0) + 
+  scale_x_date(isTimestamp = true,
+               formatString = "HH:mm:ss",
+               dateSpacing = initDuration(hours = 2),
+               dateAlgo = dtaAddDuration,
+               timeZone = local()) +                
+  ggsave("/home/basti/phd/Figs/detector/sparking/temperature_sparking_run_268.pdf")
+df.writeCsv("/home/basti/phd/resources/temperature_sparking_run_268.csv")  
+#+end_src
+
+#+RESULTS:
+| INFO: The integer column `Timestamp` has been automatically determined to be continuous. To overwrite this behavior add a `+ scale_x/y_discrete()` call to the plotting chain. Choose `x` or `y` depending on which axis this column refers to. Or apply a `factor` to the column name in the `aes` call | i.e. `aes(... | Timestamp | ...)`. |
+
+Next up we need to compute the mean hit rate of the four most active
+chips and plot it against time.
+
+How will we go about doing that? Read and reconstruct the run, then
+manually extract hits per time, bin by time and that's it?
+
+#+begin_src sh
+cd /mnt/1TB/CAST/2017/development/
+raw_data_manipulation -p Run_268_170418-05-43 --runType background --out raw_268_sparking.h5
+reconstruction raw_268_sparking.h5 --out reco_268_sparking.h5
+#+end_src
+
+With the resulting file, we can now generate the plot of the hits over
+time.
+
+This is a reproducible version of the following plot:
+[[file:~/org/Figs/hitrate_per_time_septemF_76_68deg_1s.pdf]]
+#+begin_src nim :tangle /home/basti/phd/code/sparking_hit_rate_over_time.nim
+import std / [options, sequtils, times]
+import ggplotnim, nimhdf5, unchained
+defUnit(Second⁻¹)
+import ingrid / tos_helpers
+const path = "/mnt/1TB/CAST/2017/development/reco_268_sparking.h5"
+let h5f = H5open(path, "r")
+
+var df = newDataFrame()
+var dfR = newDataFrame()
+for chip in 0 ..< 5:
+  let dsets = @["hits"]
+  let dfC = h5f.readRunDsets(
+    268,
+    chipDsets = some((chip: chip, dsets: dsets)),
+    commonDsets = @["timestamp"]
+  )
+    .mutate(f{"chip" <- chip})
+    .arrange("timestamp")
+  df.add dfC
+
+  # and directly compute the hit frequency
+  let hits = dfC["hits", int]
+  let time = dfC["timestamp", int]
+  let ts = time.map_inline((x - time[0]).s)
+  const Interval = 30.min
+  var i = 0
+  var rate = newSeq[Second⁻¹]()
+  var rateTime = newSeq[float]()
+  while i < time.len:
+    var h = 0
+    var Δt = 0.s
+    let t0 = time[i]
+    echo "Starting at t0 = ", t0
+    while Δt < Interval and i < time.len:
+      h += hits[i]
+      if i > 0:
+        Δt += ts[i] - ts[i-1]
+      inc i
+    rate.add (h.float / Δt)
+    echo "To ", time[i-1]
+    rateTime.add((time[i-1] + t0) / 2.0)
+    h = 0
+  dfR.add toDf({"rate" : rate.mapIt(it.float), rateTime, "chip" : chip})
+echo df
+echo dfR
+
+dfR = dfR.filter(f{int -> bool: fromUnix(`rateTime`).inZone(local()) < initDateTime(19, mApr, 2017, 0, 0, 0, 0, local())})
+ggplot(dfR, aes("rateTime", "rate", color = factor("chip"))) +
+  geom_point() +
+  scale_y_log10() + 
+  scale_x_date(isTimestamp = true,
+               formatString = "HH:mm:ss",
+               dateSpacing = initDuration(hours = 2),
+               dateAlgo = dtaAddDuration,
+               timeZone = local()) +                
+  ggsave("/home/basti/phd/Figs/detector/sparking/mean_hit_rate_sparking_run_268.pdf")
+
+dfR.writeCsv("/home/basti/phd/resources/mean_hit_rate_sparking_run_268.csv", precision = 10)
+#+end_src
+
+Finally, combine both and plot together:
+#+begin_src nim :tangle /home/basti/phd/code/temperature_and_sparking.nim
+import std / times
+import ggplotnim
+const path = "/home/basti/phd/resources/"
+let df = readCsv(path & "temperature_sparking_run_268.csv")
+let dfR = readCsv(path & "mean_hit_rate_sparking_run_268.csv")
+  .group_by("chip")
+  .mutate(f{"rateNorm" ~ `rate` / max(`rate`) * 80.0})
+  .rename(f{"Timestamp" <- "rateTime"})
+
+let sa = secAxis(name = "Hit rate [a.u.]",
+                 trans = f{1.0 / 80.0})
+                 #invTransFn = f{`rateNorm` * 80.0})
+
+ggplot(df, aes("Timestamp", "Temperature", color = "Type")) +
+  geom_line() +
+  geom_point(data = dfR, aes = aes("Timestamp", "rateNorm", color = factor("chip"))) + 
+  # ggtitle("Temperature during run on 2017/04/18 in which fan was placed next to detector") + 
+  xlab("Time of day") + ylab("Temperature [°C]") +
+  margin(top = 2.0) +
+  scale_y_continuous(secAxis = sa) + 
+  scale_x_date(isTimestamp = true,
+               formatString = "HH:mm:ss",
+               dateSpacing = initDuration(hours = 2),
+               dateAlgo = dtaAddDuration,
+               timeZone = local()) + 
+  legendPosition(0.835, 0.1) +
+  yMargin(0.05) + 
+  ggsave("/home/basti/phd/Figs/detector/sparking/temperature_and_sparking_run_268.pdf")
+
+#+end_src
+
+#+RESULTS:
+
+
+And finally, let's also recreate the occupancy plot
+[[file:Figs/occupancy_sparking_septem5chips_300V.pdf]] of run 241 during
+development to showcase the sparking behavior.
+
+In order to do that, we first need to reconstruct the run containing
+the data:
+#+begin_src sh
+cd /mnt/1TB/CAST/2017/development/
+raw_data_manipulation -p Run_241_170216-13-49 --runType background --out raw_241_sparking.h5
+reconstruction raw_241_sparking.h5 --out reco_241_sparking.h5
+#+end_src
+
+With the reconstructed data file at hand, we can first of all generate
+a large number of plots for each chip:
+#+begin_src sh
+plotData --h5file reco_241_sparking.h5 \
+         --runType rtBackground \
+         --config ~/CastData/ExternCode/TimepixAnalysis/Plotting/karaPlot/config.toml \
+         --ingrid --occupancy
+#+end_src
+which can be adjusted according to the user's preference of course.
+
+(For this plot in particular it's really important not use the =ToT=
+cutting feature in =raw_data_manipulation= via the =rmToTLow= and
+=rmToTHigh= in the =config.toml= file)
+
+With the file in place, let's now create the plot of the occupancies
+for each chip, embedded in the layout of the septemboard (at least for
+the 5 chips that were on this septemboard F).
+
+#+begin_src nim :tangle /home/basti/phd/code/occupancy_sparking_septem_layout.nim
+import std / os except FileInfo
+import std / strutils
+import ingrid / [tos_helpers, ingrid_types]
+import nimhdf5, ggplotnim, ginger
+
+## The Septemboard layout code is a port of the code used in the python based event 
+## display for TOS.
+
+const
+  Width = 14.1
+  Height = 14.1
+  BondHeight = 2.0
+  FullHeight = Height + BondHeight
+  NumChips = 7
+
+  # If this is set to `true` the final plot will only contain the actual raster image. No legend or axes
+  OnlyRaster = true
+
+  Run = 241
+
+type
+  SeptemRow = object
+    left: float
+    right: float
+    wspace: float
+    top: float
+    bottom: float
+
+## XXX: replace the logic by one where we compute the relative positions on a
+## 1x1 ratio grid for each chip separately instead of rows!
+
+proc initSeptemRow(nChips: int, x_size, y_size, x_dist, x_offset, y_t_offset, y_b_offset, dist_to_row_below: float): SeptemRow =
+  # this class implements a single row of chips of the septem board
+  # nChips: number of chips in row
+  # x_dist: distance in x direction between each chip
+  # x_offset: offset of left edge of first chip in row from
+  #           left side of center row
+  # calculate width and height of row, based on chips and dist
+  let width = nChips.float * Width + (nChips - 1).float * x_dist
+  let height_active = Height
+  let height_full = FullHeight + dist_to_row_below
+  # using calc gridspec one calculates the coordinates of the row on
+  # the figure in relative canvas coordinates
+  # include padding by adding or subtracting from left, right, top, bottom
+  result.left      = x_offset / x_size
+  result.right     = result.left + width / x_size
+  result.wspace    = x_dist / x_size
+  result.top       = 1.0 - y_t_offset / y_size
+  result.bottom    = result.top - height_active / y_size
+
+proc initSeptemBoard(padding, fig_x_size, fig_y_size, scaling_factor: float): seq[SeptemRow] =
+  # implements the septem board, being built from 3 septem rows
+
+  proc initRows(y_size, scaled_x_size, scaled_y_size, y_row1_row2, y_row2_row3, row2_x_dist: float): seq[SeptemRow] =
+    # this function creates the row objects for the septem class
+    # calculation of row 1 top and bottom (in abs. coords.):
+    let
+      # (top need to add padding to top of row 1)
+      row1_y_top    = y_size - BondHeight - Height
+      # bottom in abs. coords.
+      row1_y_bottom = 2 * FullHeight + y_row1_row2 + y_row2_row3 - Height
+      # offset of left side from septem in abs. coords.
+      row1_x_offset = 6.95
+    # now create the first row with all absolute coordinates
+    result.add initSeptemRow(2, scaled_x_size, scaled_y_size, 0.85, row1_x_offset, row1_y_top, row1_y_bottom, y_row1_row2)
+    # calculation of row 2 top and bottom (top & bottom of row2 not affected by padding):
+    let
+      row2_y_top    = y_size - FullHeight - y_row1_row2 - Height
+      row2_y_bottom = FullHeight + y_row2_row3 + BondHeight - Height
+      # no offset for row2, defines our left most position in abs. coords.
+      row2_x_offset = 0.0 #padding * x_size
+    result.add initSeptemRow(3, scaled_x_size, scaled_y_size, row2_x_dist, row2_x_offset, row2_y_top, row2_y_bottom, y_row2_row3)
+    # calculation of row 3 top and bottom (add padding to bottom):
+    let
+      row3_y_top    = y_size - 2 * FullHeight - y_row1_row2 - y_row2_row3 - Height
+      row3_y_bottom = BondHeight - Height
+      row3_x_offset = 7.22
+    result.add initSeptemRow(2, scaled_x_size, scaled_y_size, 0.35, row3_x_offset, row3_y_top, row3_y_bottom, 0)
+
+  # include a padding all around the septem event display of 'padding'
+  # use size of figure to scale septem accordingly to have it always properly
+  # scaled for the given figure
+  # take the inverse of the scaling factor (want 1/2 as input to scale to half size)
+  let scaling_factor = 1.0 / scaling_factor
+  # first calculate the ratio of the figure
+  let fig_ratio = float(fig_x_size) / float(fig_y_size)
+  # distances between different rows in absolute coordinates
+  let
+    y_row1_row2 = 0.38
+    y_row2_row3 = 3.1
+    # size in y direction of whole septem board in absolute coordinates
+    y_size      = 3 * FullHeight + y_row1_row2 + y_row2_row3
+    # already define row2_x_dist here (in absolute coordinates) to calculate x_size
+    row2_x_dist = 0.35
+    # 3 chips * width + 2 * distance between chips (in absolute coordinates)
+    x_size      = 3 * Width + (3 - 1) * row2_x_dist
+  # calculate the ratio of the septem board
+  var ratio = float(x_size) / float(y_size)
+  # now calculate the needed ratio to get the correct scaling of the septem on any
+  # figure scale. fig_ratio / own ratio
+  ratio = fig_ratio / ratio
+  let
+    # scaled x and y sizes
+    scaled_x_size = x_size * ratio * scaling_factor
+    scaled_y_size = y_size * scaling_factor
+  # and now create the row objects
+  result = initRows(y_size, scaled_x_size, scaled_y_size, y_row1_row2, y_row2_row3, row2_x_dist)
+
+proc readVlen(h5f: H5File,
+              fileInfo: FileInfo,
+              runNumber: int,
+              dsetName: string,
+              chipNumber = 0,
+              dtype: typedesc = float): seq[seq[dtype]] =
+  ## reads variable length data `dsetName` and returns it
+  ## In contrast to `read` this proc does *not* convert the data.
+  let vlenDtype = special_type(dtype)
+  let dset = h5f[(fileInfo.dataPath(runNumber, chipNumber).string / dsetName).dset_str]
+  result = dset[vlenDType, dtype]
+
+proc calcOccupancy[T](x, y: seq[seq[T]], z: seq[seq[uint16]] = @[]): Tensor[float] =
+  ## calculates the occupancy of the given x and y datasets
+  ## Either for a `seq[seq[T: SomeInteger]]` in which case we're calculating
+  ## the occupancy of a raw clusters or `seq[T: SomeFloat]` in which case
+  ## we're dealing with center positions of clusters
+  result = newTensor[float]([NPix, NPix])
+  # iterate over events
+  for i in 0 .. x.high:
+    let
+      xEv = x[i]
+      yEv = y[i]
+    var zEv: seq[uint16]
+    if z.len > 0:
+      zEv = z[i]
+    ## continue if full event.
+    ## TODO: replace by solution that also works for clusters!!
+    #if xEv.len >= 4095: continue
+    for j in 0 .. xEv.high:
+      if zEv.len > 0:
+        result[xEv[j].int, yEv[j].int] += zEv[j].float
+      else:
+        result[xEv[j].int, yEv[j].int] += 1.0
+
+proc occForChip(h5f: H5File, chip: int, fileInfo: FileInfo): (Tensor[int], Tensor[int], Tensor[float]) =        
+  const NPix = 256
+  let
+    xD = h5f.readVlen(fileInfo, Run, "x", chip, dtype = uint8)
+    yD = h5f.readVlen(fileInfo, Run, "y", chip, dtype = uint8)
+    zD = h5f.readVlen(fileInfo, Run, "ToT", chip, dtype = uint16)
+  let occ = calcOccupancy(xD, yD) # , zD)
+  var
+    x = newTensorUninit[int](NPix * NPix)
+    y = newTensorUninit[int](NPix * NPix)
+    z = newTensorUninit[float](NPix * NPix)
+  var i = 0
+  for idx, val in occ:
+    x[i] = idx[0]
+    y[i] = idx[1]
+    z[i] = val
+    inc i
+  result = (x, y, z)
+      
+proc handleOccupancy(h5f: H5File,
+                     chip: int,
+                     fileInfo: FileInfo,
+                     quant: float = 0.0): PlotView =
+  # get x and y datasets, stack and get occupancies
+  let (x, y, z) = h5f.occForChip(chip, fileInfo)
+  let df = toDf(x, y, z)
+  var quant = quant
+  if quant == 0.0:
+    quant = percentile(z, 80)
+  result = ggcreate(
+    block:
+      var plt = 
+        ggplot(df, aes("x", "y", fill = "z"), backend = bkCairo) +
+          geom_raster() +
+          scale_fill_continuous(scale = (low: 0.0, high: quant)) + #high: 1600.0)) +
+          xlim(0, NPix) + ylim(0, NPix)
+      if OnlyRaster:
+        plt = plt + theme_void() + hideLegend()
+      plt
+  )
+  #ggplot(df, aes("x", "y", fill = "z"), backend = bkCairo) +
+  #    geom_raster() +
+  #    scale_fill_continuous(scale = (low: 0.0, high: 1600.0)) +
+  #    xlim(0, NPix) + ylim(0, NPix) +
+  #    ggsave("/t/test_occ_0_.pdf")
+
+proc drawBounds(v: Viewport) =
+  v.drawBoundary(writeName = true)
+  for ch in mitems(v.children):
+    ch.drawBounds()
+
+proc calcQuantileChip3(h5f: H5File, fileInfo: FileInfo): float =
+  let (x, y, z) = h5f.occForChip(3, fileInfo)
+  result = percentile(z, 80)  
+
+proc addRow(view: Viewport, h5f: H5File, septem: seq[SeptemRow], fileInfo: FileInfo, i, num, chipStart: int, showEmpty = false) =
+  let width = septem[i].right - septem[i].left
+  let height = septem[i].top - septem[i].bottom
+
+  var row = view.addViewport(left = septem[i].left, bottom = septem[i].bottom,
+                             width = width, height = height)
+  row.layout(num, 1) #, margin = quant(septem[i].wspace, ukRelative))
+
+  #let quant = calcQuantileChip3()
+  
+  for j in 0 ..< num:
+    if not showEmpty:
+      let plt = handleOccupancy(h5f, chipStart + j, fileInfo) #, quant)
+      let v = if OnlyRaster: plt.view[4] else: plt.view
+      var pltView = v.relativeTo(row[j]) 
+      row.embedAt(j, pltView)
+    row[j].drawBoundary()
+
+  view.children.add row
+
+## Read the data from the reconstructed H5 file of run 241
+const path = "/mnt/1TB/CAST/2017/development/reco_$#_sparking.h5" % $Run
+let h5f = H5open(path, "r")
+let fileInfo = getFileInfo(h5f)
+
+let
+  fig_x_size = 10.0
+  fig_y_size = 12.04186
+  ratio = fig_x_size / fig_y_size
+
+let septem = initSeptemBoard(0.0, fig_x_size, fig_y_size, 1.0)
+let ImageSize = fig_x_size * DPI
+let view = initViewport(c(0.0, 0.0),
+                        quant(fig_x_size, ukInch), quant(fig_y_size, ukInch), backend = bkCairo,
+                        wImg = ImageSize, hImg = ImageSize / ratio)
+
+view.addRow(h5f, septem, fileInfo, 0, 2, 5, showEmpty = true)
+view.addRow(h5f, septem, fileInfo, 1, 3, 2)
+view.addRow(h5f, septem, fileInfo, 2, 2, 0)
+
+view.draw("/home/basti/phd/Figs/sparking_occupancy_80_quantile_run_$#.pdf" % $Run)
+#+end_src
+
+Running the above code for run 268 (the run we installed the fan and
+had temperature readout) yields fig. [[fig:detector:occupancy_sparking_run_268]].
+
+#+CAPTION: Occupancy of a testing background run with $\mathcal{O}(\SI{1}{s})$ long frames
+#+CAPTION: using septemboard F during development without any kind of cooling and temperature
+#+CAPTION: logging. Temperatures on the underside of the carrier board reached \SI{76}{\degree\celsius}
+#+CAPTION: before the fan was placed next to it.
+#+NAME: fig:detector:occupancy_sparking_run_268
+[[~/phd/Figs/sparking_occupancy_80_quantile_run_268.pdf]]
+
 :PROPERTIES:
 :CUSTOM_ID: sec:full_septemboard_detector
 :END:
