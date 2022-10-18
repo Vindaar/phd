@@ -6929,4 +6929,135 @@ great), @yglukhov (nimpy in particular!!)
 #+LATEX: \listoftables{}
 
 
+** Calibration measurements of the veto scintillator paddle
 
+The following is a set of notes taken when calibrating the
+scintillator paddle in the RD51 *RD51 OR RD52???* laboratory. It is
+reproduced here for transparency and completeness.
+
+*** Scintillator paddle calibrations [0/2]
+
+This document contains the data for the calibration of the MM veto
+scintillator. It is a 'report' created while data taking and thus may
+contain conflicting information. Not to be understood as a simple
+reference protocol.
+
+The scintillator has a Canberra 2007 base, which accepts positive
+HV. The PMT is a Bicron Corp. 31.49x15.74M2BC408/2-X, where the first
+two numbers are the scintillators dimensions in inch.
+
+=For calibration we're using $\SI{1400}{\volt}$, while Juanan
+mentioned in his mail to use $\SI{1200}{\volt}$ during data taking.=
+
+For calibration we're using an Ortec 9302 amplifier after the PMT with
+a gain of 20. This is fed into an LRS 621CL discriminator. The PMT and
+base are used at a HV of $+\SI{1200}{\volt}$.
+
+Scintillator is of size $\SI{42}{\cm}$ times $\SI{82}{\cm}$. Which is
+an area of
+#+BEGIN_SRC nim
+let x = 0.42
+let y = 0.82
+echo x * y 
+#+END_SRC
+
+#+RESULTS:
+: 0.3444
+
+- [ ] *TODO: CROSS CHECK THESE NUMBERS HERE*
+
+At a cosmic muon rate of $\sim\SI{100}{\hertz \per \meter \squared
+\steradian}$, the expected signal rate of munons is thus $\sim
+\SI{33}{\hertz}$.
+
+#+BEGIN_SRC nim
+let area = 0.34
+let total_muons = 60000.0
+echo area * total_muons
+#+END_SRC
+
+#+RESULTS:
+: 20400.0
+
+- [ ] *UPDATE*: Muon rate about $\SI{1}{cm^{-2}.min^{-1}} \approx \SI{166.67}{m^{-2}.s^{-1}}$
+
+**** Calibration
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+Threshold values are scaled by a factor of 10. Coincedence using
+Theodoros 2 scintillator paddles in RD51 lab. 
+- upper scinti: $\SI{-2070}{\volt}$
+- lower scinti: $\SI{-2050}{\volt}$
+
+Measurement time for each value: $\SI{10}{\minute}$
+
+Note: The reason the coincidences are much lower than the single
+scintillator counts is of course due to the much smaller coincidence
+area of the small scintillators used for the measurement.
+
+| Threshold / mV | Counts Szinti | Counts Coincedence |
+|----------------+---------------+--------------------|
+|         -301.9 |         24062 |                760 |
+|           -399 |         13332 |                496 |
+|           -498 |          6584 |                300 |
+|           -603 |          3363 |                167 |
+|           -699 |          1900 |                104 |
+|           -802 |          1087 |                 83 |
+|           -901 |           651 |                 54 |
+|          -1005 |           523 |                 50 |
+|          -1104 |           361 |                 32 |
+|          -1203 |           231 |                 32 |
+|          -1305 |           189 |                 38 |
+|          -1400 |           151 |                 23 |
+|          -1502 |            96 |                 14 |
+|          -1602 |            78 |                 15 |
+|          -1703 |            72 |                 10 |
+|          -1802 |            58 |                 11 |
+|                |               |                    |
+
+Second set of measurements around interesting point of
+$\SI{1000}{\milli\volt}$
+
+| Threshold / mV | Counts Szinti | Counts Coincedence |
+|----------------+---------------+--------------------|
+|          -1200 |           259 |                 35 |
+|          -1100 |           350 |                 34 |
+|          -1000 |           456 |                 48 |
+|           -900 |           774 |                 42 |
+
+A third measurement using an amplifier after the PMT, since the output
+signal of the PMT is so small (see mail of JuanAn). Now the HV was
+lowered to $\SI{1200}{\volt}$ again, since it is not necessary.
+
+| Threshold / mV | Counts Szinti | Counts Coincedence |
+|----------------+---------------+--------------------|
+|           -598 |         31221 |                634 |
+|           -700 |         30132 |                674 |
+|           -804 |         28893 |                635 |
+|           -903 |         28076 |                644 |
+|          -1005 |         27012 |                684 |
+|          -1103 |         25259 |                566 |
+|          -1200 |         22483 |                495 |
+|          -1303 |         19314 |                437 |
+|          -1403 |         16392 |                356 |
+|          -1505 |         13677 |                312 |
+|          -1600 |         11866 |                267 |
+|          -1701 |         10008 |                243 |
+|                |               |                    |
+
+|           -900 |         28263 |                892 |
+|          -1000 |         26789 |                991 |
+
+
+
+Export this table using org-table-export to
+[[file:data/veto_szinti_counts.txt]]. Then remove unnecessary last line
+and add # to beginning of first line.
+
+- [ ] *REWRITE TO USE AN INLINE GGPLOTNIM PLOTTING AND SHOW DATA*
+
+Then use [[file:PyS_mm_veto_szinti_calib.py]] to plot the data.
+
+A threshold of $\SI{-110}{\milli\volt} was selected, after analysis.
