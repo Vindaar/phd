@@ -4598,10 +4598,191 @@ offline flag to be used in the analysis.
 https://www.xilinx.com/products/boards-and-kits/ek-v6-ml605-g.html
 (visited 2022/10/17)
 
+** Detector efficiency [0/1]
 
-Flow rate!
+For the applications at CAST, the detector is filled with $\ce{Ar}$ / $\ce{iC_4 H_{10}}$ :
+\SI{97.7}{\%} / \SI{2.3}{\%} gas. Combined with its \SI{300}{nm}
+\ce{Si_3 N_4} window, the combined detection efficiency can be
+computed, if the \SI{20}{nm} \ce{Al} coating for the detector cathode
+is included by computing the product of the different
+efficiencies. The efficiency of the window and coating are the
+transmissions of X-rays at different energies for each material $t_i$. For
+the gas, the absorption probability of the gas $a_i$ is needed. As such
+
+\[
+ε_{\text{tot}} = t_{\ce{Si_3 N_4}} · t_{\ce{Al}} · a_{\ce{Ar} / \ce{iC_4H_{10}}}
+\]
+
+describes the full detector efficiency assuming the parts of the
+detector, which are not obstructed by the window strongbacks. For a
+statistical measure of detection efficiency the occlusion of the
+window needs to be taken into account. Because it is position
+(and thus area) dependent, the need to include it is decided on a case
+by case basis. For the absorption of a gas mixture, we can use
+Dalton's law and compute the absorption of the individual gases according
+to their mole fractions (their percentage as indicated by the gas
+mixture) and then compute it for each partial pressure
+
+\[
+a_i = \text{Absorption}(P_{\text{total}} · f_i)
+\]
+
+where $P_{\text{total}}$ is the total pressure of the gas mixture (in
+this case \SI{1050}{mbar} and $f_i$ is the fraction of the gas
+$i$. 'Absorption' simply refers to the generic function computing the
+absorption for a gas at a given pressure (see sec. [[#sec:theory:daltons_law]]).
+
+The full combined efficiency as presented here is shown in
+fig. [[fig:detector:combined_efficiency]]. Different aspects dominate the
+combined efficiency (purple line) in different energy ranges. At
+energies above \SI{5}{keV} the probability of X-rays to not generate a
+photoelectron within the \SI{3}{cm} of drift distance becomes the
+major factor for a loss in efficiency. This means the combined
+efficiency at \SI{10}{keV} is slightly below \SI{30}{\percent}. The
+best combined efficiency of about \SI{95}{\percent} is reached at
+about \SI{3.75}{keV} where both the absorption is likely and the
+energy is high enough to transmit well through the window. The argon
+$K 1s$ absorption edge is clearly visible at around \SI{3.2}{keV}. At
+energies below the mean free path of X-rays is significantly longer as
+the $K 1s$ absorption is a significant factor in the possible
+generation of a photoelectron. The window leads to a similar, but inverse, effect
+namely due to the $K 1s$ line of \ce{Si} at around
+$\SI{1.84}{keV}$. Because transmission is desired through the window
+material, the efficiency /increases/ once we go below that
+energy. Finally, the nitrogen $K 1s$ line also contributes to an
+increase in efficiency once we cross below about \SI{400}{eV}. The
+average efficiencies in the energy ranges between \SIrange{0}{5}{keV} and
+\SIrange{0}{10}{keV} are *X* and *Y*, respectively.
+
+The improvement in efficiency at energies below \SI{3}{keV} in
+comparison to the mylar window used in the 2014/15 detector (see
+sec. [[#sec:detector:sin_window]]) leads to a significant
+improvement in possible signal detection at those energies, which is
+especially important for searches with peak fluxes around
+\SIrange{1}{2}{keV} as is the case for the axion-electron coupling or
+a possible chameleon coupling.
+
+#+CAPTION: Combined detection efficiency for the full detector, taking into account
+#+CAPTION: the gas filling of \SI{1050}{mbar} $\ce{Ar}$ / $\ce{iC_4 H_{10}}$, the \SI{300}{nm}
+#+CAPTION: \ce{Si_3 N_4} window and its \SI{20}{nm} \ce{Al} coating. 
+#+NAME: fig:detector:combined_efficiency
+[[~/phd/Figs/detector/detector_efficiency.pdf]]
+
+Outside of that, the general background rate expected from the
+detector should match and exceed the previous detector, due to the
+additional detector features. 
+
+- [ ] *ADD NUMBERS FOR AVERAGE EFFICIENCY IN RANGES, WHERE X AND Y*
+- [ ] *REPLACE BY NATIVE TIKZ PLOT + VEGA*  
+
+*** Calculation of full detection efficiency
+
+
+#+begin_src nim :tangle /home/basti/phd/code/detector_efficiency.nim
+import std / strutils
+import xrayAttenuation, ggplotnim
+# generate a compound of silicon and nitrogen with correct number of atoms
+let Si₃N₄ = compound((Si, 3), (N, 4))
+let al = Aluminium.init()
+
+# define energies in which to compute the transmission
+# (we don't start at 0, as at 0 energy the parameters are not well defined)
+let energies = linspace(0.03, 10.0, 1000)
+
+# instantiate an Argon instance
+let ar = Argon.init()
+# and isobutane
+let iso = compound((C, 4), (H, 10))
+
+proc compTrans[T: AnyCompound](el: T, ρ: g•cm⁻³, length: Meter): Column =
+  let df = toDf({ "Energy [keV]" : energies })
+    .mutate(f{float: "μ" ~ el.attenuationCoefficient(idx("Energy [keV]").keV).float},
+            f{float: "Trans" ~ transmission(`μ`.cm²•g⁻¹, ρ, length).float},
+            f{"Compound" <- el.name()})
+  result = df["Trans"]
+    
+var df = toDf({ "Energy [keV]" : energies })
+# compute transmission for Si₃N₄ (known density and desired length)
+df[Si₃N₄.name()] = Si₃N₄.compTrans(3.44.g•cm⁻³, 300.nm.to(Meter))
+# and aluminum coating
+df[al.name()] = al.compTrans(2.7.g•cm⁻³, 20.nm.to(Meter))
+
+# and now for the gas mixture.
+# first compute partial pressures
+const fracAr = 0.977
+const fracIso = 0.023
+# using it we can compute the density of each by partial pressure theorem (Dalton's law)
+let ρ_Ar = density(1050.mbar.to(Pascal) * fracAr, 293.K, ar.molarMass)
+let ρ_Iso = density(1050.mbar.to(Pascal) * fracIso, 293.K, iso.molarWeight)
+
+# now add transmission of argon and iso
+df[ar.name()] = ar.compTrans(ρ_Ar, 3.cm.to(Meter))
+df[iso.name()] = iso.compTrans(ρ_Iso, 3.cm.to(Meter))
+
+let nSiN = r"\SI{300}{nm} \ce{Si_3 N_4}"
+let nAl = r"\SI{20}{nm} \ce{Al}"
+let nAr = r"\SI{3}{cm} \ce{Ar} Absorption"
+let nIso = r"\SI{3}{cm} \ce{iC_4 H_{10}} Absorption"
+let nArIso = r"\SI{3}{cm} \SI{97.7}{\percent} \ce{Ar} / \SI{2.3}{\percent} \ce{iC_4 H_{10}}"
+
+# finally just need to combine all of them in useful ways
+# - argon + iso
+df = df.mutate(f{"Trans_ArIso" ~ `Argon` * `C4H10`},
+               f{"Abs ArIso" ~ 1.0 - `Trans_ArIso`},
+               f{"Abs Ar" ~ 1.0 - `Argon`},
+               f{"Abs Iso" ~ 1.0 - `C4H10`},
+               f{"Efficiency" ~ idx("Abs ArIso") * `Si3N4` * `Aluminium`})
+  .rename(f{nSiN <- "Si3N4"},
+          f{nAl <- "Aluminium"},
+          f{nAr <- "Abs Ar"},
+          f{nIso <- "Abs Iso"},
+          f{nArIso <- "Abs ArIso"}) # ,                    
+  .gather([nSiN, nAl, nAr, nIso, nArIso, "Efficiency"], "Material", "Efficiency")
+
+ggplot(df, aes("Energy [keV]", "Efficiency", color = "Material")) +
+  geom_line() +
+  xlab("Energy [keV]") + ylab("Efficiency") +
+  xlim(0.0, 10.0) + 
+  ggtitle(r"Transmission (absorption for gases) of relevant detector materials and combined \\" &
+    "detection efficiency of the Septemboard detector",
+    titleFont = font(10.0)) +
+  margin(top = 1.25, right = 2.0) +
+  legendPosition(0.42, 0.15) + 
+  ggsave("/home/basti/phd/Figs/detector/detector_efficiency.pdf",
+         #width = 800, height = 600,
+         useTex = true, standalone = true) 
+#+end_src
+
+* Data acquisition, detector monitoring and preparation            :Detector:
+#+LATEX: \minitoc
+Having introduced the detector used for the data taking in this
+thesis, we will now introduce the data acquisition software for the
+detector, discuss the data formats used for readout as well as the
+logging facilities. Further, we will introduce the calibrations
+performed for the Timepix to achieve a correct operation with a
+GridPix detector as well as the calibrations for the scintillators and
+FADC. Finally, we will present the monitoring tools to monitor the
+detector operation (different event displays) which are used for
+different data taking purposes.
+
+- introduce TOS
+- introduce data format
+- logging data (temperature)
+- different timepix calibrations (here?) maybe just introduce
+  different calibrations and then in data taking part talk about what
+  they actually look like?
+
+** Timepix Operating Firmware - TOF
+:PROPERTIES:
+:CUSTOM_ID: sec:daq:tof
+:END:
+
+
 
 ** TOS
+:PROPERTIES:
+:CUSTOM_ID: sec:daq:tos
+:END:
 
 *THIS NEEDS TO BE MOVED ELSEWHERE*
 
