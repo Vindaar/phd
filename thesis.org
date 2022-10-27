@@ -3878,7 +3878,7 @@ ggplot(df, aes("Energy [keV]", "Trans", color = "Compound")) +
 #+end_src
 
 
-** Septemboard - 6 GridPixes around a center one
+** Septemboard - 6 GridPixes around a center one [0/7]
 :PROPERTIES:
 :CUSTOM_ID: sec:detector:septemboard
 :END:
@@ -3902,10 +3902,38 @@ lowest background. Hence, improvements to larger areas are needed.
 *THE LATTER NEEDS MORE WORDING ELSEWHERE / CLUSTERING ALGORITHM EXPL /
 SEPTEM VETO*
 
+- [ ] *USE EXACT MEASURES OF THE TIMEPIX BASED ON TIMEPIX MANUAL*
+
+The septemboard is implemented in such a way to optimize the loss of
+active area due to bonding requirements and general manufacturing
+realities. As the Timepix ASIC is a \SI{16.1}{mm} by \SI{14.1}{mm}
+large chip (the bonding area adding \SI{2}{mm} on one side), the upper
+two rows are installed such that they are inverted to another. The
+bonding area is above the upper row and below the center row. The
+bottom row again has its bonding area below. This way the top two rows
+are as close together as realistically possible, with a decent gap on
+the order of \SI{2}{mm} between the middle and bottom row. Any gap is
+potentially problematic as it implies loss of signal in that area,
+complicating the possible reconstruction methods.
+
+All 7 GridPix are connected in a daisy-chained way. This means that in
+particular for data readout, each chip is read out one after
+another. The dead time for readouts therefore is approximately 7 times
+the readout time of a single Timepix. A single Timepix has a readout
+time of $\sim\SI{25}{ns}$ at a clock frequency of \SI{40}{MHz} (the
+frequency used for this detector). This leads to an expected readout
+time of the full septemboard of
+\SI{175}{ns}. [fn:detector_readout_time] Such a long readout time
+leads to a strong restriction of the possible applications for such a
+detector. Fortunately, for the use cases in a very low rate experiment
+such as CAST, long shutter times are possible, mitigating the effect
+on the fractional dead time to an extent.
+
 Fig. [[cluster_centers_likelihood]] shows a heatmap of all cluster centers
 during roughly \SI{2000}{\hour} of background data after passing these
 clusters through a likelihood based cut method aiming to filter out
-non X-ray like clusters. It is clearly visible that the further a
+non X-ray like clusters (details of this follow later in chapter
+*CHAPTER FOR LIKELIHOOD METHOD*). It is clearly visible that the further a
 cluster center is towards the chip edges, and especially the corners,
 the more likely it is to be considered an X-ray like cluster. This has
 an easy geometric explanation. Consider a perfect track traversing
@@ -3926,7 +3954,28 @@ regions with the most amount of background.
 - [ ] *SIDE BY SIDE INCLUDING A SEPTEM EVENT SHOWING TRACK CUT LEADS
   TO CIRCLE*
 
-- [ ] *MENTION SEPTEMBOARDS ARE NAMED BY LETTERS, WHICH ONE USED IN DETECTOR*  
+- [ ] *MENTION SEPTEMBOARDS ARE NAMED BY LETTERS, WHICH ONE USED IN
+  DETECTOR*
+
+- [ ] *SHOW SCHEMATIC OF LAYOUT*
+
+- [ ] *FIND OUT WHERE 25 NS READOUT FOR SINGLE TIMEPIX COMES FROM*
+
+- [ ] *READOUT TIME:*
+    #+begin_quote
+  The main driver for the readout speed is the time to readout the
+  complete matrix (one frame) from the chip and this value is fixed for
+  a given FCLOCK frequency. A frame consists of 917504 bits, which have
+  to be packed to the data stream. As the data is sampled with FCLOCK,
+  the same amount of clock cycles is needed, what defines the readout
+  time
+    #+end_quote
+   page 83 of Lupberger thesis. 917504 * 25ns (one clock at 40MHz) = 22.9442 ms per frame under
+  ideal conditions
+
+[fn:detector_readout_time] We will later see that the practical
+readout time of the final detector is closer to almost \SI{500}{ms}
+under high rate conditions.  
 
 *** Compute the cluster backgrounds                              :noexport:
 
