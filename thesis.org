@@ -5587,7 +5587,7 @@ shutter time is more useful.
 
 *** ToT calibration
 :PROPERTIES:
-:CUSTOM_ID: sec:tot_calibration
+:CUSTOM_ID: sec:daq:tot_calibration
 :END:
 
 The purpose of the ToT (\textbf{T}ime \textbf{o}ver
@@ -5697,9 +5697,95 @@ ideal =THL= value can be deduced.
 By calculating =THL= value at which half of all test pulses are
 recorded, we can compute the number of electrons corresponding to that
 =THL= DAC value, as we know the amplitude of the test pulse and thus
-number of injected electrons. 
+number of injected electrons.
+
+Fig. [[fig:daq:s_curve_example]] shows an S-Curve scan of chip 0 of the
+Septemboard using the calibration from July 2018. The center peak in
+the middle is the noise peak of the detector at the shutter length
+used for the S-Curve scan. The symmetrical shape is due to specific
+implementation details of how the pixels function, the upper side is
+the one of interest. The falling edge of each curve can be fit by the
+cumulative distribution function of a normal distribution. The center
+point (half way between both plateaus) corresponds to the effective
+threshold of the detector at that injected charge.
+
+- [ ] *TURN INTO IF ELSE FUNCTION FOR z* (defined in seqmath)
+  #+begin_src nim
+  let z = (x - x0) / (sigma * sqrt(2.0))
+  if z > 1.0:
+    result = 0.5 * erfc(z)
+  else:
+    result = 0.5 * (1.0 - erf(z))
+
+  #+end_src
+
+#+NAME: eq:daq:s_curve_fit_function  
+\[
+f(μ, σ, N) = \frac{N}{2} · \text{erfc}((x - μ) / (σ * √2))
+\]
+
+where the parameter $N$ is simply a scaling factor and $μ$ represents
+the x value of the half-amplitude point. $σ$ is the spread of the drop
+and $\text{erfc}$ is the complementary error function $\text{erfc}(x)
+= 1 - \text{erf}(x)$. The error function is of course just the
+integral over a normal distribution up to the evaluation point $x$:
+
+\[
+\text{erf}(x) = \frac{2}{\sqrt{π}} ∫_0^{x} e^{-t²} dt
+\]
+
+Given that the number of injected electrons is known for each test
+pulse amplitude (see sec. [[#sec:daq:tot_calibration]]), we can compute
+the relationship of the number of electrons per =THL= value step. This
+is called the =THL= calibration and an example corresponding to
+fig. [[fig:daq:s_curves_example]] is shown in
+fig. [[fig:daq:thl_calibration_example]], where the =THL= values used
+correspond to the $μ$ parameters of
+eq. [[eq:daq:s_curve_fit_function]]. The resulting fit is useful, as it
+allows to easily convert a given =THL= DAC value into an effective
+number of electrons, which then corresponds to the effective threshold
+in electrons required to activate a pixel on average. When looking at
+the distribution of charges in a dataset, that cutoff in electrons is
+of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
+
+- [ ] *ADD FIT FUNCTION FOR SCURVE*
+
+- [ ] *REFER TO THE CODE THAT DOES THE FIT*
+  https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibration/calib_fitting.nim#L111
+
+#+CAPTION: S-Curve scan of chip 0 of the Septemboard using the calibration from
+#+CAPTION: July 2018. The scan works by injecting \num{1000} test pulses at different
+#+CAPTION: amplitudes onto the pixels. Each line represents one such measurement
+#+CAPTION: and each point is the mean number of counted hits for all pixels with injected
+#+CAPTION: test pulses.
+#+CAPTION: The center peak in the middle is the noise peak of the
+#+CAPTION: detector. The symmetrical shape is due to specific implementation
+#+CAPTION: details of how the pixels function. The upper side is the one of
+#+CAPTION: interest. The falling edge of each curve can be fit by the complement of the
+#+CAPTION: cumulative distribution function of a normal distribution. The center point
+#+CAPTION: (half way between both plateaus) corresponds to the effective threshold 
+#+CAPTION: of the detector at that injected charge. The fit parameters for all calibrations
+#+CAPTION: are shown in tab. *INSERT*.
+#+NAME: fig:daq:s_curves_example
+[[~/phd/Figs/detector/calibration/s_curves_0.pdf]]
+
+#+CAPTION: The =THL= calibration can be used to gauge the 'threshold gain' the
+#+CAPTION: =THL= DAC has on the number of electrons required to cross the threshold.
+#+CAPTION: The =THL= DAC in the Timepix normally adjusts the threshold by about
+#+CAPTION: \num{25} electrons per DAC value \cite{timepix_manual}. The root of the
+#+CAPTION: linear fit corresponds to the position of the noise peak in fig. [[fig:daq:s_curves_example]].
+#+NAME: fig:daq:thl_calibration_example
+[[~/phd/Figs/detector/calibration/thl_calibration_chip_0.pdf]]
 
 
+
+- [ ] *INSERT AND REFERENCE TABLE OF ALL FIT PARAMETERS FOR THE SCURVES*
+
+- [ ] *UNDERSTAND HOW WE CAN USE SCURVE TO DEDUCE THRESHOLD AND EXPLAIN IT*
+
+- [ ] *FIX PARAMETERS OF THL CALIBRATION. THEY ARE NONSENSICAL AND NOT ALIGNED*
+
+- [ ] *CHECK WHAT 25e/THL IS CALLED IN TABLE OF TIMEPIX MANUAL*
 
 - [ ] *ADD THAT AT EVEN LOWER VALUE WE JUST SEE NOISE AND THEN DUE TO
   IMPLEMENTATION DETAILS THE WHOLE THING INVERTS*
@@ -5729,6 +5815,8 @@ number of injected electrons.
 plotCalibration --scurve --chip 3 --runPeriod Run3 --useTeX
 #+end_src
 
+The following is essentially the main code required to plot and fit
+the SCurves (not the SCurve fit itself):
 #+begin_src nim :tangle /home/basti/phd/code/s_curve_electrons_per_thl.nim
 import std / [strutils, strscans, os, strformat]
 import ggplotnim
@@ -5786,7 +5874,7 @@ ggplot(df, aes("thls", "charges")) +
 
 *** Pólya distribution & gas gain
 :PROPERTIES:
-:CUSTOM_ID: sec:polya_distribution
+:CUSTOM_ID: sec:daq:polya_distribution_threshold
 :END:
 
 Explain how all charge values combined as a histogram generate a
@@ -7312,7 +7400,7 @@ that?
 
 
 After all geometrical properties have been computed, the next step is
-to apply the ToT calibration (sec. [[sec:tot_calibration]]) to the ToT
+to apply the ToT calibration (sec. [[sec:daq:tot_calibration]]) to the ToT
 values of all clusters, resulting in the equivalent charge in
 electrons. The charge values for all recorded pixels are then used to
 compute a histogram, which roughly follows a Pólya distribution
