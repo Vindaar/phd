@@ -5175,7 +5175,7 @@ A large amount of time spent
 *what else*
 
 
-** TODO schematic of whole readout chain
+** schematic of whole readout chain [0/1]
 
 *ELSEWHERE AS WELL?*
 
@@ -5186,7 +5186,9 @@ We have our notes about where each cable goes etc.
 We have a schematic in the master thesis. That can be modified a bit
 for the PhD thesis.
 
-** Detector calibrations etc.
+- [X] *THIS IS IN DETECTOR OVERVIEW NOW*
+
+** Timepix calibrations etc.
 
 *ELSEWHERE AS WELL*
 
@@ -5202,108 +5204,348 @@ Before a Timepix based detector can be used for data taking, different
 calibrations have to be performed.
 
 We will discuss the main calibrations that are performed, starting
-with a =THS= optimization (sec. [[=THS= optimization]]) , followed by the threshold
-equalization (sec [[Threshold equalization]]). Third is an S-Curve scan
+with a =THS= optimization and threshold equalization
+(sec. [[#sec:daq:ths_opt_equalization]]). Next, the S-Curve scan
 (sec. [[S-Curve scan]]) and finally the ToT calibration, section [[ToT
 calibration]]. In these the first 3 are calibrations that are used to
 set different DACs on the Timepix to 'good' values. The last
 calibration on the other hand is one to *interpret* the ToT values in
 amounts of charge.
 
+- [ ] *REPHRASE, SCURVE NOT TO SET A DAC. SCURVE USED TO ESTIMATE THE THRESHOLD IN ELECTRONS*
+
 In principle there are many other calibrations one could perform, as
 the Timepix has *CHECK NUMBER* 10 different DACs. Most are used with
 default values that are seen in *TABLE OF CALIBRATION*.
 
 These calibrations are mainly explained to give context for the used
-detector calibrations at CAST. All calibrations can be found in appendix *APPEND CALIBRATIONS*.
+detector calibrations at CAST. All calibrations can be found in
+appendix *APPEND CALIBRATIONS*.
 
-*** =THS= optimization
+Important references for the Timepix in general and for the
+calibration procedures explained below are
+\cite{LLOPART2007485_timepix, LlopartCudie_1056683, timepix_manual, lupberger2016pixel}.
 
-The =THS= DAC is one of the available DACs on the Timepix ASIC. It's
-purpose is to change the behavior of another DAC, the *WHAT IS THIS
-CALLED* which is present on each pixel. A change in the =THS= DAC
-yields a change in the relative range of the *PIXEL THR DAC*. 
+*** =THS= optimization and threshold equalization
+:PROPERTIES:
+:CUSTOM_ID: sec:daq:ths_opt_equalization
+:END:
 
-If the =THS= DAC is set too low *CHECK*, the 4 bit DAC on each pixel
-will be too coarse for a fine adjustment. If it is too high, not
-enough range will be available to adjust each pixel to an equal noise
-/ sensitivity level.
+For an optimal operation of a Timepix based detector, each pixel
+should ideally have the same threshold. While all pixels are
+theoretically identical, imperfections in the production process will
+always lead to slight differences, either locally (transistor
+threshold voltage or current mismatches
+\cite{LLOPART2007485_timepix,pelgrom1989matching} ) or global effects
+like small supply voltage instabilities. Therefore, each pixel has 4
+independently selectable current sources to minimize the spread of
+threshold values
+\cite{timepix_manual,LLOPART2007485_timepix}. Together all 4 sources
+act as an effective 4-bit DAC to slightly adjust the threshold. The
+absolute current for the 4 sources is dependent on the global =THS=
+DAC, allowing currents in the range of \SIrange{0}{40}{nA}.
 
-The calibration works by scanning a range of =THL= values (the global
-threshold DAC) through a subset of 4096 pixels on the given chip using
-pixel DAC values of 0 for all these pixels and doing the same at the
-maximum value of 15 for each pixel. For each of these two cases we can
-compute a histogram of the number of active pixels given different
-=THL= values. The resulting histogram will be a Gaussian around a
-specific =THL= value. An ideal =THS= value is such that these two
-Gaussians overlap at the 3σ level (*OR RMS?*), as it means the range
-of the 4 bit DAC is large enough to adjust all pixels to be at the
-same level in the threshold equalization (next calibration).
+To achieve a good calibration for a homogeneous threshold, first the
+=THS= DAC has to be set correctly. This is referred to as the =THS=
+optimization. Once the correct value is found, the 4-bit DAC on each
+pixel can be adjusted to minimize the spread of threshold values of
+all pixels together.
 
-*INSERT SOMEWHERE* For each =THL= value the shutter is opened
-shortly. If a pixel has a too low threshold, it will register random
-noise as a ToT signal. After closing the shutter the pixels will be
-read out and the resulting values are used. *bla*
+If the =THS= DAC is set too high, the 4-bit DAC on each pixel will be
+too coarse for a fine adjustment (as the 'current steps' will be too
+large). If it is too low, not enough range will be available to adjust
+each pixel to an equal noise / sensitivity level (not enough current
+available via the 4 current sources). The goal of the =THS=
+optimization is therefore to find just the right value, as to provide
+a range of values such that all values can be shifted to the same
+threshold of the threshold DAC =THL=.
 
-The actual calibration starts from a user given =THS= value and
-computes the two mentioned histograms. Then the =THS= value is halved
-and the same histograms are computed again. As the =THS= DAC is
-linear, the distance between the two histograms is computed for the
-first and second =THS= value. Then using a linear interpolation the
-ideal 3σ is computed and set.
+The algorithm scans a range of =THL= values through a subset of 4096
+pixels using pixel 4-bit DAC values first of 0 for all pixels and then
+the maximum value of 15. At each =THL= value and 4-bit value the
+number of hits due to pure noise is recorded for each pixel. The
+weighted mean of the =THL= values using the number of hits as weight
+is the value of interest for each pixel and each 4-bit DAC 0 and 15
+value, the effective =THL= noise value for that pixel. For each of the
+two cases we can then compute a histogram of the number of pixels at
+each =THL= value. The resulting histogram will be a normal
+distribution around a specific =THL= value. The stopping criterion,
+which defines the final =THS= value, is such that these two
+distributions overlap at the 3 RMS level. This is performed by
+comparing the means of the 0 and 15 value distribution at a starting
+=THS= value and again at half of that =THS= value. Using linear
+regression of the two differences, the optimal =THS= value is
+computed.
 
-_Note:_ for this calibration the =THL= range to scan is another user given
-input. All that matters for this range is to make sure the real
-threshold of the pixels lies within that range (such that the two
-Gaussians are fully within that range).
+- [ ] *I THINK THS OPT DOES NOT!! USE TEST PULSES* Yes, pretty sure
+  now. The THS optimization (and obviously threshold equalization)
+  does not use test pulses
 
-*PSEUDO CODE ALGORITHM?*
+- [ ] *INTRODUCE THE NAME 'PIXEL DAC' INSTEAD 4-BIT DAC?*  
+
+- [ ] *MAYBE REPHRASE THE FOLLOWING. BUT THIS IS WHAT'S HAPPENING. THE TOS CODE IS PRETTY SIMPLE, JUST BLOATED AND UGLY*
+
+With a suitable =THS= value set, the actual threshold equalization can
+start. The algorithm used is fundamentally very similar to the logic
+of the =THS= optimization. Each pixel of the chip is scanned for a
+range of =THL= values and the weighted =THL= noise mean is computed
+both at a 4-bit DAC value of 0 and at 15. The normalized deviation of
+each pixel's =THL= value to the mean =THL= value of all pixels is
+computed. Using a linear regression the optimal required shift (in
+units of the 4-bit DAC) yields the final 4-bit DAC value for each
+pixel.
+
+An example of the 0 and 15 value distributions as well as the
+distribution using the final 4-bit DAC values for each pixel is shown
+in fig. [[fig:daq:optimal_ths_distributions]]. [fn:daq_histo_source] Each
+of the distributions represent different 4-bit DAC settings of all
+pixels of the chip. Orange ("min") represents all pixels using a 4-bit
+DAC value of 0, purple ("max") of 15. In green is the same
+distribution for the case where every pixel uses its optimal 4-bit DAC
+value. The threshold equalization thus yields a very strong reduction
+in the =THL= spread of all pixels. Fig. [[fig:daq:4bit_dac_distribution]]
+shows how all pixels are spread in the values of the 4-bit DAC. The
+narrow equalized line of fig. [[fig:daq:optimal_ths_distributions]] is
+achieved by a normal distribution around \num{8} of the 4-bit DAC
+values, with only very few at the edges of the DAC (\num{0} and \num{15}).
+
+#+CAPTION: Distributions of different 4-bit DAC settings of all
+#+CAPTION: pixels of the chip. Orange ("min"): all pixels using a 4-bit
+#+CAPTION: DAC value of 0, purple ("max"): 15. Green: every pixel uses the
+#+CAPTION: optimal 4-bit DAC value after equalization. The result is a significant
+#+CAPTION: in =THL= value spread of all pixels.
+#+NAME: fig:daq:optimal_ths_distribution
+[[~/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf]]
+
+#+CAPTION: Distribution of all 4-bit DAC values for the pixels after the
+#+CAPTION: threshold equalization. A normal distribution around a middle
+#+CAPTION: value is expected to largest likelihood of achieving a flat
+#+CAPTION: threshold around the whole chip. Very few pixels are either in 
+#+CAPTION: value \num{0} or \num{15}, implying few pixels likely outside their
+#+CAPTION: range to adjust to the required threshold. In this example
+#+CAPTION: represented is the center chip of the Septemboard with its calibration
+#+CAPTION: from July 2018.
+#+NAME: fig:daq:4bit_dac_distribution
+[[~/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf]]
+
+#+CAPTION: Heatmap of the distribution of the 4-bit DAC values of all chips
+#+CAPTION: as they are spread over the full Timepix. In this example
+#+CAPTION: represented is the center chip of the Septemboard with its calibration
+#+CAPTION: from July 2018.
+#+NAME: fig:daq:4bit_dac_heatmap
+[[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_example.pdf]]
+
+
+- [ ] *FIRST EXPLAIN THS OPT, THEN EQ, BOTH USING THE PLOT*  
+
+- [X] *REWRITE BELOW FOLLOWING THE ABOVE NOW*
+- [X] *MENTION THIS IS TO MAKE EQUALIZATION OF EACH PIXEL DAC NICE*
+
+- [ ] *PSEUDO CODE ALGORITHM? I THINK IT WOULD CLARIFY THE EXPLANATION QUITE A BIT. ESPECIALLY BECAUSE IT'S NOT DIFFICULT. JUST TOS IS
+  UGLY*
 
 *PLOT OF THESE TWO HISTOGRAMS. SHOW MAYBE IDEALIZED EXAMPLE OF BAD THS
 AND GOOD THS VALUE*
 
-*LOOK AT TOS CODE AGAIN*
+- [X] *LOOK AT TOS CODE AGAIN*
+  
+- [X] *LOOK AT TOS CODE FOR EQUALIZATION AGAIN*
 
 *CROSS CHECK THE NAMES ETC*
 
-*** Threshold equalization
+[fn:daq_histo_source] The plot is generated from the
+=thresholdMeans.txt= file created as part of the equalization
+procedure in TOS.
 
-The threshold equalization requires the =THS= optimization to be done
-correctly. Its goal is to set each pixel DAC such that, in theory,
-each pixel has exactly the same =THL= threshold value.
 
-Essentially, the algorithm walks over all pixels and scans a user
-given =THL= range while changing the pixel DACs for each pixel to move
-the threshold to the same value.
+[fn:daq_tos_code_quality] Having to check out the TOS code to verify
+the logic of the THS optimization and equalization procedures reminded
+me of the abhorrent code quality of that code base. Holy moly...
 
-After equalization each pixel should in theory have the same threshold.
+**** Generate the plot for the THS optimization result :noexport:
 
-*UNDERSTAND THIS ALGORITHM*
+#+begin_src nim :tangle code/ths_optimization.nim
+import ggplotnim
 
-*** S-Curve scan
+proc main(fname: string) =
+  var df = readCsv(fname, sep = '\t', colNames = @["x", "y", "min", "max", "bit", "opt"])
+  let breaks = linspace(-0.5, 15.5, 17).toSeq1D
+  echo breaks
+  ggplot(df, aes("bit")) +
+    geom_histogram(breaks = breaks, hdKind = hdOutline) +
+    scale_x_continuous() +
+    xlim(-0.5, 16.5) +
+    xlab("4-bit DAC") + 
+    ggtitle("Distribution of all equalization bits after optimization") + 
+    ggsave("/home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf",
+           useTeX = true, standalone = true)
+  df = df.gather(["min", "max", "opt"], "type", "THL")
+  ggplot(df, aes("THL", fill = "type")) +
+    geom_histogram(binWidth = 1.0, position = "identity", hdKind = hdOutline, alpha = 0.7) +
+    ggtitle("THL distributions for all equalization bits at 0, 15 and optimized") +
+    ggsave("/home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf",
+           useTeX = true, standalone = true)
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
 
-The S-Curve scan is one of 2 different ways to determine the optimal
-=THL= value. 
+#+begin_src sh
+./code/ths_optimization -f ~/septemH_calibration/SeptemH_FullCalib_2018_2/chip3/thresholdMeans3.txt
+#+end_src
 
-It works by injecting charges onto each pixel and checking the pixel
-response of each pixel at different =THL= values. Below a certain
-=THL= value all pixels will respond to the injected charge. At some
-point certain pixels will be insensitive to the induced charge and a
-90° rotated "S" will form. By fitting an error function to this S an
-ideal =THL= value can be deduced. 
+#+begin_src nim :tangle code/threshold_equalization_heatmap.nim
+import ggplotnim
+import std / [sequtils, strutils]
 
-An alternative to this method is to simply scan all =THL= values by
-hand and look at the number of pixels active. For a correctly
-equalized chip a sharp drop off of noisy pixels should be visible at a
-certain threshold. In principle the =THL= value at which no more
-pixels are noisy is the ideal =THL= value.
+proc main(fname: string) =
+  let aranged = toSeq(0 .. 255).mapIt($it)
+  var df = readCsv(fname, sep = '\t', colNames = aranged)
+  df["y"] = toSeq(0 .. 255)
+  df = df.gather(aranged, "x", "4-bit DAC")
+    .mutate(f{"x" ~ `x`.parseInt})
+  echo df
+  
+  ggplot(df, aes("x", "y", fill = "4-bit DAC")) +
+    geom_raster() + 
+    #scale_x_continuous() +
+    #xlim(-0.5, 16.5) +
+    xlim(0, 255) + ylim(0, 255) + 
+    ggtitle("Distribution of all equalization bits after optimization as a heatmap") + 
+    ggsave("/home/basti/phd/Figs/detector/calibration/heatmap_threshold_equalization_example.pdf",
+           useTeX = true, standalone = true)
 
-However, one major issue of determining the threshold is one of
-shutter lengths, which complicates this idealized view. Each Timepix
-pixel has an electronic noise charge (ENC) of *CHECK THIS*
-electrons. Of course the behavior of the charges on the pixels are
-statistically distributed. For the different calibrations typically
-very short shutter opening times are used to get fast
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+#+begin_src sh
+./code/threshold_equalization_heatmap -f ~/septemH_calibration/SeptemH_FullCalib_2018_2/chip3/threshold3.txt
+#+end_src
+
+**** Relevant code for calculation of mean values from TOS :noexport:
+
+Filling of =sum= in =THscan=. =array_pos= is effectively the =THL=
+value currently being scanned. =pix_tempdata= is the response matrix
+of each pixel (contains hit counter for each pixel). Also fills
+=hit_counter=, which is simply the counts.
+#+begin_src c++
+    fpga->DataFPGAPC(pix_tempdata2,chp); //!!!only one chip!!!
+    for(short y=step;y<256;y+=(256/pix_per_row)){
+	for(short x=0;x<256;x++){
+	    if(pix_tempdata2[y][x]>=20 and pix_tempdata2[y][x]!=11810){
+		//if (pix_tempdata2[y][x]>=200) {std::cout << "hits for thl " << thl <<" :" << pix_tempdata2[y][x] << std::endl;}
+		p3DArray[y][x][array_pos] = pix_tempdata2[y][x];
+		//if(LFSR_LookUpTable[(*VecData)[chp][y][x]]>=20 and LFSR_LookUpTable[(*VecData)[chp][y][x]]!=11810){
+		//p3DArray[y][x][array_pos] = LFSR_LookUpTable[(*VecData)[chp][y][x]];
+		sum[y][x]+=p3DArray[y][x][array_pos]*(array_pos);
+		hit_counter[y][x]+=p3DArray[y][x][array_pos];
+	    }
+	    else{
+		p3DArray[y][x][array_pos] = 0;
+		sum[y][x]+=0;
+		hit_counter[y][x]+=0;
+	    }
+	}
+    }
+#+end_src
+And in the =THSopt= the code to compute the mean:
+
+#+begin_src c++
+	for(y=0;y<256;y++){
+	    for(x=0;x<256;x++){
+		if (hit_counter0[y][x]!=0){
+		    mean0[y][x] = sum0[y][x]/hit_counter0[y][x];
+		    mean0entries += 1;
+		    summean0 += mean0[y][x];
+		}
+		if (hit_counter15[y][x]!=0){
+		    mean15[y][x] = sum15[y][x]/hit_counter15[y][x];
+		    mean15entries += 1;
+		    summean15 += mean15[y][x];
+		}
+	    }
+	}
+#+end_src
+
+Length of shutter used is
+#+begin_src c++
+    // calling CountingTime with second argument == 1
+    // corresponds to n = 1, power of 256
+    fpga->CountingTime(10, 1);
+#+end_src
+(could compute the length, but not important right now)
+
+Given that the =THscan= is run for each THL value (and thus summing up
+all contributions of all THL values for =sum0=), the algorithm
+effectively computes:
+#+begin_src
+mean = Σ_i #hits_i * THL_i / Σ_i #hits_i
+#+end_src
+which is simply *the weighted mean of the =THL= value, weighted by the
+number of hits.* Essentially we compute the THL value with the most
+dominant noise? In a sense it makes sense as changing the 4-bit DAC
+will move around the position of that noise effectively. The 
+
+The point of interest then here is the fact that the number of hits
+depends on the THL value strongly. We only see the number of injected
+test pulses, if we're above the noise. Ideally we don't want to see
+any noise due to too low =THL= range. Therefore let's check what is
+used in TOS.
+
+We will verify this by computing the same value for an S-curve
+calibration file:
+#+begin_src nim
+import ggplotnim
+
+const path = "/home/basti/septemH_calibration/SCurve/chip_3/voltage_100.txt"
+let df = readCsv(path, sep = '\t', header = "#", colNames = @["THL", "counts"])
+  .filter(f{`THL` > 424})
+echo df
+let thls = df["THL", float]
+let counts = df["counts", float]
+var sum = 0.0
+var hits = 0.0
+for (thl, count) in zip(thls, counts):
+  sum += count * thl
+  hits += count
+echo "Mean value = ", sum / hits
+#+end_src
+
+#+RESULTS:
+| DataFrame |  with |      2 |           columns | and | 175 | rows: |
+|       Idx |   THL | counts |                   |     |     |       |
+|    dtype: |   int |    int |                   |     |     |       |
+|         0 |   425 |   1000 |                   |     |     |       |
+|         1 |   426 |   1000 |                   |     |     |       |
+|         2 |   427 |   1000 |                   |     |     |       |
+|         3 |   428 |   1000 |                   |     |     |       |
+|         4 |   429 |   1000 |                   |     |     |       |
+|         5 |   430 |   1000 |                   |     |     |       |
+|         6 |   431 |   1000 |                   |     |     |       |
+|         7 |   432 |   1000 |                   |     |     |       |
+|         8 |   433 |   1000 |                   |     |     |       |
+|         9 |   434 |   1000 |                   |     |     |       |
+|        10 |   435 |   1000 |                   |     |     |       |
+|        11 |   436 |   1000 |                   |     |     |       |
+|        12 |   437 |   1000 |                   |     |     |       |
+|        13 |   438 |   1000 |                   |     |     |       |
+|        14 |   439 |   1000 |                   |     |     |       |
+|        15 |   440 |   1000 |                   |     |     |       |
+|        16 |   441 |   1000 |                   |     |     |       |
+|        17 |   442 |   1000 |                   |     |     |       |
+|        18 |   443 |   1000 |                   |     |     |       |
+|        19 |   444 |   1000 |                   |     |     |       |
+|           |       |        |                   |     |     |       |
+|      Mean | value |      = | 463.8075954222876 |     |     |       |
+
+which results in a mean value of 463.8. Given the range of data
+that's, surprise, what we would expect from a weighted mean with the
+hit counter used.
+
+Of course, in the =THS= optimization the input is purely noise and not
+a fixed set of test pulses.
 calibrations. For practical data takings at experiments like CAST,
 very long shutter times on the order of $\mathcal{O}(> \SI{1}{\s})$ are
 used however. Due to the statistical nature of noise, a =THL= value
