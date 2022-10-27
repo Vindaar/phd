@@ -5669,6 +5669,121 @@ Required understanding for our charge calibration.
 
 Show function that is being fitted to it.
 
+- [ ] *NOTE: AS FAR AS I CAN TELL, THE TOT CALIBRATION ALREADY REQUIRES A CORRECT =THL= DAC VALUE!*
+
+*** S-Curve scan [0/3]
+:PROPERTIES:
+:CUSTOM_ID: sec:daq:scurve_scan
+:END:
+
+The S-Curve scan is one of 2 different ways to determine the optimal
+=THL= value.
+
+- [ ] *MAIN PURPOSE IS NOT!! THL VALUE DETERMINATION*
+
+
+The purpose of the S-curve scan is to understand the relationship
+between injected charges in electron and the =THL= DAC values by
+providing a ${\text{\# } e^-}/\mathtt{THL}\text{ step}$ number (or
+without a =ToT= calibration $\mathtt{ToT}/\mathtt{THL}$). 
+
+It works by injecting charges onto each pixel and checking the pixel
+response of each pixel at different =THL= values. Below a certain
+=THL= value all pixels will respond to the injected charge. At some
+point certain pixels will be insensitive to the induced charge and a
+90° rotated "S" will form. By fitting an error function to this S an
+ideal =THL= value can be deduced.
+
+By calculating =THL= value at which half of all test pulses are
+recorded, we can compute the number of electrons corresponding to that
+=THL= DAC value, as we know the amplitude of the test pulse and thus
+number of injected electrons. 
+
+
+
+- [ ] *ADD THAT AT EVEN LOWER VALUE WE JUST SEE NOISE AND THEN DUE TO
+  IMPLEMENTATION DETAILS THE WHOLE THING INVERTS*
+
+- [ ] *ADD ITS OWN SHORT SECTION ABOUT THRESHOLD SCANNING WITH BELOW
+  REWRITTEN TEXT*
+
+- [ ] *ADD NUMBER OF EXPECTED ELECTRONS A THRESHOLD AS MENTIONED IN TIMEPIX ORIGINAL PAPER*
+
+- [ ] *PLOT OF SCURVE SCANS*
+
+- [ ] *APPENDIX ALL SCURVE SCANS FOR CAST DATA TAKING*
+
+- [ ] *S-CURVE CAN BE USED TO DETERMINE #electron / THL DAC VALUE*
+  (first gets THL value against pulse height of course)
+- [ ] *MAKE THAT FIT AND SHOW EXAMPLE*
+
+**** Compute electrons per THL DAC value [0/1]                  :noexport:
+
+- [ ] *FIGURE OUT WHY 2017 CALIBRATION HAS ABOUT 50e/THL COMPARED TO
+  25e/THL!*
+
+- [ ] *REPLACE BELOW BY =plotCalibration= CALL?* That already handles
+  it, even though currently via plotly.
+
+#+begin_src sh
+plotCalibration --scurve --chip 3 --runPeriod Run3 --useTeX
+#+end_src
+
+#+begin_src nim :tangle /home/basti/phd/code/s_curve_electrons_per_thl.nim
+import std / [strutils, strscans, os, strformat]
+import ggplotnim
+import unchained
+
+proc charge(voltage: mV): UnitLess =
+  ## Returns the number of electrons given a voltage pulse of amplitude `voltage`
+  ## at the 8.fF capacitor of the Timepix1
+  result = 8.fF * voltage / e
+
+#const path = "/home/basti/septemH_calibration/SCurve/chip_3/voltage_*.txt"
+#const path = "/home/basti/septemH_calibration/CalibJul2018/SCurves/chip_1/voltage_*.txt"
+const path = "/home/basti/septemH_calibration/SeptemH_FullCalib_InGridDatabase/chip3/SCurve/voltage_*.txt"
+#const path = "/home/basti/septemH_calibration/SeptemH_FullCalib_2018_2/chip0/SCurve/voltage_*.txt"
+var charges = newSeq[float]()
+var thls = newSeq[int]()
+for file in walkFiles(path):
+  let (success, _, voltage) = scanTuple(file.extractFilename, "$*_$i.txt$.")
+  if voltage == 0: continue # skip 0
+  charges.add charge(voltage.mV)
+  ## we'll do the simplest approach to get the correct THL value:
+  ## - strip everything before noise peak (to have single THL value)
+  ## - compute
+  var df = readCsv(file, sep = '\t', header = "#", colNames = @["THL", "counts"])
+  let thlAtMax = df.filter(f{int: `counts` == `counts`.max})["THL", int][0] # must be single element
+  const TestPulses = 1000
+  df = df.filter(f{`THL` > thlAtMax})
+    .mutate(f{int: "DiffHalf" ~ abs(`counts` - TestPulses div 2)})
+    .filter(f{int: `DiffHalf` == min(col("DiffHalf"))}) # f{int: `DiffHalf` < 200})
+  thls.add df["THL", int][0] # must be single element
+
+import polynumeric
+let fit = polyFit(thls.toTensor.asType(float),
+                  charges.toTensor,
+                  polyOrder = 1)
+echo fit
+proc linear(x, m, b: float): float = m * x + b
+
+let thlFit = linspace(thls.min, thls.max, 10)
+let chargesFit = linspace(charges.min, charges.max, 10)
+var dfFit = toDf({ "thls" : thlFit,
+                   "charges" : thlFit.map_inline(linear(x, fit[1], fit[0])) })
+echo dfFit
+let df = toDf(thls, charges)
+
+ggplot(df, aes("thls", "charges")) + 
+  geom_point() +
+  geom_line(data = dfFit, aes = aes("thls", "charges"), color = parseHex("FF00FF")) +
+  xlab("THL DAC") + ylab("Injected charge [e⁻]") + 
+  ggtitle(&"Fit parameters: m = {fit[1]:.2f} e⁻/THL, b = {fit[0]:.2f} e⁻") +
+  ggsave("/home/basti/phd/Figs/charge_per_thl.pdf")
+#+end_src
+
+#+RESULTS:
+
 *** Pólya distribution & gas gain
 :PROPERTIES:
 :CUSTOM_ID: sec:polya_distribution
