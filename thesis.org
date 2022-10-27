@@ -5546,20 +5546,44 @@ hit counter used.
 
 Of course, in the =THS= optimization the input is purely noise and not
 a fixed set of test pulses.
+
+*** Final =THL= (threshold) DAC value selection [0/1]
+
+... THL scan at desired shutter length! Semi automatically. Scan a
+take no noise + 2
+
+Once the detector is =THS= optimized and threshold equalized, the
+final threshold value of the =THL= DAC can be determined for the data
+taking. While measurements like an S-Curve scan (see
+sec. [[#sec:daq:scurve_scan]]) can be used to understand where the noise
+level of the chip is in terms of =THL= values, it is typically not a
+reliable measure as the real noise depends strongly on the shutter
+length. If an experiment - like a low rate experiment as CAST -
+requires long shutter lengths, the best way to determine the lowest
+possible noise-free =THL= value is to perform a simple scan through
+all =THL= values using the shutter length in use for the experiment.
+
+For a correctly equalized chip a sharp drop off of noisy pixels should
+be visible at a certain threshold. In principle the =THL= value at
+which no more pixels are noisy is the ideal =THL= value.
+
+Each Timepix pixel has an electronic noise charge (ENC) of *CHECK
+THIS* electrons. Of course the behavior of the charges on the pixels
+are statistically distributed. For the different calibrations
+typically very short shutter opening times are used to get fast
 calibrations. For practical data takings at experiments like CAST,
-very long shutter times on the order of $\mathcal{O}(> \SI{1}{\s})$ are
-used however. Due to the statistical nature of noise, a =THL= value
-that is noise less may not be fully noise free for long
+very long shutter times on the order of $\mathcal{O}(> \SI{1}{\s})$
+are used however. Due to the statistical nature of noise, a =THL=
+value that is noise less may not be fully noise free for long
 shutters. Therefore, one often uses =THL= values that are slightly
-larger (i.e. ~5 values larger of the 10 bit DAC). 
+larger (i.e. ~3 values larger of the 10 bit DAC).
 
 In this sense the S-Curve scan is a good cross check for whether the
 =THL= value seems sensible, but in practice a =THL= scan with a longer
 shutter time is more useful. 
 
-*PLOT OF SCURVE SCANS*
-
-*APPENDIX ALL SCURVE SCANS FOR CAST DATA TAKING*
+- [ ] *CHECK ENC VALUE OF TIMEPIX AND CITE TIMEPIX PAPER*
+- [ ] *REWRITE FULL SECTION WITH A CLEAR HEAD*  
 
 *** ToT calibration
 :PROPERTIES:
