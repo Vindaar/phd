@@ -5792,10 +5792,31 @@ ggplot(df, aes("thls", "charges")) +
 Explain how all charge values combined as a histogram generate a
 ~Pólya distribution from which we can deduce the gas gain.
 
-  
 
-* Data reconstruction
+
+
+** Event display
+
+** Temperature monitoring
+
+** Scintillator calibration - maybe here after all?
+
+
+* Data reconstruction [0/1]
 #+LATEX: \minitoc
+
+- explain the whole data reconstruction pipeline? What we do with
+  ingrid data, clustering, reconstruction
+- everything up to energy calibration
+- [ ] wherever we finally show the real calibrations of the detector
+  for each run, show:
+  - the full FSR (for one chip, then differences for each,
+    particularly THS & THL)
+  - show plot of THL calibration from SCurves, with the THL value as a
+    "rectangle" line (from y axis to fit, down to x axis)
+  - in Polya plot show the theoretical threshold in electrons as a
+    vertical line (computed from the used THL DAC value and THL calibration)
+
 ** FADC
 
 *** Pedestals & signal reconstruction
@@ -5824,7 +5845,22 @@ FADC setup. Ideally, the detector should be installed in a Faraday
 cage and a short, shielded LEMO cable should be used to connect it to
 the 
 
+** Scintillator calibrations
 
+- [ ] *SIPM CALIBRATED IN BSC OF JANNES*
+
+- [ ] *VETO PADDLE CALIBRATED IN RD51*
+
+** FADC calibration
+
+FADC does not require a proper calibration. However, better
+measurements of the effect of the different integration /
+differentiation settings of the amplifier would have been very
+valuable. [fn:detector_fadc_amp_measurements]
+
+Outside of that 
+
+[fn:detector_fadc_amp_measurements] 
 
 * Detector installation at CAST & data taking                         :Part3:
 #+LATEX: \minitoc
@@ -8704,13 +8740,26 @@ great), @yglukhov (nimpy in particular!!)
 #+LATEX: \listoftables{}
 
 
-** Calibration measurements of the veto scintillator paddle
+** Calibrations
+
+*** Septemboard calibration
+
+Show all calibrations for each of the runs.
+
+That means, for all chips:
+- THS optimization & equalization bits
+- equalized matrix of all pixels  
+- ToT calibration
+- S-curves
+- fit to 50% point of S-curves to get #electrons / THL DAC value    
+
+*** Calibration measurements of the veto scintillator paddle
 
 The following is a set of notes taken when calibrating the
-scintillator paddle in the RD51 *RD51 OR RD52???* laboratory. It is
+scintillator paddle in the laboratory of the RD51 group at CERN. It is
 reproduced here for transparency and completeness.
 
-*** Scintillator paddle calibrations [0/2]
+**** Scintillator paddle calibrations [0/2]
 
 This document contains the data for the calibration of the MM veto
 scintillator. It is a 'report' created while data taking and thus may
@@ -8756,7 +8805,7 @@ echo area * total_muons
 
 - [ ] *UPDATE*: Muon rate about $\SI{1}{cm^{-2}.min^{-1}} \approx \SI{166.67}{m^{-2}.s^{-1}}$
 
-**** Calibration
+***** Calibration
 :PROPERTIES:
 :ORDERED:  t
 :END:
