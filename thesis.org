@@ -5792,6 +5792,8 @@ of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
 #+NAME: fig:daq:thl_calibration_example
 [[~/phd/Figs/detector/calibration/thl_calibration_chip_0.pdf]]
 
+
+
 - [ ] *FIX UP TYPESETTING OF FIT PARAMETERS IN THL PLOT*
 
 - [ ] *INSERT AND REFERENCE TABLE OF ALL FIT PARAMETERS FOR THE SCURVES*
@@ -5818,6 +5820,8 @@ of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
   (first gets THL value against pulse height of course)
 - [ ] *MAKE THAT FIT AND SHOW EXAMPLE*
 
+- [ ] *ADD EQUATION FOR MINIMUM DETECTABLE CHARGE AND GIVE A NUMBER*  
+
 **** Compute electrons per THL DAC value [0/2]                  :noexport:
 
 - [ ] *FIGURE OUT WHY 2017 CALIBRATION HAS ABOUT 50e/THL COMPARED TO
@@ -5826,9 +5830,17 @@ of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
 - [ ] *REPLACE BELOW BY =plotCalibration= CALL?* That already handles
   it, even though currently via plotly.
 
+
+For the S-Curve plot 
 #+begin_src sh
-plotCalibration --scurve --chip 3 --runPeriod Run3 --useTeX
+./plotCalibration --scurve --chip 0 --runPeriod Run3 --useTeX --legendX 200.0 --legendY 3800
 #+end_src
+and for the THL calibration:
+#+begin_src sh
+./plotCalibration --scurve --chip 0 --runPeriod Run3 --useTeX --legendX 422.0 --legendY 3550
+#+end_src
+the only difference being the legend placement (as the coordinates are
+applied to both plots).
 
 The following is essentially the main code required to plot the
 SCurves, determine the middle point and fit THL calib (not the SCurve
