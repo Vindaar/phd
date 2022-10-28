@@ -5783,12 +5783,14 @@ of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
 #+CAPTION: The =THL= calibration can be used to gauge the 'threshold gain' the
 #+CAPTION: =THL= DAC has on the number of electrons required to cross the threshold.
 #+CAPTION: The =THL= DAC in the Timepix normally adjusts the threshold by about
-#+CAPTION: \num{25} electrons per DAC value \cite{timepix_manual}. The root of the
-#+CAPTION: linear fit corresponds to the position of the noise peak in fig. [[fig:daq:s_curves_example]].
+#+CAPTION: \num{25} electrons per DAC value \cite{timepix_manual}, which is reproduced
+#+CAPTION: well here (parameter $1/m$). The root of the linear fit (written as
+#+CAPTION: $f⁻¹(y=0)$ in the annotation) corresponds to the position of the noise peak
+#+CAPTION: in fig. [[fig:daq:s_curves_example]].
 #+NAME: fig:daq:thl_calibration_example
 [[~/phd/Figs/detector/calibration/thl_calibration_chip_0.pdf]]
 
-
+- [ ] *FIX UP TYPESETTING OF FIT PARAMETERS IN THL PLOT*
 
 - [ ] *INSERT AND REFERENCE TABLE OF ALL FIT PARAMETERS FOR THE SCURVES*
 
@@ -5798,15 +5800,15 @@ of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
 
 - [ ] *CHECK WHAT 25e/THL IS CALLED IN TABLE OF TIMEPIX MANUAL*
 
-- [ ] *ADD THAT AT EVEN LOWER VALUE WE JUST SEE NOISE AND THEN DUE TO
+- [X] *ADD THAT AT EVEN LOWER VALUE WE JUST SEE NOISE AND THEN DUE TO
   IMPLEMENTATION DETAILS THE WHOLE THING INVERTS*
 
-- [ ] *ADD ITS OWN SHORT SECTION ABOUT THRESHOLD SCANNING WITH BELOW
+- [X] *ADD ITS OWN SHORT SECTION ABOUT THRESHOLD SCANNING WITH BELOW
   REWRITTEN TEXT*
 
 - [ ] *ADD NUMBER OF EXPECTED ELECTRONS A THRESHOLD AS MENTIONED IN TIMEPIX ORIGINAL PAPER*
 
-- [ ] *PLOT OF SCURVE SCANS*
+- [X] *PLOT OF SCURVE SCANS*
 
 - [ ] *APPENDIX ALL SCURVE SCANS FOR CAST DATA TAKING*
 
@@ -5814,7 +5816,7 @@ of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
   (first gets THL value against pulse height of course)
 - [ ] *MAKE THAT FIT AND SHOW EXAMPLE*
 
-**** Compute electrons per THL DAC value [0/1]                  :noexport:
+**** Compute electrons per THL DAC value [0/2]                  :noexport:
 
 - [ ] *FIGURE OUT WHY 2017 CALIBRATION HAS ABOUT 50e/THL COMPARED TO
   25e/THL!*
@@ -5826,8 +5828,9 @@ of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
 plotCalibration --scurve --chip 3 --runPeriod Run3 --useTeX
 #+end_src
 
-The following is essentially the main code required to plot and fit
-the SCurves (not the SCurve fit itself):
+The following is essentially the main code required to plot the
+SCurves, determine the middle point and fit THL calib (not the SCurve
+fit though):
 #+begin_src nim :tangle /home/basti/phd/code/s_curve_electrons_per_thl.nim
 import std / [strutils, strscans, os, strformat]
 import ggplotnim
