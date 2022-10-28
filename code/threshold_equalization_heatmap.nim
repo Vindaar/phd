@@ -14,7 +14,7 @@ proc main(fname: string) =
     #scale_x_continuous() +
     #xlim(-0.5, 16.5) +
     xlim(0, 255) + ylim(0, 255) + 
-    ggtitle("Distribution of all equalization bits after optimization as a heatmap") + 
+    ggtitle("Heatmap of all equalization bits after optimization") + 
     ggsave("/home/basti/phd/Figs/detector/calibration/heatmap_threshold_equalization_example.pdf",
            useTeX = true, standalone = true)
 
