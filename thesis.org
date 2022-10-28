@@ -5996,15 +5996,88 @@ calibrations.
 :CUSTOM_ID: sec:daq:polya_distribution_threshold
 :END:
 
+In a gaseous detector the gas amplification (see
+sec. [[sec:theory:gas_gain_polya]]) allows to easily exceed the minimum
+detectable charge of $\mathcal{O}(\SIrange{500}{1000}{e^-})$. The
+typically used =THL= threshold will be quite a bit higher than the
+'theoretical limit' however for multiple reasons. One can either
+compute the effective threshold in use based on the =THL= calibration
+as explained in sec. [[sec:daq:scurve_scan]], or use an experimental
+approach by utilizing the Pólya distribution as introduced in
+sec. [[#sec:theory:gas_gain_polya]]. By taking data over a certain period
+of time and computing a histogram of the charge values recorded by
+each pixel, a Pólya distribution naturally arises.
 
+This Pólya distribution has two different use cases. First of all it
+is the source of the empirical gas gain the detector actually operated
+under. On the one hand one of the parameters of the Pólya
+parametrization as introduced in section [[#sec:theory:gas_gain_polya]] is
+a measure for the gas gain. On the other hand, the mean of the
+histogram can also be used as a measure for the gas gain (which is the
+main number used in later chapters).
+
+Secondly, the Pólya can also be used to determine the actual
+activation threshold of the detector, by simply checking what the
+lowest charge is that sees significant statistics.
+
+- [X] *TALK ABOUT GAS GAIN*
+- [ ] *MAYBE MOVE EXPLANATION ABOUT HOW TO EXTRACT GAS GAIN FROM POLYA
+  TO EXPLANATION IN THEORY?*
+- [ ] *IF IT STAYS HERE, INTRODUCE WHAT "MEAN OF HISTOGRAM" EVEN MEANS*  
+  
+An example of such a Pólya distribution is seen in
+fig. [[fig:daq:polya_example_chip0]], where we see the same chip 0 using
+the same calibration from July 2018 as in the figures in the previous
+section [[#sec:daq:scurve_scan]]. The data is a \SI{30}{min} interval of
+background data at CAST. The reasoning behind looking at a fixed time
+interval for the Pólya will be explained in section [[#sec:?:gas_gain_time_binning]].
+The pink line represents the fit of the Pólya
+distribution to the data. The dashed part of the line was not used for
+the fit and is only an extension using the final fit parameters. The
+cutoff at the lower end due to the chip's threshold is clearly
+visible. The fit determines a gas gain of about \num{2700}, compared
+to the mean of the data yielding about \num{2430}. 
+
+Based on the data a threshold value of - very roughly - \num{1000} can
+be estimated. Using the =THL= calibration of the chip as shown in
+fig. [[fig:daq:thl_calibration_example]] yields a value of
+
+\[
+Q(\text{THL} = 419) = 26.8 · 419 - 10300 = 929.2
+\]
+
+where we used the fit parameters as printed on the plot ($1/m$ and
+$f⁻¹(y=0)$) and the =THL= DAC value of \num{419} as used during the
+data taking for this chip. Indeed, the real threshold is in the same
+range, but clearly a bit higher than the theoretical limit for this
+chip. This matches our expectation.
+
+#+CAPTION: An example of a Pólya distribution of chip 0 using the calibration
+#+CAPTION: of July 2018 based on \SI{30}{min} of background data.
+#+CAPTION: The lower cutoff is easily visible. The pink line represents the
+#+CAPTION: fit of the Pólya distribution to the data. In the dashed region the
+#+CAPTION: fit was only extended. The 
+#+NAME: fig:daq:polya_example_chip0
+[[~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf]]
+
+- [ ] *USE IT TO DETERMINE THRESHOLD*
+- [X] *COMPUTE THRESHOLD IN EXAMPLE FROM THL CALIB AND COMPARE*
+- [X] *INTRODUCE IT IS USED AS THE PRACTICAL WAY TO COMPUTE GAS GAIN*
+- [ ] *MENTION THAT WE BIN BY TIME OF 90min AND THAT WE WILL EXPLAIN
+  IN LATER CHAPTER HOW TIME INTERVAL WAS CHOSEN*
 
 Explain how all charge values combined as a histogram generate a
 ~Pólya distribution from which we can deduce the gas gain.
 
-[[#sec:theory:gas_gain_polya]]
+**** Generate Polya plot for chip 0, run period 3 :noexport:
 
-
-** Event display
+The current placeholder polya distribution (although it's the right
+chip and calibration) is:
+#+begin_src sh
+basti at void in /mnt/1TB/CAST/2018_2/out/DataRuns2018_Raw_2020-04-28_16-13-28 λ
+  cp gas_gain_run_306_chip_0_5_30_min_1545294386.pdf \
+     ~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf
+#+end_src
 
 ** Temperature monitoring
 
