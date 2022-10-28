@@ -5573,6 +5573,7 @@ For a correctly equalized chip a sharp drop off of noisy pixels should
 be visible at a certain threshold. In principle the =THL= value at
 which no more pixels are noisy is the ideal =THL= value.
 
+- [ ] *REPHRASE AND NOT TALK ABOUT ENC HERE?*
 Each Timepix pixel has an electronic noise charge (ENC) of *CHECK
 THIS* electrons. Of course the behavior of the charges on the pixels
 are statistically distributed. For the different calibrations
@@ -5589,6 +5590,10 @@ In this sense the S-Curve scan is a good cross check for whether the
 shutter time is more useful. 
 
 - [ ] *CHECK ENC VALUE OF TIMEPIX AND CITE TIMEPIX PAPER*
+  -> ENC is ~100 (timepix paper), but the ENC isn't the relevant
+  property here. I think I misunderstood what the ENC really is.
+- [ ] *FOR THE SECTION ABOVE I THINK ONLY THE MINIMALLY DETECTABLE
+  CHARGE IS RELEVANT?*
 - [ ] *REWRITE FULL SECTION WITH A CLEAR HEAD*  
 
 *** ToT calibration
@@ -5878,15 +5883,108 @@ ggplot(df, aes("thls", "charges")) +
 
 #+RESULTS:
 
+**** Compute minimally detectable charge                        :noexport:
+
+Ref:
+- \cite{LLOPART2007485_timepix} Timepix paper
+- \cite{LlopartCudie_1056683} Llopert PhD thesis
+
+The following quotes explain how to compute the effective threshold:
+
+page 5/10:
+#+begin_quote
+The electronic noise and effective threshold can be measured using the
+s-curve method [8] when the pixel is set in counting mode.
+#+end_quote
+
+page 5/10:
+#+begin_quote
+The effective threshold is at 50% of this s-curve. The charge
+difference between the 97.75% and 2.25% of the s- curve is four times
+the RMS noise of the front end assuming a gaussian distributed noise.
+#+end_quote
+
+#+begin_quote
+The measured electronic noise is 99:4 ± 3:8 e⁻ rms for hole
+collection and 104:8 ± 6 e⁻ rms for electron collection.  The
+measured DAC step gain is 24:7 ± 0:7 e⁻ =step for hole collection
+and 25:4 ± 1:2 e⁻ =step for electron collection.
+#+end_quote
+
+page 7/10:
+#+begin_quote
+The threshold variation before equalization is
+~240 e⁻ rms and after equalization the achieved noise free
+threshold variation is ~35 e⁻ rms for both polarities.
+#+end_quote
+
+page 7/10:
+#+begin_quote
+The minimum detectable charge can be calculated by quadratically
+adding the measured electronic noise and the threshold variation
+because both measurements are uncorrelated.
+#+end_quote
+
+#+begin_quote
+Before equalization the minimum detectable charge for the full matrix
+is ~1600 e⁻ and after equalization is ~650 e⁻ for both polarities.
+#+end_quote
+
+This means:
+- [ ] compute the 97.75 ⇔ 2.25% range of the S-curve. Yields 4 times
+  RMS noise. Width in THL of that can be converted to #e⁻ using THL
+  calibration.
+  -> electronic noise $N_e$
+- [ ] compute width of optimized threshold variation based on
+  histogram. Fit gaussian (?) to optimized threshold variation. σ of
+  that gaussian is width in THL. Convert THL to electrons.
+  -> threshold variation $N_t$
+
+- [ ] *CHECK IF THIS IS CORRECT*:
+  If I'm not mistaken, the noise peak we see in the S-curve scan is
+  essentially the same as the optimized distribution from the
+  threshold equalization.
+
+Then with those two parameters we compute the effective detectable
+charge as:
+
+\[
+N_d = √(N_e² + N_t²)
+\]
+
+which for the numbers listed above yields
+
+\[
+N_d = √(105² + 35²) = 110
+\]
+
+which is not close to the expected 650 e⁻!
+
+Checking in the PhD thesis of Llopert, page 115, equation 4.5 is:
+
+\[
+\text{MinDetect}Q = 6·\sqrt{ ENC² + σ_{\text{dist}}²}
+\]
+which then works out nicely (110·6 = 660 is close enough)!
+
+So in theory we can compute this for all our chips and all
+calibrations.
+
+- [ ] *CALCULATE FOR ALL CHIPS AND PUT INTO APPENDIX*
+
+
+
 *** Pólya distribution & gas gain
 :PROPERTIES:
 :CUSTOM_ID: sec:daq:polya_distribution_threshold
 :END:
 
+
+
 Explain how all charge values combined as a histogram generate a
 ~Pólya distribution from which we can deduce the gas gain.
 
-
+[[#sec:theory:gas_gain_polya]]
 
 
 ** Event display
