@@ -4055,7 +4055,9 @@ board. Each is read out using a =MAX31685= micro controllers. Both of
 which are communicated with via a =MCP2210= USB-to-SPI micro
 controllers over a single USB port on the intermediate board. The
 single =MCP2210= communicates with both temperature sensors via the
-Serial Peripheral Interface (SPI). In the run shown in
+Serial Peripheral Interface (SPI) (see
+sec. [[#sec:daq:temperature_readout]] for more information about the
+temperature logging and readout). In the run shown in
 fig. [[fig:detector:occupancy_sparking_run_241]] the temperature sensors
 were not functional yet, as the readout software was not written
 yet. The required logic was added to the Timepix Operating System
@@ -4879,7 +4881,7 @@ project, intended to run at a clock frequency of
 \textbf{I}nterface (HDMI) cables, while communication with the readout
 software on the DAQ computer is handled via Ethernet.
 
-For a detailed introduction to TOF, see \cite{*LUPBERGER THESIS*} as
+For a detailed introduction to TOF, see \cite{lupberger2016pixel} as
 well as \cite{*TOBI UPCOMING THESIS*}.
 
 
@@ -4964,37 +4966,7 @@ command, =ActivateHFM=. This triggers the USB connection to the VME
 crate and tries to find the Wiener HV module as well as the Ortec FADC
 in the crate. Additionally, the temperature sensors are attempted to
 be found (via a secondary, optional USB connection). If the latter are
-found a continuous temperature logging begins. Outside of actual data
-taking the temperature is logged into the internal =log= directory of
-the TOS directory as =temp_log.txt=. [fn:temp_logs_lost]
-
-[fn:temp_logs_lost] This default temperature logging location was also
-used as an unintended fallback mechanism during data taking, if the HV
-of the detector was considered out of certain bounds. Unfortunately,
-the bounds checking was faulty which is why it was disabled manually
-during data taking at CAST, as it triggered data taking aborts. This
-however triggered a secondary code path for the temperature logging,
-storing it in that default location. As an effect the majority of CAST
-temperature logging data has been lost, as most of it was overwritten
-several times. About daily manual temperature measurements are still
-left and show the detector operating in a good temperature
-range. Precise correlations with certain detector behaviors are
-unfortunately impossible. The two different code paths for the
-temperature logging are essentially a bug in the code that was never
-intended, stemming from the fact that temperature logging must be done
-to a 'global' location outside of data taking (as no data taking
-specific directory exists). Due to how the temperature logging and HV
-& FADC controls were added to TOS, these things were more entangled
-than necessary. A more thorough testing period of the detector and
-software package should have been performed, but was not in scope.
-
-
-
-A short snippet of the temperature log is shown in listing
-[[code:daq:temperature_readout]].
-
-- [ ] *INSERT TEMPERATURE LOGGING EXAMPLE SNIPPET*
-
+found a continuous temperature logging begins (see sec. [[#sec:daq:temperature_logging]]). 
 
 The HV controls are specific to Wiener HV power supplies. In principle
 the implemented functionality is a fully featured HV controller that
@@ -5002,11 +4974,12 @@ supports all Wiener functionality like grouping different channels to
 ramp up together, kill channels on a trip and much more.
 
 An example of a typical startup procedure is shown in listing
-[[TOS_startup_commands]]. Note that most essential commands in TOS also
-have shortened names via numbers, due to historic reasons (TOS
-originally did not have autocompletion or allowed moving the cursor in
-text input, making typing complex names cumbersome and error prone),
-which is why many of the inputs are simple numbers.
+[[TOS_startup_commands]], in this case to start a background run. Note
+that most essential commands in TOS also have shortened names via
+numbers, due to historic reasons (TOS originally did not have
+autocompletion or allowed moving the cursor in text input, making
+typing complex names cumbersome and error prone), which is why many of
+the inputs are simple numbers.
 
 #+CAPTION: An example of the typical startup routine of TOS for a background data taking measurement at CAST
 #+CAPTION: for the Septemboard based GridPix detector. The indented lines refer to commands given to the 
@@ -5129,25 +5102,297 @@ mode. An example of the file type produced in this mode is in listing
 70	57	315
 #+end_src
 
-Link to repositories (maybe we can make the Virtex TOS public?) 
-
-- [ ] Link to TOF firmware.
-
-- [ ] Septem event display example.
-
-
-*** TOS output data format
+*** TOS configuration file
 :PROPERTIES:
-:CUSTOM_ID: sec:tos_output_format
+:CUSTOM_ID: sec:daq:tos_config_file
 :END:
 
-TOS needs to talk about data format that was used in V6 TOS. Stupid
-ASCII files. Mention that in hindsight the time should have been
-invested to either use a really dumb binary format (like NIO) or HDF5
-(even if painful from C++).
+Everything related to the =HFManager= in TOS is controlled by a
+configuration file, normally located in
+=TOS/config/HFM_settings.ini=. We will go through the sections of it
+one by one and explain them.
 
+Starting with the =[General]= section, listing
+[[code:daq:general_config]]. This section defines the VME related
+settings. The VME address of the HV module installed in the crate is
+used as the base address. The FADC address in the same VME crate is
+calculated from an offset in units of the VME address spacing of
+=0x0400=. [fn:base_address_hv]
 
-Already shown an example above in the section. Move this into this section?
+#+CAPTION: General section of the TOS configuration file. It sets the base address
+#+CAPTION: of the HV module installed in the VME crate. The FADC address is given
+#+CAPTION: as an offset from the base address.
+#+NAME: code:daq:general_config
+#+begin_src toml
+[General]
+sAddress_fadc = 1
+baseAddress_hv = 0x4000
+#+end_src 
+
+The next section =[HvModule]=, listing [[code:daq:hv_module_config]], are
+general settings about the used HV module. The settings are related to
+the =KillEnable= feature of Wiener HV power supplies, the ramping
+speed of the HV channels and the time in seconds between sanity checks
+of the HV during data taking. [fn:check_hv_interval_setting]
+
+#+CAPTION: The =[HvModule]= section contains settings related to the HV module as a whole.
+#+CAPTION: Whether a single channel tripping causes all channels to ramp down (=KillEnable=)
+#+CAPTION: the ramp speed and interval in which the HV module sanity status is checked.
+#+NAME: code:daq:hv_module_config
+#+begin_src toml
+[HvModule]
+setKillEnable                   = true
+# Voltage and Current RampSped currently set to arbitrary value
+# in percent / second
+moduleVoltageRampSpeed          = 0.1
+moduleCurrentRampSpeed          = 50
+# checkModuleTimeInterval       = 60, checks the status of the
+# module every 60 seconds during a Run, between two events
+checkModuleTimeInterval         = 60
+#+end_src
+
+Next up, the =[HvGroups]= section in listing [[code:daq:hv_groups_config]]
+defines the different groups that combine multiple channels. There are
+multiple different kinds of groups in Wiener HV power supplies. The
+important groups are ramping groups and trip groups. Essentially, if
+one channel in a group starts ramping / trips all others also start
+ramping / shut off the HV, respectively. The section in the config
+file mainly exposes the already predefined sets of groups that are
+relevant for the Septemboard detector in TOS. 
+
+#+CAPTION: =[HvGroups]= defines multiple groups of different HV channels together. The
+#+CAPTION: config file does not expose arbitrary groupings, but only sets flags whether
+#+CAPTION: groups are active and what their numbers are.
+#+NAME: code:daq:hv_groups_config
+#+begin_src toml
+# if this flag is set to true, anode and grid
+# will be coupled to one group
+[HvGroups]
+anodeGridGroupFlag              = true
+# grid is master channel of set on group
+anodeGridGroupMasterChannel     = 4
+anodeGridGroupNumber            = 0
+monitorTripGroupFlag            = true
+monitorTripGroupNumber          = 1
+rampingGroupFlag                = true
+rampingGroupNumber              = 2			     
+gridChannelNumber               = 4
+anodeChannelNumber              = 5
+cathodeChannelNumber            = 8
+#+end_src
+
+After the =[HvGroups]= section is the definition of the individual HV
+channels in listing [[code:daq:hv_channels_config]]. Here the physical
+channels on the device are mapped to the desired voltages and current
+bounds as well as to a human readable name. The fields repeat with
+increasing prefix numbers.
+
+#+CAPTION: This is an excerpt of the full =[HvChannels]= section for a single HV channel.
+#+CAPTION: It maps the physical HV connectors to their voltages, current bounds and
+#+CAPTION: a human readable name. In this case the grid of the GridPixes of the Septemboard
+#+CAPTION: all receive a voltage of \SI{300}{V}. The naming scheme of the fields is 
+#+CAPTION: hardcoded for practical reasons and simply repeats with increasing numbers.
+#+NAME: code:daq:hv_channels_config
+#+begin_src toml
+[HvChannels]
+# all currents given in A (vmecontrol shows mA)
+0_Name                          = grid
+0_Number                        = 5
+0_VoltageSet                    = 300
+0_VoltageNominal                = 500
+0_VoltageBound                  = 2.5
+0_CurrentSet                    = 0.000050
+0_CurrentNominal                = 0.000500 
+0_CurrentBound                  = 0
+#+end_src
+
+Second to last is the =[FADC]= section in listing
+[[code:daq:fadc_config]]. As the name implies it configures all parameters
+of the FADC. The main parameter to change is the
+=fadcTriggerThresholdRegisterAll= parameter, which defines the trigger
+threshold in effectively \si{mV}. Depending on the amount of noise in
+the system, adjustments to the threshold may be necessary. 
+
+#+CAPTION: The =[FADC]= section configures the FADC. The most important setting is the trigger
+#+CAPTION: threshold as it defines the voltage required to trigger the FADC. 
+#+NAME: code:daq:fadc_config
+#+begin_src toml
+[Fadc] # FADC Settings
+fadcTriggerType                 = 3 
+fadcFrequency                   = 2
+fadcPosttrig                    = 80
+fadcPretrig                     = 15000
+# was 2033 before, 1966 corresponds to -40 mV
+fadcTriggerThresholdRegisterAll = 1966 
+# run time of a single pedestal run for the FADC in ms
+fadcPedestalRunTime             = 100
+# number of acquisition runs done for each pedestal calibration
+fadcPedestalNumRuns             = 10
+# using channel 0 on FADC as trigger source, thus bit 0 = 1!
+fadcChannelSource               = 1
+# set FADC mode register (mainly to enable 14-bit readout)
+fadcModeRegister                = 0b000
+#+end_src
+
+The last section of the configuration file is the =[Temperature]=
+section, which deals with the safety ranges of the temperature of the
+detector. If the temperature leaves the safe range, the detector is to
+be shut down. [fn:temperature_safety_config_settings]
+
+#+CAPTION: =[Temperature]= defines the safe operating ranges of the detector. If the
+#+CAPTION: range is left, the detector is to be shut down. 
+#+NAME: code:daq:temperature_config
+#+begin_src toml
+[Temperature] # temperature related parameters, all temps in °C
+safeUpperTempIMB                = 61
+safeUpperTempSeptem             = 61
+safeLowerTempIMB                = 0
+safeLowerTempSeptem             = 0
+#+end_src
+
+[fn:base_address_hv] If in doubt about what the base address of the HV
+supply in the VME crate is, start one of the Wiener HV programs (for
+example =isegControl=), as it auto detects the module and prints the
+address.
+
+[fn:check_hv_interval_setting] The =checkModuleTimeInterval= setting
+to check the HV status during the data taking was disabled at CAST, as
+it caused issues due to false alarms of the HV status. Given that the
+=KillEnable= flag was used, it was deemed unimportant. Attempting to
+fix it would have caused possible data loss as it would have been
+tested on the live detector.
+
+[fn:temperature_safety_config_settings] The temperature safety range
+is coupled to the =checkModuleTimeInterval= setting in the previous
+footnote. It was disabled together with the above during actual data taking.
+
+*** HV control via TOS
+
+As is being alluded to in the previous section 
+[[#sec:daq:tos_config_file]], the HV control built into TOS can also
+handle ramping the channels of the detector. This is particularly
+convenient as it offers a very smooth ramping mode, which keeps the
+voltage potentials between all channels under a constant
+ratio. This allows for automatic ramping even for highly sensitive
+channels (like the GridPix grid).
+
+In order to use the HV control and ramp the channels via TOS,
+=ActivateHFM= must be followed by =InitHV=, which attempts to connect
+to the HV power supply using the configuration of the config file. If
+the channels are not ramped up, a call to =RampChannels= will start
+the smooth ramping process (see listing [[code:daq:ramp_hv_channels]]).
+
+#+CAPTION: The required commands to ramp the HV channels using the configuration
+#+CAPTION: from the config file using a smooth ramping mode.
+#+NAME: code:daq:ramp_hv_channels
+#+begin_src sh
+> ActivateHFM
+> InitHV
+> RampChannels
+#+end_src
+
+If the HV is to be ramped down, a call to =ShutdownHFM= will ask
+whether the channels should be ramped down.
+
+There are a multitude of further commands available to communicate
+with the module, check the voltages, print status information etc.
+
+Note that TOS can be started without ramping the HV channels and
+stopped without ramping the channels down. It is capable of connecting
+to a running HV power supply or leave it running after shut down. 
+
+*** Temperature monitoring
+
+- [ ] *SHOULD EXPLANATION OF THE READOUT _HARDWARE_ NOT BE IN THE
+  DETECTOR CHAPTER?*
+
+The two =MAX31685= micro controllers read out =PT1000= sensors, a
+group of \textbf{R}esistance \textbf{T}emperature \textbf{S}ensors
+(RTDs), which measure temperatures by its effect on the electrical
+resistance. They are platinum based and have a resistance of
+\SI{1000}{Ω} at \SI{0}{\degree\celsius}. As the expected change in
+resistance is well understood, the temperature can be precisely
+measured.
+
+The micro controller communicates with another micro controller, an
+=MC2210= via the \textbf{S}erial \textbf{P}eripheral
+\textbf{I}nterface (SPI). SPI allows to address both =MAX31685= from
+the single =MCP2210=. The =MCP2210= is a USB-to-SPI micro
+controller. The USB connection from the intermediate board with the
+computer is separate from the rest of the detector
+communication. =TOS= communicates with it via the standard
+\textbf{H}uman \textbf{I}inteface \textbf{D}evice (HID) driver and
+utilizes an existing open source library for the =MCP2210=
+\cite{wong_mcp2210}, which is slightly adapted.
+
+The =ActivateHFM= command mentioned in the previous section also
+attempts to find the USB device of the =MCP2210= (the two are
+intertwined mainly, as the Septemboard detector is the only detector
+with either of the two features). If it is found, temperature logging
+starts immediately and the log files are placed in the default =log=
+directory of the =TOS= repository. Once a data taking run starts,
+the logging location is moved over to the data storage directory of
+the run. In either case the log file is named =temp_log.txt= and
+contains one temperature value for the intermediate board sensor
+(=Temp_IMB=) and one for the carrier board sensor (=Temp_Septem=)
+computed - based on an average over \SI{5}{s} - and a timestamp
+(=DateTime=). A short snippet of the temperature log is shown in listing
+[[code:daq:temperature_readout]]. [fn:temp_logs_lost]
+
+- [X] *INSERT TEMPERATURE LOGGING EXAMPLE SNIPPET*
+- [ ] *THINK ABOUT PUTTING FOOT NOTE INTO ACTUAL TEXT*
+- [ ] *ADD CITATION* https://github.com/kerrydwong/MCP2210-Library  
+
+#+CAPTION: Snippet of a temperature log file as recorded for a run during the
+#+CAPTION: CAST detector lab measurements. Tabs were replaced by spaces for
+#+CAPTION: better visual alignment here.
+#+NAME: code:daq:temperature_readout
+#+begin_src sh
+# Temperature log file
+# Temp_IMB  Temp_Septem   DateTime
+26.5186     42.1472       2019-02-16.16:11:45
+26.5217     42.2798       2019-02-16.16:11:51
+26.5202     42.4371       2019-02-16.16:11:57
+26.5309     42.5944       2019-02-16.16:12:03
+26.5324     42.7347       2019-02-16.16:12:09
+26.5355     42.8627       2019-02-16.16:12:15
+26.5416     42.9707       2019-02-16.16:12:21
+26.5432     43.0771       2019-02-16.16:12:27
+26.5616     43.1804       2019-02-16.16:12:33
+26.5692     43.2684       2019-02-16.16:12:39
+26.5708     43.3454       2019-02-16.16:12:45
+26.5908     43.4164       2019-02-16.16:12:51
+26.5969     43.4904       2019-02-16.16:12:57
+26.6015     43.5598       2019-02-16.16:13:03
+26.6184     43.6154       2019-02-16.16:13:09
+26.6215     43.6709       2019-02-16.16:13:15
+26.6368     43.7264       2019-02-16.16:13:21
+...
+#+end_src
+
+[fn:temp_logs_lost] This default temperature logging location was also
+used as an unintended fallback mechanism during data taking, if the HV
+of the detector was considered out of certain bounds. Unfortunately,
+the bounds checking was entangled with the HV module sanity checks. As
+both features were very only implemented shortly before data taking,
+they triggered data taking aborts. For that reason the feature was
+disabled manually in code for the data taking at CAST. This however
+triggered a secondary code path for the temperature logging, storing
+it in the default location outside the specific run directories. As an
+effect the majority of CAST temperature logging data has been lost, as
+most of it was overwritten several times. About daily manual
+temperature measurements are still left and show the detector
+operating in a good temperature range. Precise correlations with
+certain detector behaviors are unfortunately impossible. The two
+different code paths for the temperature logging are essentially a bug
+in the code that was never intended, stemming from the fact that
+temperature logging must be done to a 'global' location outside of
+data taking (as no data taking specific directory exists). Due to how
+the temperature logging and HV & FADC controls were added to TOS,
+these things were more entangled than necessary. A more thorough
+testing period of the detector and software package should have been
+performed, but was not in scope.
+
 
 
 *** TOS development                                              :noexport:
@@ -6076,36 +6321,6 @@ chip and calibration) is:
 basti at void in /mnt/1TB/CAST/2018_2/out/DataRuns2018_Raw_2020-04-28_16-13-28 λ
   cp gas_gain_run_306_chip_0_5_30_min_1545294386.pdf \
      ~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf
-#+end_src
-
-** Temperature monitoring
-
-
-Well, move this to the TOS part that already touches on temperature
-monitoring and make it a subsection of that? Then the footnote can
-maybe become regular text as well?
-
-#+begin_src
-# Temperature log file
-# Temp_IMB  Temp_Septem   DateTime
-26.5186     42.1472	      2019-02-16.16:11:45
-26.5217     42.2798	      2019-02-16.16:11:51
-26.5202     42.4371	      2019-02-16.16:11:57
-26.5309     42.5944	      2019-02-16.16:12:03
-26.5324     42.7347	      2019-02-16.16:12:09
-26.5355     42.8627	      2019-02-16.16:12:15
-26.5416     42.9707	      2019-02-16.16:12:21
-26.5432     43.0771	      2019-02-16.16:12:27
-26.5616     43.1804	      2019-02-16.16:12:33
-26.5692     43.2684	      2019-02-16.16:12:39
-26.5708     43.3454	      2019-02-16.16:12:45
-26.5908     43.4164	      2019-02-16.16:12:51
-26.5969     43.4904	      2019-02-16.16:12:57
-26.6015     43.5598	      2019-02-16.16:13:03
-26.6184     43.6154	      2019-02-16.16:13:09
-26.6215     43.6709	      2019-02-16.16:13:15
-26.6368     43.7264	      2019-02-16.16:13:21
-...
 #+end_src
 
 ** Event display
