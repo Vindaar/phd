@@ -9057,6 +9057,138 @@ great), @yglukhov (nimpy in particular!!)
 
 #+LATEX: \listoftables{}
 
+** Configurations
+
+*** TOS configuration file [/]
+
+This is the configuration file as it was used at CAST during the data
+taking periods.
+
+- [ ] *ALSO LINK AN ONLINE VERSION?*
+
+#+begin_src toml
+[General]
+sAddress_fadc = 1
+baseAddress_hv = 0x4000
+
+[HvModule]
+setKillEnable                   = true
+# Voltage and Current RampSped currently set to arbitrary value
+# in percent / second
+moduleVoltageRampSpeed          = 0.1
+moduleCurrentRampSpeed          = 50
+# checkModuleTimeInterval       = 60, checks the status of the
+# module every 60 seconds during a Run, between two events
+checkModuleTimeInterval         = 60
+
+# if this flag is set to true, anode and grid
+# will be coupled to one group
+[HvGroups]
+anodeGridGroupFlag              = true
+# grid is master channel of set on group
+anodeGridGroupMasterChannel     = 5
+anodeGridGroupNumber            = 0
+monitorTripGroupFlag            = true
+monitorTripGroupNumber          = 1
+rampingGroupFlag                = true
+rampingGroupNumber              = 2                          
+gridChannelNumber               = 5
+anodeChannelNumber              = 6
+cathodeChannelNumber            = 9
+
+[HvChannels]
+# grid, anode and cathode settings
+# all currents given in A (vmecontrol shows mA)
+0_Name                          = grid
+0_Number                        = 5
+0_VoltageSet                    = 300
+0_VoltageNominal                = 500
+0_VoltageBound                  = 10
+0_CurrentSet                    = 0.000050
+0_CurrentNominal                = 0.000500 
+0_CurrentBound                  = 0
+                                
+1_Name                          = anode
+1_Number                        = 6
+1_VoltageSet                    = 375
+1_VoltageNominal                = 500
+1_VoltageBound                  = 10
+1_CurrentSet                    = 0.000050
+1_CurrentNominal                = 0.000500
+1_CurrentBound                  = 0
+                                
+2_Name                          = cathode
+2_Number                        = 9
+2_VoltageSet                    = 1875
+2_VoltageNominal                = 2500
+2_VoltageBound                  = 15
+2_CurrentSet                    = 0.000050
+2_CurrentNominal                = 0.000500
+2_CurrentBound                  = 0
+                                
+3_Name                          = Ring1
+3_Number                        = 7
+3_VoltageSet                    = 415
+3_VoltageNominal                = 500
+3_VoltageBound                  = 15
+3_CurrentSet                    = 0.000100
+3_CurrentNominal                = 0.000500
+3_CurrentBound                  = 0
+                                
+4_Name                          = Ring29
+4_Number                        = 8
+4_VoltageSet                    = 1830
+4_VoltageNominal                = 2500
+4_VoltageBound                  = 15
+4_CurrentSet                    = 0.000100
+4_CurrentNominal                = 0.000500
+4_CurrentBound                  = 0
+                                
+6_Name                          = sipm
+6_Number                        = 4
+6_VoltageSet                    = 65.6
+6_VoltageNominal                = 100
+6_VoltageBound                  = 5
+6_CurrentSet                    = 0.0005
+6_CurrentNominal                = 0.0005
+6_CurrentBound                  = 0
+                                
+# The veto paddle scintillator is commented out, as it was supplied
+# with HV by an external CAEN HV power supply.
+# 5_Name                        = szintillator
+# 5_Number                      = 11
+# #5_VoltageSet                 = 1300
+# 5_VoltageSet                  = 0
+# 5_VoltageNominal              = 2500
+# 5_VoltageBound                = 5
+# 5_CurrentSet                  = 0.002
+# 5_CurrentNominal              = 0.002
+# 5_CurrentBound                = 0
+
+[Fadc] # FADC Settings
+fadcTriggerType                 = 3 
+fadcFrequency                   = 2
+fadcPosttrig                    = 80
+fadcPretrig                     = 15000
+# was 2033 before, 1966 corresponds to -40 mV
+fadcTriggerThresholdRegisterAll = 1966 
+# run time of a single pedestal run for the FADC in ms
+fadcPedestalRunTime             = 100
+# number of acquisition runs done for each pedestal calibration
+fadcPedestalNumRuns             = 10
+# using channel 0 on FADC as trigger source, thus bit 0  1!
+fadcChannelSource               = 1
+# set FADC mode register (mainly to enable 14-bit readout)
+fadcModeRegister                = 0b000
+
+[Temperature] # temperature related parameters
+safeUpperTempIMB                = 61
+safeUpperTempSeptem             = 61
+safeLowerTempIMB                = 0
+safeLowerTempSeptem             = 0
+#+end_src
+
+
 
 ** Calibrations
 
