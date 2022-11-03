@@ -7452,6 +7452,199 @@ to talk about it before though.
 Everything required in StatusAndProgress. Will need to redo all plots
 of course.
 
+- [ ] *FINISH CDL FIRST*
+- [ ] *FIND OUT WHAT CHIP CALIBRATION USED FOR CDL*
+- [ ] *REFERENCE HENDRIK MSC FOR CDL*    
+
+*** CDL measurements (from =StatusAndProgress=)
+
+To derive the background rate plots a likelihood method is
+used. Basically a likelihood distribution is built from 3
+geometric properties of extracted pixel clusters:
+- eccentricity
+- length / transverse RMS
+- fraction of pixels within transverse RMS
+To define these distributions however a set of X-ray pure datasets is
+needed. In addition the geometric properties above are highly
+dependent on the X-ray's energy, see:
+#+BEGIN_CENTER
+#+ATTR_LATEX: :width 0.49\textwidth :center
+[[~/org/Figs/CDL-reference/excentricity_comparison.pdf]]
+#+ATTR_LATEX: :width 0.49\textwidth :center
+[[~/org/Figs/DPG_Aachen_2019/eccentricity_merged.pdf]]
+#+END_CENTER
+where the left plot compares the $\ce{Mn}$ line ($^{55}\ce{Fe}$
+equivalent) to the $\ce{Cu}$ line from $\SI{0.9}{\kilo\volt}$ electrons
+and the right plot compres $^{55}\ce{Fe}$ with typical cosmic
+background. Obvious that a single cut value will result in wildly
+different signal efficiencies and background rejections.
+Thus, take different distributions for different energies.
+
+The distributions which the previous background rate plots were based
+on were obtained in 2014 with the Run-1 detector at the CAST Detector
+Lab (CDL).
+Using a different detector for this extremely sensitive part of the
+analysis chain will obviously introduce systematic errors.
+Thus, new calibration data was taken with the current Run-2 and Run-3
+detector from 15-19 Feb 2019.
+A summary of the target filter combinations, applied HV and resulting
+pixel peak position is shown in [[cdl-tab]] and the fluorescence lines these
+target filter combinations correspond to are listed in tab. [[cdl_lines]].
+
+#+CAPTION: Table of all data runs taken at CDL in Feb 2019
+#+NAME: cdl-tab
+|-------+-------+--------+--------+---------+-----------------------------------+-------------|
+| Run # | FADC? | Target | Filter | HV / kV | $\langle\mu_{\text{peak}}\rangle$ | $\Delta\mu$ |
+|-------+-------+--------+--------+---------+-----------------------------------+-------------|
+|   315 | y     | Mn     | Cr     |    12.0 |                            223.89 |        8.79 |
+|   319 | y     | Cu     | Ni     |    15.0 |                            347.77 |        8.49 |
+|   320 | n     | Cu     | Ni     |    15.0 |                            323.23 |       21.81 |
+|   323 | n     | Mn     | Cr     |    12.0 |                            224.78 |        8.92 |
+|   325 | y     | Ti     | Ti     |     9.0 |                            176.51 |        1.22 |
+|   326 | n     | Ti     | Ti     |     9.0 |                            173.20 |        2.20 |
+|   328 | y     | Ag     | Ag     |     6.0 |                            117.23 |        2.02 |
+|   329 | n     | Ag     | Ag     |     6.0 |                            118.66 |        1.21 |
+|   332 | y     | Al     | Al     |     4.0 |                             55.36 |        1.26 |
+|   333 | n     | Al     | Al     |     4.0 |                             54.79 |        2.33 |
+|   335 | y     | Cu     | EPIC   |     2.0 |                             32.33 |        2.52 |
+|   336 | n     | Cu     | EPIC   |     2.0 |                             33.95 |        0.67 |
+|   337 | n     | Cu     | EPIC   |     2.0 |                             31.51 |        4.76 |
+|   339 | y     | Cu     | EPIC   |     0.9 |                             25.00 |        0.79 |
+|   340 | n     | Cu     | EPIC   |     0.9 |                             21.39 |        2.27 |
+|   342 | y     | C      | EPIC   |     0.6 |                             18.04 |        1.46 |
+|   343 | n     | C      | EPIC   |     0.6 |                             17.16 |        0.57 |
+|   345 | y     | Cu     | Ni     |    15.0 |                            271.16 |        6.08 |
+|   347 | y     | Mn     | Cr     |    12.0 |                            198.73 |        4.72 |
+|   349 | y     | Ti     | Ti     |     9.0 |                            160.86 |        1.25 |
+|   351 | y     | Ag     | Ag     |     6.0 |                            106.94 |        2.55 |
+|-------+-------+--------+--------+---------+-----------------------------------+-------------|
+
+#+CAPTION: Table of all target filter combinations and the corresponding fluorescence lines
+#+NAME: cdl_lines
+|--------+--------+-----+-------------------------------+----------------+--------------|
+| Target | Filter |  HV | line                          | Name in Marlin | Energy / keV |
+|--------+--------+-----+-------------------------------+----------------+--------------|
+| Cu     | Ni     |  15 | $\ce{Cu}$ $\text{K}_{\alpha}$ | A              |         8.04 |
+| Mn     | Cr     |  12 | $\ce{Mn}$ $\text{K}_{\alpha}$ | B              |         5.89 |
+| Ti     | Ti     |   9 | $\ce{Ti}$ $\text{K}_{\alpha}$ | C              |         4.51 |
+| Ag     | Ag     |   6 | $\ce{Ag}$ $\text{L}_{\alpha}$ | D              |         2.98 |
+| Al     | Al     |   4 | $\ce{Al}$ $\text{K}_{\alpha}$ | E              |         1.49 |
+| Cu     | EPIC   |   2 | $\ce{Cu}$ $\text{L}_{\alpha}$ | F              |        0.930 |
+| Cu     | EPIC   | 0.9 | $\ce{O }$ $\text{K}_{\alpha}$ | G              |        0.525 |
+| C      | EPIC   | 0.6 | $\ce{C }$ $\text{K}_{\alpha}$ | H              |        0.277 |
+|--------+--------+-----+-------------------------------+----------------+--------------|
+
+For a reference of the X-ray fluorescence lines (for more exact values
+and $\alpha_1$, $\alpha_2$ values etc.) see: https://xdb.lbl.gov/Section1/Table_1-2.pdf.
+
+The raw data is combined by target / filter combinations. To clean the
+data somewhat a few simple cuts are applied, as shown in
+tab. [[cdl_cleaning_cuts]].
+
+#+CAPTION: Cuts applied to the CDL datasets in order to roughly clean of potential
+#+CAPTION: background events and double hits (recognized as single cluster).
+#+CAPTION: RMS refers to the transverse RMS of the clusters.
+#+NAME: cdl_cleaning_cuts
+#+ATTR_LATEX: :align lllrrrrr
+|--------+--------+-------------------------------+-----+--------+-----------+-----------+--------------|
+| Target | Filter | line                          |  HV | length | rms_T_min | rms_T_max | eccentricity |
+|--------+--------+-------------------------------+-----+--------+-----------+-----------+--------------|
+| Cu     | Ni     | $\ce{Cu}$ $\text{K}_{\alpha}$ |  15 |        |       0.1 |       1.0 |          1.3 |
+| Mn     | Cr     | $\ce{Mn}$ $\text{K}_{\alpha}$ |  12 |        |       0.1 |       1.0 |          1.3 |
+| Ti     | Ti     | $\ce{Ti}$ $\text{K}_{\alpha}$ |   9 |        |       0.1 |       1.0 |          1.3 |
+| Ag     | Ag     | $\ce{Ag}$ $\text{L}_{\alpha}$ |   6 |    6.0 |       0.1 |       1.0 |          1.4 |
+| Al     | Al     | $\ce{Al}$ $\text{K}_{\alpha}$ |   4 |        |       0.1 |       1.1 |          2.0 |
+| Cu     | EPIC   | $\ce{Cu}$ $\text{L}_{\alpha}$ |   2 |        |       0.1 |       1.1 |          2.0 |
+| Cu     | EPIC   | $\ce{O }$ $\text{K}_{\alpha}$ | 0.9 |        |       0.1 |       1.1 |          2.0 |
+| C      | EPIC   | $\ce{C }$ $\text{K}_{\alpha}$ | 0.6 |    6.0 |       0.1 |       1.1 |              |
+|--------+--------+-------------------------------+-----+--------+-----------+-----------+--------------|
+
+With these in place both to the pixel as well as charge spectra a
+mixture of gaussian / exponential gaussian functions is fitted.
+
+Specifically the gaussian:
+#+BEGIN_EXPORT latex
+\begin{equation}
+G(E; \mu, \sigma, N) = \frac{N}{\sqrt{2 \pi}} \exp\left(-\frac{(E - \mu)^2}{2\sigma^2}\right)
+\end{equation}
+#+END_EXPORT
+and exponential gaussian:
+#+BEGIN_EXPORT latex
+\begin{equation}
+EG(E; \mu, \sigma, N, a, b) =
+\begin{cases}
+N \exp\left(-\frac{(E-\mu)^2}{2\sigma^2}\right) & \mathrm{for}: E > c\\
+   \exp(aE + b) & \mathrm{for}: E < c \\
+\end{cases}
+\end{equation}
+#+END_EXPORT
+where the constant $c$ is chosen such that the resulting function is
+continuous.
+
+The functions fitted to the different spectra then depend on which
+fluorescence lines are visible. The full list of all combinations is shown
+in tab. [[fit_funcs_pixel]] and [[fit_func_charge]].
+
+#+CAPTION: All fit functions for the pixel spectra for the different combinations.
+#+NAME: fit_funcs_pixel
+|--------+--------+-------------------------------+-----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Target | Filter | line                          |  HV | Fit function                                                                                                                                                                                                        |
+|--------+--------+-------------------------------+-----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Cu     | Ni     | $\ce{Cu}$ $\text{K}_{\alpha}$ |  15 | $EG^{\mathrm{Cu,esc}}_{\mathrm{K}_{\alpha}}(a,b,N,\mu,\sigma) + EG^{\mathrm{Cu}}_{\mathrm{K}_{\alpha}}(a,b,N,\mu,\sigma)$ 	                                                                                  |
+| Mn     | Cr     | $\ce{Mn}$ $\text{K}_{\alpha}$ |  12 | $EG^{\mathrm{Mn,esc}}_{\mathrm{K}_{\alpha}}(a,b,N,\mu,\sigma) + EG^{\mathrm{Mn}}_{\mathrm{K}_{\alpha}}(a,b,N,\mu,\sigma)$ 	                                                                                  |
+| Ti     | Ti     | $\ce{Ti}$ $\text{K}_{\alpha}$ |   9 | $G^{\mathrm{Ti,esc}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{Ti}}_{\mathrm{K}_{\beta}}(N,\mu,\sigma) + EG^{Ti}_{K_{\alpha}}(a,b,N,\mu,\sigma) + G^{Ti}_{K_{\beta}}(N,\mu,\sigma)$                          |
+| Ag     | Ag     | $\ce{Ag}$ $\text{L}_{\alpha}$ |   6 | $EG^{\mathrm{Ag}}_{\mathrm{L}_{\alpha}}(a,b,N,\mu,\sigma) + G^{\mathrm{Ag}}_{\mathrm{L}_{\beta}}(N,\mu,\sigma)$                                                                                                     |
+| Al     | Al     | $\ce{Al}$ $\text{K}_{\alpha}$ |   4 | $EG^{\mathrm{Al}}_{\mathrm{K}_{\alpha}}(a,b,N,\mu,\sigma)$                                                                                                                                                          |
+| Cu     | EPIC   | $\ce{Cu}$ $\text{L}_{\alpha}$ |   2 | $G^{\mathrm{Cu}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma)$	                                                                                                                                                       |
+| Cu     | EPIC   | $\ce{O }$ $\text{K}_{\alpha}$ | 0.9 | $G^{\mathrm{O}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{C}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{Fe,esc}}_{L_{\alpha,\beta}}(N,\mu,\sigma) + G^{\mathrm{Ni}}_{L_{\alpha,\beta}}(N,\mu,\sigma)$ |
+| C      | EPIC   | $\ce{C }$ $\text{K}_{\alpha}$ | 0.6 | $G^{\mathrm{C}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{O}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma)$                                                                                                           |
+|--------+--------+-------------------------------+-----+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+
+#+CAPTION: All fit functions for the charge spectra for the different combinations.
+#+NAME: fit_func_charge
+|--------+--------+-------------------------------+-----+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Target | Filter | line                          |  HV | fit functions                                                                                                                                                                                                                |
+|--------+--------+-------------------------------+-----+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Cu     | Ni     | $\ce{Cu}$ $\text{K}_{\alpha}$ |  15 | $G^{\mathrm{Cu,esc}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{Cu}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma)$                                                                                                              |
+| Mn     | Cr     | $\ce{Mn}$ $\text{K}_{\alpha}$ |  12 | $G^{\mathrm{Mn,esc}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{Mn}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma)$                                                                                                              |
+| Ti     | Ti     | $\ce{Ti}$ $\text{K}_{\alpha}$ |   9 | $G^{\mathrm{Ti,esc}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{Ti}}_{\mathrm{K}_{\beta}}(N,\mu,\sigma) + G^{\mathrm{Ti}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{Ti}}_{\mathrm{K}_{\beta}}(N,\mu,\sigma)$    |
+| Ag     | Ag     | $\ce{Ag}$ $\text{L}_{\alpha}$ |   6 | $G^{\mathrm{Ag}}_{\mathrm{L}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{Ag}}_{\mathrm{L}_{\beta}}(N,\mu,\sigma)$                                                                                                                   |
+| Al     | Al     | $\ce{Al}$ $\text{K}_{\alpha}$ |   4 | $G^{\mathrm{Al}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma)$                                                                                                                                                                        |
+| Cu     | EPIC   | $\ce{Cu}$ $\text{L}_{\alpha}$ |   2 | $G^{\mathrm{Cu}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma)$                                                                                                                                                                        |
+| Cu     | EPIC   | $\ce{O }$ $\text{K}_{\alpha}$ | 0.9 | $G^{\mathrm{O}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{C}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{Fe,esc}}_{L_{\alpha,\beta}}(N,\mu,\sigma) + G^{\mathrm{Ni}}_{\mathrm{L}_{\alpha,\beta}}(N,\mu,\sigma)$ |
+| C      | EPIC   | $\ce{C }$ $\text{K}_{\alpha}$ | 0.6 | $G^{\mathrm{C}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma) + G^{\mathrm{O}}_{\mathrm{K}_{\alpha}}(N,\mu,\sigma)$                                                                                                                    |
+|--------+--------+-------------------------------+-----+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+
+The exact implementation in use for both the gaussian and
+exponential gaussian:
+- Gauss:
+  https://github.com/Vindaar/seqmath/blob/master/src/seqmath/smath.nim#L997-L1009
+- exponential Gauss:
+  https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibration.nim#L182-L194
+
+The fitting was performed both with [[https://www.physics.wisc.edu/~craigm/idl/cmpfit.html][MPFit]] (Levenberg Marquardt C
+implementation) as a comparison, but mainly using [[https://nlopt.readthedocs.io/en/latest/][NLopt]]. Specifically
+the gradient based [[http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.146.5196]["Method of Moving Asymptotes"]] algorithm was used
+(NLopt provides a large number of different minimization /
+maximization algorithms to choose from) to perform maximum likelihood
+estimation written in the form of a poisson distributed log likelihood
+$\chi^2$:
+#+BEGIN_EXPORT latex
+\begin{equation}
+\chi^2_{\lambda, P} = 2 \sum_i y_i - n_i + n_i \ln\left(\frac{n_i}{y_i}\right),
+\end{equation}
+#+END_EXPORT
+where $n_i$ is the number of events in bin $i$ and $y_i$ the model
+prediction of events in bin $i$.
+
+The required gradient was calculated simply using the [[https://en.wikipedia.org/wiki/Symmetric_derivative][symmetric
+derivative]]. Other algorithms and minimization functions were tried,
+but this proved to be the most reliable.  See the implementation:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibration.nim#L131-L162
+
+The fits to all spectra are shown below.
+
+
 ** Detector calibrations + characterization plots
 
 *** FADC spectrum & threshold [/]
