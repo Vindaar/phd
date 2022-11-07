@@ -5489,6 +5489,83 @@ for the PhD thesis.
 
 - [X] *THIS IS IN DETECTOR OVERVIEW NOW*
 
+** Septemboard event display [/]
+
+In order to monitor the data taking process while the detector is
+running, an online event display tool was developed during the first
+CAST data taking period in March 2017. It is a Python [fn:daq_python]
+based project making heavy use of =matplotlib= \cite{Hunter:2007} for
+an interactive view of both the Septemboard events as they are
+recorded, the FADC readout as well as a general information header
+about the current data taking run.
+
+The backend consists of a multiprocessing architecture with multiple
+worker processes. One process watches the current run directory for
+changes and reads the raw data files, another performs basic event
+reconstruction and another one updates the current event to be
+displayed. The main process renders the =matplotlib= based graphical
+user interface (GUI) [fn:daq_backend]. 
+
+Fig. [[fig:daq:septemboard_event_display_example]] shows the graphical
+user interface of the septemboard event display during a background
+run. General information about the current run and event is shown in
+the box at the top center. The top left box shows hit specific
+information for the current event.  The current septemboard event is
+always shown in the left pane in a realistic layout of the
+septemboard. By default the Viridis *CITE VIRIDIS* color scale is used
+in the display of the septemboard events, each shown as an image of
+$(256, 256)$ pixels. If a chip did not record any activity during an
+event, its plot remains white for easier identification of few hits
+compared to no hits. The color scale can be adjusted when starting the
+program and the images can be downsampled by any factor of 2 for
+better visibility, as is done in
+fig. [[fig:daq:septemboard_event_display_example]]. The right pane of the
+event display shows the last recorded event of the FADC. It does not
+automatically update the plot every time a new septemboard event is
+recorded, as there can be multiple events without FADC activity and it
+is useful to be able to glance at the last large event on the
+FADC. The filename is printed as the title of the plot to show which
+septemboard event it corresponds to.
+
+- [ ] *CITE SOMETHING FOR VIRIDIS COLORSCALE*
+
+#+CAPTION: Screenshot of the Septemboard event display showing a background
+#+CAPTION: event from a CAST data taking run in 2017. The pixel density in the
+#+CAPTION: septemboard on the left has been downsampled by a factor of 2 from
+#+CAPTION: $(256, 256)$ for each chip to $(128, 128)$ for better visibilty of
+#+CAPTION: the activity. The event display shows general information like run and
+#+CAPTION: event number in the box at the top, hit specific information for the 
+#+CAPTION: current event in the left top box and the current septemboard event
+#+CAPTION: in the left pane. The right pane shows the last FADC event (if no
+#+CAPTION: new FADC event is recorded, it stays).
+#+NAME: fig:daq:septemboard_event_display_example
+[[~/phd/Figs/daq/example_event_display.pdf]]
+
+The event display provides multiple forms of interactivity, such as an
+"auto follow" mode (the default in which new events are shown as they
+are recorded), a "playback" mode (walks through all events with a
+certain delay and general back and forth optionality. Further, a
+shortcut to save images directly exists, as well as simple computation
+of aggregate statistics of the current data taking period (different
+occupancy maps and simple histograms showing the number of hits per
+each event and chip).
+
+All in all it provides a simple, but powerful way to monitor the
+detector activity online as it takes data. [fn:daq_downsides]
+
+[fn:daq_python] https://python.org
+
+[fn:daq_backend] =matplotlib= provides a multitude of different GUI
+backends. The explicit choice depends on the specific machine
+(available backends may differ) and preference. Common choices are GTK
+and TkAg. *CHECK BACKENDS*
+
+[fn:daq_downsides] The main drawbacks are related to it being a
+Python based project that utilizes =matplotlib= possibly too
+heavily. The combination means the tool is not useful for fast data
+taking, as it is too slow to show events in real time if data taking
+exceeds one frame per second significantly.
+
 ** Timepix calibrations etc.
 
 *ELSEWHERE AS WELL*
@@ -6374,82 +6451,262 @@ basti at void in /mnt/1TB/CAST/2018_2/out/DataRuns2018_Raw_2020-04-28_16-13-28 Î
 
 - [ ] *REPLACE BY BETTER PLOT. USING 90MIN AMONG OTHER THINGS*
 
-** Septemboard event display [/]
+*** Final Septemboard calibrations [0/4]
 
-In order to monitor the data taking process while the detector is
-running, an online event display tool was developed during the first
-CAST data taking period in March 2017. It is a Python [fn:daq_python]
-based project making heavy use of =matplotlib= \cite{Hunter:2007} for
-an interactive view of both the Septemboard events as they are
-recorded, the FADC readout as well as a general information header
-about the current data taking run.
+The detector was calibrated according to the descriptions of the
+previous sections prior to both major data taking campaigns at CAST
+(see sec. [[#sec:cast:data_taking_campaigns]] for a detailed overview of
+both campaigns), once in October 2017 and then again in July 2018.
 
-The backend consists of a multiprocessing architecture with multiple
-worker processes. One process watches the current run directory for
-changes and reads the raw data files, another performs basic event
-reconstruction and another one updates the current event to be
-displayed. The main process renders the =matplotlib= based graphical
-user interface (GUI) [fn:daq_backend]. 
+For an overview of all calibration parameters of interest, see the
+appendix [[#sec:appendix:septemboard_calibrations]].
 
-Fig. [[fig:daq:septemboard_event_display_example]] shows the graphical
-user interface of the septemboard event display during a background
-run. General information about the current run and event is shown in
-the box at the top center. The top left box shows hit specific
-information for the current event.  The current septemboard event is
-always shown in the left pane in a realistic layout of the
-septemboard. By default the Viridis *CITE VIRIDIS* color scale is used
-in the display of the septemboard events, each shown as an image of
-$(256, 256)$ pixels. If a chip did not record any activity during an
-event, its plot remains white for easier identification of few hits
-compared to no hits. The color scale can be adjusted when starting the
-program and the images can be downsampled by any factor of 2 for
-better visibility, as is done in
-fig. [[fig:daq:septemboard_event_display_example]]. The right pane of the
-event display shows the last recorded event of the FADC. It does not
-automatically update the plot every time a new septemboard event is
-recorded, as there can be multiple events without FADC activity and it
-is useful to be able to glance at the last large event on the
-FADC. The filename is printed as the title of the plot to show which
-septemboard event it corresponds to.
+Tables [[tab:daq:thl_ths_calibration_run2]] and
+[[tab:daq:thl_ths_calibration_run3]] show the =THL= and =THS= DAC values
+used for the Septemboard detector at CAST during the data taking
+campaign from October 2017 to March 2018 (run 2) and October 2018 to December
+2018 (run 3), respectively. The other DACs were all set to the same values for
+all chips in both data taking campaigns with the detector, shown in
+tab. [[tab:daq:common_dac_values]].
 
-- [ ] *CITE SOMETHING FOR VIRIDIS COLORSCALE*
+- [ ] *WHAT ELSE*?
+- [ ] *DISTRIBUTIONS OF 4-BIT DAC?* Only appendix
+- [ ] *THEORETICAL THRESHOLDS COMPUTED AS IN SECTION ABOVE. RESULT
+  ADDED TO TABLE?*
 
-#+CAPTION: Screenshot of the Septemboard event display showing a background
-#+CAPTION: event from a CAST data taking run in 2017. The pixel density in the
-#+CAPTION: septemboard on the left has been downsampled by a factor of 2 from
-#+CAPTION: $(256, 256)$ for each chip to $(128, 128)$ for better visibilty of
-#+CAPTION: the activity. The event display shows general information like run and
-#+CAPTION: event number in the box at the top, hit specific information for the 
-#+CAPTION: current event in the left top box and the current septemboard event
-#+CAPTION: in the left pane. The right pane shows the last FADC event (if no
-#+CAPTION: new FADC event is recorded, it stays).
-#+NAME: fig:daq:septemboard_event_display_example
-[[~/phd/Figs/daq/example_event_display.pdf]]
+#+CAPTION: The =THL= and =THS= DAC values for each of the chips of the
+#+CAPTION: Septemboard (board H) detector used at CAST for the data taking
+#+CAPTION: campaign from October 2017 to March 2018 (run 2).
+#+NAME: tab:daq:thl_ths_calibration_run2
+|-----+--------+--------+--------+---------+---------+--------+--------|
+| DAC | E6 W69 | K6 W69 | H9 W69 | H10 W69 | G10 W69 | D9 W69 | L8 W69 |
+|-----+--------+--------+--------+---------+---------+--------+--------|
+| THL |    435 |    435 |    405 |     450 |     450 |    400 |    470 |
+| THS |     66 |     69 |     66 |      64 |      66 |     65 |     66 |
+|-----+--------+--------+--------+---------+---------+--------+--------|
 
-The event display provides multiple forms of interactivity, such as an
-"auto follow" mode (the default in which new events are shown as they
-are recorded), a "playback" mode (walks through all events with a
-certain delay and general back and forth optionality. Further, a
-shortcut to save images directly exists, as well as simple computation
-of aggregate statistics of the current data taking period (different
-occupancy maps and simple histograms showing the number of hits per
-each event and chip).
 
-All in all it provides a simple, but powerful way to monitor the
-detector activity online as it takes data. [fn:daq_downsides]
+#+CAPTION: The =THL= and =THS= DAC values for each of the chips of the
+#+CAPTION: Septemboard (board H) detector used at CAST for the data taking
+#+CAPTION: campaign from October 2018 to December 2018 (run 3).
+#+NAME: tab:daq:thl_ths_calibration_run3
+|-----+--------+--------+--------+---------+---------+--------+--------|
+| DAC | E6 W69 | K6 W69 | H9 W69 | H10 W69 | G10 W69 | D9 W69 | L8 W69 |
+|-----+--------+--------+--------+---------+---------+--------+--------|
+| THL |    419 |    386 |    369 |     434 |     439 |    402 |    462 |
+| THS |     68 |     66 |     66 |      65 |      69 |     65 |     64 |
+|-----+--------+--------+--------+---------+---------+--------+--------|
+  
+#+CAPTION: DAC values that are common between data taking periods and 
+#+CAPTION: all chips of the Septemboard for CAST.
+#+NAME: tab:daq:common_dac_values
+|-------------+------------|
+| DAC         |      Value |
+|-------------+------------|
+| IKrum       |         20 |
+| Hist        |          0 |
+| GND         |         80 |
+| Coarse      |          7 |
+| CTPR        | 4294967295 |
+| BiasLVDS    |        128 |
+| SenseDAC    |          1 |
+| DACCode     |          6 |
+| RefLVDS     |        128 |
+| Vcas        |        130 |
+| ExtDAC      |          0 |
+| Disc        |        127 |
+| Preamp      |        255 |
+| FBK         |        128 |
+| BuffAnalogA |        127 |
+| BuffAnalogB |        127 |
+|-------------+------------|
 
-[fn:daq_python] https://python.org
+Further, figure [[fig:daq:thl_optimized_distributinons]] shows the
+optimized =THL= distributions of all chips after threshold
+equalization for run 2 (left) and 3 (right).
 
-[fn:daq_backend] =matplotlib= provides a multitude of different GUI
-backends. The explicit choice depends on the specific machine
-(available backends may differ) and preference. Common choices are GTK
-and TkAg. *CHECK BACKENDS*
+#+CAPTION: Distributions of the =THL= values of all Septemboard (board H) chips
+#+CAPTION: at the noise peak with the calibration for for run 2 on the left and
+#+CAPTION: run 3 on the right.
+#+ATTR_LATEX: :width 1\textwidth
+#+NAME: fig:daq:thl_optimized_distributinons
+[[~/phd/Figs/detector/calibration/sepemboard_all_thl_optimized.pdf]]
 
-[fn:daq_downsides] The main drawbacks are related to it being a
-Python based project that utilizes =matplotlib= possibly too
-heavily. The combination means the tool is not useful for fast data
-taking, as it is too slow to show events in real time if data taking
-exceeds one frame per second significantly.
+- [ ] *TURN PLOT INTO TIKZ*
+
+**** Generate the FSR tables for all chips and each run period  :noexport:
+
+Let's generate the tables containing the table for the FSR DAC values
+for all chips for each of the different run periods.
+
+We will use the =ChipCalibrations= directory that is part of the
+=TimepixAnalysis= repository in the =resources= directory.
+
+Further, we will create a plot of all pixels showing the noise peak in
+THL values based on the optimized equalization.
+
+#+begin_src nim :tangle code/generate_fsr_table.nim :results raw
+import std / [sequtils, strutils, os, tables, algorithm]
+
+const path = "/home/basti/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/"
+const periods = ["Run2", "Run3"]
+const chipInfo = "chipInfo.txt"
+const thrMean = "thresholdMeans$#.txt"
+const chips = toSeq(0 .. 6)
+
+import ggplotnim
+proc readThresholdMeans(path: string, chip: int): DataFrame =
+  echo path / thrMean
+  result = readCsv(path / (thrMean % $chip), sep = '\t', colNames = @["x", "y", "min", "max", "bit", "opt"])
+    .select("opt")
+    .rename(f{"THL" <- "opt"})
+    .mutate(f{"chip" <- chip})
+
+# parse the names of the chips from the run info file
+var df = newDataFrame()    
+for period in periods:
+  var header = @["DAC"]
+  var tab = initTable[int, seq[(string, int)]]()
+  var dfPeriod = newDataFrame()
+  for chip in chips:
+    proc toTuple(s: seq[seq[string]]): seq[(string, int)] =
+      for x in s:
+        doAssert x.len == 2
+        result.add (x[0], x[1].parseInt)
+    let chipPath = path / period / "chip" & $chip
+    let data = readFile(chipPath / "fsr" & $chip & ".txt")
+      .splitLines
+      .filterIt(it.len > 0)
+      .mapIt(it.split)
+      .toTuple()
+
+    tab[chip] = data
+
+    # read chip name and add to header
+    proc readChipName(chip: int): string =
+      result = readFile(chipPath / chipInfo)
+        .splitLines()[0] 
+      result.removePrefix("chipName: ")
+    header.add readChipName(chip)
+
+    dfPeriod.add readThresholdMeans(chipPath, chip)
+  dfPeriod["Run"] = period
+  df.add dfPeriod
+  
+  proc invertTable(tab: Table[int, seq[(string, int)]]): Table[string, seq[(int, int)]] =
+    result = initTable[string, seq[(int, int)]]()
+    for chip, data in pairs(tab):
+      for (dac, value) in data:
+        if dac notin result:
+          result[dac] = newSeq[(int, int)]()
+        result[dac].add (chip, value)
+
+  proc wrap(s: string): string = "|" & s & "|\n"
+  proc toOrgTable(s: seq[seq[string]], header: seq[string]): string =
+    let tabLine = wrap toSeq(0 ..< header.len).mapIt("------").join("|")
+    result = tabLine
+    result.add wrap(header.join("|"))
+    result.add tabLine
+    for x in s:
+      doAssert x.len == header.len
+      result.add wrap(x.join("|"))
+    result.add tabLine
+
+  proc toOrgTable(tab: Table[string, seq[(int, int)]],
+                  header: seq[string]): string =
+    var commonDacs = newSeq[seq[string]]()
+    var diffDacs = newSeq[seq[string]]()
+    for (dac, row) in pairs(tab):
+      var fullRow = @[dac]
+      let toAdd = row.sortedByIt(it[0]).mapIt($it[1])
+      if toAdd.deduplicate.len > 1:
+        fullRow.add toAdd
+        diffDacs.add fullRow 
+      else:
+        commonDacs.add @[dac, toAdd.deduplicate[0]]
+    result.add toOrgTable(diffDacs, header)
+    result.add "\n\n"
+    result.add toOrgTable(commonDacs, @["DAC", "Value"])
+    # now add common dacs table
+  echo "Run: ", period
+  echo tab.invertTable.toOrgTable(header)
+
+ggplot(df.filter(f{`THL` > 100}), aes("THL", fill = factor("chip"))) +
+  facet_wrap("Run") + 
+  geom_histogram(binWidth = 1.0, position = "identity", alpha = 0.7, hdKind = hdOutline) +
+  ggtitle("Optimized THL distribution of the noise peak for each chip") +
+  ylab("# pixels") +
+  ggsave("/home/basti/phd/Figs/detector/calibration/sepemboard_all_thl_optimized.pdf",
+         width = 1200, height = 640)
+
+#+end_src
+
+#+RESULTS:
+Run: Run2
+|-----+--------+--------+--------+---------+---------+--------+--------|
+| DAC | E6 W69 | K6 W69 | H9 W69 | H10 W69 | G10 W69 | D9 W69 | L8 W69 |
+|-----+--------+--------+--------+---------+---------+--------+--------|
+| THL |    435 |    435 |    405 |     450 |     450 |    400 |    470 |
+| THS |     66 |     69 |     66 |      64 |      66 |     65 |     66 |
+|-----+--------+--------+--------+---------+---------+--------+--------|
+
+
+|-------------+------------|
+| DAC         |      Value |
+|-------------+------------|
+| IKrum       |         20 |
+| Hist        |          0 |
+| GND         |         80 |
+| Coarse      |          7 |
+| CTPR        | 4294967295 |
+| BiasLVDS    |        128 |
+| SenseDAC    |          1 |
+| DACCode     |          6 |
+| RefLVDS     |        128 |
+| Vcas        |        130 |
+| ExtDAC      |          0 |
+| Disc        |        127 |
+| Preamp      |        255 |
+| FBK         |        128 |
+| BuffAnalogA |        127 |
+| BuffAnalogB |        127 |
+|-------------+------------|
+
+Run: Run3
+|-----+--------+--------+--------+---------+---------+--------+--------|
+| DAC | E6 W69 | K6 W69 | H9 W69 | H10 W69 | G10 W69 | D9 W69 | L8 W69 |
+|-----+--------+--------+--------+---------+---------+--------+--------|
+| THL |    419 |    386 |    369 |     434 |     439 |    402 |    462 |
+| THS |     68 |     66 |     66 |      65 |      69 |     65 |     64 |
+|-----+--------+--------+--------+---------+---------+--------+--------|
+
+
+|-------------+------------|
+| DAC         |      Value |
+|-------------+------------|
+| IKrum       |         20 |
+| Hist        |          0 |
+| GND         |         80 |
+| Coarse      |          7 |
+| CTPR        | 4294967295 |
+| BiasLVDS    |        128 |
+| SenseDAC    |          1 |
+| DACCode     |          6 |
+| RefLVDS     |        128 |
+| Vcas        |        130 |
+| ExtDAC      |          0 |
+| Disc        |        127 |
+| Preamp      |        255 |
+| FBK         |        128 |
+| BuffAnalogA |        127 |
+| BuffAnalogB |        127 |
+|-------------+------------|
+
+
+
+
+
+
 
 ** Scintillator calibration - maybe here after all?
 
