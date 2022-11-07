@@ -6828,6 +6828,161 @@ bits data output and normal acquisition mode.
 
 ** Scintillator calibration - maybe here after all?
 
+*** Veto paddle
+- [ ] Part that now lives in appendix.
+
+The large veto scintillator paddle was calibrated at the RD51
+laboratory at CERN prior to the data taking campaign in
+March 2017. Using two smaller, calibrated scintillators to create a
+coincidence setup of the three scintillators, measurements were taken
+at different thresholds. Each measurement was $\SI{10}{\minute}$ long.
+
+An amplifier was installed after the PMT to increase the signal. The
+PMT was supplied with a voltage of \SI{1200}{V}. Table
+[[tab-daq-scintillator_coincidence_measurements]] shows the recorded
+measurements. Based on these a threshold of \SI{-110}{mV} was chosen
+for the CAST data taking. Fig. [[fig:daq:veto_scintillator_coincidence]]
+also shows the data from table. While the coincidence counts at
+\SI{-110}{mV} are below the visible plateau above \SI{-100}{mV}, the
+threshold was chosen as the raw counts were still considered too high
+compared to expectation based on cosmic muon rate and the size of the
+scintillator. [fn:threshold_choice]
+
+#+CAPTION: Measurements for the calibration of the large veto scintillator taken
+#+CAPTION: at RD51 at CERN with two smaller, calibrated scintillators in a coincidence.
+#+CAPTION: Each measurement was \SI{10}{min}. The thresholds set on the discriminator for
+#+CAPTION: the veto scintillator were originally measured
+#+CAPTION: with a 10x scaling and have been rescaled here to their correct values.
+#+NAME: tab-daq-scintillator_coincidence_measurements
+| Threshold / mV | Counts Szinti | Counts Coincidence |
+|----------------+---------------+--------------------|
+|          -59.8 |         31221 |                634 |
+|          -70.0 |         30132 |                674 |
+|          -80.4 |         28893 |                635 |
+|          -90.3 |         28076 |                644 |
+|         -100.5 |         27012 |                684 |
+|         -110.3 |         25259 |                566 |
+|         -120.0 |         22483 |                495 |
+|         -130.3 |         19314 |                437 |
+|         -140.3 |         16392 |                356 |
+|         -150.5 |         13677 |                312 |
+|         -160.0 |         11866 |                267 |
+|         -170.1 |         10008 |                243 |
+
+#+begin_src nim :var tbl=tab-daq-scintillator_coincidence_measurements :results none :exports none
+import ggplotnim, sequtils
+let df = toDf({ "Thr" : tbl["Threshold / mV"],
+                "Szinti" : tbl["Counts Szinti"],
+                "Coinc" : tbl["Counts Coincidence"] })
+  .mutate(f{"SzintiErr" ~ sqrt(`Szinti`)},
+          f{"CoincErr" ~ sqrt(`Coinc`)})
+## XXX: `ebLinesT` is broken?!  
+ggplot(df, aes("Thr", "Szinti")) +
+  geom_point() + geom_line() +
+  geom_errorbar(aes = aes(yMin = f{`Szinti` - `SzintiErr`},
+                          yMax = f{`Szinti` + `SzintiErr`}),
+                errorBarKind = ebLines,
+                color = parseHex("FF00FF")) + 
+  xlab(r"Threshold [\si{mV}]") + ylab(r"Counts [\#]") +
+  ggtitle(r"Calibration measurements of \SI{10}{min} each") + 
+  ggsave("/home/basti/phd/Figs/detector/calibration/veto_scintillator_calibration_rd51.pdf",
+         useTeX = true, standalone = true)
+
+ggplot(df, aes("Thr", "Coinc")) +
+  geom_point() + geom_line() +
+  geom_errorbar(aes = aes(yMin = f{`Coinc` - `CoincErr`},
+                          yMax = f{`Coinc` + `CoincErr`}),
+                errorBarKind = ebLines) +   
+  xlab(r"Threshold [\si{mV}]") + ylab(r"Counts [\#]") +
+  ggtitle(r"Calibration measurements of \SI{10}{min} each in 3-way coincidence") + 
+  ggsave("/home/basti/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.pdf",
+         useTeX = true, standalone = true)
+#+end_src
+
+#+CAPTION: Calibration measurements for the veto scintillator printed in table
+#+CAPTION: [[tab-daq-scintillator_coincidence_measurements]]. The line is simply an
+#+CAPTION: interconnection of all data points. The errors simply represent Poisson-like
+#+CAPTION: $\sqrt{N}$ uncertainties.
+#+NAME: fig:daq:veto_scintillator_coincidence
+[[~/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.pdf]]
+
+See the appendix [[#sec:appendix:scintillator_calibration_notes]] for a
+reproduction of the notes taken during the calibration of the veto
+paddle scintillator.
+
+[fn:threshold_choice] While it is unclear to me now given it's been 5
+years, I believe at the time of the calibration we wrongly assumed a
+muon rate of \SI{100}{Hz.m⁻².sr⁻¹} instead of about
+\SI{1}{Hz.min⁻¹}. The former number only works out if one integrates
+it over the $\cos^2(θ)$ dependence, _but only along $θ$_ and not $φ$!
+Either way, the number seems problematic. However, it did misguide us
+in likely choosing a too low threshold, as using the former number
+yields an expected number of counts of $\sim\num{32000}$ compared to
+only $\sim\num{20000}$ in our naive approach.
+
+**** Raw scintillator data  :noexport:
+
+#+CAPTION: Calibration measurements for the veto scintillator printed in table
+#+CAPTION: [[tab-daq-scintillator_coincidence_measurements]]. In this case the
+#+CAPTION: raw data is shown instead of the coincidence. The line is simply an
+#+CAPTION: interconnection of all data points. The errors are colored to be seen at all.
+#+NAME: fig:daq:veto_scintillator_raw_counts
+[[~/phd/Figs/detector/calibration/veto_scintillator_calibration_rd51.pdf]]
+
+In particular looking at the raw counts, in hindsight I would now
+probably choose a threshold closer to \SI{-90}{mV} or
+\SI{-95}{mV}. But well.
+
+**** Calculate expected rate  :noexport:
+
+Let's compute the expected rate based on a mean cosmic muon rate at
+the surface and the area of the scintillator.
+
+The scintillator has a size of 31.49x15.74 inches and we roughly have
+a mean cosmic muon rate of 1 per cm⁻² min⁻¹. Measurement time was 600 s.
+#+begin_src nim
+import unchained
+let rate = 1.cm⁻²•min⁻¹
+let area = 31.49.inch * 15.74.inch
+let time = 600.s
+echo "Expected rate: ", time * rate * area
+#+end_src
+
+#+RESULTS:
+: Expected rate: 31977.5 UnitLess
+
+So about 32,000 counts in the 10 min time frame. It's a bit
+frustrating that for some reason during that calibration we assumed a
+muon rate of 100 Hz m⁻² sr⁻¹, so that we only got an expected number
+of counts of about 20,000.
+
+If we assume the 100 Hz m⁻² sr⁻¹ number and integrate only over $θ$
+(not $φ$ as we should also!) using the $\cos² θ$ dependence we get a
+more comparable number:
+
+#+begin_src nim
+import unchained
+let integral = 1.5708.sr # ∫_{-π/2}^{π/2} cos²(θ) dθ = 1.5708
+let rate = 100.Hz•m⁻²•sr⁻¹
+let angleInt = 2*π
+let time = 600.s
+let area = 31.49.inch * 15.74.inch
+echo rate * time * area * integral
+#+end_src
+
+#+RESULTS:
+: 30138.2 UnitLess
+
+In any case, it seems like our assumption of 20000 as seen in appendix
+[[#sec:appendix:scintillator_calibration_notes]] is clearly flawed and
+lead to a possibly too large threshold for the discriminator.
+
+In addition: why the hell did I not take note of the size of the
+scintillators that Theodoros gave us? That would be a much better
+cross check for the expected rate. It is certainly possible that our
+choice of $\SI{-110}{mV}$ was actually due to an expected coincidence
+rate matching at that threshold given the sizes of the calibrated
+scintillators, but I can't verify that anymore.
 
 * Data reconstruction [0/1]
 #+LATEX: \minitoc
