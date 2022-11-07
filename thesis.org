@@ -6702,9 +6702,127 @@ Run: Run3
 | BuffAnalogB |        127 |
 |-------------+------------|
 
+** FADC [/]
 
+The FADC requires care about multiple aspects. First the settings need
+to be chosen that configure both the operating characteristics, data
+readout and trigger threshold. Next, the Ortec 474 shaping amplifier
+has multiple different settings. Finally, in order to interpret the
+signals received from the FADC, a so-called "pedestal run" must be
+recorded.
 
+The \num{10240} channels of the FADC are part of a cyclic
+register. Due to implementation details, the absolute recorded values
+of each register is arbitrary. In a pedestal run multiple measurements
+($\mathcal{O}(10)$ of a certain length (\SI{100}{ms} in our case)
+are performed and the pedestal values averaged. The resulting values
+represent a mean value for the typical value in each channel, hence
+the name 'pedestal'. To interpret a real measured signal, these
+pedestals are subtracted from the recorded
+signal. Fig. [[fig:daq:fadc_pedestal_run]] shows the rather peculiar
+behavior of the pedestals. The even and odd channels alternate between
+values of around \num{2000} and \num{6000}, respectively. The
+pedestals drift over time, but the associated time scales are long.
 
+As seen in the config file explanation in section
+[[#sec:daq:tos_config_file]], the 
+
+- [ ] *THRESHOLD. 44 mV. TO AVOID NOISE TRIGGERS*
+- [ ] *AMPLIFIER SETTINGS*
+- [X] *PEDESTAL*
+
+- [ ] *ATTEMPT TO CALCULATE PEDESTAL RUNS FROM FADC DATA FILES BY COMPUTING A TRUNCATED MEAN OF EACH SINGLE CHANNEL. AS THE DATA IS IN
+  CHANNEL ORDER, THIS SHOULD BE PRETTY SIMPLE*
+
+#+CAPTION: The FADC pedestal run used for CAST data shows peculiar behavior. Alternatingly
+#+CAPTION: the pedestals lie near \num{6000} and near \num{2000}. Within the variance is
+#+CAPTION: $\mathcal{O}(30)$ for both. The first 10 channels in total are not shown, as they
+#+CAPTION: are outlying by $\sim\num{100}$.
+#+NAME: fig:daq:fadc_pedestal_run
+#+Attr_LATEX: :width 1\textwidth
+[[~/phd/Figs/detector/calibration/fadc_pedestal_split_even_odd.pdf]]
+
+[fn:fadc_manual] https://archive.org/details/manualzilla-id-5646050/ 
+  
+*** Pedestals
+
+**** Generate plot of pedestals                                 :noexport:
+
+#+begin_src nim :tangle code/fadc_pedestals_plot.nim
+import std / [strutils, os, sequtils]
+import ggplotnim
+
+const path = "/home/basti/CastData/ExternCode/TimepixAnalysis/resources/pedestalRuns/"
+const file = "pedestalRun000042_1_182143774.txt-fadc"
+var df = readCsv(path / file, header = "#")
+  .rename(f{"val" <- "nb of channels: 0"})
+  .filter(f{"#" notin `val`})
+  .mutate(f{"val" ~ `val`.parseFloat})
+df["Channel"] = toSeq(0 ..< df.len)
+df = df.mutate(f{int -> bool: "even?" ~ `Channel` mod 2 == 0})
+echo df
+echo df.tail(20)
+ggplot(df, aes("Channel", "val", color = "even?")) +
+  geom_point(size = 1.0) +
+  ggtitle("FADC channel values of pedestal run") +  
+  ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_run.pdf")
+#         useTeX = true, standalone = true)
+ggplot(df.group_by("even?").filter(f{float -> bool: `val` < percentile(col("val"), 95)}),
+       aes("Channel", "val", color = "even?")) +
+  facet_wrap("even?", scales = "free") +
+  facetMargin(0.5) +
+  margin(bottom = 1.0, right = 3.0) +
+  xlab("Channel", margin = 0.0) + 
+  geom_point(size = 1.0) +
+  legendPosition(0.91, 0.0) +
+  ggtitle("FADC channel values of pedestal run, split by even and odd channel numbers") +
+  ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_even_odd.pdf", width = 1200, height = 600)#
+#         useTeX = true, standalone = true)                                                                                               
+#+end_src
+
+**** Understanding FADC settings :noexport:
+
+Given the time since last working with this, I need to look up the
+values of the TOS config file in the FADC manual.
+
+For reference our settings:
+#+begin_src toml
+[Fadc] # FADC Settings
+fadcTriggerType                 = 3 
+fadcFrequency                   = 2
+fadcPosttrig                    = 80
+fadcPretrig                     = 15000
+# was 2033 before, 1966 corresponds to -40 mV
+fadcTriggerThresholdRegisterAll = 1966 
+# run time of a single pedestal run for the FADC in ms
+fadcPedestalRunTime             = 100
+# number of acquisition runs done for each pedestal calibration
+fadcPedestalNumRuns             = 10
+# using channel 0 on FADC as trigger source, thus bit 0  1!
+fadcChannelSource               = 1
+# set FADC mode register (mainly to enable 14-bit readout)
+fadcModeRegister                = 0b000
+#+end_src
+
+=FP_FREQUENCY= is the name for the address =0x01= for the. It needs 6
+bits of data:
+#+begin_src 
+Bits 0-5 Function
+Val = 1 => Fsample = 2GHz.
+Val = 2 => Fsample = 1GHz.
+Val = 4 => Fsample = 500MHz.
+Val = 5 => Fsample = 400MHz.
+Val = 10 => Fsample = 200MHz.
+Val = 20 => Fsample = 100MHz.
+Val = 40 => Fsample = 50MHz.
+#+end_src
+As such our used value of ~fadcFrequency = 2~ corresponds to
+\SI{1}{GHz} as I remembered.
+
+=MODE_REGISTER= is for value =0x03= and its 3 bits of data.
+[[/home/basti/phd/Figs/fadc_settings_mode_register.png]]
+Our value of =0b000= for the data means no interruption tagging, 12
+bits data output and normal acquisition mode.
 
 
 
