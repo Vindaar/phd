@@ -7423,18 +7423,98 @@ these tools in the future.
   - in Polya plot show the theoretical threshold in electrons as a
     vertical line (computed from the used THL DAC value and THL calibration)
 
-** FADC
+** GridPix data reconstruction [/]
 
-*** Pedestals & signal reconstruction
+- introduce what signal and background events actually look like
+  -> motivates the kind of steps we then perform. So an "intro"
+  section, then description of the processes.
+- data parsing?
+- clustering (our custom and DBSCAN \cite{ester1996density})
+- in particular the geometric reconstruction. Split up our explanation
+  schematic made in inkscape and somehow present that?
 
-Yes, this needs to be about essentially a FADC calibration.
+*** Expectation of event shapes [/]
 
-*ALL THE SIGNAL RECONSTRUCTION GOES TO A CHAPTER LATER WHERE WE EXPLAIN INGRID RECO*
+Based on the theoretical aspects of a gaseous detector as explained in
+chapter [[#sec:theory_detector]] and the expected kinds of signal sources
+at an experiment like CAST (c.f. [[#sec:cast]]), we can have a good
+expectation of the kinds of signals that a GridPix detector records
+for different types of events.
 
-Before the FADC data can be used, the raw data needs to be converted
-from the internal, cyclic representation into a 10240 long array.
+The signal source we are interested in for an axion helioscope are
+soft energy X-rays, typically below \SI{10}{keV}. The main goal in
+later determining a background rate and computing a physics result
+from data is to filter out these X-rays from the rest of the data the
+detector records. The dominant source of background in any gaseous
+detector at surface level is due to cosmic muons.
 
-...
+Fortunately, muons and X-rays behave very different in the
+detector. X-rays 
+
+
+- [ ] *SHOULD WE MENTION ALPHAS, NEUTRONS ETC HERE?*
+- [ ] *MOTIVATED BY PHYSICAL STUFF SHOWN IN THEORY, DESCRIBE
+  EXPECTATION OF WHAT EVENTS SHOULD LOOK LIKE*
+
+
+*** Cluster properties
+
+- [ ] *EXPLANATION OF THE 3 MAIN PROPERTIES USED FOR LIKELIHOOD*
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/long_short_axis.pdf}
+    \caption{Rotated axes}
+    \label{fig:reco:prop_expl_axes}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/eccentricity.pdf}
+    \label{fig:reco:fadc_pedestals_from_data_compare_real_run303}
+    \caption{Eccentricity}
+  \end{subfigure}
+  \label{fig:reco:prop_expl_ecc}
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/frac_in_trans_rms.pdf}
+    \caption{Fraction in transverse RMS}
+    \label{fig:reco:prop_expl_fracRms}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/length_div_rms_trans.pdf}
+    \label{fig:reco:prop_expl_ldiv}
+    \caption{Length divided by transverse RMS}
+  \end{subfigure}
+  \label{fig:reco:prop_expl_ecc}
+  \caption{Funky things.
+  }
+\end{figure}
+
+  
+
+*** Event length [0/1]
+
+- [ ] How to compute length of events, given
+  - shutter mode & length
+  - FADC trigger
+
+** FADC [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:reco:fadc_data
+:END:
+
+The data files created from the FADC data sent upon a trigger are
+essentially memory snapshots of the circular register of the FADC. We
+will go through the necessary steps to convert that raw data into
+usable signals, given the FADC settings we use and the data TOS
+generates from it. For a detailed overview of the process see the FADC
+manual \cite{fadc_manual} [fn:reco_fadc_manual].
+
+- [ ] *ADD SOME KIND OF MOTIVATON FOR WHAT WE MIGHT WANT TO DO WITH THE SIGNALS?*
+
 *** FADC spectrum reconstruction [/]
 
 The first step to reconstruct the FADC data is to perform the pedestal
