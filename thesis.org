@@ -5106,23 +5106,39 @@ the FADC section, [[FADC]]
 As for our purposes most events are extremely sparse (< 500 pixels
 active) the zero suppressed readout is the only relevant readout
 mode. An example of the file type produced in this mode is in listing
-[[zero_suppressed_readout]].
+[[zero_suppressed_readout]]. *REPHRASE*
+
+The data files can be split into 3 distinct parts. A global run
+header, see listing [[code:daq:zero_suppressed_readout_run_header]], which
+contains information about the run the event is part of including important
+settings used as well as the timestamp of the event. Next is an event
+specific header, which contains specific information about the event
+in relation to the FADC and the scintillators, see listing
+[[code:daq:zero_suppressed_readout_event_header]]. The final part of the
+data files is the chip header and tab separated value part of the ~X Y
+ToT~ pairs of the active pixels for each chip of the detector in that
+event, see listing [[code:daq:zero_suppressed_readout_chips]]. 
 
 - [ ] *EXPLAIN RUN DATA LOCATION. DATA STORED IN =data/runs= AND
   DIRECTORY NAME SCHEMA*
 - [ ] *HV AND WIENER VME EXPLANATION*  
-- [ ] *POSSIBLY SPLIT ZERO SUPPRESSED OUTPUT INTO CHUNKS?*
-  
-#+CAPTION: Example of an event read out in zero suppressed readout mode. The ASCII output data
-#+CAPTION: consists of a global run and event header (indicated by =##=), a chip header (indicated by 
-#+CAPTION: =#= and actual data in format =X Y ToT= values). Each chip header is followed by
-#+CAPTION: by all active pixels on that chip in the event.
-#+NAME: zero_suppressed_readout
-#+begin_src sh
+- [X] *POSSIBLY SPLIT ZERO SUPPRESSED OUTPUT INTO CHUNKS? !! GENERAL
+  HEADER, EVENT HEADER, CHIP HEADER, DATA*
+- [ ] *ADD SECTION (EVEN IF POSSIBLY NOEXPORT) EXPLAINING THE FIELIDS
+  OF THE DATA FILE*
+- [ ] *ADD EXPLANATION OF HOW TO CALCULATE SHUTTER LENGTH. POSSIBLY
+  SOMEWHERE HERE? OR IN TIMEPIX INTRO? NEED IT LATER TO EXPLAIN LENGTH
+  OF EVENTS*  
+
+#+CAPTION: TOS generated data files start by a general header, which mainly contains 
+#+CAPTION: information about the run the data file is part of. The only exception is the
+#+CAPTION: =dateTime= field, which represents the timestamp of the event. [fn:daq_datetime_header]
+#+NAME: code:daq:zero_suppressed_readout_run_header
+#+begin_src toml
 ## [General]
 ## runNumber:        339
-## runTime:       	 7200
-## runTimeFrames: 	 0
+## runTime:          7200
+## runTimeFrames:    0
 ## pathName:         data/runs/Run_339_190218-10-36
 ## dateTime:         2019-02-18.10:36:34
 ## numChips:         7
@@ -5131,13 +5147,31 @@ mode. An example of the file type produced in this mode is in listing
 ## runMode:          0
 ## fastClock:        0
 ## externalTrigger:  0
+#+end_src
+
+#+CAPTION: After the general header follows the event header in similar fashion. It records
+#+CAPTION: the event number and information about the FADC and scintillators. If the FADC triggered
+#+CAPTION: ~fadcReadout~ is 1. Scintillator triggers may then be values in $[0, 4096)$. The ~fadcTriggerClock~
+#+CAPTION: is the clock cycle of the Timepix frame in which the FADC trigger was received.
+#+NAME: code:daq:zero_suppressed_readout_event_header
+#+begin_src sh
 ## [Event]
 ## eventNumber:      2
-## useHvFadc:    	 1
-## fadcReadout:    	 1
-## szint1ClockInt:	 0
-## szint2ClockInt:	 0
+## useHvFadc:        1
+## fadcReadout:      1
+## szint1ClockInt:   0
+## szint2ClockInt:   0
 ## fadcTriggerClock: 647246
+#+end_src
+
+#+CAPTION: The event header is followed by the beginning of the actual GridPix data. Each chip
+#+CAPTION: appears with a 3 line chip header containing number and name as well as the number
+#+CAPTION: of hits seen by that chip in the event. ~numHits~ lines follow with ~X Y TOT~ values
+#+CAPTION: in tab seperated fashion. This snippet would be followed by the remaining chips, 
+#+CAPTION: as many as written in the run header [[code:daq:zero_suppressed_readout_run_header]]
+#+CAPTION: as ~numChips~.
+#+NAME: code:daq:zero_suppressed_readout_chips
+#+begin_src sh
 # chipNumber: 0
 # chipName:   E 6 W69
 # numHits:    0
@@ -5147,27 +5181,14 @@ mode. An example of the file type produced in this mode is in listing
 # chipNumber: 2
 # chipName:   H 9 W69
 # numHits:    2
-106	160	75
-211	142	2
-# chipNumber: 3
-# chipName:   H 10 W69
-# numHits:    23
-238	154	51
-242	153	18
-...
-# chipNumber: 4
-# chipName:   G 10 W69
-# numHits:    0
-# chipNumber: 5
-# chipName:   D 9 W69
-# numHits:    0
-# chipNumber: 6
-# chipName:   L 8 W69
-# numHits:    4
-139	254	146
-166	233	11810
-234	203	11810
-70	57	315
+106     160     75
+211     142     2
+#+end_src
+
+
+[fn:daq_datetime_header] It is an oversight that the =dateTime= field
+is part of the =[General]= header instead of the =[Event]= header.
+
 #+end_src
 
 *** TOS configuration file
