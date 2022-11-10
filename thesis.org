@@ -7637,6 +7637,44 @@ valuable. [fn:detector_fadc_amp_measurements]
 Outside of that 
 
 [fn:detector_fadc_amp_measurements] 
+** Scintillator data
+:PROPERTIES:
+:CUSTOM_ID: sec:reco:scintillator_data
+:END:
+
+For the scintillator signals we only record a trigger flag and the
+number of clock cycles since the last scintillator trigger from the
+moment the FADC triggered. These two pieces of information are part of
+the Septemboard data files included in the
+header. [fn:reco_scinti_data_bug_1] [fn:reco_scinti_data_bug_2]
+
+[fn:reco_scinti_data_bug_1] Important note for people potentially
+investigating the raw data from 2017: There was a small bug in the
+readout software during the beginning of the 2017 data taking period,
+which wrote the scintillator trigger values clock cycle values into
+subsequent output files even if no FADC trigger was received (and thus
+no scintillator trigger was actually read out). However, there is a
+flag for an FADC trigger. To correctly read the first data runs it is
+therefore required to not only look at the scintillator trigger clock
+cycles, but also at whether the FADC actually triggered. This is
+handled in the analysis framework.
+
+[fn:reco_scinti_data_bug_2] *REWRITE AND MOVE* In addition to the
+above bug, there was unfortunately a more serious bug, which rendered
+the scintillator counts useless in the end of 2017 / beginning of 2018
+data taking period. The polarity of the signals was inverted in the
+detector firmware, resulting in useless "trigger" information. 
+
+
+- [ ] *WAS POLARITY REALLY THE ISSUE? I THINK SO, BUT NOT SURE*
+
+- [ ] *SHOULD SCINTI BUG NO TRIGGERS IN RUN 2 BUG BE MENTIONED HERE OR
+  IN CAST DATA TAKING CHAPTER? IT THINK LATTER* Investigate the scinti
+  bug again that caused data loss in the first place. What was wrong?
+
+
+
+
 
 * Detector installation at CAST & data taking                         :Part3:
 #+LATEX: \minitoc
