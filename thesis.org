@@ -7435,29 +7435,119 @@ Before the FADC data can be used, the raw data needs to be converted
 from the internal, cyclic representation into a 10240 long array.
 
 ...
+*** FADC spectrum reconstruction [/]
 
-By default each channel of the FADC has an arbitrary value in the
-range between \num{0} to \num{10000}. This needs to be corrected for
-by taking a so called 'pedestal run'. It is simply a readout of the
-FADC in the absence of any signal. This pedestal run then is
-subtracted from each actual FADC event to remove the pedestal
-baseline. 
+The first step to reconstruct the FADC data is to perform the pedestal
+correction. This is simply done by subtracting the pedestals register
+by register from the data file
 
-*** Noise sensitive
+\[
+N_{i, \text{corr}} = N_{i, \text{raw}} - N_{i, \text{pedestal}}
+\]
+
+with the raw data $N_{i, \text{raw}}$ and the pedestals
+$N_{i, \text{pedestal}}$ in register $i$.
+
+With the pedestals removed, the temporal correction is next to unfold
+the data into the correct order. This needs to be performed on each of
+the \num{2560} registers for each channel separately. The temporal
+rotation is performed by shifting all registers by
+
+\[
+n_\text{rot} = (\mathtt{TRIG\_REC} - \mathtt{POSTTRIG}) · 20
+\]
+
+places to the left. The constants $\mathtt{TRIG\_REC}$ and
+$\mathtt{POSTTRIG}$ are those from section [[#sec:daq:fadc_data_files]],
+written in each data file in the header.
+
+The final step is to convert the ADC values of each register into
+voltages in \si{V}. Given that the ADC covers the range of
+\SIrange{-1}{1}{V} as the ADC values 0 to 4096 (16384) with 12 (14)
+bit, this means the conversion from ADC to ticks is simply
+
+\[
+U_i = \frac{N_{i, \text{corr}} - 2048}{2048}
+\]
+
+when using the 12 bit operating mode for each register.
+
+With these corrections applied, the recorded FADC spectrum is
+recovered, centered around the trigger position.
+
+
+[fn:reco_fadc_manual] A PDF of the FADC manual is available here:
+https://archive.org/details/manualzilla-id-5646050/
+
+[fn:fadc_code] Data parsing and the mentioned reconstruction code is
+found at *CITE*
+
+- [ ] *ADD CITATION FOR* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_helpers.nim
+
+*** Signal baseline, rise time and fall time [/]                 :analysis:
+
+Assuming a singular event is recorded with the FADC, the main
+properties of interest of the resulting signal pulse are the signal
+baseline and based on that the rise and fall time.
+
+Computing the position of the baseline is generally a non trivial
+problem, as a priori the position, width and number of signals in the
+spectrum is unknown. A reasonable expectation though is that the
+majority of points in a signal should lie close to the baseline. As
+such a somewhat empirical way to compute the baseline $B$ was chosen to
+
+\[
+B = \text{median}(S) + 0.1 · \max(S)
+\]
+
+that is, adding \SI{10}{\percent} of the maximum value of the spectrum
+$S$ to the median of it. Note that the signals are _negative_ and so
+the maximum represents some noise outlier to positive values. The
+median by itself is generally slightly too low. An optimal solution
+would perform a rigorous peak finding for a signal pulse, remove those
+points and compute the mean of the remainder of the points. 
+
+Once the baseline is defined it can be used to determine both the rise
+and the fall time. These are simply computed as the number of
+registers between the register of the minimum of the spectrum
+$\text{argmin}(S)$ and the baseline on the left (rise time) and right
+(fall time). [fn:naming_rise_fall] From the difference in number of
+registers, the time can be computed.
+
+- [ ] *CHANGE FADC CODE TO NOT USE MIN, BUT MEAN OF N POINTS AROUND
+  MIN?*
+
+Together, a reconstructed FADC spectrum including indications for
+baseline, rise and fall time as well as the minimum is shown in
+fig. [[fig:reco:fadc_reco_example]].
+
+
+#+CAPTION: Example of a fully reconstructed FADC spectrum from a \SI{5.9}{keV} X-ray
+#+CAPTION: recorded with the Septemboard detector during a calibration run. *REPLACE PLOT*
+#+NAME: fig:reco:fadc_reco_example
+[[~/phd/Figs/reco/fadc_spectrum_baseline1645898374.pdf]]
+
+- [ ] *REPLACE THE PLOT!*
+- [ ] *ADD CITATION FOR* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_analysis.nim  
+
+[fn:naming_rise_fall] The naming of the rise and fall time in the
+context of a negative pulse is slightly confusing. Rise time refers to
+the _negative rise_ towards the minimum of the pulse and the fall time
+to the time to return-to-baseline.  
+
+*** Noise sensitive [/]
 
 Because of the small amplitude of the associated signals induced on
 the grid, electromagnetic interference is a serious issue with this
 FADC setup. Ideally, the detector should be installed in a Faraday
 cage and a short, shielded LEMO cable should be used to connect it to
-the 
+the
 
-** Scintillator calibrations
+- [ ] *WHAT TO DO WITH THIS? WHERE SHOULD THIS GO? MAYBE MENTION IN
+  FADC INTRODUCTION ALREADY? OR HERE BECAUSE AFTER ALL? IT SHOWS UP IN
+  ANALYSIS AND WE HAVE SIMPLE NOISE DETECTION IN CODE*
 
-- [X] *SIPM CALIBRATED IN BSC OF JANNES*
-
-- [ ] *VETO PADDLE CALIBRATED IN RD51*
-
-** FADC calibration
+*** FADC amplifier settings / calibration of amplifier settings
 
 FADC does not require a proper calibration. However, better
 measurements of the effect of the different integration /
