@@ -6935,76 +6935,109 @@ has multiple different settings. Finally, in order to interpret the
 signals received from the FADC, a so-called "pedestal run" must be
 recorded.
 
-The \num{10240} channels of the FADC are part of a cyclic
-register. Due to implementation details, the absolute recorded values
-of each register is arbitrary. In a pedestal run multiple measurements
-($\mathcal{O}(10)$ of a certain length (\SI{100}{ms} in our case)
-are performed and the pedestal values averaged. The resulting values
-represent a mean value for the typical value in each channel, hence
-the name 'pedestal'. To interpret a real measured signal, these
-pedestals are subtracted from the recorded
-signal. Fig. [[fig:daq:fadc_pedestal_run]] shows the rather peculiar
-behavior of the pedestals. The even and odd channels alternate between
-values of around \num{2000} and \num{6000}, respectively. The
-pedestals drift over time, but the associated time scales are long.
+- FADC settings :: The chosen settings, as seen in the config file
+  explanation in section [[#sec:daq:tos_config_file]], configure the FADC
+  to run at a frequency of \SI{1}{GHz} as to cover a running time interval of
+  \SI{10.24}{μs}. While it could run at up to \SI{2}{GHz}, \SI{1}{ns}
+  per time bin is accurate enough given the time scales associated
+  with the amplifier (see below) and a longer interval is more
+  useful. Further, an external trigger is sent out to TOS if the
+  threshold is exceeded. The threshold itself is set to
+  \SI{-44}{mV}. The value was chosen based on trial and error to
+  avoid no triggers based on baseline noise. Given the range of up to
+  $\SI{-1}{V}, the relative threshold is pretty low. Finally, the
+  operation mode and data readout is set, the input channel is chosen
+  and the pedestal run parameters are configured (see below).
+- Amplifier settings :: The 474 Ortec shaping amplifier has 3 settings
+  of note. The absolute gain as a multiplier and a signal integration as
+  well as differentiation time. The initial settings were set to an
+  amplification of =6x=, an integration time of \SI{50}{ns} and a
+  differentiation time of \SI{50}{ns}. However, these were changed
+  during the data taking campaign, see more on this in section
+  [[#sec:data_taking:fadc_noise]].
+- Pedestals :: The $4 · \num{2560}$ registers of the FADC are part of
+  4 separate cyclic registers. Due to implementation details, the
+  absolute recorded values of each register is arbitrary. In a
+  pedestal run multiple measurements ($\mathcal{O}(10)$ of a certain
+  length (\SI{100}{ms} in our case) are performed and the pedestal
+  values averaged. The resulting values represent a mean value for the
+  typical value in each register, hence the name 'pedestal'. To
+  interpret a real measured signal, these pedestals are subtracted
+  from the recorded signal. Each of the 4 FADC channels may have very
+  different pedestal values, but within a single channel they are
+  usually within $\lesssim\num{50}$ ADC
+  values. Fig. [[fig:daq:fadc_pedestal_run]] shows the pedestals of all 4
+  FADC channels. The pedestals drift over time, but the associated
+  time scales are long. [fn:fadc_pedestals_manual]
 
-As seen in the config file explanation in section
-[[#sec:daq:tos_config_file]], the 
+More details to each of these will be given later where it is of importance.  
 
-- [ ] *THRESHOLD. 44 mV. TO AVOID NOISE TRIGGERS*
-- [ ] *AMPLIFIER SETTINGS*
+- [X] *THRESHOLD. 44 mV. TO AVOID NOISE TRIGGERS*
+- [X] *AMPLIFIER SETTINGS* (CAST data taking notes)
 - [X] *PEDESTAL*
 
-- [ ] *ATTEMPT TO CALCULATE PEDESTAL RUNS FROM FADC DATA FILES BY COMPUTING A TRUNCATED MEAN OF EACH SINGLE CHANNEL. AS THE DATA IS IN
-  CHANNEL ORDER, THIS SHOULD BE PRETTY SIMPLE*
-
-#+CAPTION: The FADC pedestal run used for CAST data shows peculiar behavior. Alternatingly
-#+CAPTION: the pedestals lie near \num{6000} and near \num{2000}. Within the variance is
-#+CAPTION: $\mathcal{O}(30)$ for both. The first 10 channels in total are not shown, as they
-#+CAPTION: are outlying by $\sim\num{100}$.
+#+CAPTION: The FADC pedestal run used for CAST data split by each of the 4 FADC channels. Each
+#+CAPTION: channel's pedestals vary by about $\mathcal{O}(30)$ ADC values. The first few registers
+#+CAPTION: in each channel are not shown, as they are outlying by $\sim\num{100}$.
 #+NAME: fig:daq:fadc_pedestal_run
 #+Attr_LATEX: :width 1\textwidth
-[[~/phd/Figs/detector/calibration/fadc_pedestal_split_even_odd.pdf]]
+[[~/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.pdf]]
 
-[fn:fadc_manual] https://archive.org/details/manualzilla-id-5646050/ 
+[fn:fadc_manual] https://archive.org/details/manualzilla-id-5646050/
+
+[fn:fadc_pedestals_manual] The FADC pedestals can also be computed
+from real data by computing a truncated mean of all FADC files in a
+data taking run. This yields a usable pedestal to use for that
+run. See the extended version of this document for a section about this.
   
-*** Pedestals
-
-**** Generate plot of pedestals                                 :noexport:
+*** Generate plot of pedestals                                   :noexport:
 
 #+begin_src nim :tangle code/fadc_pedestals_plot.nim
-import std / [strutils, os, sequtils]
+import std / [strutils, os, sequtils, algorithm]
 import ggplotnim
 
 const path = "/home/basti/CastData/ExternCode/TimepixAnalysis/resources/pedestalRuns/"
 const file = "pedestalRun000042_1_182143774.txt-fadc"
-var df = readCsv(path / file, header = "#")
+# read the FADC files using our CSV parser. Everything `#` is header
+# aside from the last 3 lines. Skip those using `maxLines`
+var df = readCsv(path / file, header = "#", maxLines = 10240)
   .rename(f{"val" <- "nb of channels: 0"})
-  .filter(f{"#" notin `val`})
-  .mutate(f{"val" ~ `val`.parseFloat})
-df["Channel"] = toSeq(0 ..< df.len)
-df = df.mutate(f{int -> bool: "even?" ~ `Channel` mod 2 == 0})
-echo df
-echo df.tail(20)
-ggplot(df, aes("Channel", "val", color = "even?")) +
-  geom_point(size = 1.0) +
-  ggtitle("FADC channel values of pedestal run") +  
-  ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_run.pdf")
-#         useTeX = true, standalone = true)
-ggplot(df.group_by("even?").filter(f{float -> bool: `val` < percentile(col("val"), 95)}),
-       aes("Channel", "val", color = "even?")) +
-  facet_wrap("even?", scales = "free") +
-  facetMargin(0.5) +
-  margin(bottom = 1.0, right = 3.0) +
-  xlab("Channel", margin = 0.0) + 
-  geom_point(size = 1.0) +
-  legendPosition(0.91, 0.0) +
-  ggtitle("FADC channel values of pedestal run, split by even and odd channel numbers") +
-  ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_even_odd.pdf", width = 1200, height = 600)#
-#         useTeX = true, standalone = true)                                                                                               
+# generate indices 0, 0, 0, 0, 1, 1, 1, 1, ..., 2559, 2559, 2559, 2559 
+df["Register"] = toSeq(0 ..< 2560).repeat(4).concat.sorted
+df["Channel"] = @[1, 2, 3, 4].repeat(2560).concat
+when false:
+  df["Channel"] = @[1, 2, 3, 4].repeat(2560)
+  df = df.mutate(f{int -> bool: "even?" ~ `Channel` mod 2 == 0})
+  echo df
+  echo df.tail(20)
+  ggplot(df, aes("Channel", "val", color = "even?")) +
+    geom_point(size = 1.0) +
+    ggtitle("FADC channel values of pedestal run") +  
+    ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_run.pdf")
+  #         useTeX = true, standalone = true)
+  ggplot(df.group_by("even?").filter(f{float -> bool: `val` < percentile(col("val"), 95)}),
+         aes("Channel", "val", color = "even?")) +
+    facet_wrap("even?", scales = "free") +
+    facetMargin(0.5) +
+    margin(bottom = 1.0, right = 3.0) +
+    geom_point(size = 1.0) +
+    legendPosition(0.91, 0.0) +
+    ggtitle("FADC channel values of pedestal run, split by even and odd channel numbers") +
+    ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_even_odd.pdf", width = 1200, height = 600)#
+  #         useTeX = true, standalone = true)
+else:
+  ggplot(df.group_by("Channel").filter(f{float -> bool: `val` < percentile(col("val"), 99)}),
+         aes("Register", "val", color = "Channel")) +
+    facet_wrap("Channel", scales = "free") +
+    geom_point(size = 2.0) +
+    facetMargin(0.5) +
+    margin(bottom = 1.0, right = 3.0) +
+    ggtitle("FADC register pedestal values, split by channels") +    
+    xlab("Channel", margin = 0.0) + 
+    ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.pdf")
 #+end_src
 
-**** Understanding FADC settings :noexport:
+*** Understanding FADC settings                                  :noexport:
 
 Given the time since last working with this, I need to look up the
 values of the TOS config file in the FADC manual.
