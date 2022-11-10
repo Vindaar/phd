@@ -5189,7 +5189,178 @@ event, see listing [[code:daq:zero_suppressed_readout_chips]].
 [fn:daq_datetime_header] It is an oversight that the =dateTime= field
 is part of the =[General]= header instead of the =[Event]= header.
 
+
+**** FADC data files [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:daq:fadc_data_files
+:END:
+
+If the FADC triggered during an event, as indicated by the
+~fadcReadout~ field in the event header as seen in listing
+[[code:daq:zero_suppressed_readout_event_header]], an additional data file
+is written with the same name as the event file, but a ~.txt-fadc~
+extension. It contains a memory dump of the channels of the circular
+memory of the FADC plus a basic header about the FADC settings and the
+information about when the trigger happened.
+
+The different fields in the header, see listing
+[[#code:daq:fadc_data_header]], are as follows:
+- ~nb of channels~: decimal value of a 4-bit field that decides the
+  number of active channels. ~0~ corresponds to using all channels as
+  separate. We only use a single channel. [fn:fadc_chosen_settings]
+- ~channel mask~: decimal value of a 4-bit field to (de-)activate
+  channels. ~15~ corresponds to all 4 channels active.
+- ~posttrig~: how many clock cycles in the \SI{50}{MHz} [fn:base_clock] base clock of
+  the FADC after the threshold is crossed a trigger is sent.
+- ~pretrig~: the minimum acquisition time before a trigger is allowed
+  to happen, in units of the \SI{50}{MHz} [fn:base_clock] base clock.
+- ~triggerrecord~: together with ~posttrig~ allows to reconstruct the
+  time of the trigger in the acquisition window
+- ~frequency~: decimal representation of a 6-bit field to select the
+  operating frequency. ~2 = 0b000010~ corresponds to \SI{1}{GHz}
+  operation.
+- ~sampling mode~: decimal representation of a 3-bit field changing
+  the operation mode (manual or automatic trigger) and register
+  working mode (12 or 14-bit sensitivity of each register). We run in
+  manual trigger and 12-bit mode. [fn:fadc_chosen_settings]
+- ~pedestal run~: a 1-bit flag indicating whether this file is a
+  pedestal run.
+
+- [X] *Introduce FADC data files.*
+- [ ] *VERIFY THE EXPLANATION OF THE HEADER FIELDS*
+- [ ] *ISN'T THE POSTTRIG VALUE SOMETHING ONE SHOULD TAKE INTO ACCOUNT
+  WHEN COMPUTING THE TIME OF THE ACTUAL TRIGGER IN RELATION TO OTHER
+  DETECTOR FEATURES?*
+
+#+CAPTION: The file starts with a header indicated by ~#~. Some of the values are
+#+CAPTION: decimal representation of bit fields, hence the weird values like
+#+CAPTION: "0 channels". It mixes both the configuration used as well as the
+#+CAPTION: time the trigger occured (~triggerrecord~). 
+#+NAME: code:daq:fadc_data_header
+#+begin_src sh
+# nb of channels: 0  
+# channel mask: 15
+# posttrig: 80
+# pretrig: 15000
+# triggerrecord: 56
+# frequency: 2
+# sampling mode: 0
+# pedestal run: 0
 #+end_src
+
+The data portion starts with another semi-header of 12 data points,
+see listing [[#code:daq:fadc_data_header_2]]. It contains fields that are
+not explained in the FADC manual, but instead refer to "reserved for
+expert usage" \cite{fadc_manual}. One exception is data point 2, which
+is the so called Vernier, which could be used to determine the trigger
+time within two registers to get up to $\sim\SI{50}{ps}$ RMS accurate
+time information. For our purposes though \SI{1}{ns} time resolution
+is more than enough, given the signal undergoes integration and
+differentiation of a multiple of that anyway in the shaping amplifier.
+
+#+CAPTION: After the header starts the data portion with some auxilaury information.
+#+CAPTION: The lines are neither of significant interest to us, nor are they properly
+#+CAPTION: explained in the manual. The second number corresponds to the Vernier, which
+#+CAPTION: can be used to determine the trigger more precisely than between individual
+#+CAPTION: register values, which is also not important for our purposes, as \SI{1}{ns}
+#+CAPTION: resolution is plenty.
+#+NAME: code:daq:fadc_data_header_2
+#+begin_src sh
+# Data:
+# 3928
+# 8022
+# 3957
+# 8076
+# 3928
+# 8023
+# 3957
+# 8077
+# 2048
+# 6138
+# 2031
+# 6151
+#+end_src
+
+The final portion of the file contains the actual data (\num{10240}
+lines) and 3 fields at the very end to reconstruct the trigger within
+the acquisition window [fn:fadc_data_last_3_lines]. The data
+represents a pure memory dump of the cyclic register. See listing
+[[code:daq:fadc_data_raw]] for a shortened example.
+
+#+CAPTION: Actual data portion of the FADC data. The first \num{10240} lines represent
+#+CAPTIOn: a memory dump of the cyclic registers at trigger time (that is in their natural
+#+CAPTION: order instead of starting from the register in which the trigger was recorded).
+#+CAPTION: It starts at register 0 for channel 0, followed by register 0 of channel 1, and so on.
+#+CAPTION: As such each $4^{\text{th}}$ line corresponds to one channel. This is why the
+#+CAPTION: values jump so much from line to line.
+#+CAPTION: The last 3 lines are information to recover the trigger point in the acquisition
+#+CAPTION: window [fn:fadc_data_last_3_lines].
+#+NAME: code:daq:fadc_data_raw
+#+begin_src sh
+2028 # register 0, channel 0
+6119 # register 0, channel 1
+1999 # register 0, channel 2
+6100 # register 0, channel 3
+2021 # register 1, channel 0
+6108 # ...
+... # 10240 lines of data in total
+# 56
+# 4096
+# 0
+#+end_src
+
+[fn:base_clock] If running in \SI{1}{GHz} mode. Else it corresponds to
+\SI{100}{MHz} clocks.
+
+[fn:fadc_chosen_settings] As of writing this thesis, I don't remember
+why the choice was made to only use a single channel instead of using
+all 4 channels to extend the time interval (development of these
+things happened between 2015-2017). It's possible there were issues
+trying to combine all 4 channels. But it's also just as likely it was
+an oversight due to lack of time combined with the fact that a
+\SI{2.5}{μs} window is long enough for all intents and
+purposes. However, combining all 4 channels would even yield a long
+enough acquisition window when running in the \SI{2}{GHz} sampling
+mode. Similarly, the choice of the 12-bit readout mode may represent
+plenty resolution in ADC values, but it seems prudent to not use the
+14-bit mode given availability. All in all it leaves me head
+scratching (and thinking the likely reason will have been lack of time
+and being happy things working in the first place at the time).
+
+[fn:fadc_data_last_3_lines] The last 3 lines of the data portion
+contain the trigger record, which is already printed by us in the
+header part and the ~Valp_cp~ and ~Vali_cp~ registers, which are only
+important if the FADC is used at a sampling frequency of $<
+\SI{1}{GHz}$, which is why we ignore it here.
+
+***** Explanation of beginning of data portion                 :noexport:
+
+Explanation of the data header [[#code:daq:fadc_data_header_2]] here:
+- =hvFadcManager.cpp= =writeFadcData=
+- FADC manual page 27 lists the data sent by the FADC.
+  
+However, neither explains what the "first sample" and the "rest
+baseline" is. The manual calls these "expert features" and doesn't
+explain them... That's how you keep it as an expert feature! The
+second line is the Vernier, that I honestly don't really understand
+either. I think it allows to more precisely find the time of trigger
+between two register entries? Ah yes, see page 14 of the manual about
+the Vernier. Allows for 50 ps RMS time information between two bins.
+
+***** Explanation of FADC settings  :noexport:
+
+As mentioned in the footnote in the previous section, I really don't
+understand the choice of FADC settings we used for the actual data
+taking. It's quite possible I'm nowadays just not aware of something
+important, but well. Either way, unfortunately I only started being
+serious about note taking about my work around the beginning of the
+data taking period in October 2017. So retracing my thoughts during my
+master thesis (2015-2016) and beginning of my PhD is unfortunately pretty much
+impossible.
+
+However, as mentioned the settings are good enough for what we are
+doing with the data. The much bigger issues are related to the noise
+we observed at times etc., which will be mentioned later.
 
 *** TOS configuration file
 :PROPERTIES:
