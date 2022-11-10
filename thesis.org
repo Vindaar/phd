@@ -7081,11 +7081,138 @@ As such our used value of ~fadcFrequency = 2~ corresponds to
 Our value of =0b000= for the data means no interruption tagging, 12
 bits data output and normal acquisition mode.
 
+*** Calculate pedestals from real FADC data                      :noexport:
 
+We will now see what happens if we compute the FADC pedestals from the
+raw data by computing a truncated mean of all FADC files in a single
+run and comparing to the real pedestal run we normally use as a reference.
 
-** Scintillator calibration - maybe here after all?
+#+begin_src nim :tangle code/attempt_fadc_pedestals_from_data.nim
+import std / [strutils, os, sequtils, sugar, algorithm]
+import ggplotnim
 
-*** Veto paddle
+proc readFadc(f: string): DataFrame =
+  # read the FADC files using our CSV parser. Everything `#` is header
+  # aside from the last 3 lines. Skip those using `maxLines`
+  result = readCsv(f, header = "#", maxLines = 10240)
+    .rename(f{"val" <- "nb of channels: 0"})
+  #result["Channel"] = toSeq(0 ..< result.len)
+  result["Register"] = toSeq(0 ..< 2560).repeat(4).concat.sorted
+  result["Channel"] = @[1, 2, 3, 4].repeat(2560).concat
+
+## Main function to avoid bug of closure capturing old variable  
+proc readFadcData(path: string): DataFrame =
+  var dfs = newSeq[DataFrame]()
+  var i = 0
+  for f in walkFiles(path / "*.txt-fadc"):
+    echo "Parsing ", f
+    dfs.add readFadc(f)
+    inc i
+    #if i > 100: break
+  let df = assignStack(dfs)
+  var reg = newSeq[int]()
+  var val = newSeq[float]()
+  var chs = newSeq[int]()
+  for (tup, subDf) in groups(df.group_by(["Channel", "Register"])):
+    let p20 = percentile(subDf["val", float], 20)
+    let p80 = percentile(subDf["val", float], 80)
+    reg.add tup[1][1].toInt
+    chs.add tup[0][1].toInt
+    let dfF = if p80 - p20 > 0: subDf.filter(f{float: `val` >= p20 and `val` <= p80})
+             else: subDf
+    val.add dfF["val", float].mean
+  let dfP = toDf({"Channel" : chs, val, "Register" : reg})
+  dfP.writeCsv("/t/pedestal.csv")
+  echo dfP.pretty(-1)
+  result = dfP
+
+proc main(path: string, outfile: string = "/t/empirical_fadc_pedestal_diff.pdf",
+          plotVoltage = false) =
+  let pData = readFadcData(path)
+  
+  const path = "/home/basti/CastData/ExternCode/TimepixAnalysis/resources/pedestalRuns/"
+  const file = "pedestalRun000042_1_182143774.txt-fadc"
+  let pReal = readFadc(path / file)
+  echo pData
+  echo pReal
+  var df = bind_rows([("Data", pData), ("Real", pReal)], "ID")
+    .spread("ID", "val")
+    .mutate(f{"Diff" ~ abs(`Data` - `Real`)})
+    # alternatively compute the voltage corresponding to the FADC register values,
+    # assuming 12 bit working mode (sampling_mode == 0)
+    .mutate(f{"DiffVolt" ~ `Diff` / 2048.0})
+  var plt: GgPlot
+  if plotVoltage:
+    plt = ggplot(df, aes("Register", "DiffVolt", color = "Channel")) +
+      ylim(0, 100.0 / 2048.0)    
+  else:
+    plt = ggplot(df, aes("Register", "Diff", color = "Channel")) +
+      ylim(0, 100)
+  plt +
+    geom_point(size = 1.5, alpha = 0.75) +
+    ylab("Difference between mean and actual pedestal [ADC]") + 
+    ggtitle("Attempt at computing pedestal values based on truncated mean of data") +
+    margin(top = 2) +
+    xlim(0, 2560) + 
+    ggsave(outfile)
+  
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+We can call it on different runs with FADC data:
+#+begin_src sh
+code/attempt_fadc_pedestals_from_data \
+    -p /mnt/1TB/CAST/2017/DataRuns/Run_77_171102-05-24 \
+    --outfile ~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run77.pdf
+#+end_src
+for an early 2017 run
+#+begin_src sh
+code/attempt_fadc_pedestals_from_data \
+    -p /mnt/1TB/CAST/2018_2/DataRuns/Run_303_181217-16-52 \
+    --outfile ~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run303.pdf
+#+End_src
+
+#+RESULTS:
+
+for a late 2018 run.
+
+These yield fig. \subref{fig:daq:fadc_pedestals_from_data_compare_real}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run77.pdf}
+    \caption{Run 77}
+    \label{fig:daq:fadc_pedestals_from_data_compare_real_run77}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run303.pdf}
+    \label{fig:reco:fadc_pedestals_from_data_compare_real_run303}
+    \caption{Run 303}
+  \end{subfigure}
+  \label{fig:daq:fadc_pedestals_from_data_compare_real}
+  \caption{Calculation of the FADC pedestals from data by averaging all channels
+    over all FADC data files of a single run using a truncated mean from the 20-th
+    to 80-th percentile of the distribution. Both data runs show a comparatively small
+    variance. Arguably it may make sense to \textit{always} compute it based on each
+    run instead of relying on a pedestal run though.
+  }
+\end{figure}
+
+Surprisingly, the deviation for the end 2018 run is lower than for the
+2017 run, despite the 2017 run being closer in time to the real
+pedestal run.
+
+Keep in mind that in our data taking we used the 12 bit readout
+mode. This means the register values divided by \num{2048} correspond
+to the voltages recorded by the register. As such the absolute values
+of the deviations are quite a bit smaller than $\lesssim \SI{48}{mV}$
+(which is small given the absolute range of $±\SI{1}{V}$ of the FADC. 
+
 - [ ] Part that now lives in appendix.
 
 The large veto scintillator paddle was calibrated at the RD51
