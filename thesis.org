@@ -7675,6 +7675,128 @@ as reading individual columns from these is inefficient.
     - ...
 #+end_src
 
+*** Data reconstruction
+
+With the data stored in an HDF5 file after processing the raw data
+with ~raw_data_manipulation~, the actual data and event reconstruction
+can begin. This is handled by the
+~reconstruction~ [fn:reco_reconstruction] program. It continues from
+the HDF5 file created before and proceeds to reconstruct all runs in
+the given input file.
+
+- [ ] *REFER TO ~reconstructSingleChip~ HERE*
+For each run, each GridPix chip is processed sequentially, while all
+events for that chip are then processed in parallel using
+multithreading.
+
+For each event, the data processing is essentially a two step process:
+1. perform cluster finding, see section [[#sec:reco:cluster_finding]].
+2. compute geometric properties for each found cluster, see section
+   [[#sec:reco:cluster_geometry]].
+
+
+Basic reconstruction:
+- [ ] per run, per chip
+- [ ] clustering (2 cluster methods)
+- [ ] geometric properties
+  - [ ] find rotated coordinate system
+  - [ ] compute parameters for long & short axis
+  - [ ] resulting parameters
+- [ ] table of parameters (we have that somewhere already)
+- [ ] use a description to describe all parameters like
+  - X :: description    
+
+[fn:reco_reconstruction]
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/reconstruction.nim
+
+**** Cluster finding 
+:PROPERTIES:
+:CUSTOM_ID: sec:reco:cluster_finding
+:END:
+
+The cluster finding algorithm splits a single event into possibly
+multiple clusters. Clusters are defined based on a certain notion of
+distance (the details depend on the clustering algorithm used). The
+multiple clusters from a single event are then treated fully equally
+for the rest of the analysis. The fact that they originate from the
+same event has no further relevance (with a slight exception for one
+veto technique, which utilizes clustering over multiple chips, more on
+that in section [[sec:septem_veto]]).
+
+There are two different cluster finding algorithms implemented for use
+in ~TimepixAnalysis~. By default one is strictly used for the general
+cluster finding as part of the reconstruction, the other is intended
+to be used for one of the vetoes (again, sec. [[sec:septem_veto]]). The
+choice is user configurable however. [fn:clustering]
+
+- Default :: The default one is the same clustering algorithm
+  introduced for the data reconstruction of the 2014/15 GridPix
+  detector in \cite{krieger2018search}. It defines a cluster by all
+  pixels within the squares of side length $N$ centered around each
+  pixel. It is best thought of as a recursive square neighbor search
+  around each pixel. For each neighbor in the search square, start
+  another search square. Once no neighbor finds any neighbors not
+  already part of the cluster, it is finished.
+- DBSCAN :: The secondary clustering algorithm is the
+  \textbf{D}ensity-\textbf{b}ased \textbf{s}patial \textbf{c}lustering
+  of \textbf{a}pplications with \textbf{n}oise (DBSCAN)
+  \cite{ester1996density} algorithm. In contrast to the default
+  algorithm it is - as the name implies - a density based
+  algorithm. This means it distinguishes points which have more
+  neighbors (high density) from those with few neighbors (low
+  density). The algorithm has a parameter ~minSamples~, which defines
+  the density threshold. If a point has at least ~minSamples~ neighbors within a
+  (euclidean) distance of $ε$ (the second parameter) it is considered
+  a "core point". All core points build a cluster with all other
+  points in their reach. Those points in reach of a core point,
+  but do itself not have ~minSamples~ neighbors are still part of the
+  cluster. Any point _not_ in reach of a core point is a "noise
+  point". The main advantage of this algorithm over many other more
+  classical algorithms is the ability to separate clusters close to one
+  another, which are not separateable by a linear cut. This results in
+  a more humanly "intuitive" clustering.
+  DBSCAN is one of the most widely used clustering algorithm in many
+  scientific fields and even in 2017 was still considered highly
+  relevant \cite{10.1145/3068335}.
+
+- [ ] *THINK ABOUT EXAMPLE OF CLUSTERING THAT DBSCAN FINDS AND DEFAULT
+  WOULDN'T* NON LINEAR CLUSTERABLE
+
+[fn:clustering] The clustering logic of TPA is found here: https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/clustering.nim
+
+[fn:default_algo_core] The heart of the algorithm is the following
+pixel search: https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/clustering.nim#L120-L148
+
+***** CLASSIX clustering algorithm [/]                         :noexport:
+
+- [ ] *OR SHOULD THIS GO INTO MAIN SECTION BEFORE?* OR AS :optional:?
+
+There is one further clustering algorithm, which is extremely exciting
+and seems like a great candidate for a clustering algorithm for
+~TimepixAnalysis~. That is the CLASSIX algorithm, introduced as "a
+fast and explainable clustering method" \cite{CLASSIX}.
+
+See the GitHub page with many examples here:
+https://github.com/nla-group/classix
+
+It is an algorithm, which first sorts the data based on the first
+principal component in the data. 
+
+***** Clustering bug in MarlinTPC for 2014/15 data             :noexport:
+
+One of the initial goals of ~TimepixAnalysis~ was the reproduction of
+the background rate computed for the 2014/15 data with the MarlinTPC
+framework. While that whole ordeal wasted a lot of time trying to
+achieve the exact same results from both frameworks to satisfy other
+people, among other things it lead to the discovery of a clustering
+bug in MarlinTPC (which was finally the point that let me drop this
+pursuit).
+
+
+
+- [ ] *INSERT DISCUSSION FROM STATUSANDPROGRESS ABOUT MARLIN CLUSTER
+  BUG* See section ~sec:marlin_vs_tpa_output~ in TPA for the Marlin
+  clustering bug.
 - [ ] *EXPLANATION OF THE 3 MAIN PROPERTIES USED FOR LIKELIHOOD*
 
 \begin{figure}[htbp]
