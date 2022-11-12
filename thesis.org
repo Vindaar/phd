@@ -7846,6 +7846,84 @@ In the ~reconstruction~ tool each found cluster will then ...
   }
 \end{figure}
 
+#+begin_center
+Probably won't end up using this table, instead use the descriptions below.
+
+#+CAPTION: Table of all the (mostly) geometric properties of a single cluster computed during the
+#+CAPTION: =reconstruction= tool. All but the likelihood, charge and energy properties are computed
+#+CAPTION: during the first pass of the tool.
+#+NAME: tab:geometric_properties
+| Property                  | Meaning                                                          |
+|---------------------------+------------------------------------------------------------------|
+| igCenterX                 | =x= position of cluster center                                   |
+| igCenterY                 | =y= position of cluster center                                   |
+| igHits                    | number of pixels in cluster                                      |
+| igEventNumber             | event number cluster is from                                     |
+| igEccentricity            | eccentricity of the cluster                                      |
+| igSkewnessLongitudinal    | skewness along long axis                                         |
+| igSkewnessTransverse      | skewness along short axis                                        |
+| igKurtosisLongitudinal    | kurtosis along long axis                                         |
+| igKurtosisTransverse      | kurtosis along short axis                                        |
+| igLength                  | size along long axis                                             |
+| igWidth                   | size along short axis                                            |
+| igRmsLongitudinal         | RMS along long axis                                              |
+| igRmsTransverse           | RMS along short axis                                             |
+| igLengthDivRmsTrans       | length divided by transverse RMS                                 |
+| igRotationAngle           | rotation angle of long axis over chip coordinate system          |
+| igEnergyFromCharge        | energy of cluster computed from its charge                       |
+| igLikelihood              | likelihood value for cluster                                     |
+| igFractionInTransverseRms | fraction of pixels within radius of transverse RMS around center |
+| igTotalCharge             | integrated charge of total cluster in electrons                  |
+| igNumClusters             |                                                                  |
+| igFractionInHalfRadius    | fraction of pixels in half radius around center                  |
+| igRadiusDivRmsTrans       | radius divided by transverse RMS                                 |
+| igRadius                  | radius of cluster                                                |
+| igLengthDivRadius         | length divided by radius                                         |
+#+end_center
+
+The following is a list of all properties of a single cluster computed
+by the ~reconstruction~ tool. All but the likelihood, charge and energy properties are computed
+during the first pass of the tool.
+
+- igCenterX / igCenterY :: The center position of the cluster along
+  the ~x~ / ~y~ axis of the detector.
+- igHits :: The number of pixels in the cluster.
+- igEventNumber :: The event number the cluster is part of (multiple
+  clusters may share the same event number).
+- igRotationAngle :: The rotation angle of the long axis of the
+  cluster over the chip coordinate system.
+- igLength :: The length of the cluster along the long axis in the 
+  rotated coordinate system, defined by the furthest pixel at each
+  end in that direction.
+- igWidth :: The equivalent of *igLength* for the short axis.
+- igRadius :: The radius of the cluster, defined by *IM NOT DEFINED
+  YET, DEFINE ME*
+- igRmsLongitudinal :: The root mean square (RMS) along the long axis.
+- igRmsTransverse :: The RMS along the short axis.
+- igSkewnessLongitudinal / igKurtosisLongitudinal :: The skewness / kurtosis along the long axis.
+- igSkewnessTransverse / igKurtosisTransverse :: The skewness / kurtosis along the short axis.
+- igEccentricity :: The eccentricity of the cluster, defined by the
+  ratio of the longitudinal RMS over the transverse RMS.
+- igLengthDivRmsTrans :: The length of the cluster divided by the
+  transverse RMS.
+- igFractionInTransverseRms :: The fraction of all pixels within a
+  radius of the transverse RMS around the center.
+- igRadiusDivRmsTrans :: The radius over the transverse RMS.
+- igFractionInHalfRadius :: Equivalent to *igFractionInTransveresRms*
+  but for a radius of half the cluster radius.
+- igLengthDivRadius :: The length divided by the cluster radius.
+- igTotalCharge :: The sum of the charge of the ~ToT~ calibrated
+  charges of all pixels in the cluster.
+- igEnergyFromCharge :: The calibrated energy of the cluster in \si{keV}.
+- igLikelihood :: The likelihood value of the cluster for the
+  likelihood cut method, explained in detail in section [[#sec:logL:likelihood_of_cluster]].
+
+The properties are computed here:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366
+and here:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569
+
+- [ ] *PLACE THE LINKS AFTER FIX UP SOMEWHERE THEY BELONG*
   
 
 *** Event length [0/1]
