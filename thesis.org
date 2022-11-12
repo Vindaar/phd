@@ -7436,7 +7436,53 @@ these tools in the future.
   - show plot of THL calibration from SCurves, with the THL value as a
     "rectangle" line (from y axis to fit, down to x axis)
   - in Polya plot show the theoretical threshold in electrons as a
-    vertical line (computed from the used THL DAC value and THL calibration)
+    vertical line (computed from the used THL DAC value and THL
+    calibration)
+
+- [ ] *SHORT INTRO TO TIMEPIX ANALYSIS AND NIM HERE. LIKE 2
+  PARAGRAPHS.* Then link to
+
+** ~TimepixAnalysis~ and Nim
+
+The data reconstruction software handling the processes mentioned in
+the remainder of this chapter is the ~TimepixAnalysis~ \cite{TPA} [fn:tpa_github]
+framework. It is only a "framework" in a loose sense, as it is a set
+of programs to parse data from different Timepix (usually GridPix) DAQ
+software packages and process and analyze it. In addition it contains
+a large number of tools to visualize that data as well as analyze
+auxiliary data like lists of data taking runs, CAST log files and
+more.
+
+The entire code base is written in the Nim programming language
+\cite{nim} [fn:nim_lang]. Nim is a statically typed, compiled language
+with a Python-like whitespace sensitive syntax, taking inspirations
+from Pascal, Modula and in particular ideas regarding type safety from
+Ada. Further, it has a strong metaprogramming focus with full access
+3to the abstract syntax tree (AST) at compile time, offering Lisp-like
+macro functionality, which allows to construct powerful and concise
+domain specific languages (DSLs). Nim compiles its code by default
+first to C code, which can then utilize the decades of compiler
+optimization techniques available via GCC \cite{gcc} or Clang
+\cite{LLVM:CGO04}, while allowing to target every single platform
+supported by C (which effectively means almost all). As such it also
+achieves performance on-par with C, while providing high-level
+features normally associated with languages like Python.
+
+Nim was chosen as the language of choice for ~TimepixAnalysis~, due to
+its combination of concise and clean syntax, high-level features for
+productivity, high performance due to native code generation, easy
+interfacing with existing C and C++ code bases and its strong
+metaprogramming features, which allow to reduce boilerplate code to a
+minimum.
+
+Appendix [[#sec:appendix:software]] contains a detailed overview of the
+important tools part of ~TimepixAnalysis~ and how they are used for
+the context of the data analysis presented in this thesis. Read it if
+you wish to understand how to recreate the results presented in this thesis.
+
+[fn:tpa_github] https://github.com/Vindaar/TimepixAnalysis
+
+[fn:nim_lang] [[https://nim-lang.org]]
 
 ** GridPix data reconstruction [/]
 
