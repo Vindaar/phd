@@ -7805,14 +7805,58 @@ pursuit).
 
 
 - [ ] *REWRITE ME*
-For the individual clusters geometric properties will be
-computed. These are the long and short axis, the eccentricity as well
-as the statistical moments up to kurtosis along the long and short
-axis. The full list is shown in tab. [[tab:geometric_properties]].
+For each individual cluster the geometric event reconstruction
+is up next. As the basic differentiator between X-rays and common
+background events is their circularity, most properties are in some
+sense related to eccentric clusters are. Therefore, the first thing to
+be computed for each cluster, is the rotation
+angle [fn:rotation_angle].
 
-In the ~reconstruction~ tool each found cluster will then ...
+The rotation angle is found via a non linear optimization
+
+\begin{align}
+  x'_i &= \cos(θ) \left( x_i - \bar{x} \right) · P - \sin(θ) \left( y_i - \bar{y} \right) · P \\
+  y'_i &= \sin(θ) \left( x_i - \bar{x} \right) · P + \cos(θ) \left( y_i - \bar{y} \right) · P 
+\end{align}
+
+where $θ$ is the rotation angle (in the context of the optimization
+the parameter to be fitted), $x_i, y_i$ the coordinates of the $i$-th
+pixel in the cluster, and $\bar{x}, \bar{y}$ the center coordinates of
+the cluster. $P = \SI{55}{μm}$ is the pixel pitch of a Timepix. The
+resulting variables $x'_i, y'_i$ define a new rotated coordinate
+system. From these coordinates, the RMS of each of these new axes is
+computed via
+
+\begin{align}
+  x_{\text{RMS}} &= \sqrt{ \frac{1}{N} \left( \sum_i x^{\prime2}_i \right) - \frac{1}{N²} \left( \sum_i x'_i \right)² }\\
+  y_{\text{RMS}} &= \sqrt{ \frac{1}{N} \left( \sum_i y^{\prime2}_i \right) - \frac{1}{N²} \left( \sum_i y'_i \right)² }.
+\end{align}
+
+These then can define the eccentricity $ε$ to (see also fig. [[fig:reco:prop_expl_ecc]])
+
+\[
+ε = \frac{x_{\text{RMS}}}{y_{\text{RMS}}}
+\]
+
+During the non linear optimization, the algorithm attempts to maximize
+the eccentricity. In a track like cluster, the maximum eccentricity is
+found under the rotation angle $θ$, which points along the longest
+axis of the cluster. The resulting rotated coordinate system after the
+fit has converged, is illustrated in
+fig. \subref{fig:reco:prop_expl_axes}.
+
+Once the rotation angle and therefore the rotated coordinate system of
+a cluster is defined, most other properties follow in a straight
+forward fashion. In the rotated coordinate system the axis along the
+long axis of the cluster is called "longitudinal" and the short axis
+"transverse" in the following. The higher moments skewness and
+kurtosis for each axis are computed as well as the length and width of
+the cluster based on the biggest spread of pixels along each axis.  In
+addition to the geometric properties a few other properties like the
+number of pixels are also computed. 
 
 - [ ] *EXPLANATION OF THE 3 MAIN PROPERTIES USED FOR LIKELIHOOD*
+- [ ] *LOOK INTO \subref RENDERING. SHOULDN'T JUST SHOW a) HERE*  
 
 \begin{figure}[htbp]
   \centering
@@ -7825,10 +7869,9 @@ In the ~reconstruction~ tool each found cluster will then ...
   \begin{subfigure}{0.5\linewidth}
     \centering
     \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/eccentricity.pdf}
-    \label{fig:reco:fadc_pedestals_from_data_compare_real_run303}
+    \label{fig:reco:prop_expl_ecc}
     \caption{Eccentricity}
   \end{subfigure}
-  \label{fig:reco:prop_expl_ecc}
   \begin{subfigure}{0.5\linewidth}
     \centering
     \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/frac_in_trans_rms.pdf}
@@ -7841,13 +7884,14 @@ In the ~reconstruction~ tool each found cluster will then ...
     \label{fig:reco:prop_expl_ldiv}
     \caption{Length divided by transverse RMS}
   \end{subfigure}
-  \label{fig:reco:prop_expl_ecc}
+  \label{fig:reco:property_explanations}
   \caption{Funky things.
   }
 \end{figure}
 
-#+begin_center
-Probably won't end up using this table, instead use the descriptions below.
+#+begin_comment
+Probably won't end up using this table, instead use the descriptions
+below.
 
 #+CAPTION: Table of all the (mostly) geometric properties of a single cluster computed during the
 #+CAPTION: =reconstruction= tool. All but the likelihood, charge and energy properties are computed
@@ -7879,11 +7923,12 @@ Probably won't end up using this table, instead use the descriptions below.
 | igRadiusDivRmsTrans       | radius divided by transverse RMS                                 |
 | igRadius                  | radius of cluster                                                |
 | igLengthDivRadius         | length divided by radius                                         |
-#+end_center
+#+end_comment
 
 The following is a list of all properties of a single cluster computed
 by the ~reconstruction~ tool. All but the likelihood, charge and energy properties are computed
-during the first pass of the tool.
+during the first pass of the tool, namely in the context discussed
+above. [fn:geometry_calc]
 
 - igCenterX / igCenterY :: The center position of the cluster along
   the ~x~ / ~y~ axis of the detector.
@@ -7905,9 +7950,9 @@ during the first pass of the tool.
 - igEccentricity :: The eccentricity of the cluster, defined by the
   ratio of the longitudinal RMS over the transverse RMS.
 - igLengthDivRmsTrans :: The length of the cluster divided by the
-  transverse RMS.
+  transverse RMS (see fig. [[fig:reco:prop_expl_ldiv]]).
 - igFractionInTransverseRms :: The fraction of all pixels within a
-  radius of the transverse RMS around the center.
+  radius of the transverse RMS around the center (see fig. [[fig:reco:prop_expl_fracRms]]).
 - igRadiusDivRmsTrans :: The radius over the transverse RMS.
 - igFractionInHalfRadius :: Equivalent to *igFractionInTransveresRms*
   but for a radius of half the cluster radius.
@@ -7916,7 +7961,13 @@ during the first pass of the tool.
   charges of all pixels in the cluster.
 - igEnergyFromCharge :: The calibrated energy of the cluster in \si{keV}.
 - igLikelihood :: The likelihood value of the cluster for the
-  likelihood cut method, explained in detail in section [[#sec:logL:likelihood_of_cluster]].
+  likelihood cut method, explained in detail in section
+  [[#sec:logL:likelihood_of_cluster]].
+
+After the calculation of all geometric properties for all events and
+chips, the data is written to an output HDF5 file (similar in format to
+the output of ~raw_data_manipulation~) for each run. This concludes
+the first pass of ~reconstruction~ over the data.
 
 The properties are computed here:
 https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366
@@ -7924,6 +7975,21 @@ and here:
 https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569
 
 - [ ] *PLACE THE LINKS AFTER FIX UP SOMEWHERE THEY BELONG*
+- [ ] *CONSIDER MOVING LIST OF ALL PROPERTIES TO FURTHER DOWN ONCE WE
+  HAVE DISCUSSED CHARGE CALIB?*  
+
+[fn:rotation_angle] Note that the absolute value of the rotation angle
+is of secondary importance. For X-rays the rotation angle is going to
+be random, as the definition of a long and short axis in a
+(theoretically perfect) circle depends on the statistical distribution
+of the pixels. However, for pure muons it allows to map the rotation
+angle to the incidence angle.
+
+[fn:calc_eccentricity]
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L296-L329
+
+[fn:geometry_calc] In particular all these properties are computed
+here: https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L331-L391
   
 **** HDF5 data layout generated by ~reconstruction~             :optional:
 
