@@ -8033,16 +8033,61 @@ similar fashion to the equivalent for ~raw_data_manipulation~ before.
 
 *** Data calibration
 
-- separate from reconstruction, even though it's also handled by
-  ~reconstruction~ due to somewhat different nature of the problems
+The next step of the reconstruction is the data calibration. This is a
+separate pass over the data as it is optional on the one hand and
+requires further inputs about each used GridPix than just the raw data
+(different calibration files).
 
-- And this is where the ugly mess of needing X or Y starts :(
-- at least for energy calibration, we will refer to section later
+There are different calibrations to be performed:
+
+1. the charge calibration via the application of the ~ToT~ calibration
+   as introduced in section [[#sec:daq:tot_calibration]].
+2. the calculation of the gas gain, introduced in section
+   [[#sec:daq:polya_distribution_threshold]].
+3. the energy calibration (see
+   sec. [[#sec:calibration:energy_calibration]] in the next chapter).
+
+Here we will only discuss the ~ToT~ calibration, as the other two are
+more involved and require deeper explanations.
+
+The ~ToT~ calibration is in principle performed simply by converting
+each ~ToT~ value to an equivalent charge in electrons using the
+calibration as presented in section [[#sec:daq:tot_calibration]]. For each
+GridPix used in a detector, a ~ToT~ calibration must be available.
+
+- [ ] *SHOW AGAIN?*
+
+
+~TimepixAnalysis~ comes with a library and helper program, which
+manages a simple database about different GridPixes, their
+calibrations and their validity (in time & runs they apply to). The
+user needs to add the chips for which they wish to perform a ~ToT~
+calibration to the database before it can be performed. See appendix
+[[#sec:appendix:software:ingrid_database]] for a detailed overview.
+
+For any chip part of the database, the ~ToT~ calibration is a single
+pass over the ~ToT~ values of all runs. This generates a calibrated
+charge for every pixel of every cluster and a combined property, the
+~totalCharge~ of the full charge of each cluster.
+
+
+
+And this is where the ugly mess of needing X or Y starts :(
+at least for energy calibration, we will refer to section later
 
 While the energy calibration is also handled by ~reconstruction~, we
 will cover it in section [[#sec:calibration:energy]], due to its more
-complex nature.  
+complex nature.
 
+- [ ] *MENTION INGRID DATABASE STORING TOT CALIB DATA*
+
+**** ~InGridDatabase~ [0/1]                                     :optional:
+(or :noexport: ?)
+- [ ] introduce database including the data structure needed to add a
+  detector to the database?
+
+- [ ] *OR SHOULD THIS BE PART OF THE APPENDIX ABOUT SOFTWARE AND IN
+  SECTION ABOVE WE MENTOIN AND REFER TO THAT?*  
 
 *** Event length [0/1]
 
@@ -11331,7 +11376,16 @@ Essentially we aim to move the chapter [[Software]] here and extend it to:
 - give an overview of all tools we use in this thesis behind the
   scenes (means what they do, what their CLI looks like and how to use
   them in the context of generating the limit starting from raw data)
--   
+-
+
+** ~InGridDatabase~
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:software:ingrid_database
+:END:
+
+- explain database
+- explain data structure needed to add to DB
+- show how to add    
 
 * Configurations                                                   :Appendix:
 
