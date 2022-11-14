@@ -8089,11 +8089,52 @@ complex nature.
 - [ ] *OR SHOULD THIS BE PART OF THE APPENDIX ABOUT SOFTWARE AND IN
   SECTION ABOVE WE MENTOIN AND REFER TO THAT?*  
 
-*** Event length [0/1]
+*** Event duration [0/1]
 
-- [ ] How to compute length of events, given
+During the reconstruction of the data, another important parameter is
+computed, namely the event duration of each individual event. In
+principle each event has a fixed length, because the Timepix uses a
+shutter based readout, with the shutter length predefined. However, as
+the FADC is used as an external trigger to close the shutter early, if
+it recorded a signal, all events with an FADC trigger have a shorter
+duration.
+
+For the fixed length duration events their length is computed by the
+shutter length as indicated in TOS. In section
+[[#sec:daq:tos_output_format]], listing
+[[code:daq:zero_suppressed_readout_run_header]] the ~shutterTime~ and
+~shutterMode~ fields were listed. These define the absolute length of
+the shutter opening in (effectively) number of clock cycles. The
+~shutterMode~ acts as a modifier to the number of clock cycles:
+
+\[
+t_{\text{clocks}}(\mathtt{mode}, t) = 256^{\mathtt{mode}} · t
+\]
+
+where $t$ is the ~shutterTime~ and $\mathtt{mode}$ corresponds to the
+~shutterMode~. The available modes are:
+- ~short~: \num{0}
+- ~long~: \num{1}
+- ~verylong~: \num{2}
+
+In case of the FADC triggering, the clock cycles after shutter opening
+that were recorded up to the trigger is also reported in the data
+files, see sec. [[#sec:daq:tos_output_format]], listing
+[[code:daq:zero_suppressed_readout_event_header]].
+
+With the number of clock cycles the shutter was open, the total event
+duration can then be computed in either case via:
+
+\[
+d(t_{\text{clocks}}) = \frac{t_{\text{clocks}} · 46}{40 · \num{1000000}}.
+\]
+
+
+- [X] How to compute length of events, given
   - shutter mode & length
   - FADC trigger
+
+[fn:event_duration_calc] https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/pure.nim#L266-L297
 
 *** InGrid database                                              :optional:
 
