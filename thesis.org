@@ -8322,135 +8322,32 @@ detector firmware, resulting in useless "trigger" information.
 
 * Detector installation at CAST & data taking                         :Part3:
 #+LATEX: \minitoc
-** Detector
-
-The InGrid Mk. IV Septemboard detector is a gaseous detector intended
-for operation at the CAST experiment behind the LLNL telescope (airport
-side). 
-
-Note that this document does not attempt to be a complete reference of
-the detector down to the physical principles. It is rather supposed to
-provide an overview of the relevant pieces of information regarding
-its operation at CAST. 
-
-*** Components
-
-The full (main) detector as used in 2017/18 is shown in
-Fig. [[fig:mkIV-ingrid]].
-#+CAPTION: InGrid Mk. IV Septemboard detector used at CAST in 2017/18.
-#+NAME: fig:mkIV-ingrid
-[[file:~/org/Doc/Detector/figs/detector-mk4c-assembly-exploded-whitebg-no-cables-cropped.jpg]]
-
-It consists of a $\SI{3}{\cm}$ drift volume, which is filled with
-$\ce{Ar} / \ce{iC_4H_{10}}$ at $\SI{1050}{\milli \bar}$. At the top of
-the detector, separating the gas volume from the vacuum on the
-telescope side, is a $\SI{300}{\nm}$ $\ce{Si_x N_y}$ window, with
-$\num{4}$ $\ce{Si}$ ribbons of $\SI{500}{\um}$ thickness and
-$\SI{200}{\um}$ width.
-
-These windows are tested up to $\Delta P = \SI{1.5}{\bar}$ pressure
-difference for at least $\num{5}$ cycles, before being commissioned
-for usage at CAST.
-
-The main part of the detector, is the Septemboard, a 7 chip carrier of
-InGrids. The center chip is the main data taking chip, on which the
-telescope focuses the X-rays converted in the magnet (axion or
-chameleon image from the
-Sun), while the outer ring of chips is used as a background
-suppression tool, in case long tracks passing through the corners of
-the center chip. 
-#+BEGIN_COMMENT
-*include typical xray and track*
-*Include potential axion and chameleon images*.
-#+END_COMMENT
-
-Aside from the main detector as presented in fig. [[fig:mkIV-ingrid]],
-the detector is supported by two scintillators and a flash ADC (FADC).
-- one SiPM on the backend of the detector (as depicted in
-  fig. [[fig:mkIV-ingrid]]), to veto cosmics passing through the detector
-  orthogonally
-- one veto scintillator paddle above the lead shielding
-- an FADC to read out decoupled analogue grid signal of center chip,
-  which is induced by the electrons drifting through towards the Timepix
-FADC and veto paddle can be used together to remove cosmics, which
-trigger X-ray fluorescence lines of the detector material, by
-looking at the time difference between the last veto signal and an
-FADC signal. If it is smaller than $\sim\SI{3}{\micro\second}$, there
-is a potential correlation. See fig. [[fig:fadc-trigger-schematic]] for a
-schematic of the functioning principle.
-
-#+CAPTION: Working principle of FADC and veto scintillator
-#+NAME: fig:fadc-trigger-schematic
-[[file:~/org/Doc/Detector/figs/scintillator_FADC_correlation.pdf]]
-
-**** Veto scintillator
-
-The veto scintillator in use is the old MM veto scintillator.
-
-The scintillator has a Canberra 2007 base, which accepts positive
-HV. The PMT is a Bicron Corp. 31.49x15.74M2BC408/2-X, where the first
-two numbers are the scintillators dimensions in inch.
-
-The following will briefly discuss the calibration of it, which was
-done in the RD51 gaseous detector lab on <2017-10-28 Sat>. 
-
-For calibration an Ortec 9302 amplifier after the PMT with a gain of
-20 was used. This is fed into an LRS 621CL discriminator. The PMT and
-base are used at a HV of $+\SI{1200}{\volt}$.
-
-Scintillator is of size $\SI{42}{\cm}$ times $\SI{82}{\cm}$. Which is
-an area of
-
-#+BEGIN_SRC nim :exports both :results output
-let x = 0.42
-let y = 0.82
-echo x * y 
-#+END_SRC
-
-#+RESULTS:
-: 0.3444
-
-At a cosmic muon rate of $\sim\SI{100}{\hertz \per \meter \squared
-\steradian}$, the expected signal rate of munons is thus $\sim
-\SI{33}{\hertz}$.
-
-#+BEGIN_SRC nim :exports both :results output
-let area = 0.34
-let total_muons = 60000.0
-echo area * total_muons
-#+END_SRC
-
-#+RESULTS:
-: 20400.0
-
-Threshold values are scaled by a factor of 10. Coincedence using
-Theodoros 2 scintillator paddles in RD51 lab. 
-- upper scinti: $\SI{-2070}{\volt}$
-- lower scinti: $\SI{-2050}{\volt}$
-
-Measurement time for each value: $\SI{10}{\minute}$
-
-| Threshold / mV | Counts Szinti | Counts Coincedence |
-|----------------+---------------+--------------------|
-|           -598 |         31221 |                634 |
-|           -700 |         30132 |                674 |
-|           -804 |         28893 |                635 |
-|           -903 |         28076 |                644 |
-|          -1005 |         27012 |                684 |
-|          -1103 |         25259 |                566 |
-|          -1200 |         22483 |                495 |
-|          -1303 |         19314 |                437 |
-|          -1403 |         16392 |                356 |
-|          -1505 |         13677 |                312 |
-|          -1600 |         11866 |                267 |
-|          -1701 |         10008 |                243 |
-
-from which a threshold of $\SI{-110}{\milli\volt} was selected, after analysis.
 
 
 
 
-**** Cabling
+
+
+
+
+
+
+
+
+** Introduction about data taking? [/]
+
+- [ ] *MENTION 2016 COSMIC ALIGNMENT MEASUREMENT?*
+
+
+
+** Detector installation March 2017
+
+
+
+
+
+
+** Detector cabling
 
 FADC Trig out:
 - trig out -> level adapter (NIM module) into NIM IN, set to +NORM+ /
@@ -8471,38 +8368,6 @@ that is); signal order is reversed!
   discriminator IN -> back of Amplifier Discriminator NIM module
   amplifier input -> veto scintillator signal
   The signal is needs to be *2.4 V TTL signal!*
-
-
-
-
-*** Efficiency
-
-The combined detector efficiency is given by the combination of X-ray
-transmission through the silicon nitride window, its $\SI{20}{\nm}$
-$\ce{Al}$ coating and the absorption probability in the gas volume of
-the detector. After conversion the actual quantum efficiency of the
-InGrids is of $O(1)$.
-
-Fig. [[fig:detector-efficiency]] shows a plot of the combined detector
-efficiency.
-
-#+CAPTION: Calculated combined detector efficiency of the InGrid Mk. IV Septemboard detector.
-#+NAME: fig:detector-efficiency
-[[file:~/org/Doc/Detector/figs/transmission_curves_SiN_window_ind_plus_argon.pdf]]
-
-*** Full detector schematic
-
-The full detector can be presented in a flow chart as seen in
-fig. [[fig:detector-flowchart]].
-
-#+CAPTION: Flowchart of the whole detector and readout system
-#+NAME: fig:detector-flowchart
-[[file:~/org/Doc/Detector/figs/2016_detector_setup_schematic.pdf]]
-
-Note however, that in this plot the SiPM is not illustrated, as it is
-connected to the bottom of the intermediate board and only provides an
-offline flag to be used in the analysis.
-
 
 ** High voltage supply
 
