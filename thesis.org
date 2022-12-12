@@ -8394,7 +8394,7 @@ to <2017-09-14 Thu> with another geometer measurement on the last
 day. During an attempt to clean the detector water cooling system on
 <2017-09-19>, the window of the detector was destroyed (see section
 [[#sec:cast:window_accident]]). This required a detector dismount and
-transport to Bonn for repairs, as the detector was electronically dead
+transport to Bonn for repairs as the detector was electronically dead
 after the incident.
 
 Near the end of October <2017-10-23> the remount of the detector
@@ -8757,14 +8757,295 @@ lead around the detector. An image is seen in fig. *INSERT ME*.
 :CUSTOM_ID: sec:cast:window_accident
 :END:
 
-During the preparations of the detector for data taking, it
-became clear that the rubber seals of the quick connectors used for
-the water cooling system started to disintegrate. The connectors were
-replaced by Swagelok connectors, but the water cooling system still
-contained rubber pieces blocking the flow. Due to the small diameter
-and twisted layout of the cooling pipes in the copper body, the only
-way at hand to clean them was a compressed air line, normally used for
-operation of the $\ce{^{55}Fe}$ manipulator
+During the preparations of the detector for data taking, it became
+clear that the rubber seals of the quick connectors used for the water
+cooling system started to disintegrate. The connectors were replaced
+by Swagelok connectors, but the water cooling system still contained
+rubber pieces blocking the flow. Due to the small diameter and twisted
+layout of the cooling ducts in the copper body, the only way at hand
+to clean them was a compressed air line, normally used for operation
+of the $\ce{^{55}Fe}$ manipulator (see
+sec. [[#sec:cast:55fe_manipulator]]). This cleaning process worked very
+well. Multiple cleaning & water pumping cycles were needed, as after
+cleaning the system with compressed air, pumping water the next time
+moved some remaining pieces, which blocked again. After multiple
+cycles at which no more clogging happened upon water pumping a final
+cycle was intended. As the gas supply and the water cooling system
+after replacement of the quick connectors now used not only the same
+tubing, but also the same connectors, the compressed air line was
+mistakenly connected to the gas supply instead of water cooling line
+by me. The windows - tested up to $\SI{1.5}{bar}$ pressure - could not
+withstand the sudden pressure of the compressed air line of about
+$\SI{6}{bar}$. A sudden and catastrophic window failure broke the
+vacuum and shot window pieces as well as possible contamination into
+the vacuum pipes towards the X-ray optics.
+
+Because the LLNL telescope is an experimental optics there was worry
+about potential oil contamination coming from dirty air of the
+compressed air line. An conservative estimate of this given an upper
+bound on contamination of the air, volume of the vacuum pipes and the
+telescope area was computed. Assuming a flow of compressed air of
+\SI{5}{s}, a ISO 8573-1:2010 class 4 compressed air contamination of
+$\text{ppmv}_{\text{oil}} = \SI{10}{\milli\gram\per\meter\cubed}$ and
+all oil in the air sticking to the telescope shells would lead to a
+contamination of $c_{\text{oil}} =
+\SI{41.7}{\nano\gram\per\cm\squared}$. More realistic is about
+$\SI{1}{\percent}$ of that due to the telescope only being less than
+$\frac{1}{10}$ of the full system area and the primary membrane pump
+likely removing the majority ($>\SI{90}{\percent}$) of the oil in the
+first place. This puts an upper limit of $c_{\text{oil}} =
+\SI{0.417}{\nano\gram\per\cm\squared}$, which is well below anything
+considered problematic for further data taking.
+
+Further, the $\ce{^{55}Fe}$ source manipulator likely caught most of the
+debris, as it was fully inserted due to the necessary removal of the
+compressed air line from it, which is normally needed to keep the
+manipulator extruded when the system is under vacuum. For this reason
+it is unlikely and window debris could have caused significant
+scratches in the telescope layers.
+
+After the incident the detector was dismounted and taken to the CAST
+detector lab. Fig. \subref{fig:cast:window_accident:broken_window} shows the
+detector from above with the small remaining pieces of the
+window. Fig. \subref{fig:cast:window_accident:broken_window_inside} shows the
+detector inside after opening it. A bulge is visible where the gas
+inlet is and the compressed air entered. As the detector was
+electronically dead after the incident, the decision was made to move
+it back to Bonn for repairs. It turned out that the Septemboard had
+become loose from the connector.
+
+- [ ] LIKELY NOT LIST EXACT NUMBERS HERE, BUT IF SO REFERENCE ISO CLASS
+- [X] contamination calculation
+- [X] pictures of broken window & detector
+- [ ] *REWRITE CODE TO USE UNCHAINED*
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CAST_detector_exploded/broken_window_close_IMG_20170919_152130.jpg}
+    \caption{Broken window from the inside}
+    \label{fig:cast:window_accident:broken_window}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CAST_detector_exploded/detector_broken_window_open_top_IMG_20170919_152130.jpg}
+    \label{fig:cast:window_accident:broken_window_inside}
+    \caption{View into the detector after accident}
+  \end{subfigure}
+  \label{fig:cast:window_accident:broken_window_subfig}
+  \caption{\subref{fig:cast:window_accident:broken_window} shows the cathode of the detector from the inside
+    with the broken window. Essentially the full window directly exposed to vacuum is gone.
+    \subref{fig:cast:window_accident:broken_window_inside} is the view into the detector without the cathode.
+    A bulge of the field cage is visible where the compressed air entered.
+  }
+\end{figure}  
+
+*** Calculations of contamination [0/1]                          :noexport:
+
+- [ ] *REWRITE TO USE UNCHAINED!!*
+
+Check the appendix [[#sec:appendix:vacuum_contamination]] for the document
+written that contains my thoughts about the calculations below.
+
+Here are the calculations done to estimate the contamination. First a
+file containing the tubing sizes of the vacuum system:
+#+begin_src nim :tangle code/vacuum_contamination/tubing.nim
+import tables
+
+type
+  # defines the TubesMap datatype, which is a combined object to
+  # store the different parts of the tubing each sequences of tuples
+  TubesMap* = object
+    static_tubes* : seq[tuple[diameter: float, length: float]]
+    flexible_tubes* : seq[tuple[diameter: float, length: float]]
+    t_pieces* : seq[tuple[diameter: float, length_long: float, length_short: float]]
+    crosses* : seq[tuple[diameter: float, length: float]]
+
+proc getVacuumTubing*(): TubesMap =
+  # this function returns the data (originally written in calc_vacuum_volume.org
+  # as a set of hash maps as a "TubesMap" datatype
+  let st_tubing = @[(63.0, 10.0),
+                    (63.0, 51.0),
+                    (63.0, 21.5),
+                    (25.0, 33.7),
+                    (63.0, 20.0),
+                    (63.0, 50.0),
+                    (40.0, 15.5),
+                    (16.0, 13.0),
+                    (40.0, 10.0)]
+
+  let fl_tubing = @[(16.0,  25.0),
+                    (16.0,  25.0 ),
+                    (16.0,  25.0 ),
+                    (16.0,  25.0 ),
+                    (16.0,  40.0 ),
+                    (25.0,  90.0 ),
+                    (25.0,  80.0 ),
+                    (40.0,  50.0 ),
+                    (16.0, 150.0 ),
+                    (40.0,  80.0 ),
+                    (40.0,  80.0)]
+
+  let t_pieces = @[(40.0, 18.0, 21.0),
+                   (16.0, 7.0, 4.5),
+                   (40.0, 10.0, 10.0)]
+
+  let crosses = @[(16.0, 10.0),
+                  (40.0, 14.0),
+                  (40.0, 14.0),
+                  (40.0, 14.0)]
+                    
+  let t = TubesMap(static_tubes: st_tubing, flexible_tubes: fl_tubing, t_pieces: t_pieces, crosses: crosses)
+  echo "Vacuum tubing is as follows:"
+  echo t
+  return t
+#+end_src
+
+And the actual code using the tubing to calculate possible
+contamination:
+
+#+begin_src nim :tangle code/vacuum_contamination/vacuum_contamination.nim
+import math
+import tubing
+import sequtils, future
+import typeinfo
+
+# This script contains a calculation for the total volume of the
+# currently in use vacuum system at CAST (behind and including LLNL
+# telescope)
+
+proc cylinder_volume(diameter, length: float): float =
+  # this proc calculates the volume of a cylinder, given a
+  # diameter and a length both in cm
+  result = PI * pow(diameter / 2.0, 2) * length
+  
+proc t_piece_volume(diameter, length_long, length_short: float): float =
+  # this proc calculates the volume of a T shaped vacuum piece, using
+  # the cylinder volume proc
+  # inputs:
+  # diameter: diameter of the tubing in cm
+  # length_long: length of the long axis of the tubing
+  # length_short: length of the short axis of the tubing
+  result = cylinder_volume(diameter, length_long) + cylinder_volume(diameter, length_short - diameter)
+
+proc cross_piece_volume(diameter, length: float): float =
+  # this proc calculates the volume of a cross shaped vacuum piece, using
+  # the cylinder volume proc
+  # inputs:
+  # diameter: diameter of the tubing in cm
+  # length: length of one axis of the tubing
+  result = 2 * cylinder_volume(diameter, length) - pow(diameter, 3)
+
+proc calcTotalVacuumVolume(t: TubesMap): float =
+  # function which calculates the total vacuum volume, using
+  # the rough measurements of the length and diameters of all the
+  # piping
+  # the TubesMap consists of:
+  # static_tubes : seq[tuple[diameter: float, length: float]]
+  # flexible_tubes : seq[tuple[diameter: float, length: float]]
+  # t_pieces : seq[tuple[diameter: float, length_long: float, length_short: float]]
+  # crosses : seq[tuple[diameter: float, length: float]]
+  # define variables to store static volume etc
+
+  # calc volume of static tubing
+  let static_vol = sum(map(
+    t.static_tubes, (b: tuple[diameter, length: float]) ->
+    float =>
+    cylinder_volume(b.diameter / 10, b.length)))
+  let flexible_vol = sum(map(
+    t.flexible_tubes, (b: tuple[diameter, length: float]) -> 
+    float =>
+    cylinder_volume(b.diameter / 10, b.length)))
+  let t_vol = sum(map(
+    t.t_pieces, (b: tuple[diameter, length_long, length_short: float]) ->
+    float =>
+    t_piece_volume(b.diameter / 10, b.length_long, b.length_short)))
+  let crosses_vol = sum(map(
+    t.crosses, (b: tuple[diameter, length: float]) ->
+    float =>
+    cross_piece_volume(b.diameter / 10, b.length)))
+
+  result = static_vol + flexible_vol + t_vol + crosses_vol
+
+proc calcFlowRate(d, p, mu, x: float): float =
+  # this function calculates the flow rate following the Poiseuille Equation
+  # for a non-ideal gas under laminar flow.
+  # inputs:
+  # d: diameter of the tube in m
+  # p: pressure difference between both ends of the tube in Pa
+  # mu: dynamic viscosity of the medium
+  # x: length of the tube
+  # note: get viscosity e.g. from https://www.lmnoeng.com/Flow/GasViscosity.php
+  # returns the flow rate in m^3 / s
+  result = PI * pow(d, 4) * p / (128 * mu * x)
+
+proc calcGasAmount(p, V, T: float): float =
+  # this function calculates the amount of gas in moles follinwg
+  # the ideal gas equation p V = n R T for a given pressure, volume
+  # and temperature
+  let R = 8.31446
+  result = p * V / (R * T)
+
+proc calcVolumeFromMol(p, n, T: float): float =
+  # this function calculates the volume in m^3 follinwg
+  # the ideal gas equation p V = n R T for a given pressure, amount in mol
+  # and temperature
+  let R = 8.31446
+  result = n * R * T / p
+    
+proc main() =
+
+  # TODO: checke whether diameter of 63mm for telescope is a reasonable
+  # number!
+  let t = getVacuumTubing()
+  # first of all we need to calculate the total volume of the vacuum
+  let volume = calcTotalVacuumVolume(t)
+  echo volume
+
+  # now calcualte flow rate through pipe
+  let
+    # 3 mm diameter
+    d = 3e-3
+    # 6 bar pressure diff
+    p = 6.0e5
+    # viscosity of air
+    mu = 1.8369247e-4
+    # ~2m of tubing
+    x = 2.0
+    flow = calcFlowRate(d, p, mu, x)
+
+  echo(flow * 1e3, " l / s")
+
+  # given the flow in liter, calc total gas inserted into the system
+  let flow_l = flow * 1e3
+
+  # detector volume in m^3
+  let det_vol = cylinder_volume(12.0, 3.0) * 1e-6
+  echo("Detector volume is : ", det_vol)
+  # initial gas volume inside detector (1 bar is argon!), thus
+  # only .5 bar
+  let n_initial = calcGasAmount(0.5e5, det_vol, 293.15)
+  # gas which came in after window ruptured
+  let valve_open = 5.0
+  # total volume in m^3
+  let flow_vol = flow_l * 1e-3 * valve_open
+  
+  # since the flown volume is given for normal pressure and temp, calc
+  # amount of gas
+  let n_flow = calcGasAmount(1.0e5, flow_vol, 293.15)
+  echo("Initial gas is : ", n_initial, " mol")
+  echo("Gas from flow is : ", n_flow, " mol")
+  let n_total = n_initial + n_flow
+  echo("Total compressed air, which entered system : ", n_total)
+
+  # calc volume corresponding to normal pressure
+  let tot_vol_atm = calcVolumeFromMol(1e5, n_total, 293.15)
+  echo("Total volume of air at normal pressure : ", tot_vol_atm * 1e3, " l")
+  
+when isMainModule:
+  main()
+#+end_src
 
 ** Data taking woes
 :PROPERTIES:
