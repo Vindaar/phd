@@ -9089,29 +9089,6 @@ See timeline for overview of important points to cover.
 
 
 
-
-** Detector cabling
-
-FADC Trig out:
-- trig out -> level adapter (NIM module) into NIM IN, set to +NORM+ /
-  *COMPL* (*this is active*)
-  TTL out -> TTL signal clipper (TTL 5V -> 2.4V) into port marked =I=
-  TTL signal clipper -> adapter board into *left LEMO at back* (viewed
-  from behind the crate; cable still at CAST)
-
-FPGA to FADC (shutter signal)
-- Adapter board *right LEMO at back* (viewed from behind crate) ->
-  level adapter (NIM module), set to *NORM* / +COMPL+ into TTL IN
-  NIM out -> FADC EXT EN TRIG
-
-Veto scintillator (*NOTE* this may be *WRONG*; input to adapter board
-that is); signal order is reversed!
-- Adapter board *left LEMO on top* (viewed from behind the crate,
-  input number *1* on adapter board) -> discriminator OUT (top discriminator in NIM module)
-  discriminator IN -> back of Amplifier Discriminator NIM module
-  amplifier input -> veto scintillator signal
-  The signal is needs to be *2.4 V TTL signal!*
-
 ** High voltage supply
 
 The high voltage supply is an iseg HV module, which is located in the
@@ -9411,408 +9388,6 @@ P_{\text{3, VT3 disable}} &\leq \SI{8e-5}{\milli\bar}.
 This is to make sure there can be no rapid toggling between the two
 states during pumping or flushing the system. 
 
-
-** Operation
-
-This chapter provides some guidance about typical operations necessary
-during maintenance or installation of the detector / vacuum system.
-
-*** Ramping the HV
-
-The high voltage supply can be controlled in two different
-ways. Besides differing in usability terms (one is manual, the other
-automatic), the main difference between the two is the HV interlock,
-which is only partially usable in case of the manual HV control.
-1. in the manual way using the Linux software supplied by iseg. On the
-   InGrid-DAQ computer it is located in
-   [[file:/home/ingrid/src/isegControl/isegControl][~/src/isegControl/isegControl]]. Depending on the setup of the
-   machine, the software may need superuser rights to access the USB
-   connection. With the software the given channel as shown in
-   tab. [[tab:hv]] can be set up and the HV can be ramped up. Note: one
-   needs to activate SetKillEnable such that the HV is shut down in
-   case of a current trip (exceeding of specified current). One should
-   then set 'groups' of different channels, so that grid, anode and
-   ring 1 are shut down at the same time, in case of a current trip,
-   as well as ring 29 and the cathode! In addition the trip current
-   needs to be manually set about a factor 5 higher during ramping,
-   because of capacitors, which need to be charged first. Otherwise
-   the channels trip immediately. In this case the HV interlock is
-   restricted to basic current restrictions. Anything detector related
-   is not included!
-2. in the automatic way via the TOS. The TOS takes care of everything
-   mentioned above. To use the TOS for the HV control (and thus also
-   use the complete HV interlock, as it exists at the moment), perform
-   the following steps:
-   1. check [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]] and compare with tab. [[tab:hv]]
-      whether settings seem reasonable
-   2. after starting TOS and setting up the chips, call
-      #+BEGIN_SRC sh
-      > ActivateHFM
-      #+END_SRC
-      which will set up TOS to use the combined HV and FADC (due to
-      both inside the same VME crate, they are intertwined). This
-      configures the FADC and reads the desired HV settings, but does
-      not set the HV settings on the module yet.
-   3. to write the HV to the HV module, call
-      #+BEGIN_SRC sh
-      > InitHV
-      #+END_SRC
-      which will write the HV settings from HFM_settings.ini to the HV
-      module. At the end it will ask the user, whether the HV should
-      be ramped up:
-      #+BEGIN_SRC sh
-      Do you wish to ramp up the channels now? (Y / n)
-      #+END_SRC
-      If yes, the ramping progress will be shown via calls to the
-      CheckModuleIsRamping() function (which can also be called
-      manually in TOS). 
-   This should properly ramp up all channels. It is possible that TOS
-   fails to connect to the VME crate and hence is not able to ramp up
-   the channels. The most likely reason for this is that the
-   isegControl software is still open, since only one application can
-   access a single USB interface at the same time.
-
-*** Vacuum
-
-The vacuum system as described in sec. [[Vacuum system]] usually does not
-require manual intervention during normal operation.
-
-For maintenance the following two sections describe how to pump the
-system safely as well as how to flush it with nitrogen. Both processes
-are rather delicate due to the sensitive $\ce{Si_x N_y}$
-window. Pumping needs to be done slowly, $O(\SI{1}{\milli\bar \per
-\second})$. To be able to do this, the needle valve
-$V_{\text{Needle}}$ (cf. fig. [[fig:vacuum-schematic]]) is installed. One
-may separate the vacuum volume into two separate vacua. A bad vacuum
-before the primary pump and after the turbo pumps T1 and T2 and a good
-vacuum before the turbo pump T2. There are three connections from the
-good vacuum to the bad one. 
-1. through T2, closable via $V_{\text{T2}}$, $\SI{40}{\mm}$ tubing
-2. through the needle valve $V_{\text{needle}}$, $\SI{16}{\mm}$ tubing
-3. through T1 via the manipulator interstage, normally closed (see the
-  note below), $\SI{25}{\mm}$ tubing
-3 is mainly irrelevant for pumping purposes, since there is no valve
-to open or close; it is always closed by a 2-O-ring seal to the good
-vacuum. While 1 is the main path for pumping during operation, it is 2
-which is used during a pumping down or flushing of the system, since
-it can be controlled very granularly. 
-
-For both explanations below, it is very important to always think
-about each step (are the correct valves open / closed? etc.). A small
-mistake can lead to severe damage of the hardware (turbo pumps can
-break, the window can rupture).
-
-_Note_: There is a third very small vacuum volume before T1, which is
-the volume up to the manipulator interstage. This volume is separate
-from the main good vacuum chamber, due to a 2-O-ring seal on both ends
-of the manipulator. Compare with fig. [[fig:vacuum-schematic]] at the
-location of the two clamped flanges 'above' the manipulator. One
-2-O-ring seal is at the upper flange and one at the lower. This is
-because the manipulator part furthest from the beampipe is under
-air. In order to seal the air and the vacuum especially during
-movement of the source, these seals are in place. However, while the
-2-O-ring seals provide decent sealing, it is not perfect. This is why
-the small turbo pump T1 is in place at all, to reduce the amount of
-air, which might enter the system during source manipulation. Another
-aspect to keep in mind is potential air, which can get trapped in
-between the two O-rings. This air will be released during movement of
-the seals. Especially after the system was open to air, it is expected
-that a small pressure increase on $P_{\text{MM}}$ can be seen during
-operation, despite T1 being in place. After several movement cycles
-, $O(10)$, these peaks should be negligible. 
-
-**** Pumping the vacuum
-
-Before pumping it is a good idea to connect two linear gauges to the
-two $P_{\text{Linear}}$ pressure sensors.
-To pump the system safely, perform the following steps:
-1. Make sure every pump is turned off.
-2. Make sure every valve in the system is closed:
-   1. $V_{\text{Primary}}$
-   2. $V_{\text{Leak}}$
-   3. $V_{\text{T2}}$
-   4. $V_{\text{Needle}}$
-3. Connect a linear gauge to $P_{\text{P, Linear}}$ on the primary pump line.
-4. Start the primary pump. Tubing up to $V_{\text{Primary}}$ will be
-   pumped, visible on linear gauge connected to
-   $P_{\text{P, Linear}}$. Check that the second linear gauge remains
-   unchanged, if not $V_{\text{Primary}}$ and $V_{\text{Needle}}$ is
-   open!
-5. Once $P_{\text{P, Linear}}$ shows $\leq \SI{10}{\milli bar}$,
-   slowly open $V_{\text{Primary}}$, again checking $P_{\text{N,
-   Linear}}$ remains unchanged. This will increase the pressure on
-   $P_{\text{P, Linear}}$ again until the volume is pumped.
-6. This step is the most crucial. With $V_{\text{T2}}$ still closed,
-   very carefully open $V_{\text{Needle}}$, while keeping an eye on
-   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
-   locking mechanisms. The knob at the end with the analog indicator
-   and a general lock in front of that. While the analog indicator
-   shows =000=, open the general lock. Then slowly start turning the
-   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
-   slowly start to decrease. Keep turning the knob until you reach a
-   pump rate of $O(\SI{1}{\milli \bar \per \second})$. You will have
-   to keep opening the needle valve further, the lower the pressure is
-   to keep the pump rate constant.
-7. Once both linear gauges have equalized (up to different offsets),
-   close the needle valve again.
-8. Open $V_{\text{T2}}$.
-9. Start T2 by turning on the power and pressing the right most
-   button. Use the arrow buttons to select the 'actual RPM' setting to
-   see that the turbo is spinning up. Final speed should be set to
-   $\SI{1500}{\Hz}$.
-10. While T2 is spinning up, start T1 by turning on the power at the
-    back. There is no additional button to be pressed.
-
-The system should now be in the following state:
-- $V_{\text{Leak}}$ closed
-- $V_{\text{Needle}}$ closed
-- $V_{\text{T2}}$ open
-- $V_{\text{Primary}}$ open
-- T2 & T1 running
-- Primary pump running
-If so, the system is now pumping. Note that it may take several days
-to reach a vacuum good enough to satisfy the interlock.
-
-**** Flushing the system
-
-Flushing the system is somewhat of a reverse of pumping the
-system. Follow these steps to safely flush the system with
-nitrogen. See section [[Nitrogen supply]] for an explanation of which
-valves need to be operated to open the nitrogen line.
-Before flushing the system connect two linear gauges to both
-$P_{\text{Linear}}$ sensors.
-1. Make sure the turbo pumps are turned off, if not yet turn both off
-   and wait for them to have come to a halt.
-2. Turn off the primary pump.
-3. Close $V_{\text{T2}}$. $V_{\text{Leak}}$ and $V_{\text{Needle}}$
-   should already be closed, while $V_{\text{T2}}$ and
-   $V_{\text{Primary}}$ should still be open.
-4. Connect the nitrogen line to the blind flange before
-   $V_{\text{Leak}}$. 
-5. Slowly open $V_{\text{Leak}}$, while checking both linear
-   gauges. Make sure only the pressure on $P_{\text{P, Linear}}$
-   increases, while $P_{\text{N, Linear}}$ remains under vacuum. If
-   not, another valve is still open. Close $V_{\text{Leak}}$
-   immediately again!
-6. Keep flushing nitrogen, until $P_{\text{P, Linear}}$ gets close to
-   $\SI{1000}{\milli\bar}$ (the sensors will never actually reach
-   that value).
-7. Close $V_{\text{Leak}}$ again to make sure you do not put the
-   system over one atmosphere of pressure.
-8. This step is the most crucial. With $V_{\text{T2}}$ still closed,
-   very carefully open $V_{\text{Needle}}$, while keeping an eye on
-   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
-   locking mechanisms. The knob at the end with the analog indicator
-   and a general lock in front of that. While the analog indicator
-   shows =000=, open the general lock. Then slowly start turning the
-   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
-   slowly start to increase. Keep turning the knob until you reach a
-   pump rate of $O(\SI{1}{\milli \bar \per \second})$.
-9. You will notice that the pressure on $P_{\text{P, Linear}}$ will
-   start to decrease, since the air will distribute in a larger
-   volume. Open $V_{\text{Leak}}$ again slightly to keep $P_{\text{P,
-   Linear}}$ roughly constant.
-10. Keep flushing with $\SI{1}{\milli\bar\per\second}$ until both
-    sensors read $O(\SI{1000}{\milli\bar})$.
-11. Close all valves in the system again.
-
-This way the system is safely flushed with nitrogen. This helps to
-pump faster after a short maintenance, because less humidity can enter
-the system.
-
-*** COMMENT Gas supply
-
-If the requirements of the gas supply interlock are satisfied
-(cf. sec. [[Gas supply interlock]]), it is possible to flush the detector
-with gas. For that, follow these steps:
-1. Make sure the pressure controller is connected and running. Check
-   InGrid-PLC computer in control room and see if pressure control
-   software is running. If gas supply is currently closed, reported
-   pressure inside the detector is usually reported to
-   $\SIrange{960}{980}{\milli\bar}$.
-2. Outside the building, open the main valve of the currently active
-   gas bottle (check the arrow on the bottle selector mechanism). See
-   fig. [[fig:gas-bottle-outside]].
-3. Open the second valve near the bottle.
-4. Pressure values should be:
-   - gas bottle: $\sim\SIrange{30}{100}{\bar}$
-   - pre-line pressure: $\sim\SI{7}{\bar}$
-   - line pressure: $\sim\SI{0.45}{\bar}$
-5. Activate the gas supply at the interlock box by turning the key to
-   =Security on= and pressing the large button. See
-   fig. [[fig:interlock-box]].
-6. Go to the airport side of the magnet. Open the valve on the InGrid
-   gas panel below the telescope platform. See
-   fig. [[fig:ingrid-gas-panel]].
-7. Slowly open the needle valve on the flow meter on the previous
-   panel. Increase gas flow up to $\sim\SI{2}{\liter\per\hour}$.
-8. Open the needle valve on the gas supply line on the side of the
-   platform (see fig. [[fig:gas-needle-valve]]).
-9. After $\SIrange{5}{10}{\minute}$ the pressure controller on the
-   InGrid-PLC computer should report $\SI{1050}{\milli\bar}$.
-# 7. Make sure the electrovalves on the second gas panel (see
-#    fig. NOT HERE. NO PANEL) are open. THESE VALVES CANNOT BE CHECKED
-#    EXPLICITLY. IF INTERLOCK BOX IS ACTIVE, WILL BE OPEN?! MAYBE CHECK
-#    BOX POWER SUPPLY? NO LED I THINK.
-
-
-Now the detector should be flushed with $\ce{Ar} /
-\ce{iC_4H_{10}}$. Before turning on the HV, make sure to flush for at
-least $\SI{12}{\hour}$ to be on the safe side.
-
-#+CAPTION: Location of the Argon-Isobutane bottle and the main valves outside the building.
-#+NAME: fig:gas-bottle-outside
-[[file:~/org/Doc/Detector/figs/gas_bottles_outside.jpg]]
-
-
-#+CAPTION: Location of the gas interlock box
-#+NAME: fig:interlock-box
-[[file:~/org/Doc/Detector/figs/gas_interlock_box.jpg]]
-
-#+CAPTION: Location of the InGrid gas panel below the telescope platform on the airport side.
-#+NAME: fig:ingrid-gas-panel
-[[file:~/org/Doc/Detector/figs/gas_panel.jpg]]
-
-#+CAPTION: Location of the needle valve on the gas supply line
-#+NAME: fig:gas-needle-valve
-<file to be inserted>
-
-*** Nitrogen supply
-
-Nitrogen is supplied by a nitrogen bottle outside the building. To
-open the nitrogen line, 5 valves need to be opened. The line ends in a
-copper pipe on the airport side, which is usually there rolled up (the
-copper is somewhat flexible).
-1. Open the lever on the nitrogen bottle outside the building (see
-   fig. [[fig:nitrogen-bottle-outside]]).
-2. Open the valve next to the bottle.
-3. Go to the gas lines next to the control room. The right most line
-   (see fig. [[fig:valves-control-room]] and
-   fig. [[fig:nitrogen-valve-control-room]]) is the nitrogen line. Open
-   the valve.
-4. Open the needle valve on the flow meter to the right of the
-   previous valve.
-5. Open the needle valve on the airport side of the magnet (see
-   fig. [[fig:nitrogen-airport-side]]).
-This should be all to open the nitrogen line. The flow through the
-pipe is not too large, but it should be large enough to feel it on the
-back of the hand.
-
-#+CAPTION: Location of the Nitrogen bottle and the main valves outside the building.
-#+NAME: fig:nitrogen-bottle-outside
-[[file:~/org/Doc/Detector/figs/nitrogen_bottle.jpg]]
-
-#+CAPTION: Location of the valves next to the control room
-#+NAME: fig:valves-control-room
-[[file:~/org/Doc/Detector/figs/nitrogen_valve_location.jpg]]
-
-#+CAPTION: The actual nitrogen valve on the set of valves near the control room.
-#+NAME: fig:nitrogen-valve-control-room
-[[file:~/org/Doc/Detector/figs/nitrogen_valve.jpg]]
-
-
-#+CAPTION: Location of the flow meter near the valve next to the control room
-#+NAME: fig:nitrogen-flow-meter-control-room
-[[file:~/org/Doc/Detector/figs/nitrogen_flow_meter.jpg]]
-
-#+CAPTION: Location of the needle valve on the airport side
-#+NAME: fig:nitrogen-airport-side
-<file to be inserted>
-
-
-#+BEGIN_EXPORT latex
-\newpage
-#+END_EXPORT
-
-** Cabling & software setup
-
-The requires:
-- Virtex:
-  - power
-  - 2 HDMI to intermediate board
-  - mini USB into JTAG port on backside
-  - RJ45 from ethernet port into 2nd ethernet card on DAQ PC
-
-The RJ45 connection is only required to flash the firmware onto the
-Virtex.
-
-For the flashing of the firmware, take into account the USB driver
-setup described in =void_settings.org=.
-
-*** Ethernet connection with Virtex
-
-The ethernet connection with the Virtex needs to be set up
-manually.
-
-On the one hand it is required to use a static IP address for the
-secondary ethernet device and in addition we need to set an ARP entry
-(note: the =arp= program is part of the =net-tools= package, name same
-in ubuntu & void linux).
-
-Under Ubuntu said setup can be done using the network manager. In Void
-we need to use =ip= from the terminal.
-
-The settings are as follows:
-- IP address: 10.1.2.3
-- Subnet: 24
-
-Setup of the device can be done according to the example here:
-https://docs.voidlinux.org/config/network/index.html
-namely (with superuser rights):
-#+begin_src sh
-ip addr show
-# check the name of the correct, secondary device
-ip link set dev enp4s0 up # name on tpc19
-ip addr add 10.1.2.3/24 brd + dev enp4s0
-#+end_src
-afterwards we can set the ARP entries (ref: https://confluence.team.uni-bonn.de/display/PHYGASDET/How+to+automatically+set+ARP+entries):
-#+begin_src sh
-arp -i enp4s0 -s 10.1.2.2 AA:BA:DD:EC:AD:E2
-#+end_src
-
-**** Make these two steps automatic under void
-
-In principle it should be enough to set the above steps into =/etc/rc.local=.
-
-*** Setting up the chips in TOS
-
-This section is specific to the Septemboard used at CAST.
-
-Following the steps described in the shifter documentation
-[[file:~/org/Doc/ShiftDocumentation/shifter_documentation.org]]
-#+begin_src sh
-#+BEGIN_SRC python
-7 # number of chips
-4 # preload
-SetChipIDOffset
-190
-lf
-# 7 times enter to load default paths
-uma
-1 # Matrix settings
-0
-1
-1
-0
-LoadThreshold # load threshold equalisation files
-4 # write matrix
-3 # read out
-3
-ActivateHFM
-SetFadcSettings
-Run
-1 # run time via # frames
-0
-0
-0
-2 # shutter range select
-30 # shutter time select
-0 # zero suppression
-1 # FADC usage
-0 # accept FADC settings
-#+end_src
-
-The above would launch a full background run.
 
 ** 55Fe source at CAST
 
@@ -13171,6 +12746,448 @@ There are also pictures of every shift form in my googlo photos.
 |        301 | <2018-12-17 Mon 06:26> |    45.03 |                                                |
 |        303 | <2018-12-18 Tue 06:52> |    44.69 |                                                |
 |        306 | <2018-12-20 Thu 06:30> |    40.04 |                                                |
+
+
+* CAST operation procedures                                        :Appendix:
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:cast_operations
+:END:
+
+This chapter provides some guidance about typical operations necessary
+during maintenance or installation of the detector / vacuum system.
+
+** Ramping the HV
+
+The high voltage supply can be controlled in two different
+ways. Besides differing in usability terms (one is manual, the other
+automatic), the main difference between the two is the HV interlock,
+which is only partially usable in case of the manual HV control.
+1. in the manual way using the Linux software supplied by iseg. On the
+   InGrid-DAQ computer it is located in
+   [[file:/home/ingrid/src/isegControl/isegControl][~/src/isegControl/isegControl]]. Depending on the setup of the
+   machine, the software may need superuser rights to access the USB
+   connection. With the software the given channel as shown in
+   tab. [[tab:hv]] can be set up and the HV can be ramped up. Note: one
+   needs to activate SetKillEnable such that the HV is shut down in
+   case of a current trip (exceeding of specified current). One should
+   then set 'groups' of different channels, so that grid, anode and
+   ring 1 are shut down at the same time, in case of a current trip,
+   as well as ring 29 and the cathode! In addition the trip current
+   needs to be manually set about a factor 5 higher during ramping,
+   because of capacitors, which need to be charged first. Otherwise
+   the channels trip immediately. In this case the HV interlock is
+   restricted to basic current restrictions. Anything detector related
+   is not included!
+2. in the automatic way via the TOS. The TOS takes care of everything
+   mentioned above. To use the TOS for the HV control (and thus also
+   use the complete HV interlock, as it exists at the moment), perform
+   the following steps:
+   1. check [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]] and compare with tab. [[tab:hv]]
+      whether settings seem reasonable
+   2. after starting TOS and setting up the chips, call
+      #+BEGIN_SRC sh
+      > ActivateHFM
+      #+END_SRC
+      which will set up TOS to use the combined HV and FADC (due to
+      both inside the same VME crate, they are intertwined). This
+      configures the FADC and reads the desired HV settings, but does
+      not set the HV settings on the module yet.
+   3. to write the HV to the HV module, call
+      #+BEGIN_SRC sh
+      > InitHV
+      #+END_SRC
+      which will write the HV settings from HFM_settings.ini to the HV
+      module. At the end it will ask the user, whether the HV should
+      be ramped up:
+      #+BEGIN_SRC sh
+      Do you wish to ramp up the channels now? (Y / n)
+      #+END_SRC
+      If yes, the ramping progress will be shown via calls to the
+      CheckModuleIsRamping() function (which can also be called
+      manually in TOS). 
+   This should properly ramp up all channels. It is possible that TOS
+   fails to connect to the VME crate and hence is not able to ramp up
+   the channels. The most likely reason for this is that the
+   isegControl software is still open, since only one application can
+   access a single USB interface at the same time.
+
+** Vacuum
+
+The vacuum system as described in sec. [[Vacuum system]] usually does not
+require manual intervention during normal operation.
+
+For maintenance the following two sections describe how to pump the
+system safely as well as how to flush it with nitrogen. Both processes
+are rather delicate due to the sensitive $\ce{Si_x N_y}$
+window. Pumping needs to be done slowly, $O(\SI{1}{\milli\bar \per
+\second})$. To be able to do this, the needle valve
+$V_{\text{Needle}}$ (cf. fig. [[fig:vacuum-schematic]]) is installed. One
+may separate the vacuum volume into two separate vacua. A bad vacuum
+before the primary pump and after the turbo pumps T1 and T2 and a good
+vacuum before the turbo pump T2. There are three connections from the
+good vacuum to the bad one. 
+1. through T2, closable via $V_{\text{T2}}$, $\SI{40}{\mm}$ tubing
+2. through the needle valve $V_{\text{needle}}$, $\SI{16}{\mm}$ tubing
+3. through T1 via the manipulator interstage, normally closed (see the
+  note below), $\SI{25}{\mm}$ tubing
+3 is mainly irrelevant for pumping purposes, since there is no valve
+to open or close; it is always closed by a 2-O-ring seal to the good
+vacuum. While 1 is the main path for pumping during operation, it is 2
+which is used during a pumping down or flushing of the system, since
+it can be controlled very granularly. 
+
+For both explanations below, it is very important to always think
+about each step (are the correct valves open / closed? etc.). A small
+mistake can lead to severe damage of the hardware (turbo pumps can
+break, the window can rupture).
+
+_Note_: There is a third very small vacuum volume before T1, which is
+the volume up to the manipulator interstage. This volume is separate
+from the main good vacuum chamber, due to a 2-O-ring seal on both ends
+of the manipulator. Compare with fig. [[fig:vacuum-schematic]] at the
+location of the two clamped flanges 'above' the manipulator. One
+2-O-ring seal is at the upper flange and one at the lower. This is
+because the manipulator part furthest from the beampipe is under
+air. In order to seal the air and the vacuum especially during
+movement of the source, these seals are in place. However, while the
+2-O-ring seals provide decent sealing, it is not perfect. This is why
+the small turbo pump T1 is in place at all, to reduce the amount of
+air, which might enter the system during source manipulation. Another
+aspect to keep in mind is potential air, which can get trapped in
+between the two O-rings. This air will be released during movement of
+the seals. Especially after the system was open to air, it is expected
+that a small pressure increase on $P_{\text{MM}}$ can be seen during
+operation, despite T1 being in place. After several movement cycles
+, $O(10)$, these peaks should be negligible. 
+
+*** Pumping the vacuum
+
+Before pumping it is a good idea to connect two linear gauges to the
+two $P_{\text{Linear}}$ pressure sensors.
+To pump the system safely, perform the following steps:
+1. Make sure every pump is turned off.
+2. Make sure every valve in the system is closed:
+   1. $V_{\text{Primary}}$
+   2. $V_{\text{Leak}}$
+   3. $V_{\text{T2}}$
+   4. $V_{\text{Needle}}$
+3. Connect a linear gauge to $P_{\text{P, Linear}}$ on the primary pump line.
+4. Start the primary pump. Tubing up to $V_{\text{Primary}}$ will be
+   pumped, visible on linear gauge connected to
+   $P_{\text{P, Linear}}$. Check that the second linear gauge remains
+   unchanged, if not $V_{\text{Primary}}$ and $V_{\text{Needle}}$ is
+   open!
+5. Once $P_{\text{P, Linear}}$ shows $\leq \SI{10}{\milli bar}$,
+   slowly open $V_{\text{Primary}}$, again checking $P_{\text{N,
+   Linear}}$ remains unchanged. This will increase the pressure on
+   $P_{\text{P, Linear}}$ again until the volume is pumped.
+6. This step is the most crucial. With $V_{\text{T2}}$ still closed,
+   very carefully open $V_{\text{Needle}}$, while keeping an eye on
+   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
+   locking mechanisms. The knob at the end with the analog indicator
+   and a general lock in front of that. While the analog indicator
+   shows =000=, open the general lock. Then slowly start turning the
+   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
+   slowly start to decrease. Keep turning the knob until you reach a
+   pump rate of $O(\SI{1}{\milli \bar \per \second})$. You will have
+   to keep opening the needle valve further, the lower the pressure is
+   to keep the pump rate constant.
+7. Once both linear gauges have equalized (up to different offsets),
+   close the needle valve again.
+8. Open $V_{\text{T2}}$.
+9. Start T2 by turning on the power and pressing the right most
+   button. Use the arrow buttons to select the 'actual RPM' setting to
+   see that the turbo is spinning up. Final speed should be set to
+   $\SI{1500}{\Hz}$.
+10. While T2 is spinning up, start T1 by turning on the power at the
+    back. There is no additional button to be pressed.
+
+The system should now be in the following state:
+- $V_{\text{Leak}}$ closed
+- $V_{\text{Needle}}$ closed
+- $V_{\text{T2}}$ open
+- $V_{\text{Primary}}$ open
+- T2 & T1 running
+- Primary pump running
+If so, the system is now pumping. Note that it may take several days
+to reach a vacuum good enough to satisfy the interlock.
+
+*** Flushing the system
+
+Flushing the system is somewhat of a reverse of pumping the
+system. Follow these steps to safely flush the system with
+nitrogen. See section [[Nitrogen supply]] for an explanation of which
+valves need to be operated to open the nitrogen line.
+Before flushing the system connect two linear gauges to both
+$P_{\text{Linear}}$ sensors.
+1. Make sure the turbo pumps are turned off, if not yet turn both off
+   and wait for them to have come to a halt.
+2. Turn off the primary pump.
+3. Close $V_{\text{T2}}$. $V_{\text{Leak}}$ and $V_{\text{Needle}}$
+   should already be closed, while $V_{\text{T2}}$ and
+   $V_{\text{Primary}}$ should still be open.
+4. Connect the nitrogen line to the blind flange before
+   $V_{\text{Leak}}$. 
+5. Slowly open $V_{\text{Leak}}$, while checking both linear
+   gauges. Make sure only the pressure on $P_{\text{P, Linear}}$
+   increases, while $P_{\text{N, Linear}}$ remains under vacuum. If
+   not, another valve is still open. Close $V_{\text{Leak}}$
+   immediately again!
+6. Keep flushing nitrogen, until $P_{\text{P, Linear}}$ gets close to
+   $\SI{1000}{\milli\bar}$ (the sensors will never actually reach
+   that value).
+7. Close $V_{\text{Leak}}$ again to make sure you do not put the
+   system over one atmosphere of pressure.
+8. This step is the most crucial. With $V_{\text{T2}}$ still closed,
+   very carefully open $V_{\text{Needle}}$, while keeping an eye on
+   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
+   locking mechanisms. The knob at the end with the analog indicator
+   and a general lock in front of that. While the analog indicator
+   shows =000=, open the general lock. Then slowly start turning the
+   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
+   slowly start to increase. Keep turning the knob until you reach a
+   pump rate of $O(\SI{1}{\milli \bar \per \second})$.
+9. You will notice that the pressure on $P_{\text{P, Linear}}$ will
+   start to decrease, since the air will distribute in a larger
+   volume. Open $V_{\text{Leak}}$ again slightly to keep $P_{\text{P,
+   Linear}}$ roughly constant.
+10. Keep flushing with $\SI{1}{\milli\bar\per\second}$ until both
+    sensors read $O(\SI{1000}{\milli\bar})$.
+11. Close all valves in the system again.
+
+This way the system is safely flushed with nitrogen. This helps to
+pump faster after a short maintenance, because less humidity can enter
+the system.
+
+** COMMENT Gas supply
+
+If the requirements of the gas supply interlock are satisfied
+(cf. sec. [[Gas supply interlock]]), it is possible to flush the detector
+with gas. For that, follow these steps:
+1. Make sure the pressure controller is connected and running. Check
+   InGrid-PLC computer in control room and see if pressure control
+   software is running. If gas supply is currently closed, reported
+   pressure inside the detector is usually reported to
+   $\SIrange{960}{980}{\milli\bar}$.
+2. Outside the building, open the main valve of the currently active
+   gas bottle (check the arrow on the bottle selector mechanism). See
+   fig. [[fig:gas-bottle-outside]].
+3. Open the second valve near the bottle.
+4. Pressure values should be:
+   - gas bottle: $\sim\SIrange{30}{100}{\bar}$
+   - pre-line pressure: $\sim\SI{7}{\bar}$
+   - line pressure: $\sim\SI{0.45}{\bar}$
+5. Activate the gas supply at the interlock box by turning the key to
+   =Security on= and pressing the large button. See
+   fig. [[fig:interlock-box]].
+6. Go to the airport side of the magnet. Open the valve on the InGrid
+   gas panel below the telescope platform. See
+   fig. [[fig:ingrid-gas-panel]].
+7. Slowly open the needle valve on the flow meter on the previous
+   panel. Increase gas flow up to $\sim\SI{2}{\liter\per\hour}$.
+8. Open the needle valve on the gas supply line on the side of the
+   platform (see fig. [[fig:gas-needle-valve]]).
+9. After $\SIrange{5}{10}{\minute}$ the pressure controller on the
+   InGrid-PLC computer should report $\SI{1050}{\milli\bar}$.
+# 7. Make sure the electrovalves on the second gas panel (see
+#    fig. NOT HERE. NO PANEL) are open. THESE VALVES CANNOT BE CHECKED
+#    EXPLICITLY. IF INTERLOCK BOX IS ACTIVE, WILL BE OPEN?! MAYBE CHECK
+#    BOX POWER SUPPLY? NO LED I THINK.
+
+
+Now the detector should be flushed with $\ce{Ar} /
+\ce{iC_4H_{10}}$. Before turning on the HV, make sure to flush for at
+least $\SI{12}{\hour}$ to be on the safe side.
+
+#+CAPTION: Location of the Argon-Isobutane bottle and the main valves outside the building.
+#+NAME: fig:gas-bottle-outside
+[[file:~/org/Doc/Detector/figs/gas_bottles_outside.jpg]]
+
+
+#+CAPTION: Location of the gas interlock box
+#+NAME: fig:interlock-box
+[[file:~/org/Doc/Detector/figs/gas_interlock_box.jpg]]
+
+#+CAPTION: Location of the InGrid gas panel below the telescope platform on the airport side.
+#+NAME: fig:ingrid-gas-panel
+[[file:~/org/Doc/Detector/figs/gas_panel.jpg]]
+
+#+CAPTION: Location of the needle valve on the gas supply line
+#+NAME: fig:gas-needle-valve
+<file to be inserted>
+
+** Nitrogen supply
+
+Nitrogen is supplied by a nitrogen bottle outside the building. To
+open the nitrogen line, 5 valves need to be opened. The line ends in a
+copper pipe on the airport side, which is usually there rolled up (the
+copper is somewhat flexible).
+1. Open the lever on the nitrogen bottle outside the building (see
+   fig. [[fig:nitrogen-bottle-outside]]).
+2. Open the valve next to the bottle.
+3. Go to the gas lines next to the control room. The right most line
+   (see fig. [[fig:valves-control-room]] and
+   fig. [[fig:nitrogen-valve-control-room]]) is the nitrogen line. Open
+   the valve.
+4. Open the needle valve on the flow meter to the right of the
+   previous valve.
+5. Open the needle valve on the airport side of the magnet (see
+   fig. [[fig:nitrogen-airport-side]]).
+This should be all to open the nitrogen line. The flow through the
+pipe is not too large, but it should be large enough to feel it on the
+back of the hand.
+
+#+CAPTION: Location of the Nitrogen bottle and the main valves outside the building.
+#+NAME: fig:nitrogen-bottle-outside
+[[file:~/org/Doc/Detector/figs/nitrogen_bottle.jpg]]
+
+#+CAPTION: Location of the valves next to the control room
+#+NAME: fig:valves-control-room
+[[file:~/org/Doc/Detector/figs/nitrogen_valve_location.jpg]]
+
+#+CAPTION: The actual nitrogen valve on the set of valves near the control room.
+#+NAME: fig:nitrogen-valve-control-room
+[[file:~/org/Doc/Detector/figs/nitrogen_valve.jpg]]
+
+
+#+CAPTION: Location of the flow meter near the valve next to the control room
+#+NAME: fig:nitrogen-flow-meter-control-room
+[[file:~/org/Doc/Detector/figs/nitrogen_flow_meter.jpg]]
+
+#+CAPTION: Location of the needle valve on the airport side
+#+NAME: fig:nitrogen-airport-side
+<file to be inserted>
+
+
+#+BEGIN_EXPORT latex
+\newpage
+#+END_EXPORT
+
+* Cabling & software setup [/]                                     :Appendix:
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:cabling_and_softwar_setup
+:END:
+
+- [ ] *CLEAN THIS UP TO MAKE IT STAND ON ITS OWN OR MERGE INTO ABOVE
+  CAST OPERATION?*
+
+The requires:
+- Virtex:
+  - power
+  - 2 HDMI to intermediate board
+  - mini USB into JTAG port on backside
+  - RJ45 from ethernet port into 2nd ethernet card on DAQ PC
+
+The RJ45 connection is only required to flash the firmware onto the
+Virtex.
+
+For the flashing of the firmware, take into account the USB driver
+setup described in =void_settings.org=.
+
+** Detector cabling [/]
+
+- [ ] *CLEAN THIS UP*
+
+The following is the cabling for the FADC and the scintillators to the
+intermediate board. It's a useful reference when connecting the
+cabling!
+
+FADC Trig out:
+- trig out -> level adapter (NIM module) into NIM IN, set to +NORM+ /
+  *COMPL* (*this is active*)
+  TTL out -> TTL signal clipper (TTL 5V -> 2.4V) into port marked =I=
+  TTL signal clipper -> adapter board into *left LEMO at back* (viewed
+  from behind the crate; cable still at CAST)
+
+FPGA to FADC (shutter signal)
+- Adapter board *right LEMO at back* (viewed from behind crate) ->
+  level adapter (NIM module), set to *NORM* / +COMPL+ into TTL IN
+  NIM out -> FADC EXT EN TRIG
+
+Veto scintillator (*NOTE* this may be *WRONG*; input to adapter board
+that is); signal order is reversed!
+- Adapter board *left LEMO on top* (viewed from behind the crate,
+  input number *1* on adapter board) -> discriminator OUT (top discriminator in NIM module)
+  discriminator IN -> back of Amplifier Discriminator NIM module
+  amplifier input -> veto scintillator signal
+  The signal is needs to be *2.4 V TTL signal!*
+
+
+** Ethernet connection with Virtex
+
+The ethernet connection with the Virtex needs to be set up
+manually.
+
+On the one hand it is required to use a static IP address for the
+secondary ethernet device and in addition we need to set an ARP entry
+(note: the =arp= program is part of the =net-tools= package, name same
+in ubuntu & void linux).
+
+Under Ubuntu said setup can be done using the network manager. In Void
+we need to use =ip= from the terminal.
+
+The settings are as follows:
+- IP address: 10.1.2.3
+- Subnet: 24
+
+Setup of the device can be done according to the example here:
+https://docs.voidlinux.org/config/network/index.html
+namely (with superuser rights):
+#+begin_src sh
+ip addr show
+# check the name of the correct, secondary device
+ip link set dev enp4s0 up # name on tpc19
+ip addr add 10.1.2.3/24 brd + dev enp4s0
+#+end_src
+afterwards we can set the ARP entries (ref: https://confluence.team.uni-bonn.de/display/PHYGASDET/How+to+automatically+set+ARP+entries):
+#+begin_src sh
+arp -i enp4s0 -s 10.1.2.2 AA:BA:DD:EC:AD:E2
+#+end_src
+
+*** Make these two steps automatic under void
+
+In principle it should be enough to set the above steps into =/etc/rc.local=.
+
+** Setting up the chips in TOS
+
+This section is specific to the Septemboard used at CAST.
+
+Following the steps described in the shifter documentation
+[[file:~/org/Doc/ShiftDocumentation/shifter_documentation.org]]
+#+begin_src sh
+#+BEGIN_SRC python
+7 # number of chips
+4 # preload
+SetChipIDOffset
+190
+lf
+# 7 times enter to load default paths
+uma
+1 # Matrix settings
+0
+1
+1
+0
+LoadThreshold # load threshold equalisation files
+4 # write matrix
+3 # read out
+3
+ActivateHFM
+SetFadcSettings
+Run
+1 # run time via # frames
+0
+0
+0
+2 # shutter range select
+30 # shutter time select
+0 # zero suppression
+1 # FADC usage
+0 # accept FADC settings
+#+end_src
+
+The above would launch a full background run.
+
 
 
 * Window rupture and vacuum contamination                 :Appendix:noexport:
