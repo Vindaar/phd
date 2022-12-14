@@ -3210,6 +3210,9 @@ fact that theory assumes a perfectly statistical process, but reality
 has fixed number of possible interactions, hence not really perfect statistics.
 
 *** Escape photons / peaks | 55Fe as a typical calibration source
+:PROPERTIES:
+:CUSTOM_ID: sec:theory:escape_peaks_55fe
+:END:
 
 Finally, gaseous detectors need to be calibrated, monitored and
 tested. This is commonly done with a $^{55}\text{Fe}$
@@ -8356,6 +8359,21 @@ taken with the Septemboard detector. The final section
 encountered and lessons learned.  
 
 
+bla bla bla, the setup includes a $\ce{^{55}Fe}$ source mounted to a
+pneumatic manipulator, see sec. [[#sec:cast:55fe_manipulator]], ...
+
+The appendix contains an additional chapter
+[[#sec:appendix:cast_operations]], which contains details about the
+operating procedures with respect to the gas supply and vacuum
+system. As the details of that are not particularly relevant after
+shutdown of the experiment, it is not discussed here.
+
+** Introduction about data taking? [/]
+
+- [ ] *MENTION 2016 COSMIC ALIGNMENT MEASUREMENT?*
+
+
+
 ** TODO [0/4]
 
 - [ ] alignment photo of laser alignment
@@ -8765,11 +8783,644 @@ telescope.
 #+NAME: fig:cast:annotated_setup
 [[~/phd/Figs/CAST_Nov2017Aufbau_annotated_small.png]]
 
+*** $^{55}\text{Fe}$ source and manipulator
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:55fe_manipulator
+:END:
+
+As seen in the previous section the setup includes a $\ce{^{55}Fe}$
+source. Its purpose is both monitoring of the detector behavior and it
+serves as a way to calibrate the energy of events (as mentioned in
+theory section [[#sec:theory:escape_peaks_55fe]]). More details on the
+usage and importance for data analysis will be given in chapter
+[[#sec:calibration:energy]]. It is installed on a pneumatic
+manipulator. Using a compressed air line with about \SI{6}{bar}
+pressure the manipulator can be moved up and down. Under vacuum
+conditions of the setup the manipulator is inserted unless the
+compressed air is used to keep it out.
+
+A Raspberry Pi is installed close to the manipulator and connects to
+the two Festo control sensors at the top and bottom end of the
+manipulator using the general purpose input/output (GPIO) pins. Two
+pins are used to read the sensor status from each. 5 more pins connect
+to a $\SI{24}{V}$ relay, which is used to control the controllers for
+the compressed air line. The relay is controlled via pulse width
+modulation (PWM). The software controlling the GPIO pins of the
+Raspberry Pi is written in Python. It does not need to run on the
+Raspberry Pi itself, instead it connects to it via network. It starts
+a server process, which can receive connections via a socket, which
+allows for remote and programmatic control of the manipulator via a
+set of simple string based messages. Further it provides a REPL
+(read-evaluate-print loop) to control it interactively. 
+
+- [ ] *REFERENCE / LINK TO FESTO*
+- [ ] *MAYBE SHORTEN INFO ABOUT PWM?*
+- [ ] *LINK TO SOFTWARE HERE*
+
+**** Manipulator software and notes [0/1]                       :noexport:
+
+- [ ] *MOVE MANIPULATOR CODE TO TPA TOOLS AND LINK TO IT?*
+
+The source code of the python script running on the Raspberry Pi to
+control the manipulator is the following:
+
+#+begin_src python
+#!/usr/bin/env python3.6
+
+import sys
+import pigpio
+import readline
+import logging
+import argparse
+import time
+import socket
+import threading
+import json
+import asyncio
+import functools
+import weakref
+
+# the program needs to do the following
+# 
+# - on RPi 7 pins used (5 controlled via software):
+#     - relay:
+#         - GOOD  - input, Pin 14
+#         - OUT   - input, Pin 15
+#         - RC IN - output (via PWM), via Pin 14
+#         - VRC   - const voltage, using 5V via PIN 2, not done in software
+#         - GND   - ground, pin 6, not done in software
+#     - sensors 2 pins:
+#         - input, read sensor output
+# 
+# 
+# program always listens to GOOD and OUT
+# using PWM we activate the manipulator. done by waiting for 
+#  - command line input?
+#  - reading some file, s.t. this program runs as a daemon and we use
+#    some external tool to write file via usb to Pi
+#  - finally be able to execute from TOS. easiest via script to call
+# reading sensor inputs done in connection with usage of PWM
+# 
+# finally compile this program to jar to run it
+
+
+# in order to control the source via network, the basic usage is something like
+# the following:
+# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# s.connect(('localhost', 42000))
+# s.send("insert".encode())
+# depening on whether the call is from the local machine or not.
+# "insert" and "remove" are supported at the moment
+# sends back a byte string containing the bool of the
+# insertion / removal
+
+#class client(asyncio.Protocol):
+
+
+
+# connect to pi at IP address
+p = pigpio.pi('10.42.0.91')
+
+# define dict of pins
+d = {"GOOD"    : 14,
+     "OUT"     : 15,
+     "RC_IN"   : 18,
+     "S_OPEN"  : 20,
+     "S_CLOSE" : 21}
+
+    
+
+class server(threading.Thread):
+    # this is a simple server class, which receives the necessary
+    # parameters to control the raspberry pi and a socket, from
+    # which it listens to commands
+    # inherits from threading.Thread to run in a separate thread
+
+    def __init__(self, socket, p, d, pwm):
+        # init the object
+        self.socket = socket
+        self.p      = p 
+        self.d      = d
+        self.pwm    = pwm
+        self._stop  = False
+        # now call the Thread init
+        threading.Thread.__init__(self)
+        # and set it as a daemon, so that it cannot
+        # stop the main program from quitting
+        self.setDaemon(True)
+
+    async def process_client(self, reader, writer):
+        client = writer.get_extra_info('peername')
+        print("New client connected: {}".format(client))
+        while self._stop == False:
+            #data = socket.recv(1024).decode()
+            data = (await reader.readline()).decode()
+            if data:
+                success = self.parse_message(data, client)
+                message = self.create_message(client[0], success)
+                writer.write(message)
+                await writer.drain()
+            else:
+                writer.close()
+                break
+
+    # hacky get loop...
+    def get_loop_and_server(self):
+        return (self.loop, self.socketserver)
+
+    def run(self):
+        # using run we start the thread
+
+        # need a new event loop, in which asyncio works
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+        # start server on specific port open on all interfaces
+        self.server_future = asyncio.start_server(self.process_client, host = "0.0.0.0", port = 42000)
+        # the returned future is handed to the event loop
+        self.socketserver = self.loop.run_until_complete(
+            asyncio.ensure_future(
+                self.server_future,
+                loop = self.loop))
+        
+        print(self.socketserver.sockets)
+        # run 
+        self.loop.run_forever()
+                
+    def stop_server(self):
+        # in case stop_server is called, the stop flag is
+        # set, such that the while loop, which waits for
+        # data from the socket stops
+        self._stop = True
+
+        while self.loop.is_running() == True:
+            print("current sockets still connected {}".format(self.socketserver.sockets))
+            print("loop is still running: {}".format(self.loop.is_running()))
+
+            #self.socketserver.wait_closed()
+            self.loop.stop()
+            self.server_future.close()
+            self.socketserver.close()
+            # next line raises an exception, loop still running....
+            # TODO: fix problem that we cannot stop the running event loop :(
+            self.loop.close(self.loop.run_until_complete(self.socketserver.wait_closed()))
+            time.sleep(0.2)
+        
+        self.loop.close()
+
+
+    def parse_message(self, data, address):
+        # this function parses the data. If there is a function
+        # call in the data, we call the appropriate function
+        ip, port = address
+        result = False
+        if 'insert' in data:
+            result = insert_source(self.p, self.d, self.pwm)
+            #logging.info("source inserted via network socket {}:{}".format(ip, port))
+        elif 'remove' in data:
+            result = remove_source(self.p, self.d, self.pwm)
+            #logging.info("source removed via network socket {}:{}".format(ip, port))
+        elif 'out?' in data:
+            result = read_out(self.p, self.d)
+            #logging.info("out? status requestet via network socket {}:{}".format(ip, port))
+        elif 'good?' in data:
+            # read GOOD and print
+            result = read_good(self.p, self.d)
+            #logging.info("good? status requestet via network socket {}:{}".format(ip, port))
+        elif 's_open?' in data:
+            # read sensor 1 and print
+            result = read_sensor_open(self.p, self.d)
+            #logging.info("s_open? status requestet via network socket {}:{}".format(ip, port))
+        elif 's_close?' in data:
+            # read sensor 1 and print
+            result = read_sensor_close(self.p, self.d)
+            #logging.info("s_close? status requestet via network socket {}:{}".format(ip, port))
+        else:
+            result = "Unknown command"
+
+        return result
+
+    def create_message(self, client, data):
+        # this function creates a JSON message containing the returned value
+        # of the RPi call and a clientname
+        # using dictionary, we create a json dump and return the encoded
+        # string
+        message = {"username" : client, "message" : data}
+        # add trailing \r\l to indicate end of data stream
+        json_data = json.dumps(message) + '\n'
+        return json_data.encode()
+
+
+# set relay_sleep time (time to wait for activation of relay): 50ms
+relay_sleep = 50e-3
+# set manipulator_sleep time: 1s
+manip_sleep = 1
+
+def print_help():
+
+    help_string = """
+    The following commands are available:\n
+        insert : insert source into bore
+        remove : remove source from bore
+        out?   : print current value of relay OUT
+        good?  : print current value of relay GOOD
+        d?     : parameters used for relay (pin layout etc.)
+        pwm?   : parameters used for PWM (frequency, duty cycle, ...)
+        help   : prints this help
+    """
+
+    print(help_string)
+    return
+
+    
+
+def read_good(p, d):
+    # simple function which returns the value of the
+    # GPIO pin for the GOOD output of the relay
+    good = bool(p.read(d["GOOD"]))
+    return good
+
+def read_out(p, d):
+    # simple function which returns the value of the
+    # GPIO pin for the OUT output of the relay
+    out = bool(p.read(d["OUT"]))
+    return out
+
+def read_sensor_open(p, d):
+    # simple function which returns bool corresponding to
+    # GPIO pin of sensor for OPEN
+    val = bool(p.read(d["S_OPEN"]))
+    return val
+
+def read_sensor_close(p, d):
+    # simple function which returns bool corresponding to
+    # GPIO pin of sensor for CLOSED
+    val = bool(p.read(d["S_CLOSE"]))
+    return val
+
+def configure_pins(p, d):
+    # function to export all pins and set to correct modes
+    # relay control / reading
+    p.set_mode(d["GOOD"], pigpio.INPUT)
+    p.set_mode(d["OUT"], pigpio.INPUT)
+    p.set_mode(d["RC_IN"], pigpio.OUTPUT)
+    # sensor reading
+    p.set_mode(d["S_OPEN"], pigpio.INPUT)
+    p.set_mode(d["S_CLOSE"], pigpio.INPUT)
+    return
+
+def pwm_control(p, d, freq, duty_cycle):
+    # function to control the pwm of the RC IN pin
+    p.hardware_PWM(d["RC_IN"], freq, duty_cycle)
+    return
+
+def insert_source(p, d, pwm):
+    # inserts the source into the bore by activating the relay
+    # wrapper for source_control
+    success = source_control(p, d, pwm, "on")
+    return success
+
+def remove_source(p, d, pwm):
+    # removes source from bore by disabling the relay
+    # wrapping source control
+    success = source_control(p, d, pwm, "off")
+    return success
+
+def source_control(p, d, pwm, direction):
+    # this function provides a generalized interface to control the source
+    # inputs:
+    #     p: the Pi object
+    #     d: the dict. containing the parameters
+    #     pwm: the dict. containing pwm parameters
+    #     direction: a string describing the direction to move the source
+    #         "on"  : insert source
+    #         "off" : remove source
+
+    
+    pwm_control(p, d, pwm["f"], pwm[direction])
+    # relay was triggered: means relay should now read
+    # insert:
+    # GOOD == True &
+    # OUT  == True
+    # remove:
+    # GOOD == True &
+    # OUT  == False
+    time.sleep(relay_sleep)
+    good = read_good(p, d)
+    out  = read_out(p, d)
+    success = False
+
+    # set expected values based on insertion / removal
+    if direction == "on":
+        good_exp = True
+        out_exp  = True
+    elif direction == "off":
+        good_exp = True
+        out_exp  = False
+    else:
+        raise NotImplementedError("only 'on' and 'off' implemented to control source.")
+
+    s1 = None
+    s2 = None
+    if good == good_exp and out == out_exp:
+        # if good is True and out False, everything fine
+        #logging.debug("pwm set to {}, relay reports: (good : {}), (out : {})".format(direction, good ,out))
+        # after setting of relay, wait again and check sensors
+        print('pwm switched, waiting for manipulator to be moved')
+        time.sleep(manip_sleep)
+        # check sensors
+        s1 = read_sensor_open(p, d)
+        s2 = read_sensor_close(p, d)
+
+        #logging.debug('sensors report: s1 = {}, s2 = {}'.format(s1, s2))
+        # TODO: implement logic, which deals with sensors of manipulators
+
+        if direction is "on":
+            # after insertion the sensors should read:
+            # s1 (sensor open) == True
+            # s2 (sensor close) == False
+            if s1 == True and s2 == False:
+                success = True
+            else:
+                success = False
+        else:
+            if s1 == False and s2 == True:
+                # after removal the sensors should read:
+                # s1 (sensor open) == False
+                # s2 (sensor close) == True
+                success = True
+            else:
+                success = False
+        
+        if success == False:
+            #logging.warning("""WARNING: direction was {}, but sensors read (open): {} (close): {}. 
+            #Relay switched correctly.""".format(direction, s1, s2))
+            pass
+
+    elif good == good_exp and out != out_exp:
+        # something is wrong, seems like relay did not change, both still repot True
+        #logging.warning("pwm set to {}, relay good, but OUT still reports True: {}, {}".format(direction, good, out))
+        pass
+    elif good == False:
+        #logging.warning("relay reports bad signal: {}".format(good))
+        pass
+    else:
+        #logging.warning("should not happen. Contact developer.")
+        pass
+
+    if direction == "on":
+        print("Insertion returned {}".format(success))
+        if success == False:
+            print("WARNING: insertion may have failed, but sensors read (open): {} (close): {}".format(direction, s1, s2))
+            print("However, relay was activated correctly.")    
+    elif direction == "off":
+        print("Removal returned {}".format(success))
+        if success == False:
+            print("WARNING: removal may have failed, but sensors read (open): {} (close): {}".format(direction, s1, s2))
+            print("However, relay was activated correctly.")    
+
+
+    # the following lines are here to make sure there is a new prompt
+    # even in case a network call was made before
+    sys.stdout.write('> ')
+    sys.stdout.flush()
+
+    return success
+    
+def control_loop(p, d, pwm):
+    # this function defines the main control loop of the manipulator
+    # control
+    print('Starting command prompt')
+    print('\t insert : inserts source into bore')
+    print('\t remove : removes source out of bore')
+    print('\t quit   : stop the program')
+
+    # TODO: still need to implement the checks for
+    #       - sensor positions
+    #         output warning to console and log file in case sensors
+    #         don't report what was commanded
+    #       - output warning in case signal not good
+    
+    while True:
+        # the sys calls are used to make sure the line is empty before we
+        # write to it via input. Don't want two > > to appear (depening
+        # on network calls this might happen)
+        sys.stdout.write('\r')
+        sys.stdout.flush()
+        line = input('> ')
+        if 'insert' in line:
+            insert_source(p, d, pwm)
+            #logging.info("source inserted")
+        elif 'remove' in line:
+            remove_source(p, d, pwm)
+            #logging.info("source removed")
+        elif 'out?' in line:
+            # read OUT and print
+            print(read_out(p, d))
+        elif 'good?' in line:
+            # read GOOD and print
+            print(read_good(p, d))
+        elif 's_open?' in line:
+            # read sensor 1 and print
+            print(read_sensor_open(p, d))
+        elif 's_close?' in line:
+            # read sensor 1 and print
+            print(read_sensor_close(p, d))
+        elif 'd?' in line:
+            # print dictionary
+            print(d)
+        elif 'pwm?' in line:
+            # print dictionary
+            print(pwm)
+        elif line in ['help', 'h', 'help?']:
+            print_help()
+        elif line in ['quit', 'q', 'stop']:
+            break
+        elif line is not "":
+            print('not a valid command.')
+        else:
+            continue
+
+        # perform some logging of input, exit
+        #logging.debug("command: {}".format(line))
+
+
+    # after loop perform final logging?
+    #logging.info('stopping program.')
+
+    return
+
+def create_message(client, data):
+    # this function creates a JSON message containing the returned value
+    # of the RPi call and a clientname
+    # using dictionary, we create a json dump and return the encoded
+    # string
+    message = {"username" : client, "message" : data}
+    # add trailing \r\l to indicate end of data stream
+    json_data = json.dumps(message) + '\n'
+    return json_data.encode()
+
+def main(args):
+
+    # setup arg parser
+    parser = argparse.ArgumentParser(description = 'parse log level')
+    parser.add_argument('--log', default="DEBUG", type=str)
+
+    parsed_args = parser.parse_args()
+    loglevel = parsed_args.log
+
+    # setup logger
+    numeric_level = getattr(logging, loglevel.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('Invalid log level: {}'.format(loglevel))
+
+
+    # add an additional handler for the asyncio logger so that it also
+    # writes the errors and exceptions to console
+    console = logging.StreamHandler()
+    logging.getLogger("asyncio").addHandler(console)
+
+    LOG_FILENAME = 'log/manipulator.log'
+    logging.basicConfig(filename = LOG_FILENAME,
+                        #stream = sys.stdout, 
+                        format = '%(levelname)s %(asctime)s: %(message)s',
+                        datefmt='%d/%m/%Y %H:%M:%S',
+                        level = numeric_level)
+
+
+    # now configure all pins
+    configure_pins(p, d)
+
+    # define PWM settings
+    pwm = {"f"   : 200,
+           "off" : 200000,
+           "on"  : 400000}
+
+    # set pwm for RC IN pin
+    pwm_control(p, d, pwm["f"], pwm["off"])
+
+    # configure readline
+    readline.parse_and_bind('tab: complete')
+    readline.set_auto_history(True)
+
+    # create the socket for the server
+    # instantiate the server object
+    # thr = server(serversocket, p, d, pwm)
+    thr = server(None, p, d, pwm)
+    # and start
+    thr.start()
+
+    # now that everything is configured, start the control loop
+    control_loop(p, d, pwm)
+
+    #try:
+    #thr.stop_server()
+    #except:
+        
+
+    # after control loop has finished, shut down the server thread
+    loop, socketserver = thr.get_loop_and_server()
+    # the following is an ugly hack to close the program without getting any
+    # exceptions, thrown because the event loop in the server class is
+    # not being shut down. Trying, but doesn't work, so this will have
+    # to do for now
+    try:
+        thr.stop_server()
+    except:
+        socketserver.close()
+    
+    #loop.close()
+    
+    
+if __name__=="__main__":
+    import sys
+    main(sys.argv[1:])
+#+end_src
+
+The following are my notes taken during development of the hardware &
+software that describe the specific hardware in use.
+
+***** DONE Manipulator [3/3]
+****** DONE test for leaks
+****** DONE test using compressed air, reading sensors
+Regarding sensors, setup and hardware: 
+Hardware:
+    - sensors: Festo 150 857
+      accept between 12 and 30 V DC
+      max. output amperage: 500 mA
+      switch on time: 0.5 ms
+      switch off time: 0.03 ms
+    - cable  : Festo NEBU-M8G3-K5-LE3 (541 334)
+    - cable (power): Festo NEBV-Z4WA2L-R-E-5-N-LE2-S1
+Thus, supply sensors with 24 V DC as well. Build setup such that 
+valve and sensors receive same 24 V. 
+Sensor outputs need to go on RPi GPIO pins. These max value of 
+3.3 V (!). 
+Using voltage divider something like the following seems
+reasonable
+#+BEGIN_LaTeX
+$\frac{U_{\text{Pi, in}}}{U_{\text{sensor, out}}} = \frac{R_2}{R_1 + R_2}$
+#+END_LaTeX
+with 
+#+BEGIN_LaTeX
+$U_{\text{Pi, in}} < 3.3\,\text{V}$
+$U_{\text{sensor, out}} = 24\,\text{V}$
+#+END_LaTeX
+Thus, we'd get:
+#+BEGIN_SRC python
+R2 = 1e3
+R1 = 8.2e3
+U_sensor_out = 24
+U_pi_in = U_sensor_out * R2 / (R1 + R2)
+return U_pi_in
+#+END_SRC
+
+#+RESULTS:
+: 2.60869565217
+
+Build simple board using these resistors (first check output
+ current of sensor does not exceed 0.5 mA! max of RPi) to feed
+the sensor values into the RPi. Should be simple?
+
+Tested basic setup today (<2017-08-29 Di 18:47>). 
+- 24V power supply prepared
+- RPi connected to relay
+- tpc20 used to run PyS_manipController.py
+- relay connected as:
+  - power supply 24V+: relay COM
+  - power supply GND: valve GND
+  - valve +: relay NO
+is all there is to do. :)
+      
+****** DONE finalize software
+The software to readout and control the manipulator needs to be
+finished. The [[file:~/CastData/ManipulatorController/PyS_manipController.py][Python script to control manipulator]] currently
+creates a server, which listens for connections from a client
+connecting to it. Commands are not final yet (use only "insert"
+and "remove" so far). 
+Still need to:
+1. DONE separate server and client into two actually separate threads
+2. DONE try using nim client of chat app as the client. allows me to
+   use nim, yay.
+
+Note <2017-09-07 Do>: took me the last two days to figure out, why the server
+application was buggy. See mails to Lucian and Fabian for an
+explanation titled 'Python asyncio'. 
+Having a logger enabled, causes asyncio to redirect all error
+output from the asyncio code parts to land in the log file.
+
+CLOSED: <2017-09-09 Sa 01:51>
+Python server is finished, allows multiple incoming connections at the
+same time, thanks to asyncio (what a PITA...).
+Final version is [[file:~/CastData/ManipulatorController/PyS_manipController.py][PyS_manipController.py]].
+Nim client works well as a client to control the server. See
+[[file:~/CastData/ManipulatorController/nim/client.nim][client.nim]] for the code currently in use.
+
 *** Lead shielding layout [/]                                    :noexport:  
 
 The full lead shielding layout can be found here (created by Christoph Krieger):
 
 [[file:resources/lead_shielding_assembly_ingrid_2017.pdf]]
+
 
 
 ** Window accident
