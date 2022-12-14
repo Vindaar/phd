@@ -9867,12 +9867,12 @@ positive HV, instead of a negative one.
 The detector uses $\num{7}$ different high voltages. $\num{5}$ of
 these are for the detector itself, $\num{1}$ for the SiPM and the last
 for the veto scintillator on top. Their voltages are shown in
-tab. [[tab:hv]]. 
+tab. [[tab:cast:high_voltage]]. 
 
 #+CAPTION: Table of high voltages in use for the InGrid Mk. IV. 
 #+CAPTION: Note that the veto scintillator is not controlled via
 #+CAPTION: the iseg module, but by a CAEN N470.
-#+NAME: tab:hv
+#+NAME: tab:cast:high_voltage
 #+ATTR_LATEX: :booktabs
 | Description | Channel | Voltage / V | TripCurrent / mA |
 |-------------+---------+-------------+------------------|
@@ -9892,12 +9892,16 @@ to change, the actual values in use are defined in
 The HV cables in use are red cables with LEMO HV connectors. They run
 from the detector to an iseg HV module sitting in a VME crate on the
 airport side of the magnet. The cables are marked with zip ties and
-the same names as in tab. [[tab:hv]]. 
+the same names as in tab. [[tab:cast:high_voltage]]. 
 
 The interlock system for the high voltage supply is detailed in
-section [[HV interlock]], together with the other interlock systems in place.
+section [[#sec:cast:hv_interlock]], together with the other interlock
+systems in place.
 
 ** Vacuum system [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:vacuum_system
+:END:
 
 This section covers the vacuum system of the detector. It is pumped
 via a single primary membrane pump and two turbo pumps. One turbo pump
@@ -9922,7 +9926,7 @@ and the gas supply, respectively.
 ** Watercooling system & gas supply
 
 In this section the watercooling system as well as the gas supply is
-discussed. In section [[Combined schematic]] a combined schematic of both systems is
+discussed. In section [[#sec:cast:water_gas_schematic]] a combined schematic of both systems is
 shown. 
 
 *** Watercooling 
@@ -9937,7 +9941,7 @@ intermediate board (outside of the detector volume), while the other
 is located on the bottom side of the Septemboard. This temperature
 $T_{\text{Septem}}$ is also included in the schematic
 [[fig:detector-schematic]], because it is part of the HV interlock, as
-described in [[HV interlock]].
+described in [[#sec:cast:hv_interlock]].
 
 Fig. [[fig:watercooling]] shows the main part of the system including the
 pump, reservoir and radiator. The tubing is specifically chosen in
@@ -9981,8 +9985,7 @@ It follows a short explanation of the different valves:
   bottle outside the CAST hall. 
 - $V_{\text{interlock}}$ is installed is the electrovalve installed
   below the platform where the beamline is located. This valve is part
-  of the gas supply interlock, as described in section [[Gas supply
-  interlock]].
+  of the gas supply interlock, as described in section [[#sec:cast:gas_supply_interlock]].
 - $V_{\text{in, 2}}$ is the manual valve located on the second gas
   supply mounting below the beamline. 
 - $V_{\text{in, N1}}$ is the first needle valve, which is located on
@@ -9993,6 +9996,10 @@ It follows a short explanation of the different valves:
   $P_{\text{Detector}}$ is the pressure gauge inside this controller.
 
 *** Combined schematic (water & gas)
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:water_gas_schematic
+:END:
+
 
 Fig. [[fig:detector-schematic]] shows a combined schematic of both the
 watercooling system and the gas supply. Additionally, the relevant
@@ -10021,6 +10028,9 @@ detector. There are 3 interlock systems to speak of.
   sparks are produced) and the currents on the HV lines are nominal.
 
 *** HV interlock
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:hv_interlock
+:END:
 
 The HV system is part of an interlock, which tracks the following
 properties:
@@ -10064,6 +10074,9 @@ detector leaves a certain safe boundary, since this might indicate a
 leak in the detector or an empty gas bottle.
 
 *** Gas supply interlock
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:gas_supply_interlock
+:END:
 
 The gas supply is also part of an interlock system. In case of a
 window rupture the potential amount of gas that might enter the vacuum
@@ -10094,7 +10107,7 @@ closed, i.e. in case of power loss they automatically close. They are
 open if a voltage is applied to them. 
 
 The valves are connected to the pressure sensor $P_{\text{MM}}$ (see
-fig. [[fig:vacuum-schematic]]). The pressures to activate the interlock
+fig. [[fig:cast:vacuum-schematic]]). The pressures to activate the interlock
 system is defined by upper and lower thresholds asymmetrically. They
 are as follows:
 #+BEGIN_EXPORT latex
@@ -10127,7 +10140,10 @@ P_{\text{MM, Gas disable}} \leq \SI{2e-2}{\milli \bar}
 [[file:~/org/Doc/Detector/figs/electrovalve_V_out.jpg]]
 
 
-*** CAST interlock
+*** CAST magnet interlock
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:cast_magnet_interlock
+:END:
 
 The main CAST magnet interlock, as it is relevant to our detector, is
 as follows. The gate valve VT3 separating the magnet volume from the
@@ -10136,7 +10152,7 @@ volume is good enough, VT3 can be opened while the interlock is
 activated. 
 
 For this the pressure of $P_{\text{3}}$ is considered relevant
-(cp. fig. [[fig:vacuum-schematic]]). The upper and lower thresholds which
+(cp. fig. [[fig:cast:vacuum-schematic]]). The upper and lower thresholds which
 activate and deactivate the interlock are asymmetric and as follows:
 #+BEGIN_EXPORT latex
 \begin{align}
@@ -13577,7 +13593,7 @@ which is only partially usable in case of the manual HV control.
 
 ** Vacuum
 
-The vacuum system as described in sec. [[Vacuum system]] usually does not
+The vacuum system as described in sec. [[#sec:cast:vacuum_system]] usually does not
 require manual intervention during normal operation.
 
 For maintenance the following two sections describe how to pump the
@@ -13585,7 +13601,7 @@ system safely as well as how to flush it with nitrogen. Both processes
 are rather delicate due to the sensitive $\ce{Si_x N_y}$
 window. Pumping needs to be done slowly, $O(\SI{1}{\milli\bar \per
 \second})$. To be able to do this, the needle valve
-$V_{\text{Needle}}$ (cf. fig. [[fig:vacuum-schematic]]) is installed. One
+$V_{\text{Needle}}$ (cf. fig. [[fig:cast:vacuum-schematic]]) is installed. One
 may separate the vacuum volume into two separate vacua. A bad vacuum
 before the primary pump and after the turbo pumps T1 and T2 and a good
 vacuum before the turbo pump T2. There are three connections from the
@@ -13608,7 +13624,7 @@ break, the window can rupture).
 _Note_: There is a third very small vacuum volume before T1, which is
 the volume up to the manipulator interstage. This volume is separate
 from the main good vacuum chamber, due to a 2-O-ring seal on both ends
-of the manipulator. Compare with fig. [[fig:vacuum-schematic]] at the
+of the manipulator. Compare with fig. [[fig:cast:vacuum-schematic]] at the
 location of the two clamped flanges 'above' the manipulator. One
 2-O-ring seal is at the upper flange and one at the lower. This is
 because the manipulator part furthest from the beampipe is under
@@ -13621,8 +13637,8 @@ aspect to keep in mind is potential air, which can get trapped in
 between the two O-rings. This air will be released during movement of
 the seals. Especially after the system was open to air, it is expected
 that a small pressure increase on $P_{\text{MM}}$ can be seen during
-operation, despite T1 being in place. After several movement cycles
-, $O(10)$, these peaks should be negligible. 
+operation, despite T1 being in place. After several movement cycles,
+$O(10)$, these peaks should be negligible.
 
 *** Pumping the vacuum
 
