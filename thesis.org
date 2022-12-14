@@ -9051,45 +9051,132 @@ when isMainModule:
   main()
 #+end_src
 
-** Data taking woes
+** Data taking woes [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:data_taking_woes
 :END:
 
-See timeline for overview of important points to cover.
+In this section we will cover the smaller issues encountered during
+the data taking that are worth naming due to having an impact on the
+quality of the data or specific features in the data someone who
+analyzes the data should be aware of. We will cover each of the
+effectively three data taking periods one after another.
 
-*** 2017
+- [ ] *LATER HAVE SECTION ON FADC NOISE, NOISE DETECTION AND WHAT
+  EVENTS LOOK LIKE IN EACH CASE?*
+- [ ] *THIS DOES NOT TALK ABOUT DRIFT OF PEAK IN DATA NOR GAIN
+  VARIATION! TOPIC FOR ANOTHER SECTION*  
+
+*** 2017 Oct - Dec
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:data_taking_woes_2017
 :END:
 
-*** 2018
+The first data taking period from <2017-10-30 Mon> to <2017-12-22 Fri>
+initially had a bug in the data acquisition software, which failed to
+reset the veto scintillator values from one event to the next, if the
+next one did not have an FADC trigger. In that case in principle the
+veto scintillators should not have any values other than ~0~. However,
+as there is a flag in the data readout for whether the FADC triggered
+at all, this is nowadays handled neatly in the software by only
+checking the triggers if there was an FADC trigger in the first
+place. Unfortunately, it was later found that the scintillator
+triggers were nonsensical in this data taking period due to firmware
+bug anyway.
+
+Starting from the solar tracking run on <2017-11-29 Wed> the analogue
+FADC signals showed significant signs of noise activity. This lead to
+an effectively extremely high dead time of the detector, because the
+FADC triggered pretty much immediately after the Timepix shutter was
+opened. As I was on shift during this tracking, I changed the FADC
+settings to a value, which got rid of the noise enough to continue
+normal data taking. The following changes were made:
+
+- differentiation time reduced from $\SI{50}{ns}$ to $\SI{20}{ns}
+- coarse gain of the main amplifier increased from ~6x~ to ~10x~
+
+Evidently this has a direct effect on the shape of the FADC signals.
+
+On <2017-12-05 Tue> while trying to investigate the noise problem
+which resurfaced the day before despite the different settings, a fuse
+blew in the gas interlock box. This caused a loss of a solar tracking
+the next day. The still present FADC noise lead me to change the
+amplification settings more drastically on <2017-12-07 Thu 8:00>
+during the shift:
+
+- integration time from \SI{50}{ns} to \SI{100}{ns}
+
+The same day in the evening the magnet quenched causing the shift to
+be missed the next day. In the evening of <2017-12-08 Fri> the
+integration time was turned down to \SI{50}{ns} again, as the noise
+issue was gone again.
+
+A week later the integration time was finally changed again to
+\SI{100}{ns}. By this time it was clear that there would be no easy
+fix to the problem and that it is strongly correlated to the magnet
+activity during a shift. For that reason the setting was kept for the
+remaining data taking periods.
+
+*** 2018 Feb - Apr
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:data_taking_woes_2018
 :END:
 
-*** 2018 #2
+2 days before the data taking period was supposed to start again in
+2018 there were issues with the detector behavior with respect to the
+thresholds and the gain of the GridPixes. During one calibration run
+with the $\ce{^{55}Fe}$ source the effective gain dropped further and
+further such that instead of $\sim\num{220}$ electrons less than
+$\sim\num{100}$ were recorded. This turned out to be a grounding issue
+of the detector relative to the water cooling system.
+
+Further, the temperature readout of the detector did not work
+anymore. It is unclear what happened exactly, but the female micro
+USB connector on the detector had a bad soldering joint as was found
+out after the data taking campaign. It is possible that replugging
+cables to fix the above mentioned issue caused an already weak
+connector to fully break.
+
+The second data taking period finally started on <2018-02-17 Sat> and
+ran until <2018-04-17 Tue>.
+
+This data taking campaign still ran without functioning scintillators,
+due to lack of time and alternative hardware in Bonn to debug the
+underlying issue and develop a solution.
+
+*** 2018 Oct - Dec [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:data_taking_woes_2018_2
 :END:
 
-- [ ] bugs waitcondition
-- [ ] FADC noise  
+Between the spring and final data taking campaign the temperature
+readout as well as the firmware was fixed to get the scintillator
+triggers working correctly, with the installation being done end of
+July 2018. By the time of the start of the actual solar tracking data
+taking campaign at the end of October however, a powering issue had
+appeared. This time the Phoenix connector on the intermediate board
+had a bad soldering joint, which was finally fixed
+<2018-10-19 Fri>. Data taking started the day after.
 
+Two runs in mid December showed strong noise on the FADC again. This
+time no amount of changing amplifier settings had any effect, which is
+why 2 runs were done without the FADC. For the last runs it was
+activated again and no more noise issues appeared.
 
-** Introduction about data taking? [/]
+The FADC noise issue was in many ways the most disrupting active issue
+the detector was plagued by. In hindsight the standard LEMO cable used
+should have been a properly shielded cable and someone with more
+knowledge about RF interference should have assisted in the
+installation. In a later section *WHICH!!* the typical signals
+recorded by the FADC under noise will be shown as well as mitigation
+strategies software side and how the signals and the FADC activation
+threshold changed due to the changed settings will be presented.
 
-- [ ] *MENTION 2016 COSMIC ALIGNMENT MEASUREMENT?*
+- [ ] *FIX REFERENCE TO FADC NOISE LATER*
 
+** High voltage supply [/]
 
-
-** Detector installation March 2017
-
-
-
-
-
-** High voltage supply
+- [ ] *MOVE SOME OF THIS TO THE DAQ SECTION WHERE WE HAVE A HV SECTION*
 
 The high voltage supply is an iseg HV module, which is located in the
 VME crate on the airport side of the magnet. The HV is controlled via
