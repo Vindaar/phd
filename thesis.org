@@ -8180,7 +8180,10 @@ manual \cite{fadc_manual} [fn:reco_fadc_manual].
 
 - [ ] *ADD SOME KIND OF MOTIVATON FOR WHAT WE MIGHT WANT TO DO WITH THE SIGNALS?*
 
-- [ ] *ADD EXPLANATION HOW IT FITS INTO ~raw_data_manipulation~ AND ~reconstruction~*
+- [ ] *ADD EXPLANATION HOW IT FITS INTO ~raw_data_manipulation~ AND
+  ~reconstruction~*
+
+- [ ] *ADD MENTION OF SAVITZKY GOLAY!*  
   
 *** FADC spectrum reconstruction [/]
 
@@ -8660,7 +8663,8 @@ used for the Septemboard detector is a three-fold approach:
    perfect focal spot, even if the telescope was perfect and the
    detector placed right in the focus. The mean position of the taken
    data can anyhow be used to determine the likely focal spot
-   position.
+   position. See below for an example and the resulting position from
+   one of the X-ray finger runs.
 3. alignment by the geometer group at CERN. A theodolite is installed
    in the CAST hall and the location of many targets on the magnet,
    telescope, vacuum pipes and the detector itself are measured up to
@@ -8673,6 +8677,26 @@ used for the Septemboard detector is a three-fold approach:
    telescope. This assures the detector can be remounted and placed in
    the right location without the need for an additional laser
    alignment.
+
+Using the first X-ray finger run taken in July 2017, the center
+positions of each cluster can be shown as a heatmap, where the number
+of hits each pixel received is colored. Computing the mean position of
+all those clusters yields the most likely center position of the focal
+spot. See fig. [[fig:cast:xray_finger_centers]] for an example of
+this. The position almost perfectly ($\sim\SI{0.2}{mm}$) in the center
+along one axis and about \SI{1.35}{mm} away from the center along the
+other.
+
+- [ ] *REPHRASE ABOVE W.R.T. CORRECT RUN 189 AND WHAT IS WINDOW ETC*
+
+#+CAPTION: Cluster center positions of the X-ray finger run 21 from July
+#+CAPTION: 2017. The red cross marks the center of all cluster centers,
+#+CAPTION: which is the most likely position of the focal spot. It is
+#+CAPTION: $\sim\SI{1.35}{mm}$ away from the chip center in one axis and almost
+#+CAPTION: about $\sim{0.2}{mm}$ in the other.
+#+NAME: fig:cast:xray_finger_centers
+[[~/phdFigs/CAST_Alignment/xray_finger_centers_run_21.pdf]]
+   
 
 With this setup after each remounting a geometer measurement was
 performed to align the detector back to the initial laser
@@ -8739,7 +8763,6 @@ direction is usually significantly less than $\SI{1}{mm}$.
 |             | CenterF |          1.0 |          0.5 |          0.3 |        |
 |-------------+---------+--------------+--------------+--------------+--------|
 
-
 For a detailed overview of the geometer measurements see the public
 EDMS links under \cite{geometer_1,geometer_2,geometer_3,geometer_4}
 containing the PDF reports for each measurement.
@@ -8759,6 +8782,77 @@ close to the detector axis CenterR and CenterF have been defined on
 11.07. Afterwards their coordinates for the measurement on 14.09 have
 been calculated.
   #+end_quote
+
+*** Generate X-ray heatmap [/]                                   :noexport:
+
+- [ ] *FIND XRAY FINGER RUN 2, RUN 189!*
+- [ ] *RECREATE BELOW FOR THE OTHER XRAY FINGER RUN!*
+- [ ] *RECREATE PLOTS AS TIKZ + VEGA*
+- [ ] *VERIFY THAT WE (LIKELY) HAVE TO ROTATE THE DATA BY 90 DEGREES AS ONE OF THE VERTICAL LINES IS THE TELESCOPE AXIS WHICH SHOULD BE
+  HORIZONTAL TO THE GROUND*
+
+First let's reconstruct the X-ray finger run:
+#+begin_src nim
+import shell
+
+const path = "/mnt/1TB/CAST/2017/XrayFingerRun/Run_21_170713-11-03/"
+# parse data
+shell:
+  raw_data_manipulation -p ($path) "--runType xray --out /tmp/xray_finger_21.h5"
+shell:
+  reconstruction "/tmp/xray_finger_21.h5" "--out /t/reco_xray_finger_21.h5"
+#+end_src
+
+And now we simply create a heatmap of the cluster centers:
+ 
+#+begin_src nim :tangle code/xray_finger_center_plot.nim
+import nimhdf5, ggplotnim, options
+import ingrid / tos_helpers
+import std / [strutils, tables]
+
+proc main(run: int) =
+  let file = "/t/reco_xray_finger_$#.h5" % $run
+  
+  #proc readClusters(h5f: H5File): (seq[float], seq[float]) =
+  var h5f = H5open(file, "r")
+  
+  # compute counts based on number of each pixel hit
+  proc toIdx(x: float): int = (x / 14.0 * 256.0).round.int.clamp(0, 255)
+  var ctab = initCountTable[(int, int)]() 
+  
+  var df = readRunDsets(h5f, run = 21,
+                        chipDsets = some((
+                          chip: 3, dsets: @["centerX", "centerY"])))
+    .mutate(f{"xidx" ~ toIdx(idx("centerX"))},
+            f{"yidx" ~ toIdx(idx("centerY"))})
+  let xidx = df["xidx", int]
+  let yidx = df["yidx", int]
+  forEach x in xidx, y in yidx:
+    inc cTab, (x, y)
+  df = df.mutate(f{int: "count" ~ cTab[(`xidx`, `yidx`)]})
+  let centerX = df["centerX", float].mean
+  let centerY = df["centerY", float].mean
+  discard h5f.close()
+ 
+  echo "Center position of the cluster is at: (x, y) = (", centerX, ", ", centerY, ")"
+  ggplot(df, aes("centerX", "centerY", color = "count")) +
+    geom_point(size = 0.75) +
+    geom_point(data = newDataFrame(), aes = aes(x = centerX, y = centerY),
+               color = "red", marker = mkRotCross) + 
+    scale_color_continuous() +
+    ggtitle("X-ray finger clusters of run $#" % $run) +
+    ggsave("/home/basti/phd/Figs/CAST_Alignment/xray_finger_centers_run_$#.pdf" % $run)
+
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+#+RESULTS:
+# Center position of the cluster is at: (x, y) = (7.210714052855218, 5.669514297250704)
+
+[[file:Figs/CAST_Alignment/xray_finger_centers_run_21.pdf]]
+
 
 ** Detector setup at CAST [/]
 
@@ -10130,6 +10224,9 @@ P_{\text{MM, Gas disable}} \leq \SI{2e-2}{\milli \bar}
 #+BEGIN_COMMENT
 *CHECK THESE VALUES, they are still wrong I believe*.
 #+END_COMMENT
+
+
+- [ ] *MERGE IMAGES INTO ONE SUBFIG*
 
 #+CAPTION: Location of the electrovalve $V_{\text{in}}$ located outside the building.
 #+NAME: fig:electrovalve-outside
