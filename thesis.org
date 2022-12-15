@@ -10174,8 +10174,82 @@ P_{\text{3, VT3 disable}} &\leq \SI{8e-5}{\milli\bar}.
 This is to make sure there can be no rapid toggling between the two
 states during pumping or flushing the system. 
 
+** X-ray finger runs [/]
 
-** Summary of CAST data taking [2/5]
+- [ ] should this go to the alignment part? I suppose we could mention
+  this as part of the alignment with a heatmap and the center location
+  _before_ (?) geometer alignment and movement? For context
+  We can then later refer to this again in the context of determining
+  the systematic uncertainty on the position.
+
+2 X-ray finger runs were made. One near beginning, one near end.
+
+Plot of X-ray finger centers.
+
+Mention how this plays into the analysis side, that it means we need
+to adjust the ray tracing.
+
+** CAST log files [/]
+
+- [ ] in the above we simply state the number of trackings etc. Of
+  course realistically that is simply not enough. We need the slow
+  control and tracking files to compute when a tracking starts and
+  stops.
+  I think this implies it needs to go before the summary!
+- [ ] INSERT FOOTNOTE LINK TO LABVIEW  
+
+The CAST experiment is controlled by a central computer running the
+LabVIEW based slow control system. It receives data from all sensors
+installed at CAST (vacuum pressure, temperature, magnet current,
+magnet position etc.). A separate LabVIEW program is responsible for
+controlling the magnet position, either by moving the magnet to a
+specific coordinate or by following the Sun, if it's in reach of the
+magnet.
+
+The slow control software records all sensor data and on the one hand
+presents it in a multitude of graphs and on the other generates log
+files of all information. There are two different kinds of log files
+of interest in the context of the Septemboard detector at CAST.
+
+1. The general slow control log file is a versioned space separated
+   values file (similar to a comma separated value (CSV) or tab
+   separated value (TSV) file, except using spaces as delimiters). The
+   filename contains the version number, which decides the columns
+   contained in the file and their order. A ~Version.idx~ file maps
+   version numbers to file columns for easy access. These slow control
+   log files normally contain one entry every minute. For the
+   Septemboard detector of interest in this file are mainly the magnet
+   current, relevant vacuum pressure sensors and the state of the gate
+   valve ~VT3~.
+2. The second kind of log files are the tracking log files. These are
+   also space separated value files with fields describing the
+   pointing location of the magnet as well as whether the magnet is
+   currently tracking the Sun.
+
+Both of these log files need to be read by the analysis software to
+decide whether one or multiple trackings took place in a given
+background run and if so extract the exact start and end time for a
+precise data splitting and calculation of background / solar tracking
+time.
+
+Generally the latter log files are all that is needed to determine the
+existence of a solar tracking. However, the slow control log file can
+be used as a further sanity check to make sure the gate valve was
+actually open and the magnet under current during the solar tracking.
+
+This is implemented in *LINK TO LOGREADER*. The code first parses the
+log files and determines valid solar trackings. Then, given a HDF5
+data file containing the background data each solar tracking is mapped
+to a background run. One background run may have zero or more solar
+trackings attached to it. In the final step the solar tracking start
+and stop information is added to each run as additional meta
+data. During the later stages of processing this meta data is then
+used to only consider background (non tracking) or solar tracking data
+(starting from the computation of background rates).
+
+- [ ] *LINK TO CODE!*
+
+** Summary of CAST data taking [3/8]
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:data_taking_campaigns
 :END:
