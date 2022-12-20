@@ -8803,15 +8803,22 @@ been calculated.
   HORIZONTAL TO THE GROUND*
 
 First let's reconstruct the X-ray finger run:
-#+begin_src nim
-import shell
+#+begin_src nim :tangle code/xray_finger_data_parsing.nim
+import shell, strutils
 
-const path = "/mnt/1TB/CAST/2017/XrayFingerRun/Run_21_170713-11-03/"
-# parse data
-shell:
-  raw_data_manipulation -p ($path) "--runType xray --out /tmp/xray_finger_21.h5"
-shell:
-  reconstruction "/tmp/xray_finger_21.h5" "--out /t/reco_xray_finger_21.h5"
+proc main(path: string, run: int) =
+  # parse data
+  let outfile = "/t/xray_finger_$#.h5" % $run
+  let recoOut = "/t/reco_xray_finger_$#.h5" % $run
+  
+  shell:
+    raw_data_manipulation -p ($path) "--runType xray --out " ($outfile)
+  shell:
+    reconstruction ($outfile) "--out " ($recoOut)
+  
+when isMainModule:
+  import cligen
+  dispatch main
 #+end_src
 
 And now we simply create a heatmap of the cluster centers:
@@ -8831,7 +8838,7 @@ proc main(run: int) =
   proc toIdx(x: float): int = (x / 14.0 * 256.0).round.int.clamp(0, 255)
   var ctab = initCountTable[(int, int)]() 
   
-  var df = readRunDsets(h5f, run = 21,
+  var df = readRunDsets(h5f, run = run,
                         chipDsets = some((
                           chip: 3, dsets: @["centerX", "centerY"])))
     .mutate(f{"xidx" ~ toIdx(idx("centerX"))},
@@ -8852,6 +8859,7 @@ proc main(run: int) =
                color = "red", marker = mkRotCross) + 
     scale_color_continuous() +
     ggtitle("X-ray finger clusters of run $#" % $run) +
+    xlim(0.0, 14.0) + ylim(0.0, 14.0) +
     ggsave("/home/basti/phd/Figs/CAST_Alignment/xray_finger_centers_run_$#.pdf" % $run)
 
 when isMainModule:
@@ -8862,8 +8870,28 @@ when isMainModule:
 #+RESULTS:
 # Center position of the cluster is at: (x, y) = (7.210714052855218, 5.669514297250704)
 
+#+begin_src sh
+./code/xray_finger_data_parsing -p ~/CastData/data/XrayFingerRuns/Run_21_170713-11-03 --run 21
+./code/xray_finger_data_parsing -p ~/CastData/data/XrayFingerRuns/Run_189_180420-09-53 --run 189
+
+./code/xray_finger_center_plot -p 21
+./code/xray_finger_center_plot -p 189
+#+end_src
+
+For run 21:
+Center position of the cluster is at: (x, y) = (7.210714052855218,5.669514297250704)
+For run 189:
+Center position of the cluster is at: (x, y) = (7.428075467697270,6.594113570730057)
+
+
+First the plot for the (unused) X-ray finger run taken at the first
+installation before any data taking (detector removed afterwards):
 [[file:Figs/CAST_Alignment/xray_finger_centers_run_21.pdf]]
 
+And second the plot of the 2018 X-ray finger run taken _before_ the
+detector was removed in Apr 2018. This is the baseline for our idea
+where the focal spot is going to be.
+file:Figs/CAST_Alignment/xray_finger_centers_run_189.pdf
 
 ** Detector setup at CAST [/]
 
