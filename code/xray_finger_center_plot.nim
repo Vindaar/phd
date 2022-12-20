@@ -12,7 +12,7 @@ proc main(run: int) =
   proc toIdx(x: float): int = (x / 14.0 * 256.0).round.int.clamp(0, 255)
   var ctab = initCountTable[(int, int)]() 
   
-  var df = readRunDsets(h5f, run = 21,
+  var df = readRunDsets(h5f, run = run,
                         chipDsets = some((
                           chip: 3, dsets: @["centerX", "centerY"])))
     .mutate(f{"xidx" ~ toIdx(idx("centerX"))},
@@ -33,6 +33,7 @@ proc main(run: int) =
                color = "red", marker = mkRotCross) + 
     scale_color_continuous() +
     ggtitle("X-ray finger clusters of run $#" % $run) +
+    xlim(0.0, 14.0) + ylim(0.0, 14.0) +
     ggsave("/home/basti/phd/Figs/CAST_Alignment/xray_finger_centers_run_$#.pdf" % $run)
 
 when isMainModule:
