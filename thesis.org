@@ -10440,6 +10440,323 @@ used to only consider background (non tracking) or solar tracking data
 
 - [ ] *LINK TO CODE!*
 
+*** Add tracking log information to background files             :noexport:
+
+The code dealing with the log files is [[file:~/CastData/ExternCode/TimepixAnalysis/LogReader/cast_log_reader.nim]]
+
+In case previous log information is available we first have to remove
+that information. This is done by just calling the program just with
+the H5 file as an input:
+#+begin_src sh
+cast_log_reader h5file -f ~/CastData/data/DataRuns2017_Reco.h5
+cast_log_reader h5file -f ~/CastData/data/DataRuns2018_Reco.h5
+#+end_src
+
+With an 'empty' (in terms of tracking information) HDF5 file we can
+then go ahead and add all tracking information to them. This of course
+requires the tracking log files:
+
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2017_Reco.h5
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2018_Reco.h5
+#+end_src
+
+One can also run it without any output H5 file ~--h5out~ to simply get
+information about the runs. In particular all runs
+
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --startTime 2017/09/01 --endTime 2018/12/30
+#+end_src
+:RESULTS:
+FILTERING TO DATE: 2017-09-01T02:00:00+02:00 and 2018-12-30T01:00:00+01:00
+<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>
+<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>
+<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>
+<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>
+<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>
+<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>
+<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>
+<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>
+<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>
+<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>
+<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>
+<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>
+<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>
+<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>
+<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>
+<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>
+<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>
+<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>
+<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>
+<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>
+<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>
+<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>
+<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>
+<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>
+<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>
+<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>
+<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>
+<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>
+<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>
+<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>
+<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>
+<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>
+<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>
+<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>
+<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>
+<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>
+<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>
+<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>
+<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>
+<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>
+<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>
+<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>
+<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
+<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
+<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>
+<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>
+<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>
+<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>
+<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>
+<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>
+<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>
+<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>
+<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>
+<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>
+<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>
+<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>
+<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>
+<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>
+<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>
+<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>
+<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>
+<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>
+<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>
+<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>
+<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>
+<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>
+<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>
+<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>
+<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>
+<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>
+<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
+<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>
+<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>
+<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>
+<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>
+<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>
+<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>
+<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
+<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>
+<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>
+<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>
+<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>
+<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>
+<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>
+<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>
+<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>
+<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>
+<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>
+<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>
+<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>
+<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>
+<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>
+<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>
+<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>
+<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>
+<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>
+<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>
+<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
+<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>
+<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>
+<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>
+<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>
+<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>
+<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>
+<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>
+<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>
+<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>
+<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>
+<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>
+<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>
+<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>
+<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>
+<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>
+<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>
+<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>
+<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>
+<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>
+<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>
+<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>
+<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>
+There are 120 solar trackings found in the log file directory
+The total time of all trackings: 186 h (exact: 1 week, 18 hours, 46 minutes, and 19 seconds)
+Total time the magnet was on (> 1 T): 0 h h
+:END:
+
+This lists 5 runs that were *not* part of our data taking, meaning we
+lost them.
+
+
+And finally (and most useful for information purposes) we can run the
+log reader over the files and do a fake insert (aka dry run) of
+inserting the files, which only outputs the run information including
+which runs were missed:
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
+                  --startTime 2017/09/01 --endTime 2018/05/01 \
+                  --h5out ~/CastData/data/DataRuns2017_Reco.h5 --dryRun
+#+end_src
+:RESULTS:
+There are 70 solar trackings found in the log file directory
+The total time of all trackings: 109 h (exact: 4 days, 13 hours, 3 minutes, and 22 seconds)
+Total time the magnet was on (> 1 T): 0 h h
+Filtering tracking logs to date: 2017-09-01T02:00:00+02:00 and 2018-05-01T02:00:00+02:00
+========== Logs mapped to trackings in the output file: ==========
+<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>  for run: 76
+<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>  for run: 77
+<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>  for run: 78
+<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>  for run: 79
+<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>  for run: 80
+<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>  for run: 81
+<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>  for run: 82
+<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>  for run: 82
+<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>  for run: 84
+<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>  for run: 86
+<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>  for run: 87
+<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>  for run: 87
+<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>  for run: 89
+<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>  for run: 90
+<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>  for run: 91
+<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>  for run: 92
+<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>  for run: 94
+<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>  for run: 95
+<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>  for run: 97
+<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>  for run: 98
+<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>  for run: 99
+<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>  for run: 100
+<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>  for run: 101
+<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>  for run: 103
+<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>  for run: 104
+<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>  for run: 106
+<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>  for run: 105
+<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>  for run: 107
+<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>  for run: 109
+<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>  for run: 112
+<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>  for run: 112
+<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>  for run: 114
+<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>  for run: 113
+<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>  for run: 115
+<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>  for run: 117
+<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>  for run: 119
+<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>  for run: 121
+<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>  for run: 123
+<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>  for run: 124
+<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>  for run: 124
+<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>  for run: 125
+<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>  for run: 127
+<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>  for run: 146
+<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>  for run: 150
+<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>  for run: 148
+<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>  for run: 152
+<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>  for run: 154
+<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>  for run: 156
+<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>  for run: 158
+<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>  for run: 160
+<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>  for run: 162
+<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>  for run: 162
+<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>  for run: 162
+<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>  for run: 164
+<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>  for run: 164
+<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>  for run: 166
+<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>  for run: 170
+<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>  for run: 172
+<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>  for run: 174
+<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>  for run: 176
+<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>  for run: 178
+<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>  for run: 178
+<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>  for run: 178
+<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>  for run: 178
+<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>  for run: 178
+<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>  for run: 180
+<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>  for run: 182
+<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>  for run: 182
+==================================================================
+
+========== Logs *not* mapped to a run ============================
+<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
+<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
+==================================================================
+:END:
+
+And for 2018:
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
+                  --startTime 2018/05/01 --endTime 2018/12/31 \
+                  --h5out ~/CastData/data/DataRuns2018_Reco.h5 --dryRun
+#+end_src
+:RESULTS:
+There are 50 solar trackings found in the log file directory
+The total time of all trackings: 77 h (exact: 3 days, 5 hours, 42 minutes, and 57 seconds)
+Total time the magnet was on (> 1 T): 0 h h
+Filtering tracking logs to date: 2018-05-01T02:00:00+02:00 and 2018-12-31T01:00:00+01:00
+========== Logs mapped to trackings in the output file: ==========
+<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>  for run: 240
+<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>  for run: 242
+<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>  for run: 244
+<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>  for run: 246
+<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>  for run: 248
+<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>  for run: 250
+<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>  for run: 254
+<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>  for run: 256
+<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>  for run: 258
+<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>  for run: 261
+<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>  for run: 261
+<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>  for run: 261
+<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>  for run: 263
+<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>  for run: 265
+<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>  for run: 268
+<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>  for run: 270
+<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>  for run: 270
+<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>  for run: 272
+<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>  for run: 272
+<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>  for run: 272
+<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>  for run: 274
+<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>  for run: 274
+<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>  for run: 274
+<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>  for run: 276
+<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>  for run: 276
+<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>  for run: 279
+<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>  for run: 279
+<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>  for run: 281
+<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>  for run: 283
+<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>  for run: 283
+<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>  for run: 283
+<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>  for run: 285
+<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>  for run: 285
+<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>  for run: 287
+<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>  for run: 289
+<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>  for run: 291
+<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>  for run: 291
+<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>  for run: 293
+<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>  for run: 295
+<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>  for run: 297
+<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>  for run: 297
+<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>  for run: 298
+<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>  for run: 299
+<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>  for run: 301
+<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>  for run: 301
+<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>  for run: 303
+<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>  for run: 306
+==================================================================
+
+========== Logs *not* mapped to a run ============================
+<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
+<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
+<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
+==================================================================
+:END:
+
 ** Summary of CAST data taking [3/8]
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:data_taking_campaigns
