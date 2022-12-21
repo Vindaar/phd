@@ -495,13 +495,15 @@ steps:
 - 
 
 
-** TODO Use ~booktabs~ everywhere
+** DONE Use ~booktabs~ everywhere
 
-Simply done by adding ~:booktabs~ to the ~#+ATTR_LATEX:~ above a
+Simply done by adding ~:booktabs t~ to the ~#+ATTR_LATEX:~ above a
 table!
 
 https://orgmode.org/manual/Tables-in-LaTeX-export.html
 
+(Note that it isn't really clear from the documentation that it needs
+an argument, as it is otherwise interpreted as receiving ~nil~ I presume)
 
 * Theory of axions                                                   :Theory:
 #+LATEX: \minitoc
@@ -4699,6 +4701,7 @@ of these are listed in tab. [[tab:detector:septem_h_chips]].
 #+CAPTION: Overview of the different chips on septemboard H. The first part of the name corresponds
 #+CAPTION: to the position on the wafer and =W69= is Timepix wafer number \num{69}.
 #+NAME: tab:detector:septem_h_chips
+#+ATTR_LATEX: :booktabs t
 |---------+--------|
 | Chip    | Number |
 |---------+--------|
@@ -6721,6 +6724,7 @@ tab. [[tab:daq:common_dac_values]].
 #+CAPTION: Septemboard (board H) detector used at CAST for the data taking
 #+CAPTION: campaign from October 2017 to March 2018 (run 2).
 #+NAME: tab:daq:thl_ths_calibration_run2
+#+ATTR_LATEX: :booktabs t
 |-----+--------+--------+--------+---------+---------+--------+--------|
 | DAC | E6 W69 | K6 W69 | H9 W69 | H10 W69 | G10 W69 | D9 W69 | L8 W69 |
 |-----+--------+--------+--------+---------+---------+--------+--------|
@@ -6733,6 +6737,7 @@ tab. [[tab:daq:common_dac_values]].
 #+CAPTION: Septemboard (board H) detector used at CAST for the data taking
 #+CAPTION: campaign from October 2018 to December 2018 (run 3).
 #+NAME: tab:daq:thl_ths_calibration_run3
+#+ATTR_LATEX: :booktabs t
 |-----+--------+--------+--------+---------+---------+--------+--------|
 | DAC | E6 W69 | K6 W69 | H9 W69 | H10 W69 | G10 W69 | D9 W69 | L8 W69 |
 |-----+--------+--------+--------+---------+---------+--------+--------|
@@ -6743,6 +6748,7 @@ tab. [[tab:daq:common_dac_values]].
 #+CAPTION: DAC values that are common between data taking periods and 
 #+CAPTION: all chips of the Septemboard for CAST.
 #+NAME: tab:daq:common_dac_values
+#+ATTR_LATEX: :booktabs t
 |-------------+------------|
 | DAC         |      Value |
 |-------------+------------|
@@ -7283,6 +7289,8 @@ scintillator. [fn:threshold_choice]
 #+CAPTION: the veto scintillator were originally measured
 #+CAPTION: with a 10x scaling and have been rescaled here to their correct values.
 #+NAME: tab-daq-scintillator_coincidence_measurements
+#+ATTR_LATEX: :booktabs t
+|----------------+---------------+--------------------|
 | Threshold / mV | Counts Szinti | Counts Coincidence |
 |----------------+---------------+--------------------|
 |          -59.8 |         31221 |                634 |
@@ -7297,6 +7305,7 @@ scintillator. [fn:threshold_choice]
 |         -150.5 |         13677 |                312 |
 |         -160.0 |         11866 |                267 |
 |         -170.1 |         10008 |                243 |
+|----------------+---------------+--------------------|
 
 #+begin_src nim :var tbl=tab-daq-scintillator_coincidence_measurements :results none :exports none
 import ggplotnim, sequtils
@@ -7920,6 +7929,7 @@ below.
 #+CAPTION: =reconstruction= tool. All but the likelihood, charge and energy properties are computed
 #+CAPTION: during the first pass of the tool.
 #+NAME: tab:geometric_properties
+#+ATTR_LATEX: :booktabs t
 | Property                  | Meaning                                                          |
 |---------------------------+------------------------------------------------------------------|
 | igCenterX                 | =x= position of cluster center                                   |
@@ -8762,6 +8772,7 @@ direction is usually significantly less than $\SI{1}{mm}$.
 #+CAPTION: by laser and X-ray finger. The second geometer measurement is not useful, as 
 #+CAPTION: no data was taken with it, due to the window rupture accident.
 #+NAME: tab:cast:geometer_alignments
+#+ATTR_LATEX: :booktabs t
 |-------------+---------+--------------+--------------+--------------+--------|
 | Measurement | Target  | ΔX [\si{mm}] | ΔY [\si{mm}] | ΔZ [\si{mm}] | Useful |
 |-------------+---------+--------------+--------------+--------------+--------|
@@ -10044,7 +10055,8 @@ tab. [[tab:cast:high_voltage]].
 #+CAPTION: Note that the veto scintillator is not controlled via
 #+CAPTION: the iseg module, but by a CAEN N470.
 #+NAME: tab:cast:high_voltage
-#+ATTR_LATEX: :booktabs
+#+ATTR_LATEX: :booktabs t
+|-------------+---------+-------------+------------------|
 | Description | Channel | Voltage / V | TripCurrent / mA |
 |-------------+---------+-------------+------------------|
 | grid        |       0 |        -300 |            0.050 |
@@ -10054,7 +10066,7 @@ tab. [[tab:cast:high_voltage]].
 | ring 29     |       4 |       -1830 |            0.100 |
 | veto scinti |       5 |       +1200 |                2 |
 | SiPM        |       6 |       -65.6 |             0.05 |
-
+|-------------+---------+-------------+------------------|
 
 The voltages in use should remain unchanged, however in case they were
 to change, the actual values in use are defined in
@@ -10470,7 +10482,7 @@ not affect data quality as they can be calibrated out.
 #+caption: Overview of the total data taken with the Septemboard detector at CAST
 #+CAPTION: in the time between October 2017 and December 2018.
 #+NAME: tab:cast:total_data_time
-#+ATTR_LATEX: :align lrrr
+#+ATTR_LATEX: :align lrrr :booktabs t
 |-------+----------------+------------+-------------|
 |       | solar tracking | background | calibration |
 |-------+----------------+------------+-------------|
@@ -10483,6 +10495,7 @@ not affect data quality as they can be calibrated out.
 #+CAPTION: working (\red{x}) features in each run. FADC was partially noisy
 #+CAPTION: in Run-2.
 #+NAME: tab:cast:features_by_run
+#+ATTR_LATEX: :booktabs t
 |-------------+------------+-----------|
 | Feature     | Run 2      | Run 3     |
 |-------------+------------+-----------|
@@ -11186,6 +11199,8 @@ axis. The full list is shown in tab. [[tab:geometric_properties]].
 #+CAPTION: =reconstruction= tool. All but the likelihood, charge and energy properties are computed
 #+CAPTION: during the first pass of the tool.
 #+NAME: tab:geometric_properties
+#+ATTR_LATEX: :booktabs t
+|---------------------------+------------------------------------------------------------------|
 | Property                  | Meaning                                                          |
 |---------------------------+------------------------------------------------------------------|
 | igCenterX                 | =x= position of cluster center                                   |
@@ -11212,6 +11227,7 @@ axis. The full list is shown in tab. [[tab:geometric_properties]].
 | igRadiusDivRmsTrans       | radius divided by transverse RMS                                 |
 | igRadius                  | radius of cluster                                                |
 | igLengthDivRadius         | length divided by radius                                         |
+|---------------------------+------------------------------------------------------------------|
 
 The properties are computed here:
 https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366
