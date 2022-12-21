@@ -8166,6 +8166,7 @@ d(t_{\text{clocks}}) = \frac{t_{\text{clocks}} · 46}{40 · \num{1000000}}.
 - [X] How to compute length of events, given
   - shutter mode & length
   - FADC trigger
+- [ ] *HERE OR IN CAST SECTION: WHAT SHUTTER LENGTHS WERE ACTUALLY USED?*    
 
 [fn:event_duration_calc] https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/pure.nim#L266-L297
 
@@ -10793,6 +10794,8 @@ Outside the issues mentioned in the previous section
 stable. Certain detector behaviors will be discussed later, which do
 not affect data quality as they can be calibrated out. 
 
+In total 5 (4) runs out of 120 (119) were missed in the course of the whole data
+taking campaign (one of them was aborted after 30 min).
 
 - [ ] table for number of shifts in each run, column for number of
   trackings
@@ -10804,10 +10807,23 @@ not affect data quality as they can be calibrated out.
   of space! ~Tools/mapSeptemTempToFePeak.nim~)
 - [ ] numbers of the total activity, number of events on the center &
   outside chips, # of FADC triggers, event durations etc.
+- [ ] *THINK ABOUT WHETHER TO INCLUDE FADC NOISE HERE IN STATISTICS*
+- [ ] *MENTION SHUTTER TIMES USED, 2017 2/32, 2018 2/30?*
 - [ ] plot of event durations already created!
+  
 
-#+caption: Overview of the total data taken with the Septemboard detector at CAST
-#+CAPTION: in the time between October 2017 and December 2018.
+- [ ] *FIX TABLE OF TIME! CODE IN NEXT NOEXPORT SECTION GIVES
+  DIFFERENT NUMBERS THAN THE FIRST TABLE HERE! WHY?*
+  -> Difference (among others) is different number of trackings
+  known. In
+  [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/writeRunList/writeRunList.nim]]
+  the generated run list that's commited to TPA is 115 trackings,
+  whereas here (on voidRipper) only 109 trackings are known. Why?
+
+#+CAPTION: Overview of the total data taken with the Septemboard detector at CAST
+#+CAPTION: in the time between October 2017 and December 2018. See the table below
+#+CAPTION: [[tab:cast:data_stats_overview]] for more precise numbers including the
+#+CAPTION: time the detector was active (shutter open).
 #+NAME: tab:cast:total_data_time
 #+ATTR_LATEX: :align lrrr :booktabs t
 |-------+----------------+------------+-------------|
@@ -10831,7 +10847,334 @@ not affect data quality as they can be calibrated out.
 | Veto scinti | \red{x}    | \green{o} |
 | SiPM        | \red{x}    | \green{o} |
 |-------------+------------+-----------|
-  
+
+
+#+CAPTION: Overview of the data taken in each of the runs split by calibration data
+#+CAPTION: ("calib") and background ("back"). First information about the total recorded
+#+CAPTION: time and trackings and then event information regarding general activity and
+#+CAPTION: activity split by chips, FADC and scintillators. Note that the scintillator
+#+CAPTION: information for Run-2 is not useful, as the signals recorded were not actually
+#+CAPTION: real signals.
+#+NAME: tab:cast:data_stats_overview
+#+ATTR_LATEX: :booktabs t
+| Field                          | calib Run-2  | calib Run-3  | back Run-2    | back Run-3    |
+|--------------------------------+--------------+--------------+---------------+---------------|
+| total duration                 | 107.42 h     | 87.06 h      | 2507.43 h     | 1199.22 h     |
+| active duration                | 2.6 h        | 3.53 h       | 2238.78 h     | 1079.6 h      |
+| active fraction                | 2.422 %      | 4.049 %      | 89.29 %       | 90.02 %       |
+| # trackings                    | \num{0}      | \num{0}      | \num{68}      | \num{47}      |
+| tracking time                  | 0 h          | 0 h          | 106.01 h      | 74.3 h        |
+| active tracking time           | 0 h          | 0 h          | 94.65 h       | 66.89 h       |
+|--------------------------------+--------------+--------------+---------------+---------------|
+| Events                         |              |              |               |               |
+|--------------------------------+--------------+--------------+---------------+---------------|
+| total # events                 | \num{532020} | \num{415927} | \num{3758960} | \num{1837330} |
+| only center chip               | \num{480232} | \num{366917} | \num{23820}   | \num{9462}    |
+| only any outer chip            | \num{7}      | \num{5}      | \num{1557934} | \num{741199}  |
+| center + outer                 | \num{51368}  | \num{47825}  | \num{960499}  | \num{460726}  |
+| center chip                    | \num{531600} | \num{414742} | \num{984319}  | \num{470188}  |
+| any chip                       | \num{531607} | \num{414747} | \num{2542253} | \num{1211387} |
+| fraction with center           | 99.92 %      | 99.72 %      | 26.19 %       | 25.59 %       |
+| fraction with any              | 99.92 %      | 99.72 %      | 67.63 %       | 65.93 %       |
+| with fadc readouts             | \num{531529} | \num{413853} | \num{542233}  | \num{211683}  |
+| fraction with FADC             | 99.91 %      | 99.50 %      | 14.43 %       | 11.52 %       |
+| with SiPM trigger <4095        | \num{1656}   | \num{20}     | \num{8585}    | \num{4304}    |
+| with veto scinti trigger <4095 | \num{0}      | \num{2888}   | \num{0}       | \num{70016}   |
+| with any SiPM trigger          | \num{531528} | \num{1312}   | \num{825460}  | \num{34969}   |
+| with any veto scinti trigger   | \num{0}      | \num{216170} | \num{0}       | \num{206025}  |
+| fraction with any SiPM         | 99.91 %      | 0.3154 %     | 21.96 %       | 1.903 %       |
+| fraction with any veto scinti  | 0.000 %      | 51.97 %      | 0.000 %       | 11.21 %       |
+
+
+- [ ] *FIX UP THE TABLE TO NOT USE FIELDS AS ROW NAMES, BUT RATHER
+  TEXT*
+- [ ] *SEE NOEXPORT SECTION BELOW TO THINK ABOUT ADDING OTHER THINGS*  
+
+
+*** Code to compute statistics [/]                               :noexport:
+
+- [ ] code to compute the total run duration of the different parts
+- [ ] code to produce the outer chip & central chip activity
+- [ ] produce number of events with FADC trigger
+- [ ] number of events with scintillator trigger + non trivial
+  triggers (i.e. not maximum)
+
+Tools we have for this and related:
+
+- [[~/CastData/ExternCode/TimepixAnalysis/Tools/extractScintiRandomRate.nim]]
+  -> works by single run
+- [[~/CastData/ExternCode/TimepixAnalysis/Tools/outerChipActivity/outerChipActivity.nim]]
+  -> works on full files
+- [[~/CastData/ExternCode/TimepixAnalysis/Tools/countNonEmptyFrames/countNonEmptyFrames.nim]]
+  -> works on full files
+  -> only looks at center chip
+- [[~/CastData/ExternCode/TimepixAnalysis/Tools/extractAlphasInBackground/extractAlphasInBackground.nim]]
+  -> works on full files
+  -> extracts all events with energy > 1 MeV
+- [[~/CastData/ExternCode/TimepixAnalysis/Tools/extractScintiTriggers/extractScintiTriggers.nim]]
+  -> (super old, still uses plotly)
+  -> works on full files
+  -> reads scinti trigger values and plots all != 0 & 4095 & and plots
+  all < 300
+- [[~/CastData/ExternCode/TimepixAnalysis/Tools/extractSparks/extractSparks.nim]]
+  -> works on full files
+  -> counts events with more than MinPix hits in a region. Written for
+  Lucian iirc
+- [[~/CastData/ExternCode/TimepixAnalysis/Tools/mapSeptemTempToFePeak.nim]]
+  -> works on full files (all calibration)
+  -> maps peak position by fit parameter to temperature from ~/resources~ directory
+- [[~/CastData/ExternCode/TimepixAnalysis/Tools/writeRunList/writeRunList.nim]]
+  -> works on full files
+  -> uses the ~ExtendedRunInfo~ type
+  Also outputs tracking & non tracking duration already.
+
+
+Combined the above gives us more than we need. The one thing missing
+(outside of details, like computing rates instead of numbers etc) is
+_maybe_ FADC related, i.e. number of noisy events.
+But we haven't even talked about noisy events, so I'm not sure if this
+is the right place for that anyway.
+
+So the information we want:
+- [X] total duration (sum of all runs, background + calibration)
+- [X] total active duration (event durations)
+- [X] total # of trackings
+- [X] total tracking time
+- [ ] total active tracking time 
+- [ ] total # of events for each chip (non empty ones, & split between
+     center & outside)
+- [ ] fraction of events with only center / only outer chips  
+- [ ] total # of FADC triggers
+- [ ] total # of scintillator triggers (run 3, by scintillator)
+- [ ] total # of non trivial scintillator triggers
+- [ ] total # of non trivial center chip events w/o FADC trigger (some
+  runs don't have FADC though) ?  
+- ?
+
+
+- [ ] *CREATE PLOT OF DURATIONS, HIGHLIGHT 2017 USED 2/32 WHILE 2018 2/30*
+
+Better to just write a new piece of code that extracts exactly what we
+need using ~ExtendedRunInfo~.
+#+begin_src nim :tangle code/cast_run_information.nim
+# 1. open file
+# 2. get file info
+# 3. for each run get extended run info
+# ?
+import std / [times, strformat, strutils]
+import nimhdf5, unchained
+import ingrid / tos_helpers
+
+type
+  CastInformation = object
+    totalDuration: Second
+    activeDuration: Second
+    activeFraction: float # ratio of active / total    
+    numTrackings: int
+    trackingTime: Second
+    activeTrackingTime: Second
+    totalEvents: int # total number of recorded events
+    onlyCenter: int  # events with activity only on center chip (> 3 hits)
+    onlyOuter: int   # events with activity only on outer, but not center chip
+    centerAndOuter: int # events with activity on center & any outer chip
+    center: int      # events with activity on center (irrespective any other)
+    anyActive: int # events with any active chip
+    fractionWithCenter: float # fraction of events that have center chip activity
+    fractionWithAny: float # fraction of events that have any activity
+    # ... add mean of event durations?
+    fadcReadouts: int
+    fractionFadc: float # fraction of events having FADC readout
+    scinti1NonTrivial: int # number of non trivial scinti triggers 0 < x < 4095
+    scinti2NonTrivial: int # number of non trivial scinti triggers 0 < x < 4095
+    scinti1Triggers: int # number of any scinti triggers != 0
+    scinti2Triggers: int # number of any scinti triggers != 0
+    fractionScinti1: float # fraction of events with any scinti 1 activity    
+    fractionScinti2: float # fraction of events with any scinti 2 activity
+
+proc fieldToStr(s: string): string =
+  case s
+  of "totalDuration":      result = "total duration"
+  of "activeDuration":     result = "active duration"
+  of "activeFraction":     result = "active fraction"
+  of "numTrackings":       result = "# trackings"
+  of "trackingTime":       result = "tracking time"
+  of "activeTrackingTime": result = "active tracking time"
+  of "totalEvents":        result = "total # events"
+  of "center":             result = "center chip"
+  of "onlyCenter":         result = "only center chip"
+  of "onlyOuter":          result = "only any outer chip"
+  of "centerAndOuter":     result = "center + outer"
+  of "anyActive":          result = "any chip"
+  of "fractionWithCenter": result = "fraction with center"
+  of "fractionWithAny":    result = "fraction with any"
+  of "fadcReadouts":       result = "with fadc readouts"
+  of "fractionFadc":       result = "fraction with FADC"
+  of "scinti1NonTrivial":  result = "with SiPM trigger <4095"
+  of "scinti2NonTrivial":  result = "with veto scinti trigger <4095"
+  of "scinti1Triggers":    result = "with any SiPM trigger"
+  of "scinti2Triggers":    result = "with any veto scinti trigger"
+  of "fractionScinti1":    result = "fraction with any SiPM"
+  of "fractionScinti2":    result = "fraction with any veto scinti"  
+
+proc `$`(castInfo: CastInformation): string =
+  result.add &"Total duration: {pretty(castInfo.totalDuration.to(Hour), 4, true)}\n"
+  result.add &"Active duration: {pretty(castInfo.activeDuration.to(Hour), 4, true)}\n"
+  result.add &"Active fraction: {castInfo.activeFraction}\n"
+  result.add &"Number of trackings: {castInfo.numTrackings}\n"
+  result.add &"Tracking time: {pretty(castInfo.trackingTime.to(Hour), 4, true)}\n"
+  result.add &"Active tracking time: {pretty(castInfo.activeTrackingTime.to(Hour), 4, true)}\n"
+  result.add &"Number of total events:   {castInfo.totalEvents}\n"
+  result.add &"Number of events without center: {castInfo.onlyOuter}\n"
+  result.add &"\t| {(castInfo.onlyOuter.float / castInfo.totalEvents.float) * 100.0} %\n"
+  result.add &"Number of events only center: {castInfo.onlyCenter}\n"
+  result.add &"\t| {(castInfo.onlyCenter.float / castInfo.totalEvents.float) * 100.0} %\n"
+  result.add &"Number of events with center activity and outer: {castInfo.centerAndOuter}\n"
+  result.add &"\t| {(castInfo.centerAndOuter.float / castInfo.totalEvents.float) * 100.0} %\n"
+  result.add &"Number of events any hit events: {castInfo.anyActive}\n"
+  result.add &"\t| {(castInfo.anyActive.float / castInfo.totalEvents.float) * 100.0} %\n"
+
+proc countEvents(df: DataFrame): int =
+  for (tup, subdf) in groups(df.group_by("runNumber")):
+    inc result, subDf["eventNumber", int].max
+
+proc contains[T](t: Tensor[T], x: T): bool =
+  for i in 0 ..< t.size:
+    if x == t[i]:
+      return true
+
+proc countChipActivity(castInfo: var CastInformation, df: DataFrame) =
+  for (tup, subDf) in groups(df.group_by(["eventNumber", "runNumber"])):
+    let chips = subDf["chip"].unique.toTensor(int)
+    if 3 in chips:
+      inc castInfo.center
+    # start new if 
+    if 3 notin chips: 
+      inc castInfo.onlyOuter
+    elif [3].toTensor == chips:
+      inc castInfo.onlyCenter
+    elif 3 in chips and chips.len > 1:
+      inc castInfo.centerAndOuter
+    inc castInfo.anyActive
+
+proc processFile(fname: string): CastInformation = # extend to both calib & both background
+  let h5f = H5open(fname, "r")
+  let fileInfo = getFileInfo(h5f)
+  var castInfo: CastInformation
+  for run in fileInfo.runs:
+    let runInfo = getExtendedRunInfo(h5f, run, fileInfo.runType)
+    castInfo.totalDuration  += runInfo.timeInfo.t_length.inSeconds().Second
+    castInfo.activeDuration += runInfo.activeTime.inSeconds.Second
+    castInfo.numTrackings   += runInfo.trackings.len
+    for track in runInfo.trackings:
+      castInfo.trackingTime += track.t_length.inSeconds.Second
+
+    # read the data of all chips & FADC
+    const names = ["eventNumber", "fadcReadout", "szint1ClockInt", "szint2ClockInt"]
+    let dfNoChips = h5f.readRunDsets(run, commonDsets = names)
+    let dfChips = h5f.readRunDsetsAllChips(run, fileInfo.chips,
+                                           dsets = @[]) # don't need additional dsets
+    castInfo.totalEvents       += dfNoChips.countEvents()
+    castInfo.countChipActivity(dfChips)
+    castInfo.fadcReadouts      += dfNoChips.filter(f{`fadcReadout` == 1}).len
+    castInfo.scinti1Triggers   += dfNoChips.filter(f{`szint1ClockInt` != 0}).len
+    castInfo.scinti2Triggers   += dfNoChips.filter(f{`szint2ClockInt` != 0}).len
+    castInfo.scinti1NonTrivial += dfNoChips.filter(f{`szint1ClockInt` != 0 and `szint1ClockInt` < 4095}).len
+    castInfo.scinti2NonTrivial += dfNoChips.filter(f{`szint2ClockInt` != 0 and `szint2ClockInt` < 4095}).len
+      
+
+# compute at the end as we need total information about fraction of total / active
+  template fraction(arg, by: untyped): untyped = (castInfo.arg / castInfo.by) * 100.0
+  castInfo.activeFraction = fraction(activeDuration, totalDuration)
+  castInfo.activeTrackingTime = (castInfo.trackingTime * castInfo.activeFraction / 100.0)
+  # fractions
+  castInfo.fractionWithCenter = fraction(center         , totalEvents)
+  castInfo.fractionWithAny    = fraction(anyActive      , totalEvents)
+  castInfo.fractionFadc       = fraction(fadcReadouts   , totalEvents)
+  castInfo.fractionScinti1    = fraction(scinti1Triggers, totalEvents)
+  castInfo.fractionScinti2    = fraction(scinti2Triggers, totalEvents)
+  echo castInfo
+  result = castInfo
+
+proc toTable(castInfos: Table[(string,string), CastInformation]): string =
+  ## Turns the input into an Org table
+  # | Field | Back Run-2 | Back Run-3 | Calib Run-2 | Calib Run-3 |
+  # |-
+  # ...
+  # turn the input into a DF, then `toOrgTable` it
+  proc toColName(tup: (string, string)): string =
+    result = tup[1] & " "
+    if "2017" in tup[0]:
+      result.add "Run-2"
+    else:
+      result.add "Run-3"
+      
+  var df = newDataFrame()
+  for k, v in pairs(castInfos):
+    var fields = newSeq[string]()
+    var vals = newSeq[string]()
+    for field, val in fieldPairs(v):
+      fields.add field.fieldToStr()
+      when typeof(val) is Second:
+        vals.add pretty(val.to(Hour), precision = 2, short = true,
+                        format = ffDecimal)
+      elif typeof(val) is float:
+        vals.add $(val.formatFloat(precision = 4)) & " %"
+      else:
+        vals.add "\\num{" & $val & "}"
+    let colName = k.toColName()
+    let dfLoc = toDf({"Field" : fields, colName : vals})
+    if df.len == 0:
+      df = dfLoc
+    else:
+      df[colName] = dfLoc[colName]
+
+  df = df.select(["Field", "calib Run-2", "calib Run-3", "back Run-2", "back Run-3"])
+  echo df.toOrgTable(emphStrNumber = false)
+
+proc main(background: seq[string], calibration: seq[string]) =
+
+  var tab = initTable[(string, string), CastInformation]()
+  for b in background:
+    echo "--------------- Processing: ", b, " ---------------"
+    tab[(b, "back")] = processFile(b)
+    
+  for c in calibration:
+    echo "--------------- Processing: ", c, " ---------------"    
+    tab[(c, "calib")] = processFile(c)
+  echo tab
+  echo tab.toTable()
+
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+| Field                          | calib Run-2  | calib Run-3  | back Run-2    | back Run-3    |
+|--------------------------------+--------------+--------------+---------------+---------------|
+| total duration                 | 107.42 h     | 87.06 h      | 2507.43 h     | 1199.22 h     |
+| active duration                | 2.6 h        | 3.53 h       | 2238.78 h     | 1079.6 h      |
+| active fraction                | 2.422 %      | 4.049 %      | 89.29 %       | 90.02 %       |
+| # trackings                    | \num{0}      | \num{0}      | \num{68}      | \num{47}      |
+| tracking time                  | 0 h          | 0 h          | 106.01 h      | 74.3 h        |
+| active tracking time           | 0 h          | 0 h          | 94.65 h       | 66.89 h       |
+| total # events                 | \num{532020} | \num{415927} | \num{3758960} | \num{1837330} |
+| only center chip               | \num{480232} | \num{366917} | \num{23820}   | \num{9462}    |
+| only any outer chip            | \num{7}      | \num{5}      | \num{1557934} | \num{741199}  |
+| center + outer                 | \num{51368}  | \num{47825}  | \num{960499}  | \num{460726}  |
+| center chip                    | \num{531600} | \num{414742} | \num{984319}  | \num{470188}  |
+| any chip                       | \num{531607} | \num{414747} | \num{2542253} | \num{1211387} |
+| fraction with center           | 99.92 %      | 99.72 %      | 26.19 %       | 25.59 %       |
+| fraction with any              | 99.92 %      | 99.72 %      | 67.63 %       | 65.93 %       |
+| with fadc readouts             | \num{531529} | \num{413853} | \num{542233}  | \num{211683}  |
+| fraction with FADC             | 99.91 %      | 99.50 %      | 14.43 %       | 11.52 %       |
+| with SiPM trigger <4095        | \num{1656}   | \num{20}     | \num{8585}    | \num{4304}    |
+| with veto scinti trigger <4095 | \num{0}      | \num{2888}   | \num{0}       | \num{70016}   |
+| with any SiPM trigger          | \num{531528} | \num{1312}   | \num{825460}  | \num{34969}   |
+| with any veto scinti trigger   | \num{0}      | \num{216170} | \num{0}       | \num{206025}  |
+| fraction with any SiPM         | 99.91 %      | 0.3154 %     | 21.96 %       | 1.903 %       |
+| fraction with any veto scinti  | 0.000 %      | 51.97 %      | 0.000 %       | 11.21 %       |
+
+- [X] generate that table... then onto calibration finally!
 
 * Detector preparation / study / characterization etc.                :Part3:
 :PROPERTIES:
