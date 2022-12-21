@@ -10758,7 +10758,7 @@ Filtering tracking logs to date: 2018-05-01T02:00:00+02:00 and 2018-12-31T01:00:
 ==================================================================
 :END:
 
-** Summary of CAST data taking [3/8]
+** Summary of CAST data taking [7/15]
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:data_taking_campaigns
 :END:
@@ -10780,6 +10780,12 @@ FADC was partially noisy. In Run-3 all detector features were working
 as intended. The feature list is summarized in
 tab. [[tab:cast:features_by_run]].
 
+Run-2 ran with a Timepix shutter time of ~2/32~ resulting in about
+$\SI{2.4}{s}$ long frames. This was changed with the start of 2018
+(still in Run-2) to ~2/30~ ($\sim\SI{2.2}{s}$).
+
+- [ ] *VERIFY EXACT SHUTTER TIMES*
+
 In total 115 solar trackings were recorded between Run-2 and
 Run-3. This amounts to about $\SI{180}{\hour}$ of tracking
 data. Further, $\SI{3526}{\hour}$ of background data and
@@ -10797,6 +10803,7 @@ not affect data quality as they can be calibrated out.
 In total 5 (4) runs out of 120 (119) were missed in the course of the whole data
 taking campaign (one of them was aborted after 30 min).
 
+
 - [ ] table for number of shifts in each run, column for number of
   trackings
 - [X] number of X-ray finger runs  
@@ -10805,7 +10812,7 @@ taking campaign (one of them was aborted after 30 min).
 - [X] table of working detector features in each run
 - [ ] table of recorded temperatures (or as a plot? Table takes a lot
   of space! ~Tools/mapSeptemTempToFePeak.nim~)
-- [ ] numbers of the total activity, number of events on the center &
+- [X] numbers of the total activity, number of events on the center &
   outside chips, # of FADC triggers, event durations etc.
 - [ ] *THINK ABOUT WHETHER TO INCLUDE FADC NOISE HERE IN STATISTICS*
 - [ ] *MENTION SHUTTER TIMES USED, 2017 2/32, 2018 2/30?*
@@ -10886,12 +10893,12 @@ taking campaign (one of them was aborted after 30 min).
 | fraction with any veto scinti  | 0.000 %      | 51.97 %      | 0.000 %       | 11.21 %       |
 
 
-- [ ] *FIX UP THE TABLE TO NOT USE FIELDS AS ROW NAMES, BUT RATHER
+- [X] *FIX UP THE TABLE TO NOT USE FIELDS AS ROW NAMES, BUT RATHER
   TEXT*
-- [ ] *SEE NOEXPORT SECTION BELOW TO THINK ABOUT ADDING OTHER THINGS*  
+- [X] *SEE NOEXPORT SECTION BELOW TO THINK ABOUT ADDING OTHER THINGS*  
 
 
-*** Code to compute statistics [/]                               :noexport:
+*** Code to compute statistics [10/17]                           :noexport:
 
 - [ ] code to compute the total run duration of the different parts
 - [ ] code to produce the outer chip & central chip activity
@@ -10928,6 +10935,8 @@ Tools we have for this and related:
   -> uses the ~ExtendedRunInfo~ type
   Also outputs tracking & non tracking duration already.
 
+- [ ] *CREATE PLOT OF DURATIONS, HIGHLIGHT 2017 USED 2/32 WHILE 2018 2/30*
+
 
 Combined the above gives us more than we need. The one thing missing
 (outside of details, like computing rates instead of numbers etc) is
@@ -10940,19 +10949,16 @@ So the information we want:
 - [X] total active duration (event durations)
 - [X] total # of trackings
 - [X] total tracking time
-- [ ] total active tracking time 
+- [X] total active tracking time 
 - [ ] total # of events for each chip (non empty ones, & split between
      center & outside)
-- [ ] fraction of events with only center / only outer chips  
-- [ ] total # of FADC triggers
-- [ ] total # of scintillator triggers (run 3, by scintillator)
-- [ ] total # of non trivial scintillator triggers
+- [X] fraction of events with only center / only outer chips  
+- [X] total # of FADC triggers
+- [X] total # of scintillator triggers (run 3, by scintillator)
+- [X] total # of non trivial scintillator triggers
 - [ ] total # of non trivial center chip events w/o FADC trigger (some
   runs don't have FADC though) ?  
 - ?
-
-
-- [ ] *CREATE PLOT OF DURATIONS, HIGHLIGHT 2017 USED 2/32 WHILE 2018 2/30*
 
 Better to just write a new piece of code that extracts exactly what we
 need using ~ExtendedRunInfo~.
