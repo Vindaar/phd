@@ -11215,6 +11215,221 @@ best present the other calibrations then (FADC, scintillators).
   towards analysis chapter of course!
   Best use a CNN with 1D input data & kernel!
 
+**** Generate plots... [/]                                      :noexport:
+
+- [ ] *REPLACE THE ORIGIN OF THIS PLOT*
+
+#+begin_src sh :results drawer
+raw_data_manipulation -p ~/CastData/data/2018_2/Run_240_181021-14-54/ \
+                      --out /t/raw_240.h5 \
+                      --runType rtBackground
+#+end_src
+
+#+begin_src sh :results drawer
+reconstruction /t/raw_240.h5 --out /t/reco_240.h5
+#+end_src
+
+#+RESULTS:
+:results:
+{"<HDF5file>": /t/raw_240.h5, "--only_gain_fit": false,
+"--create_fe_spec": false, "--version": false, "--runNumber": nil,
+"--only_charge": false, "--only_energy_from_e": false,
+"--only_energy": nil, "--out": /t/reco_240.h5, "--config": nil,
+"--only_gas_gain": false, "--only_fadc": false, "--help": false,
+"--only_fe_spec": false}
+...
+INFO Writing data to datasets
+INFO Writing of FADC data took 0.9212641716003418 seconds
+INFO Reconstruction of all runs in /t/raw_240.h5 with flags: {rfReadAllRuns} took 5.32500171661377 seconds
+INFO Performed reconstruction of the following runs:
+INFO {240}
+INFO while iterating over the following:
+INFO {240}
+:end:
+#+begin_src sh :results drawer
+reconstruction /t/reco_240.h5 --only_fadc
+#+end_src
+
+#+RESULTS:
+:results:
+{"<HDF5file>": /t/reco_240.h5, "--only_gain_fit": false, "--create_fe_spec": false, "--version": false, "--runNumber": nil, "--only_charge": false, "--only_energy_from_e": false, "--only_energy": nil, "--out": nil, "--config": nil, "--only_gas_gain": false, "--only_fadc": true, "--help": false, "--only_fe_spec": false}
+INFO Reading config file: /home/basti/CastData/ExternCode/TimepixAnalysis/Analysis/ingrid/config.toml
+Start fadc calc
+FADC minima calculations took: 0.5971462726593018
+INFO Reconstruction of all runs in /t/reco_240.h5 with flags: {rfOnlyFadc, rfReadAllRuns} took 1.252563714981079 seconds
+INFO Performed reconstruction of the following runs:
+INFO {240}
+INFO while iterating over the following:
+INFO {240}
+:end:
+
+#+begin_src sh :results drawer
+raw_data_manipulation -p ~/CastData/data/2017/Run_96_171123-10-42 \
+                      --out /t/raw_96.h5 \
+                      --runType rtCalibration
+#+end_src
+
+#+RESULTS:
+:results:
+Flags are is {}
+...
+INFO Closing h5file with code 0
+INFO Processing all given runs took 0.3456798712412516 minutes
+:end:
+
+#+begin_src sh :results drawer
+reconstruction /t/raw_96.h5 --out /t/reco_96.h5
+#+end_src
+
+#+RESULTS:
+:results:
+{"<HDF5file>": /t/raw_96.h5, "--only_gain_fit": false,
+"--create_fe_spec": false, "--version": false, "--runNumber": nil,
+"--only_charge": false, "--only_energy_from_e": false,
+"--only_energy": nil, "--out": /t/reco_96.h5, "--config": nil,
+"--only_gas_gain": false, "--only_fadc": false, "--help": false,
+"--only_fe_spec": false}
+...
+INFO Writing data to datasets
+INFO Writing of FADC data took 6.967457056045532 seconds
+INFO Reconstruction of all runs in /t/raw_96.h5 with flags: {rfReadAllRuns} took 15.26722311973572 seconds
+INFO Performed reconstruction of the following runs:
+INFO {96}
+INFO while iterating over the following:
+INFO {96}
+:end:
+#+begin_src sh :results drawer
+reconstruction /t/reco_96.h5 --only_fadc
+#+end_src
+
+#+RESULTS:
+:results:
+{"<HDF5file>": /t/reco_96.h5, "--only_gain_fit": false, "--create_fe_spec": false, "--version": false, "--runNumber": nil, "--only_charge": false, "--only_energy_from_e": false, "--only_energy": nil, "--out": nil, "--config": nil, "--only_gas_gain": false, "--only_fadc": true, "--help": false, "--only_fe_spec": false}
+INFO Reading config file: /home/basti/CastData/ExternCode/TimepixAnalysis/Analysis/ingrid/config.toml
+Start fadc calc
+FADC minima calculations took: 4.997849464416504
+INFO Reconstruction of all runs in /t/reco_96.h5 with flags: {rfOnlyFadc, rfReadAllRuns} took 10.23849511146545 seconds
+INFO Performed reconstruction of the following runs:
+INFO {96}
+INFO while iterating over the following:
+INFO {96}
+:end:
+
+#+begin_src nim :results drawer
+import nimhdf5, ggplotnim
+import std / [strutils, os, sequtils]
+import ingrid / tos_helpers
+
+proc stripPrefix(s, p: string): string =
+  result = s
+  result.removePrefix(p)
+
+proc plotIdx(df: DataFrame, fadcData: Tensor[float], idx: int) =
+  let xmin = df["argMinval", int][idx]
+  let xminY = df["minvals", float][idx]
+  let xminlineX = @[xmin, xmin] # one point for x of min, max
+  let fData = fadcData[idx, _].squeeze
+  let xminlineY = linspace(fData.min, fData.max, 2)
+
+  let riseStart = df["riseStart", int][idx]
+  let fallStop = df["fallStop", int][idx]
+  let riseStartX = @[riseStart, riseStart]
+  let fallStopX = @[fallStop, fallStop]
+  let baseline = df["baseline", float][idx]  
+  let baselineY = @[baseline, baseline]
+  
+  let df = toDf({ "x"         : toSeq(0 ..< 2560),
+                  "baseline"  : baseline,
+                  "data"      : fData,
+                  "xminX"     : xminlineX, 
+                  "xminY"     : xminlineY,
+                  "riseStart" : riseStartX,
+                  "fallStop"  : fallStopX })
+                  # Comparison has to be done by hand unfortunately
+  let path = "/t/fadc_spectrum_baseline.pdf"
+  ggplot(df, aes("x", "data")) +
+    geom_line() +
+    geom_point(color = color(0.1, 0.1, 0.1, 0.1)) +
+    geom_line(aes = aes("x", "baseline"),
+              color = "blue") +
+    geom_line(data = df.head(2), aes = aes("xminX", "xminY"),
+                     color = "red") +
+    geom_line(data = df.head(2), aes = aes("riseStart", "xminY"),
+                     color = "green") +
+    geom_line(data = df.head(2), aes = aes("fallStop", "xminY"),
+                     color = "pink") +
+    ggsave(path)
+
+const run = 96    
+const path = "/t/reco_$#.h5" % $run
+var h5f = H5open(path, "r")
+let fileInfo = h5f.getFileInfo()
+var df = h5f.readRunDsets(
+  run,
+  commonDsets = @["fadc/eventNumber",
+                  "fadc/baseline",
+                  "fadc/riseStart",
+                  "fadc/riseTime",                  
+                  "fadc/fallStop",
+                  "fadc/fallTime",
+                  "fadc/minvals",
+                  "fadc/argMinval"]                 
+)
+df = df.rename(df.getKeys.mapIt(f{it.stripPrefix("fadc/") <- it}))
+let dset = h5f[(recoBase() & $run / "fadc/fadc_data").dset_str]
+let fadcData = dset[float].toTensor.reshape(dset.shape)
+echo df
+#plotIdx(df, fadcData, 10)
+
+#for idx in 0 ..< dset.shape[0]:
+#  plotIdx(df, fadcData, idx)
+#  sleep(500)
+
+ggplot(df, aes("minvals")) +
+  geom_histogram(bins = 300) +
+  ggsave("/t/fadc_run_$#_minima.pdf" % $run)
+
+  
+
+#+end_src
+
+#+RESULTS:
+:results:
+DataFrame with 8 columns and 34496 rows:
+     Idx    eventNumber       baseline      riseStart       riseTime       fallStop       fallTime        minvals      argMinval
+  dtype:            int          float            int            int            int            int          float            int
+       0              0       -0.02236             82            116            702            504        -0.3636            198
+       1              1       -0.02524           2021             97           2462            344        -0.1986           2118
+       2              2       -0.02368           1982            116             42            504        -0.2475           2098
+       3              3       -0.02427           1622             96           1840            122        -0.1959           1718
+       4              4       -0.02422            966             97           1522            459        -0.2271           1063
+       5              5       -0.02339            146             97            722            479        -0.2976            243
+       6              6       -0.02368           1853            105           1980             22        -0.2778           1958
+       7              7       -0.02358           2102            116            142            484        -0.3596           2218
+       8              8       -0.02231           2081             62            102            519        -0.2665           2143
+       9              9       -0.02402             33            105            622            484        -0.3785            138
+      10             10        -0.0229            402            116           1042            524        -0.3345            518
+      11             11       -0.02534           2482             81            342            339        -0.1612              3
+      12             12       -0.02471           1006             97           1540            437        -0.2314           1103
+      13             13        -0.0249           1542             81           1982            359        -0.1722           1623
+      14             14        -0.0231           2333            105            302            424        -0.3687           2438
+      15             15       -0.02412           1486             97           2002            419        -0.1704           1583
+      16             16       -0.02197           1682            101           1900            117        -0.2837           1783
+      17             17       -0.02378            562             81            902            259       -0.08162            643
+      18             18       -0.02187            242            101            882            539        -0.2576            343
+      19             19        -0.0229           2186             97            202            479        -0.3091           2283
+
+:end:
+
+- [ ] *REGENERATE FADC DATA IN H5 FILES ON ~voidRipper~*
+- [ ] *GENERATE HISTOGRAMS OF MINVALS FOR ALL CALIBRATION RUNS*
+- [ ] *GENERATE PLOT OF ALL FIT TO MINVALS HISTO FIND PEAK FOR ALL
+  CALIBRATION RUNS*
+  -> start by just computing maximum of the above histogram for each
+  run as a basis
+  
+
+*** FADC noise & study  
 
 ** Detector behavior over time [/]
 
@@ -11241,6 +11456,7 @@ Explain why we did it and how we ended up at 90 min time binning.
 :END:
 
 Example spectrum. What's the point of these spectra.
+
 
 ** Energy calibration, how done? [0/1]
 :PROPERTIES:
