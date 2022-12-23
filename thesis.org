@@ -7243,9 +7243,14 @@ when isMainModule:
 We can call it on different runs with FADC data:
 #+begin_src sh
 code/attempt_fadc_pedestals_from_data \
-    -p /mnt/1TB/CAST/2017/DataRuns/Run_77_171102-05-24 \
-    --outfile ~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run77.pdf
+#    -p /mnt/1TB/CAST/2017/DataRuns/Run_77_171102-05-24 \
+    -p ~/CastData/data/2017/Run_96_171123-10-42 \
+#    --outfile ~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run77.pdf
+    --outfile ~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run96.pdf    
 #+end_src
+
+#+RESULTS:
+
 for an early 2017 run
 #+begin_src sh
 code/attempt_fadc_pedestals_from_data \
@@ -11417,14 +11422,82 @@ So then, where do we start? FADC first or GridPix?
 
 
 ** FADC
+
+As described over the course of previous chapters, the FADC serves
+essentially a 4-way purpose. First of all, it is used as a trigger to
+start the readout process of the GridPixes, if the center chip records
+a large enough signal. This brings up the question of the activation
+threshold of the FADC, sec. [[#sec:fadc:activation_threshold]]. Secondly,
+thanks to the high temporal resolution the recorded signal can be used
+to gain information about the longitudinal shape of recorded
+events. This theoretically allows it to act as an additional
+background suppression mechanism,
+sec. [[#sec:fadc:fadc_as_veto]]. Finally, its trigger clock acts as the
+reference time and readout flag for the scintillators, see
+sec. [[#sec:fadc:scintillator_trigger_reference]] (*I THINK THIS MAY NOT
+BE NEEDED, AS THERE IS ENOUGH STUFF ABOUT THIS BEFORE*).
+
+
+
+- trigger
+- longitudinal shape information -> acting as a veto
+- reference clock for scintillators
+- [ ] *? Is there something else*
+
+problems:  
+- noise
+- different thresholds due to gain changes
+- different shapes due to 50ns 100ns signal integration, 50ns 20ns
+  differentiation
+    
+
 *** FADC spectrum & threshold [0/4]
+
+What is it that we actually want from this? Aside from providing an
+*overview* the FADC is barely used for anything. Things that are
+important:
+- [ ] *trigger threshold* deduced from calibration data / real data
+  - [ ] define how to compute & compute for every run, plot trigger
+    threshold vs run (correlate with settings)
+- [ ] show rise time / fall time histograms! Required for our cuts we
+  actually perform on that in background calc later! This is required
+  because otherwise we cannot explain why we do / do not use the FADC
+  as a veto and why it's not super helpful.
+    
+
+#+CAPTION: The peak position in \si{V} of the photopeak in the $\ce{^{55}Fe}$ calibration
+#+CAPTION: runs during Run-2. The different FADC amplifier settings are clearly visible. *FIX THE PLOT / PRETTIFY*
+#+NAME: fig:fadc:peak_position_55fe_run2_settings
+[[~/phd/Figs/FADC/peak_positions_fadc_run2.pdf]]
+
+#+CAPTION: The mean rise time of the signals recorded during the $\ce{^{55}Fe}$ data
+#+CAPTION: during Run-2 of the FADC. Again, the FADC amplifier settings are visible
+#+CAPTION: as expected.
+#+NAME: fig:fadc:mean_rise_times_55fe_fadc_run2
+[[~/phd/Figs/FADC/fadc_mean_riseTime_run2.pdf]]
 
 - [ ] show spectra
 - [ ] show 55Fe spectrum of FADC data
 - [ ] apply Savitzky Golay filter to FADC spectra & describe
+- [ ] show how FADC events differ in 50ns and 100ns data (*we have 
+  those datasets*)
+- [ ] show detector pointing to Zenith data for muon related stuff
+- [ ] plot histograms of 50ns runs vs 100ns runs at CAST to see
+  difference in background
+- [ ] plot histograms of the different properties (rise & fall time in
+  particular) for the different FADC settings used at CAST  
+- [ ] noise analysis
+- [ ] finish trying to deduce the pedestals from real data. Didn't
+  work last time only due to our confusion of using all 4
+  channels. Try again focusing on the single channel we actually use!        
 - [ ] train NN on FADC data and see what we can gain <- this goes
   towards analysis chapter of course!
   Best use a CNN with 1D input data & kernel!
+- [ ] create a plot comparing 55Fe data from GridPix with FADC (by
+  peak position over time. Same correlation or not?)
+- [X] create plot showing position of 55 Fe photo peak in FADC data,
+  highlighting when amplifier settings were changed
+- [X] create plot of mean rise times in FADC   
 
 **** Generate plots... [/]                                      :noexport:
 
