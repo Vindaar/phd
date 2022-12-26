@@ -7162,11 +7162,20 @@ As such our used value of ~fadcFrequency = 2~ corresponds to
 Our value of =0b000= for the data means no interruption tagging, 12
 bits data output and normal acquisition mode.
 
-*** Calculate pedestals from real FADC data                      :noexport:
+*** Calculate pedestals from real FADC data [/]                  :noexport:
 
 We will now see what happens if we compute the FADC pedestals from the
 raw data by computing a truncated mean of all FADC files in a single
-run and comparing to the real pedestal run we normally use as a reference.
+run and comparing to the real pedestal run we normally use as a
+reference.
+
+*UPDATE*: <2022-12-26 Mon 00:48> This was a big success. We will use
+this in our real data from now on, move this to ~statusAndProgress~
+and rewrite the section above with that in mind, i.e. explain how to
+calc pedestals.
+- [ ] *REWRITE MAIN TEXT*
+
+- [ ] *TEST PEDESTAL CALC FOR BACKGROUND DATA*
 
 #+begin_src nim :tangle code/attempt_fadc_pedestals_from_data.nim
 import std / [strutils, os, sequtils, sugar, algorithm]
@@ -7534,7 +7543,9 @@ when isMainModule:
 
 #+end_src
 
-*** 
+- [ ] *SHOW PLOT OF THE ABOVE (~plotCompare~) AS EXAMPLE OF BAD
+  PEDESTALS VS GOOD PEDESTALS?*
+
 
 ** Scintillator calibration
 :PROPERTIES:
@@ -8493,7 +8504,8 @@ N_{i, \text{corr}} = N_{i, \text{raw}} - N_{i, \text{pedestal}}
 \]
 
 with the raw data $N_{i, \text{raw}}$ and the pedestals
-$N_{i, \text{pedestal}}$ in register $i$.
+$N_{i, \text{pedestal}}$ in register $i$ (as computed based on a
+truncated mean of the real data).
 
 With the pedestals removed, the temporal correction is next to unfold
 the data into the correct order. This needs to be performed on each of
@@ -8522,6 +8534,9 @@ when using the 12 bit operating mode for each register.
 With these corrections applied, the recorded FADC spectrum is
 recovered, centered around the trigger position.
 
+- [ ] *REWRITE TAKING INTO ACCOUNT THAT PEDESTALS ARE COMPUTED BASED
+  ON DATA NOW!* -> Partially done by referencing pedestals from
+  truncated mean.
 
 [fn:reco_fadc_manual] A PDF of the FADC manual is available here:
 https://archive.org/details/manualzilla-id-5646050/
@@ -8562,7 +8577,7 @@ $\text{argmin}(S)$ and the baseline on the left (rise time) and right
 registers, the time can be computed.
 
 - [ ] *CHANGE FADC CODE TO NOT USE MIN, BUT MEAN OF N POINTS AROUND
-  MIN?*
+  MIN? -> ALREADY USES MEAN OF N-th PERCENTILE AROUND ARGMIN*
 
 Together, a reconstructed FADC spectrum including indications for
 baseline, rise and fall time as well as the minimum is shown in
@@ -8570,7 +8585,8 @@ fig. [[fig:reco:fadc_reco_example]].
 
 
 #+CAPTION: Example of a fully reconstructed FADC spectrum from a \SI{5.9}{keV} X-ray
-#+CAPTION: recorded with the Septemboard detector during a calibration run. *REPLACE PLOT*
+#+CAPTION: recorded with the Septemboard detector during a calibration run. *REPLACE PLOT
+#+CAPTION: BY VERSION WITH FIXED PEDESTALS*
 #+NAME: fig:reco:fadc_reco_example
 [[~/phd/Figs/reco/fadc_spectrum_baseline1645898374.pdf]]
 
@@ -8600,14 +8616,18 @@ the
   ANALYSIS AND WE HAVE SIMPLE NOISE DETECTION IN CODE*
   -> Go to analysis / characterization / whatever part!
 
-*** FADC amplifier settings / calibration of amplifier settings
+*** FADC amplifier settings / calibration of amplifier settings [/]
 
 FADC does not require a proper calibration. However, better
 measurements of the effect of the different integration /
 differentiation settings of the amplifier would have been very
 valuable. [fn:detector_fadc_amp_measurements]
 
-Outside of that 
+Outside of that
+- [ ] *FINISH*
+
+- [ ] *MENTION TALKED ABOUT FURTHER DOWN IN FADC ANALYSIS AS WELL AS
+  CAST SECTION MENTIONING CHANGES DUE TO NOISE*
 
 [fn:detector_fadc_amp_measurements] 
 ** Scintillator data
@@ -11552,7 +11572,6 @@ problems:
 - different thresholds due to gain changes
 - different shapes due to 50ns 100ns signal integration, 50ns 20ns
   differentiation
-    
 
 *** FADC spectrum & threshold [0/4]
 
@@ -11579,28 +11598,34 @@ important:
 #+NAME: fig:fadc:mean_rise_times_55fe_fadc_run2
 [[~/phd/Figs/FADC/fadc_mean_riseTime_run2.pdf]]
 
-- [ ] show spectra
+- [ ] show spectra (already one shown in previous chapter!)
 - [ ] show 55Fe spectrum of FADC data
+- [X] create plot showing position of 55 Fe photo peak in FADC data,
+  highlighting when amplifier settings were changed
+- [X] create plot of mean rise times in FADC   
 - [ ] apply Savitzky Golay filter to FADC spectra & describe
+  -> Still necessary after correct pedestals in use w/ trunc mean?
+  Maybe much more helpful now? Try it!
 - [ ] show how FADC events differ in 50ns and 100ns data (*we have 
   those datasets*)
 - [ ] show detector pointing to Zenith data for muon related stuff
 - [ ] plot histograms of 50ns runs vs 100ns runs at CAST to see
   difference in background
+  -> code is there!
 - [ ] plot histograms of the different properties (rise & fall time in
-  particular) for the different FADC settings used at CAST  
+  particular) for the different FADC settings used at CAST
+  -> partially done! Not the histograms shown above, but the mean
+  value of those histograms!
 - [ ] noise analysis
-- [ ] finish trying to deduce the pedestals from real data. Didn't
+- [X] finish trying to deduce the pedestals from real data. Didn't
   work last time only due to our confusion of using all 4
-  channels. Try again focusing on the single channel we actually use!        
+  channels. Try again focusing on the single channel we actually use!
+  -> Now that it's done correctly it works extremely well!
 - [ ] train NN on FADC data and see what we can gain <- this goes
   towards analysis chapter of course!
   Best use a CNN with 1D input data & kernel!
 - [ ] create a plot comparing 55Fe data from GridPix with FADC (by
   peak position over time. Same correlation or not?)
-- [X] create plot showing position of 55 Fe photo peak in FADC data,
-  highlighting when amplifier settings were changed
-- [X] create plot of mean rise times in FADC   
 
 **** Generate plots... [/]                                      :noexport:
 
@@ -11878,7 +11903,7 @@ when isMainModule:
 
 - [X] *REGENERATE FADC DATA IN H5 FILES ON ~voidRipper~*
 - [X] *GENERATE HISTOGRAMS OF MINVALS FOR ALL CALIBRATION RUNS*
-- [ ] *GENERATE PLOT OF ALL FIT TO MINVALS HISTO FIND PEAK FOR ALL
+- [X] *GENERATE PLOT OF ALL FIT TO MINVALS HISTO FIND PEAK FOR ALL
   CALIBRATION RUNS*
   -> start by just computing maximum of the above histogram for each
   run as a basis
@@ -11896,7 +11921,6 @@ and now for 2018 to generate the CSV for the peak positions of the run
 #+begin_src sh
 ./code/fadc_testing -f ~/CastData/data/CalibrationRuns2018_Reco_withFadc.h5 --year 2018
 #+end_src
-
 
 *** FADC noise & study  
 
