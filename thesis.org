@@ -7015,13 +7015,47 @@ recorded.
   usually within $\lesssim\num{50}$ ADC
   values. Fig. [[fig:daq:fadc_pedestal_run]] shows the pedestals of all 4
   FADC channels. The pedestals drift over time, but the associated
-  time scales are long. [fn:fadc_pedestals_manual]
+  time scales are long. Alternatively, the pedestals can be computed
+  from real data by computing a truncated mean in each register. The
+  idea is to remove all recorded events in a register, in which it was
+  involved in a real signal. At least in typical signals recorded with
+  a GridPix the signal lengths are $\mathcal{O}(\SI{10}{\percent})$ of
+  the window length, leaving plenty of registers free to recover
+  pedestal information. Regular noise affects things, but is partially
+  taken care by the truncation and partially cancels out as real noise
+  is normal distributed around the actual pedestal. This latter
+  approach is the one used in the data analysis by calculating:
+
+  \[
+  p(r) = \text{mean}_{i, P_{20}, P_{98}}{r_i}
+  \]
+
+  where $p(r)$ is the pedestal in register $r$ and the mean is taken
+  over all data $i$ in that register within the 20-th ($P_{20}$) and
+  98-th ($P_{98}$) percentile. All data refers to a full data run of
+  $\sim\SI{1}{day}$. The highly biased nature is due to the real
+  signals being negative. Removing the smallest $\SI{20}{\percent}$ of
+  data guarantees in the vast majority of events the full physical
+  signal is excluded given the typical signal lengths involved. A
+  small upper percentile is used to exclude possible significant
+  outliers to the top. While such a biased estimator will not result in
+  the real mean (and in case of signal and noise free input data thus
+  the real pedestals), a slight bias is irrelevant, as the baseline is
+  still calculated for the reconstructed signal which is used to
+  correct any global offset. 
+  
+  - [ ] pedestals can be obtained from a pedestal run as explained
+    here _or_ computed from real data due to signals making up small
+    fraction of data and having lots of statistics in one run. Explain
+    biased truncated mean used.
 
 More details to each of these will be given later where it is of importance.  
 
 - [X] *THRESHOLD. 44 mV. TO AVOID NOISE TRIGGERS*
 - [X] *AMPLIFIER SETTINGS* (CAST data taking notes)
 - [X] *PEDESTAL*
+- [X] *REWRITE TAKING INTO ACCOUNT PEDESTAL CALCULATION FROM DATA*
+- [ ] *LINK TO PEDESTAL CALCULATIONS FROM DATA CODE*
 
 #+CAPTION: The FADC pedestal run used for CAST data split by each of the 4 FADC channels. Each
 #+CAPTION: channel's pedestals vary by about $\mathcal{O}(30)$ ADC values. The first few registers
