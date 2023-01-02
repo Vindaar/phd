@@ -11813,7 +11813,7 @@ INFO while iterating over the following:
 INFO {96}
 :end:
 
-#+begin_src nim :results drawer :tangle code/fadc_testing.nim
+#+begin_src nim :results drawer :tangle code/fadc_rise_fall_different_settings.nim
 import nimhdf5, ggplotnim
 import std / [strutils, os, sequtils]
 import ingrid / [tos_helpers]
@@ -11823,42 +11823,6 @@ import ingrid / calibration
 proc stripPrefix(s, p: string): string =
   result = s
   result.removePrefix(p)
-
-proc plotIdx(df: DataFrame, fadcData: Tensor[float], idx: int) =
-  let xmin = df["argMinval", int][idx]
-  let xminY = df["minvals", float][idx]
-  let xminlineX = @[xmin, xmin] # one point for x of min, max
-  let fData = fadcData[idx, _].squeeze
-  let xminlineY = linspace(fData.min, fData.max, 2)
-
-  let riseStart = df["riseStart", int][idx]
-  let fallStop = df["fallStop", int][idx]
-  let riseStartX = @[riseStart, riseStart]
-  let fallStopX = @[fallStop, fallStop]
-  let baseline = df["baseline", float][idx]  
-  let baselineY = @[baseline, baseline]
-  
-  let df = toDf({ "x"         : toSeq(0 ..< 2560),
-                  "baseline"  : baseline,
-                  "data"      : fData,
-                  "xminX"     : xminlineX, 
-                  "xminY"     : xminlineY,
-                  "riseStart" : riseStartX,
-                  "fallStop"  : fallStopX })
-                  # Comparison has to be done by hand unfortunately
-  let path = "/t/fadc_spectrum_baseline.pdf"
-  ggplot(df, aes("x", "data")) +
-    geom_line() +
-    geom_point(color = color(0.1, 0.1, 0.1, 0.1)) +
-    geom_line(aes = aes("x", "baseline"),
-              color = "blue") +
-    geom_line(data = df.head(2), aes = aes("xminX", "xminY"),
-                     color = "red") +
-    geom_line(data = df.head(2), aes = aes("riseStart", "xminY"),
-                     color = "green") +
-    geom_line(data = df.head(2), aes = aes("fallStop", "xminY"),
-                     color = "pink") +
-    ggsave(path)
 
 from ginger import transparent    
 proc plotFallTimeRiseTime(df: DataFrame, suffix: string) =
@@ -11902,11 +11866,6 @@ proc main(fname: string, year: int) =
     let dset = h5f[(recoBase() & $run / "fadc/fadc_data").dset_str]
     let fadcData = dset[float].toTensor.reshape(dset.shape)
 
-    ## The following can be used to construct event displays
-    #for idx in 0 ..< dset.shape[0]:
-    #  plotIdx(df, fadcData, idx)
-    #  sleep(500)
-
     let feSpec = fitFeSpectrumFadc(df["minvals", float].toSeq1D)
     let ecData = fitEnergyCalib(feSpec, isPixel = false)
     let texts = buildTextForFeSpec(feSpec, ecData)
@@ -11926,8 +11885,6 @@ proc main(fname: string, year: int) =
   let suffix = "run$#" % $yearToRun
     
   plotFallTimeRiseTime(dfProp, suffix) 
-
-
 
   ##    - run 101 <2017-11-29 Wed 6:40> was the first with FADC noise
   ##      significant enough to make me change settings:
@@ -12000,12 +11957,12 @@ when isMainModule:
 Run the code for 2017 calibration data to generate the plot of the
 FADC settings (and generate the CSV containing the peak positions by run):
 #+begin_src sh
-./code/fadc_testing -f ~/CastData/data/CalibrationRuns2017_Reco_withFadc.h5 --year 2017
+./code/fadc_rise_fall_different_settings.nim -f ~/CastData/data/CalibrationRuns2017_Reco.h5 --year 2017
 #+end_src
 and now for 2018 to generate the CSV for the peak positions of the run
 3 data:
 #+begin_src sh
-./code/fadc_testing -f ~/CastData/data/CalibrationRuns2018_Reco_withFadc.h5 --year 2018
+./code/fadc_rise_fall_different_settings.nim -f ~/CastData/data/CalibrationRuns2018_Reco.h5 --year 2018
 #+end_src
 
 *** FADC noise & study  
