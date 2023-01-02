@@ -11969,6 +11969,70 @@ and now for 2018 to generate the CSV for the peak positions of the run
 
 *** FADC noise & study  
 
+*** Activation threshold [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:fadc:activation_threshold
+:END:
+
+- [ ] how to compute? The fits we perform for the 55 Fe in one of our
+  scripts here ideally should be done for each run again... That way
+  we could compute the energy similar to what we do for GridPix
+  data. Ideally we could compute it more by using an integral approach
+  though, as that gives us a better proxy for the amount of charge. Or
+  at least using a peak finding to detect multiple signals within one
+  FADC event to sum energies of both.
+  As an easier approach we can of course compute a lower percentile
+  (not the total minimum, but maybe 1% of each run and plot that?).
+
+#+begin_src nim :tangle code/fadc_compute_activation_threshold.nim
+import nimhdf5, ggplotnim
+import std / [strutils, os, sequtils]
+import ingrid / [tos_helpers, fadc_helpers, ingrid_types, fadc_analysis]
+
+proc fadcSettingRuns(): seq[int] =
+  result = @[0, 101, 121]
+
+proc minimum(h5f: H5File, runNumber: int, percentile: int): float =
+  var run = h5f.readRecoFadcRun(runNumber)
+  result = percentile(run.minvals, percentile)
+
+proc main(fname: string, percentile: int) =
+  var h5f = H5open(fname, "r")
+  let fileInfo = h5f.getFileInfo()
+  echo fileInfo
+  var minima = newSeq[float]()
+  var idxs = newSeq[int]()
+  for run in fileInfo.runs:
+    let idx = lowerBound(fadcSettingRuns(), run)
+    echo "idx ", idx, " for run ", run
+    minima.add minimum(h5f, run, percentile)
+    idxs.add idx
+  ggplot(toDf(minima, idxs), aes("minima", fill = "idxs")) +
+    geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
+    ggsave("/t/fadc_minima.pdf")
+
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+  
+#+begin_src sh
+./code/fadc_compute_activation_threshold -f ~/CastData/data/CalibrationRuns2017_Reco.h5 --percentile 1
+#+end_src
+
+yields
+
+[[file:Figs/FADC/fadc_minima_2017_calibration.pdf]]
+
+showing a _very_ clear difference in the activation threshold in terms
+of voltages.
+
+Of course this itself does not imply a difference in activation
+threshold of the equivalent physical energy!
+
+- [ ] *COMPUTE IN ENERGY INSTEAD OF VOLTAGE*
+
+
 ** Detector behavior over time [/]
 
 - [ ] this should be in the detector energy calibration section. It
