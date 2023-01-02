@@ -129,4 +129,3 @@ proc main(fname: string, runNumber: int) =
 when isMainModule:
   import cligen
   dispatch main
-
