@@ -12048,8 +12048,41 @@ threshold of the equivalent physical energy!
 
 - [ ] *COMPUTE IN ENERGY INSTEAD OF VOLTAGE*
 
+*** How to compute an effective charge based on FADC signals? [0/1]
+
+This section should cover our ideas about how we compute an effective
+charge (in arbitrary units) based on the FADC signals as a measure
+about the effective charge recorded in a signal. To cross correlate
+changes in FADC "charge" to GridPix charge.
+
+- [ ] -> is detector behavior over time visible in FADC data?
+
+-> Looking at [[file:Figs/time_vs_55fe_peak_pos_2017.pdf]] generated via
+#+begin_src sh
+./mapSeptemTempToFePeak ~/CastData/data/CalibrationRuns2017_Reco.h5 --inputs fePixel --inputs feCharge --inputs feFadc
+#+end_src
+shows a _very_ strong correlation between all three kinds of
+calibration.
+
+Note the strong fall in the FADC data in the "left hump" of points is
+the change of the integration / differentiation time during the 2017
+data taking (up to Dec 2017). But looking closely even there a strong
+correlation is visible inside of each "block".
+
+This puts to rest at least _most_ theories that the change might _not_
+be a change in the gas gain, but some other effect like electronics!
+
+- [ ] *EXPAND ON THE ABOVE, EXPLAIN THAT IN DETECTOR BEHAVIOR OVER
+  TIME!*
+  -> given that also temperature is not properly correlated it leaves
+  charge up effects (changing effective voltage) and gas flow
+  (unlikely as flow constant & pressure always stable).
+
 
 ** Detector behavior over time [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:detector_behavior_over_time
+:END:
 
 - [ ] this should be in the detector energy calibration section. It
   only matters (and can be computed) once we discuss the energy calibration.
