@@ -12048,6 +12048,73 @@ threshold of the equivalent physical energy!
 
 - [ ] *COMPUTE IN ENERGY INSTEAD OF VOLTAGE*
 
+*NOTE*: From the FADC plots here (pure FADC & GridPix energy
+correlated) as well as the raw FADC spectra it's clearly evident that
+the actual gain of the FADC went _down_ instead of up after changing
+diff 50->20ns and coarse gain 6x->10x and further when going from
+50ns-100ns integration time.
+To some extent this may make sense: differentiation
+
+According to FADC manual the "differentiation" setting adjusts the RC
+differentiation time and therefore
+#+begin_quote
+DIFFERENTIATE Front panel 6-position switch
+selects a differentiation time constant to control the
+decay time of the pulse; settings select Out
+(equivalent to 150 µs), 20, 50, 100, 200, or 500 ns.
+
+INTEGRATE Front panel 6-position switch selects
+an integration time constant to control the risetime
+of the pulse; settings select 20, 50, 100,
+#+end_quote
+And further:
+#+begin_quote
+Generally speaking, the Integrate time constant can
+be selected so that the rise time of the output
+pulses is normalized at a rate that is slower than
+the rise times of the input pulses. This function is of
+greatest value when the pulses originate in a large
+detector so that they generate a wide variety of rise
+times and are difficult to observe for timing
+measurements. The Differentiate time constant is
+also selectable and determines the total interval
+before the pulse returns to the baseline and allows
+a new pulse to be observed. The combination of
+integration and differentiation time constants also
+contributes to the amount of electronic noise that is
+seen in the system, so the resulting waveforms
+should be considered from each of these points of
+view and adjusted for optimum results.
+
+When the shaping time constants impose
+considerable changes in the input waveform, the
+nominal gain, which is the product of the Coarse
+and Fine control settings, may be degraded
+somewhat. This is not normally a problem, since
+the gain is constant even though it may be less
+than the nominal settings indicate. 
+#+end_quote
+
+I.e. this means the differentiation time is responsible for getting
+the signal back to baseline. And it's expected that it has an effect
+on the amplitude on the signal!
+
+- [ ] *ADD ABOVE AS EXPLANATION FOR THE SEEN BEHAVIOR*
+  -> maybe 4 fold plot:
+  - histogram as above for lower percentile energies of min vals &
+    gridpix energies together with three spectra, one for each setting
+    combined in one plot?
+
+All this is effectively good news. This explains also _why_ the
+changes to the integration / differentiation had such an effect on the
+noise! They simply reduced the effective gain, ergo made the FADC less
+sensitive to the same noise!    
+
+Ref:
+https://www.ortec-online.com/-/media/ametekortec/manuals/4/474-mnl.pdf?la=en&revision=07c47ecb-5c63-48ff-a393-ba39e45be57b
+from here:
+https://www.ortec-online.com/products/electronics/amplifiers/474
+
 *** How to compute an effective charge based on FADC signals? [0/1]
 
 This section should cover our ideas about how we compute an effective
