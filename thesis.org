@@ -12170,6 +12170,74 @@ be a change in the gas gain, but some other effect like electronics!
   charge up effects (changing effective voltage) and gas flow
   (unlikely as flow constant & pressure always stable).
 
+** Energy calibration, how done? [0/1]
+:PROPERTIES:
+:CUSTOM_ID: sec:calibration:energy
+:END:
+
+- [ ] Mention something about section [[#sec:large_events_few_pixels_tot]] in
+=StatusAndProgress=, i.e. events that convert very close to grid and
+thus have few pixels, but a lot of energy as determined by the
+ToT. This is an argument in favor of using ToT over #pix.
+
+The reconstructed data from the GridPixes as described in chapter
+[[#sec:???]] (refer to TOS calibration, charge calib & reconstruction
+parts) still needs to be calibrated in energy. The charge calibration
+(*sec ...*) computes the number of electrons recorded on each GridPix
+pixel in an event. In order to calculate an equivalent energy based on
+a certain amount of charge, the data recorded using the $\ce{^{55}Fe}$
+calibration source at CAST is used. As the $\ce{^{55}Fe}$ spectrum
+(see sec. [[#sec:theory:escape_peaks_55fe]]) has a photo peak at
+$\SI{5.9}{keV}$ and an escape peak at $\SI{2.9}{keV}$ it provides two
+different lines for calibration. While the charge calibration for each
+pixel from ToT to electrons is non linear, the relation between energy
+and recorded charge is linear. This allows to deduce the linear
+relationship between charge and energy seen in the escape and photo
+peak. The position of the two peaks in the $\ce{^{55}Fe}$ spectrum
+needs to be determined precisely, which is done using a double
+gaussian fit
+
+\[
+INSERT FE SPECTRUM MATH.
+\]
+
+Then, a linear function without y-offset is fitted for the calibration
+factor. With this calibration factor all events in the data run can
+then be calibrated.
+
+However, the recorded charge is dependent on the detector gas
+gain. The calibration factor is only valid for the specific gas gain
+ta the time of recording the $\ce{^{55}Fe}$ spectrum. Over the time of
+data taking at CAST the gas gain varies by a significant margin,
+requiring a more complex calibration routine.
+
+Fortunately, the gas gain can be computed using raw data without
+understanding of the physical events, allowing calculation of it also
+for background data. This motivates the idea to map a gas gain valid
+for a certain time to a calibration factor needed to convert events at
+such gas gains to energies. This is achieved by first performing the
+aforementioned gaussian fits to _all_ calibration spectra in a data
+taking (using the same GridPix calibrations) and then mapping the
+calibration factor for each calibration spectrum to the gas gain of
+each run.
+
+- [ ] *INSERT PLOT OF GAS GAIN VS CALIB?*
+
+The behavior between calibration factor and gas gain is mostly linear
+as seen in fig *FIGURE INSERT*.
+
+As such the final energy calibration works by first deducing the gas
+gain at the time of an event, computing the calibration factor based
+on this gas gain and the fit between all calibration spectra and
+finally using that factor to convert the charge into energy.
+
+Unfortunately, the task is slightly more complicated.
+
+- [ ] *TALK ABOUT DETECTOR BEHAVIOR OVER TIME, REFER TO SUBSECTION*
+
+
+
+  
 
 ** Detector behavior over time [/]
 :PROPERTIES:
@@ -12224,16 +12292,6 @@ Explain why we did it and how we ended up at 90 min time binning.
 
 Example spectrum. What's the point of these spectra.
 
-
-** Energy calibration, how done? [0/1]
-:PROPERTIES:
-:CUSTOM_ID: sec:calibration:energy
-:END:
-
-- [ ] Mention something about section [[#sec:large_events_few_pixels_tot]] in
-=StatusAndProgress=, i.e. events that convert very close to grid and
-thus have few pixels, but a lot of energy as determined by the
-ToT. This is an argument in favor of using ToT over #pix.
 
 ** CAST Detector Lab [/]
 :PROPERTIES:
