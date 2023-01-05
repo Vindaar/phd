@@ -12299,14 +12299,38 @@ power supply and grounding problems encountered, as well as different
 sets of calibrations between Run-2 and Run-3. By binning the data into
 short intervals of order one hour, significant fluctuations can be
 observed even on such time
-scales. Fig. [[fig:calib:total_charge_over_time]] shows the ...
+scales. Fig. [[fig:calib:total_charge_over_time]] shows the normalized
+median of the total charge in events for all CAST data normalized by
+the datasets (background and calibration). Each data point represents
+a \SI{90}{min} time slice. Some data is removed prior to calculation
+of the median as mentioned in the caption and title. The important
+takeaway of the figure is the extreme variability of the median charge
+(up to \SI{30}{\percent}). Fortunately though, the background and
+calibration data behaves the same, evident by the strong
+correlation. While the causes for the variability are not entirely
+understood (see sec. [[#sec:calib:causes_variability]]), it allows us to
+take action and calibrate the data accordingly.
 
-- [ ] *FIGURE TOTAL CHARGE OVER TIME*
+- [ ] SPLIT THIS BY: EXPLANATION TO A *WHY* SUCH VARIATION AND *WHAT
+  IS DONE* AS A RESULT.
+
+- [X] *FIGURE TOTAL CHARGE OVER TIME*
   what binning?
+  
+#+CAPTION: The plot shows the median charge within \SI{90}{min} time windows of both
+#+CAPTION: background and calibration data. Some data is removed (only clusters with
+#+CAPTION: less than 500 pixels active to remove the worst sparks and extremely large
+#+CAPTION: events) and only events within the inner \SI{4.5}{mm} radius are considered.
+#+CAPTION: Each data type (calibration and background) is normalized to 1 as the median
+#+CAPTION: charge is so different in the datasets. The median is used instead of the mean
+#+CAPTION: to further remove effect of very rare, but extreme outliers. Each pane of
+#+CAPTION: the plot shows a portion of data taking with significant time without data
+#+CAPTION: between each.
+#+NAME: fig:calib:total_charge_over_time
+[[~/phd/Figs/median_charge_binned_90min_filtered_crSilver_normalized.pdf]]
 
-- [ ] *CHECK NOTES W/ KLAUS AND STATUSANDPROGRESS FOR HOW WE WENT
+- [X] *CHECK NOTES W/ KLAUS AND STATUSANDPROGRESS FOR HOW WE WENT
   THROUGH GAS GAIN SLICING INVESTIGATION*  
-
 
 - [ ] *REMOVE REFERENCE TO FIXED SPECTRUM AND CALIBRATION RUNS HERE
   AND REWRITE BETTER IN CONTEXT OF PREVIOUS SECTION*
@@ -12345,14 +12369,50 @@ Reasons for peak position moving:
   -> a case of bad grounding causing the module to applying 300 V, but
   in reality not relative to the pixel layer, but rather to something
   else so that it was floating around that?
+
+[fn:calib_amount_of_calibration] *MOVE THIS WHEREVER FIRST VISIBLE 
+AMOUNT OF CALIBRATION* As is pretty evident in the first data taking
+campaign in 2017, the amount of calibration data is pretty
+limited. The reason for this is plainly that too much was going on at
+the time, leading to a neglect in taking regular calibration runs.
   
 *** Gas gain binning
 :PROPERTIES:
 :CUSTOM_ID: sec:?:gas_gain_time_binning
 :END:
 
+The why is plainly the strong variation, so just explain using 90 min.
+
 Explain why we did it and how we ended up at 90 min time binning.
-  
+
+*** Generate plot for median of charge over time                 :noexport:
+
+Let's generate the plot for the median charge within 90 minutes,
+filtered to only clusters with less than 500 hits, also showing the
+calibration data, filtered to the silver region & each data type
+(calibration & background) normalized to 1, as a facet plot.
+
+We hand ~StartHue=285~ manually here for now, but we should change
+that to become a thesis wide setting for everything we compile.
+
+For a note on why the median and not the mean, see the whole section
+on "Detector behavior over time" in the ~statusAndProgress~ and in
+particular the 'Addendum' there (extreme outliers in some cases is the tl/dr).
+#+begin_src sh
+nim c -d:danger -d:StartHue=285 plotTotalChargeOverTime && \
+    ./plotTotalChargeOverTime ~/CastData/data/DataRuns2017_Reco.h5 \
+                              ~/CastData/data/DataRuns2018_Reco.h5 \
+                              --interval 90 --cutoffCharge 0 \
+                              --cutoffHits 500 \
+                              --calibFiles ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+                              --calibFiles ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+                              --applyRegionCut --timeSeries \
+                              --useMedian --normalizeMedian
+#+end_src
+
+yielding
+[[~/phd/Figs/median_charge_binned_90min_filtered_crSilver_normalized.pdf]]
+
 ** 55Fe spectra
 :PROPERTIES:
 :CUSTOM_ID: sec:preparation:55fe
