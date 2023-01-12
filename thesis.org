@@ -12256,43 +12256,18 @@ data taking at CAST the gas gain varies by a significant margin,
 requiring a more complex calibration routine.
 
 Fortunately, the gas gain can be computed using raw data without
-understanding of the physical events, allowing calculation of it also
-for background data. This motivates the idea to map a gas gain valid
+evaluating any physical events, allowing calculation of it also for
+raw background data. This motivates the idea to map a gas gain valid
 for a certain time to a calibration factor needed to convert events at
-such gas gains to energies. This is achieved by first performing the
-aforementioned gaussian fits to _all_ calibration spectra in a data
-taking (using the same GridPix calibrations) and then mapping the
-calibration factor for each calibration spectrum to the gas gain of
-each run.
+such gas gains to energies. As we will see in
+sec. [[#sec:calib:gasgain_vs_calibration_factor]] the behavior is
+linear. The remaining question is the stability of the gas gain over
+time, which we will look at next in the context of the general
+detector behavior over time.
 
-- [X] *INSERT PLOT OF GAS GAIN VS CALIB?*
+- [X] *TALK ABOUT DETECTOR BEHAVIOR OVER TIME, REFER TO SUBSECTION*
 
-#+CAPTION: Fit of the gas gain values vs the calculated energy calibration factors
-#+CAPTION: for all calibration runs in Run-2. Each run was further sliced into
-#+CAPTION: \SI{90}{min} parts for the gas gain determination and fits. *REPLACE BY VERSION WITH FIXED ERRORS AND UNITS + PRETTY*
-#+NAME: fig:calib:gasgain_vs_energy_calib
-[[~/phd/Figs/gasgain_vs_energy_calibration_factors_-5437145575257130897_2017_placeholder.pdf]]
-
-The behavior between calibration factor and gas gain is mostly linear
-as seen in fig *FIGURE INSERT*.
-
-- [ ] *THINK ABOUT INSTEAD OF EXPLAINING HOW THE CALIBRATION IS DONE*
-  in as much detail as done above, instead just start by saying how
-  the calibration is gas gain dependent and then say that is
-  varying. therefore first study gas gain behavior & discover slicing
-
-As such the final energy calibration works by first deducing the gas
-gain at the time of an event, computing the calibration factor based
-on this gas gain and the fit between all calibration spectra and
-finally using that factor to convert the charge into energy.
-
-Unfortunately, the task is slightly more complicated.
-
-- [ ] *TALK ABOUT DETECTOR BEHAVIOR OVER TIME, REFER TO SUBSECTION*
-
-- [ ] *MENTION IF GAS GAIN VS ENERGY CALIB FITS USE INDIVIDUAL SLICES
-  OR MEAN VALUE!*
-
+- [ ] *INSERT REFERENCES TO THE FITS IN CODE*  
   
 ** Detector behavior over time [/]
 :PROPERTIES:
@@ -12312,29 +12287,37 @@ detector.
 As the charge and gas gain can be computed purely from individual
 pixel data without any physical interpretation, it serves as a great
 reference over time. Longer time scale variations of the gas gain were
-evident from the calibration runs and partially expected due to the
-power supply and grounding problems encountered, as well as different
-sets of calibrations between Run-2 and Run-3. By binning the data into
-short intervals of order one hour, significant fluctuations can be
-observed even on such time
+already evident from the calibration runs during data taking and
+partially expected due to the power supply and grounding problems
+encountered, as well as different sets of calibrations between Run-2
+and Run-3. By binning the data into short intervals of order one hour,
+significant fluctuations can be observed even on such time
 scales. Fig. [[fig:calib:total_charge_over_time]] shows the normalized
 median of the total charge in events for all CAST data normalized by
 the datasets (background and calibration). Each data point represents
 a \SI{90}{min} time slice. Some data is removed prior to calculation
 of the median as mentioned in the caption and title. The important
 takeaway of the figure is the extreme variability of the median charge
-(up to \SI{30}{\percent}). Fortunately though, the background and
+(up to \SI{30}{\percent}!). Fortunately though, the background and
 calibration data behaves the same, evident by the strong
 correlation. While the causes for the variability are not entirely
-understood (see sec. [[#sec:calib:causes_variability]]), it allows us to
-take action and calibrate the data accordingly.
+certain (see sec. [[#sec:calib:causes_variability]]), it allows us to take
+action and calibrate the data accordingly.
 
 - [ ] SPLIT THIS BY: EXPLANATION TO A *WHY* SUCH VARIATION AND *WHAT
   IS DONE* AS A RESULT.
 
 - [X] *FIGURE TOTAL CHARGE OVER TIME*
   what binning?
-  
+
+- [ ] *INSERT TABLE OF THE MEAN POSITIONS OF THE 55FE PEAKS WITH*
+  column charge and pixel mean of esc and photo. similar to that cdl
+  table we have!
+  -> AND OR have a plot of the positions?
+
+- [ ] *EXPLAIN HOW WE ENDED UP AT 90 MIN BINNING! AND HOW SLICING
+  WORKS ETC*  
+   
 #+CAPTION: The plot shows the median charge within \SI{90}{min} time windows of both
 #+CAPTION: background and calibration data. Some data is removed (only clusters with
 #+CAPTION: less than 500 pixels active to remove the worst sparks and extremely large
@@ -12350,18 +12333,10 @@ take action and calibrate the data accordingly.
 - [X] *CHECK NOTES W/ KLAUS AND STATUSANDPROGRESS FOR HOW WE WENT
   THROUGH GAS GAIN SLICING INVESTIGATION*  
 
-- [ ] *REMOVE REFERENCE TO FIXED SPECTRUM AND CALIBRATION RUNS HERE
-  AND REWRITE BETTER IN CONTEXT OF PREVIOUS SECTION*
-
 - [ ] this should be in the detector energy calibration section. It
   only matters (and can be computed) once we discuss the energy calibration.
 
-Plot of the (known) temperature at PCB from shift forms.
-Unfortunately, most of the high resolution temperature logs were lost due to a
-software bug.
-Cooling power varied over time, probably due to slight clogging.
-
-- [ ] plot of total charge over time as *main motivation*
+- [X] plot of total charge over time as *main motivation*
 - [ ] Plot of the peak position of the 55Fe calibration runs.
 
 
@@ -12370,23 +12345,6 @@ Cooling power varied over time, probably due to slight clogging.
   septemboard temperature, but the ambient temperature in the CAST hall?
   Unlikely, but can easily check by extracting temps from log files
   and plotting against position!
-
-Reasons for peak position moving:
-- electronic causing the effective threshold to change
-- change in gas temperature (seems uncorrelated going by
-  plots!. *Maybe* correlated to ambient temperature?)
-- change in pressure (unlikely, had pressure sensor!)
-- change in gas flow (related to above 2) (unlikely, was constant at
-  ~2 L/h. If changes smaller than what's commonly visible on the
-  flow meter was responsible it would be Jochen's fault for not being
-  aware of that!)
-- change in grid voltage (real or effective due to charge up)
-  -> either Iseg module broken (we *know* they are crappy), but in
-  this case the module *showing* the right voltage, but maybe not
-  really *applying* that voltage?
-  -> a case of bad grounding causing the module to applying 300 V, but
-  in reality not relative to the pixel layer, but rather to something
-  else so that it was floating around that?
 
 [fn:calib_amount_of_calibration] *MOVE THIS WHEREVER FIRST VISIBLE 
 AMOUNT OF CALIBRATION* As is pretty evident in the first data taking
@@ -12430,6 +12388,52 @@ nim c -d:danger -d:StartHue=285 plotTotalChargeOverTime && \
 
 yielding
 [[~/phd/Figs/median_charge_binned_90min_filtered_crSilver_normalized.pdf]]
+
+
+** Energy calibration dependence on the gas gain [/]
+
+- [ ] *REWRITE ME WITH NEW STRUCTURE IN MIND!*
+
+This is achieved by first performing the
+aforementioned gaussian fits to _all_ calibration spectra using the
+same GridPix calibrations and then mapping the calibration factor for
+each calibration spectrum to the gas gain of each run.
+
+- [X] *INSERT PLOT OF GAS GAIN VS CALIB?*
+- [X] *REPHRASE WORD 'UNDERSTANDING' IN SECTION ABOVE*
+- [ ] *MOVE EXPLANATION OF THIS FIT TO AFTER DISCUSSION OF GAS GAIN VARIANCE?*  
+
+#+CAPTION: Fit of the gas gain values vs the calculated energy calibration factors
+#+CAPTION: for all calibration runs in Run-2. Each run was further sliced into
+#+CAPTION: \SI{90}{min} parts for the gas gain determination and fits. *REPLACE BY VERSION WITH FIXED ERRORS AND UNITS + PRETTY*
+#+NAME: fig:calib:gasgain_vs_energy_calib
+[[~/phd/Figs/gasgain_vs_energy_calibration_factors_-5437145575257130897_2017_placeholder.pdf]]
+
+The resulting fit of a linear function with offset for the Run-2 data
+can be seen in fig. [[fig:calib:gasgain_vs_energy_calib]].
+
+- [ ] *HAVE TABLE OF FIT PARAMETERS SOMEWHERE FOR RUN-2 AND RUN-3!*
+- [ ] *Instead of single plot as now, have both plots in a subfig for
+  each of the two run periods!*
+
+- [X] *THINK ABOUT INSTEAD OF EXPLAINING HOW THE CALIBRATION IS DONE*
+  in as much detail as done above, instead just start by saying how
+  the calibration is gas gain dependent and then say that is
+  varying. therefore first study gas gain behavior & discover slicing
+
+As such the final energy calibration works by first deducing the gas
+gain at the time of an event, computing the calibration factor based
+on this gas gain and the fit between all calibration spectra and
+finally using that factor to convert the charge into energy.
+
+Unfortunately, the task is slightly more complicated.
+
+
+
+- [ ] *MENTION IF GAS GAIN VS ENERGY CALIB FITS USE INDIVIDUAL SLICES
+  OR MEAN VALUE!*
+
+
 
 ** 55Fe spectra
 :PROPERTIES:
