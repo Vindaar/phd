@@ -12351,6 +12351,486 @@ AMOUNT OF CALIBRATION* As is pretty evident in the first data taking
 campaign in 2017, the amount of calibration data is pretty
 limited. The reason for this is plainly that too much was going on at
 the time, leading to a neglect in taking regular calibration runs.
+
+*** Potential causes for the variability [0/6]
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:causes_variability
+:END:
+
+As mentioned in the previous section, variability of the data was
+already apparent during the data taking based on the position of the
+peaks in the \cefe spectra. The change in the median of the charge (and related the
+gas gain) is an easier data point to investigate possible reasons for
+such changes.
+
+One possible reason for such changes are related to the electronics of
+the detector readout. Either a floating ground or unstable power
+supply can result in the activation thresholds of the pixels moving,
+as was indeed observed as mentioned in section
+[[#sec:cast:data_taking_woes]]. Lesser versions of the problems discussed
+in that section could theoretically explain the variations. In
+particular in regards to the \cefe spectra showing variation, the
+number of pixels and the amount of charge are directly correlated. The
+number of pixels is plainly a clamped version of the charge
+information. If electronics caused threshold variations it would both
+change the effective ToT value as well as the number of pixels
+activated in the first place. Fortunately, the center chip also
+contains the FADC, which allows for an independent measurement of the
+effective charge generated below the grid and thus another indirect
+measurement of the gas gain. By comparing how the mean position of the
+\cefe spectra behave in the FADC data compared to the GridPix data we
+can deduce if the GridPix behavior likely is due to real gas gain
+changes or due to electronics.
+
+Fig. [[fig:calib:fe55_peak_pos_charge_pixel_fadc]] shows the (normalized)
+position of the \cefe photo peak based on a fit to the pixel, charge
+and FADC spectrum (the latter based on the amplitudes of the FADC
+signals). Aside from the variations in the FADC data in the first
+facet due to the changed FADC settings, the 'temporally local' changes
+in all three datasets are almost perfectly correlated. This implies a
+*real physical origin* in the observed variation and not an electronic
+or power supply origin!
+
+- [ ] *REWRITE TEXT ABOVE PLOT BELOW IS REPLACED BY FACET PLOT*
+
+#+CAPTION: Normalized photo peak positions in the Run-2 data based on the pixel (blue), charge
+#+CAPTION: (red) and FADC (green) spectra. The empty range in the middle is the period between
+#+CAPTION: Dec2017 and Feb2018 (TO BE REPLACED BY NEW PLOT). The strong changes in the FADC
+#+CAPTION: on the left are due to the different FADC settings. Beyond that the three sets of 
+#+CAPTION: data are fully correlated, implying a physical origin in the variation.
+#+NAME: fig:calib:fe55_peak_pos_charge_pixel_fadc
+[[~/phd/Figs/time_vs_55fe_peak_pos_2017.pdf]]
+
+- [ ] *UPDATE THE PLOT WITH ALL DATA, SPLIT BY RUN PERIOD AS FACET,
+  AND UPDATE COLORS (!!!) IN THE CAPTION!*
+
+A physical change in the gas gain can either be caused by a change in
+high voltage in the amplification region, a change in gas composition
+or gas properties (assuming no change in the physical size of the
+amplification gap, which is reasonable at least within Run-2 and Run-3
+as the detector was not touched).
+
+Firstly, the high voltage, while not logged to a file [fn:hv_logging],
+was visually inspected regularly and was always kept at the desired
+voltages by the Iseg HV module within the operating window. It is a
+very unlikely source of the
+variability. [fn:hv_variability_lab_course]
+
+Secondly, there is no reason to believe the gas composition to be at
+fault as a) the detector is used in an open loop at a constant gas
+flow and b) it would then if anything show up as a sudden change in
+detector properties upon a gas bottle change and not a continuous
+change during operation.
+
+This finally leaves the properties of the gas itself, for which three
+variables are (partially) known:
+1. the gas flow
+2. the chamber pressure via the pressure controller on the inlet *OR
+   OUTLET* side
+3. the temperature
+
+The gas flow was at a relatively constant $\SI{2}{\liter\per\hour}$. The
+absolute value should not be too relevant, as the flow is small in
+absolute terms and thus should have no effect on the gas properties in
+the chamber as such (via gas flow related effects causing turbulence
+or similar in the chamber). Its secondary impact is only one on
+absolute gas pressure, which is controlled by the pressure controller,
+which provides granular control. While also no log files were written
+for the chamber pressure, visual inspection was also done regularly
+and the pressure was at a constant $\SI{1050}{mbar}$ at most varying
+by $\SI{1}{mbar}$ in rare cases, but certainly not in a way
+correlating to the gas gain variations.
+
+This leaves the temperature inside the chamber and in the
+amplification region as the final plausible source of the
+variations. As the temperature log files for the Septemboard were lost
+due to a software bug (as mentioned previously), there are two other
+sources of temperature information. First of all the shift log of each
+morning shift contains one temperature reading of the Septemboard,
+which yields one value for every solar tracking. Second of all the
+CAST slow control log files contain multiple different temperature
+readings in one second intervals. Most notably the ambient temperature
+in the CAST hall, which up to an offset (and some variation due to
+detector load and cooling efficiency) should be equivalent to the gas
+temperature. Fig. [[fig:calib:correlation_ambient_temperature_gasgain_and_spectra]]
+shows the normalized temperature sensors in the CAST hall (excluding
+the exterior temperature) during the Run-3 data taking period together
+with the normalized peak position of the \cefe spectra in pixels
+(black points), the temperature from the shift logs (blue points) and
+the gas gain values of each chip (smaller points using the color
+scale, based on \SI{90}{min} per point). The blue points of the
+temperature of the Septemboard recorded during each solar tracking
+nicely follows the temperature trend of the ambient temperature
+(~T_amb~) in the hall, as expected. Comparing the \cefe spectra mean
+positions with the shift log temperatures does not allow to draw
+meaningful conclusions about possible correlations, due to lack of
+statistics. But the gas gains of each chip compared to the temperature
+lines does imply an (imperfect) inverse correlation between the
+temperature and the gas gain.
+
+- [ ] *REWRITE BELOW OBV*
+- ideal gas, temp + constant pressure, lower density, higher mobility
+- less visible in old detector, as absolute temperatures under grid
+  much lower, therefore on a "less steep" part of the exponential that
+  makes up the gas gain temperature dependence!
+This *should* imply:
+- A higher temperature in the CAST hall, while keeping the same
+  pressure in the detector, means a lower gas density according to the
+  ideal gas law, p·V = nRT ⇔ n₁RT₁ = n₂RT₂ ⇔ T₁/T₂ = n₁/n₂ ⇔ T₁ > T₂ ⇒
+  n₁ < n₂. n ∝ ρ.
+- A lower density according to the quote then implies a _higher_
+  mobility.
+- The 'mobility' should be proportional to the mean free path.
+  - [ ] *CHECK THIS*
+- *Assuming* the mean free path is _long enough_ in 'both'
+  temperatures as to have enough kinetic energy to cause an ionization
+  ~typically, *then* a _higher mobility_ means *less* gas gain, as
+  there will be *less* collisions!
+  *However* if the mean free path would lead to typical collisions
+  that do *not* have enough energy to cause ionization, then the gas
+  gain would be *lower* for a *lower* mobility, as the gas would then
+  act as a dampener. But the former should always be true in the
+  amplification region I guess.
+  
+
+This explanation is not meant as a definitive statement about the
+origins of the gas gain variations in the Septemboard detector
+data. *However*, it clearly motivates the need for an in depth study
+of the behavior of these detectors for different gas temperatures at
+constant pressures and more precise logging of temperatures in future
+detectors. Further, a significantly improved cooling setup (to more
+closely approach a region where temperature changes have a smaller
+relative impact), or theoretically even a temperature controlled setup
+with known inlet gas temperatures might be useful. This behavior is
+one of the most problematic from a data analysis point of view and
+thus it should be taken seriously for future endeavors!
+
+
+#+CAPTION: Normalized data for Run-3 of the temperature sensors from the CAST slow control log
+#+CAPTION: files compared to the behavior of the mean peak position in the \cefe pixel spectra
+#+CAPTION: (black points), the recovered temperature values recorded during each solar tracking
+#+CAPTION: (blue points) and the gas gain values computed based on \SI{90}{min} of data for each
+#+CAPTION: chip (smaller points using Viridis color scale). The shift log temperatures nicely
+#+CAPTION: follow the trend of the general temperatures. Gas gains and temperatures seem to be
+#+CAPTION: inversely correlated, providing a possible explanation for the detector behavior.
+#+NAME: fig:calib:correlation_ambient_temperature_gasgain_and_spectra
+#+ATTR_LATEX: :float sideways
+[[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain.pdf]]
+
+
+
+
+
+
+
+Note that even if the temperature logs were still available, it is not
+obvious how they could lead to a correction that goes beyond the gas
+gain binning in time that was eventually settled on. The variations
+lead to gain and loss of information that cannot easily be corrected
+for without introducing potential biases, especially because the
+temperature sensor on the bottom side of the Septemboard does not
+yield an absolute temperature inside the amplification region
+anyway. While theoretically a fit correlating temperature to energy
+calibration factors is thinkable it is not clear it would improve the
+calibration over using gas gains binned in time, as the gas gain is
+the physical result of temperature changes. The only interesting
+aspect of it would be potentially higher time resolution than the time
+binning required to have good statistics for a gas gain. Further,
+temperature changes are not expected to usually occur on time scales
+much shorter than of the order of one hour, if they are due to ambient
+temperature changes. Still, it could be an interesting avenue to
+explore experimenting with the available slow control log information
+on the ambient temperature as a proxy for the temperature in the
+amplification region (same as the Septemboard temperature sensors, but
+just with a larger offset and lack of detail regarding local
+temperature changes due to water cooling related variations).
+
+
+
+  
+
+- [ ] Reasons for peak position moving:
+  - [X] electronic causing the effective threshold to change
+  - [X] change in gas temperature (seems uncorrelated going by
+    plots!. *Maybe* correlated to ambient temperature?)
+  - [X] change in pressure (unlikely, had pressure sensor!)
+  - [X] change in gas flow (related to above 2) (unlikely, was constant at
+    ~2 L/h. If changes smaller than what's commonly visible on the
+    flow meter was responsible it would be Jochen's fault for not being
+    aware of that!)
+  - [X] change in grid voltage (real or effective due to charge up)
+    -> either Iseg module broken (we *know* they are crappy), but in
+    this case the module *showing* the right voltage, but maybe not
+    really *applying* that voltage?
+    -> a case of bad grounding causing the module to applying 300 V, but
+    in reality not relative to the pixel layer, but rather to something
+    else so that it was floating around that?
+
+- [ ] *WAS GAS PRESSURE CONTROLLER ON INLET OR OUTLET SIDE??? CHECK
+  AND ADJUST ABOVE*
+
+- [X] Plot of the (known) temperature at PCB from shift forms.
+Unfortunately, most of the high resolution temperature logs were lost due to a
+software bug.
+Cooling power varied over time, probably due to slight clogging.
+
+- [ ] *CHECK NAME OF BRONKHORST ? OR WHATEVER PRESSURE CONTROLLER AND
+  ADJUST IN FOOTNOTE!*
+
+[fn:hv_logging] Once again, in hindsight writing a log file of the
+high voltage values would have been valuable, especially as it could
+have been done straight from TOS. However, similar to what lead to
+losses of the temperature log files, this was simply not prioritized to
+implement at the time. The same holds for the gas pressure in the
+chamber, which should have been logged using the *CHECK ME NAME*
+software of the pressure controller used to control it.
+
+[fn:hv_variability_lab_course] From other Iseg HV modules used in lab
+course experiments we know that when they _are_ faulty it is very
+evident. We have never experienced a module that reads correct values,
+but actually supplies the wrong voltage. In each faulty case the
+desired target voltage was simply not correctly held and this was
+visible in the read out voltage.
+
+**** Generate plot of ambient CAST temp against 55Fe peaks      :noexport:
+
+First we run the CAST log reader to get the temperature data as a
+simple CSV file (by default just written to
+~/tmp/temperatures_cast.csv~):
+#+begin_src sh
+cd $TPA/LogReader # <- directory of TimepixAnalysis
+./cast_log_reader sc -p ../resources/LogFiles/SClogs -s Version.idx
+#+end_src
+Note that this requires the slow control files for the relevant times
+to be present in the ~SCLogs~ directory!
+
+
+- [ ] *MOVE CODE OVER TO TPA, DEDUCTION TO STATUS, MAYBE KEEP HERE AS
+  WELL?*
+  -> well, the interesting stuff will go straight into the thesis, so
+  there is less 
+
+#+begin_src nim :tangle code/correlation_ambient_temps_fe55_peaks.nim
+import std / [strutils, sequtils, times]
+import os except FileInfo
+import ggplotnim, nimhdf5
+import ingrid / tos_helpers
+import ingrid / ingrid_types
+
+type
+  FeFileKind = enum
+    fePixel, feCharge, feFadc
+
+const Peak = "μ"
+const PeakNorm = "μ/μ_max"
+const TempPeak = "(μ/T) / max"
+
+const TempFile = "/home/basti/CastData/ExternCode/TimepixAnalysis/resources/cast_2017_2018_temperatures.csv"
+const OrgFormat = "'<'yyyy-MM-dd ddd H:mm'>'"
+var dfTemp = toDf(readCsv(TempFile))
+  .filter(f{c"Temp / °" != "-"})
+dfTemp["Timestamp"] = dfTemp["Date"].toTensor(string).map_inline(parseTime(x, OrgFormat, utc()).toUnix)
+
+proc readFePeaks(files: seq[string], feKind: FeFileKind = fePixel): DataFrame =
+  const kalphaPix = 10
+  const kalphaCharge = 4
+  const parPrefix = "p"
+  const dateStr = "yyyy-MM-dd'.'HH:mm:ss" # example: 2017-12-04.13:39:45
+  var dset: string
+  var kalphaIdx: int
+  case feKind
+  of fePixel:
+    kalphaIdx = kalphaPix
+    dset = "FeSpectrum"
+  of feCharge:
+    kalphaIdx = kalphaCharge
+    dset = "FeSpectrumCharge"
+  of feFadc:
+    kalphaIdx = kalphaCharge
+    dset = "FeSpectrumFadcPlot" # raw dataset is `minvals` instead of `FeSpectrumFadc`
+
+  var h5files = files.mapIt(H5open(it, "r"))
+  var fileInfos = newSeq[FileInfo]()
+  for h5f in mitems(h5files):
+    let fi = h5f.getFileInfo()
+    fileInfos.add fi
+  var
+    peakSeq = newSeq[float]()
+    dateSeq = newSeq[float]()
+  for (h5f, fi) in zip(h5files, fileInfos):
+    for r in fi.runs:
+      let group = h5f[(recoBase() & $r).grp_str]
+      let chpGrpName = if feKind in {fePixel, feCharge}: group.name / "chip_3"
+                       else: group.name / "fadc"
+      peakSeq.add h5f[(chpGrpName / dset).dset_str].attrs[
+        parPrefix & $kalphaIdx, float
+      ]
+      dateSeq.add parseTime(group.attrs["dateTime", string],
+                            dateStr,
+                            utc()).toUnix.float
+  result = toDf({ Peak : peakSeq,
+                  "Timestamp" : dateSeq })
+    .arrange("Timestamp", SortOrder.Ascending)
+    .mutate(f{float: PeakNorm ~ idx(Peak) / max(col(Peak))},
+            f{"Type" <- $feKind})
+
+proc toDf[T: object](data: seq[T]): DataFrame =
+  ## Converts a seq of objects that (may only contain scalar fields) to a DF
+  result = newDataFrame()
+  for i, d in data:
+    for field, val in fieldPairs(d):
+      if field notin result:
+        result[field] = newColumn(toColKind(type(val)), data.len)
+      result[field, i] = val
+    
+proc readGasGainSliceData(files: seq[string]): DataFrame =     
+  result = newDataFrame()
+  for f in files:
+    let h5f = H5file(f, "r")
+    let fInfo = h5f.getFileInfo()
+    for r in fInfo.runs:
+      for c in fInfo.chips:
+        let group = recoDataChipBase(r) & $c
+        var gainSlicesDf = h5f[group & "/gasGainSlices90", GasGainIntervalResult].toDf
+        gainSlicesDf["Chip"] = c
+        gainSlicesDf["Run"] = r
+        gainSlicesDf["File"] = f
+        result.add gainSlicesDf
+    discard h5f.close()
+
+proc plotCorrelation(files: seq[string], kind: FeFileKind, gainDf: DataFrame) =
+  let df = readFePeaks(files, feCharge)
+    .filter(f{`Timestamp` >= 1.54e9})
+  let t0 = df["Timestamp", float].min
+  let t1 = df["Timestamp", float].max
+
+  let dfTemp = dfTemp
+    .filter(f{float: `Timestamp` >= t0 and `Timestamp` <= t1})
+  var gainDf = gainDf
+    .filter(f{float: `tStart` >= t0 and `tStart` <= t1})
+  echo gainDf
+  ggplot(gainDf, aes("tStart", "G")) +
+    geom_point() +
+    ggsave("/t/raw_gas_gain.pdf")
+  let dfCastTemp = readCsv("/tmp/temperatures_cast.csv")
+    .filter(f{float: `Time` >= t0 and `Time` <= t1})
+    .group_by("Temperature")
+    .mutate(f{"TempNorm" ~ `TempVal` / max(col("TempVal"))})
+    .filter(f{`Temperature` != "T_ext"})
+
+  ## XXX: combine point like data for legend?
+  # let dfC = bind_rows([("Fe55", df), ("SeptemTemp", dfTemp)], "Type")
+
+    
+  ggplot(df, aes("Timestamp", PeakNorm)) +
+    geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}, color = "Chip"), alpha = 0.7, size = 1.5) + 
+    geom_line(data = dfCastTemp, aes = aes("Time", "TempNorm", color = "Temperature")) +
+    geom_point(data = dfTemp, aes = aes("Timestamp", f{idx("Temp / °") / max(col("Temp / °"))}), color = "blue") +
+    geom_point() +
+    ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind & " (black) and gas gains by chip", titleFont = font(11.0)) + 
+    ggsave("/tmp/correlation_" & $kind & "_all_chips_gasgain.pdf", width = 1000, height = 600)
+    
+  gainDf = gainDf.filter(f{`Chip` == 3})
+  ggplot(df, aes("Timestamp", PeakNorm)) +
+    geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}), color = "purple", alpha = 0.7, size = 1.5) + 
+    geom_line(data = dfCastTemp, aes = aes("Time", "TempNorm", color = "Temperature")) +
+    geom_point(data = dfTemp, aes = aes("Timestamp", f{idx("Temp / °") / max(col("Temp / °"))}), color = "blue") +
+    geom_point() +
+    ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind & " (black) and gas gains (chip3) in purple", titleFont = font(11.0)) +     
+    ggsave("/tmp/correlation_" & $kind & ".pdf", width = 1000, height = 600)
+    
+
+proc main(calibFiles: seq[string], dataFiles: seq[string] = @[]) =
+  ## NOTE: this file needs the CSV file containing the temperature data from the slow control
+  ## CAST log files, which is written running the `cast_log_reader` on the slow control log
+  ## directory!
+  var gainDf = newDataFrame()
+  if dataFiles.len > 0:
+    gainDf = readGasGainSliceData(dataFiles)
+  plotCorrelation(calibFiles, fePixel, gainDf)
+  plotCorrelation(calibFiles, feCharge, gainDf)
+
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+which generates the following four plots:
+
+[[file:Figs/behavior_over_time/correlation_feCharge.pdf]]
+[[file:Figs/behavior_over_time/correlation_fePixel.pdf]]
+file:Figs/behavior_over_time/correlation_feCharge_all_chips_gasgain.pdf
+[[file:Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain.pdf]]
+
+The first thing that jumps out is that the (normalized) temperature
+recovered from the shift forms of the Septem board sensor is strongly
+correlated with the ambient CAST temperature (~T_amb~). This is
+interesting and reassuring as it partially explains why the
+temperatures were higher on the Septemboard during Run-3 than Run-2:
+it was hotter in the hall in Run-3 (not shown in this plot, see full
+version of all data).
+
+*Next paragraph was written before gas gain information was in the plot*
+However, the peak position of the 55Fe data is either uncorrelated
+*or* actually inversely proportional to the temperatures. When the
+temperatures are lower the peak position is higher and vice versa. The
+data is imo not good enough to make final statements about this, but
+_something_ might be going on there. This is something that one might
+want to investigate in the future!
+
+*UPDATE*: Having added the gas gain slice information to the plot now,
+it seems pretty evident that there *is* an inverse correlation between
+the gas gain and the temperature!
+
+- ideal gas, temp + constant pressure, lower density, higher mobility
+- less visible in old detector, as absolute temperatures under grid
+  much lower, therefore on a "less steep" part of the exponential that
+  makes up the gas gain temperature dependence!
+
+PDG 2016 page 467 says: (detectors at accelerators chapter)
+#+begin_quote
+For different temperatures and pressures, the mobility can be scaled
+inversely with the density assuming an ideal gas law
+#+end_quote
+This *should* imply:
+- A higher temperature in the CAST hall, while keeping the same
+  pressure in the detector, means a lower gas density according to the
+  ideal gas law, p·V = nRT ⇔ n₁RT₁ = n₂RT₂ ⇔ T₁/T₂ = n₁/n₂ ⇔ T₁ > T₂ ⇒
+  n₁ < n₂. n ∝ ρ.
+- A lower density according to the quote then implies a _higher_
+  mobility.
+- The 'mobility' should be proportional to the mean free path.
+  - [ ] *CHECK THIS*
+- *Assuming* the mean free path is _long enough_ in 'both'
+  temperatures as to have enough kinetic energy to cause an ionization
+  ~typically, *then* a _higher mobility_ means *less* gas gain, as
+  there will be *less* collisions!
+  *However* if the mean free path would lead to typical collisions
+  that do *not* have enough energy to cause ionization, then the gas
+  gain would be *lower* for a *lower* mobility, as the gas would then
+  act as a dampener. But the former should always be true in the
+  amplification region I guess.
+
+This explanation is not meant as a definitive statement about the
+origins of the gas gain variations in the Septemboard detector
+data. *However*, it clearly motivates the need for an in depth study
+of the behavior of these detectors for different gas temperatures at
+constant pressures and more precise logging of temperatures in future
+detectors. Further, a significantly improved cooling setup (to more
+closely approach a region where temperature changes have a smaller
+relative impact), or theoretically even a temperature controlled setup
+with known inlet gas temperatures might be useful. This behavior is
+one of the most problematic from a data analysis point of view and
+thus it should be taken seriously for future endeavors!
+
+
+- [ ] *INSERT THE PIXEL TEMP GASGAIN PLOT INTO THESIS ROTATED FULL PAGE?*
+
+- [ ] *ADD VERSION OF PLOTS THAT SHOW FULL DATA WITHOUT CUT TO RUN-3*
+
+- [X] *ADD A SIMILAR PLOT, BUT NOT USING 55FE POSITIONS, BUT GAS GAIN
+  SLICES*
+  -> done by *adding* Gas gain data as well for all chips! 
   
 *** Gas gain binning
 :PROPERTIES:
