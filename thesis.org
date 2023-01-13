@@ -6667,11 +6667,11 @@ each pixel, a Pólya distribution naturally arises.
 
 This Pólya distribution has two different use cases. First of all it
 is the source of the empirical gas gain the detector actually operated
-under. On the one hand one of the parameters of the Pólya
-parametrization as introduced in section [[#sec:theory:gas_gain_polya]] is
-a measure for the gas gain. On the other hand, the mean of the
-histogram can also be used as a measure for the gas gain (which is the
-main number used in later chapters).
+under. One of the parameters of the Pólya parametrization as
+introduced in section [[#sec:theory:gas_gain_polya]] is a measure for the
+gas gain. Alternatively, the mean of the histogram can also be used as
+a measure for the gas gain (which is the main number used in later
+chapters).
 
 Secondly, the Pólya can also be used to determine the actual
 activation threshold of the detector, by simply checking what the
@@ -6680,14 +6680,14 @@ lowest charge is that sees significant statistics.
 - [X] *TALK ABOUT GAS GAIN*
 - [ ] *MAYBE MOVE EXPLANATION ABOUT HOW TO EXTRACT GAS GAIN FROM POLYA
   TO EXPLANATION IN THEORY?*
-- [ ] *IF IT STAYS HERE, INTRODUCE WHAT "MEAN OF HISTOGRAM" EVEN MEANS*  
+- [ ] *IF IT STAYS HERE, INTRODUCE WHAT "MEAN OF HISTOGRAM" EVEN MEANS!*  
   
 An example of such a Pólya distribution is seen in
 fig. [[fig:daq:polya_example_chip0]], where we see the same chip 0 using
 the same calibration from July 2018 as in the figures in the previous
 section [[#sec:daq:scurve_scan]]. The data is a \SI{30}{min} interval of
 background data at CAST. The reasoning behind looking at a fixed time
-interval for the Pólya will be explained in section [[#sec:?:gas_gain_time_binning]].
+interval for the Pólya will be explained in section [[#sec:calib:gas_gain_time_binning]].
 The pink line represents the fit of the Pólya
 distribution to the data. The dashed part of the line was not used for
 the fit and is only an extension using the final fit parameters. The
@@ -6722,7 +6722,10 @@ chip. This matches our expectation.
 - [X] *INTRODUCE IT IS USED AS THE PRACTICAL WAY TO COMPUTE GAS GAIN*
 - [ ] *MENTION THAT WE BIN BY TIME OF 90min AND THAT WE WILL EXPLAIN
   IN LATER CHAPTER HOW TIME INTERVAL WAS CHOSEN*
-- [ ] *GENERATE A NEW PLOT OF POLYA FOR THESIS*  
+- [ ] *GENERATE A NEW PLOT OF POLYA FOR THESIS*
+
+- [ ] *EXPLAIN HOW WE CHOOSE THE FITTING RANGE FOR THE POLYA*
+  -> see the ~statusAndProgress~ section ~Determine polya fit range dynamically~!  
 
 Explain how all charge values combined as a histogram generate a
 ~Pólya distribution from which we can deduce the gas gain.
@@ -12367,6 +12370,36 @@ campaign in 2017, the amount of calibration data is pretty
 limited. The reason for this is plainly that too much was going on at
 the time, leading to a neglect in taking regular calibration runs.
 
+*** Generate plot for median of charge over time                 :noexport:
+
+Let's generate the plot for the median charge within 90 minutes,
+filtered to only clusters with less than 500 hits, also showing the
+calibration data, filtered to the silver region & each data type
+(calibration & background) normalized to 1, as a facet plot.
+
+We hand ~StartHue=285~ manually here for now, but we should change
+that to become a thesis wide setting for everything we compile.
+
+For a note on why the median and not the mean, see the whole section
+on "Detector behavior over time" in the ~statusAndProgress~ and in
+particular the 'Addendum' there (extreme outliers in some cases is the tl/dr).
+#+begin_src sh
+nim c -d:danger -d:StartHue=285 plotTotalChargeOverTime && \
+    ./plotTotalChargeOverTime ~/CastData/data/DataRuns2017_Reco.h5 \
+                              ~/CastData/data/DataRuns2018_Reco.h5 \
+                              --interval 90 --cutoffCharge 0 \
+                              --cutoffHits 500 \
+                              --calibFiles ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+                              --calibFiles ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+                              --applyRegionCut --timeSeries \
+                              --useMedian --normalizeMedian
+#+end_src
+
+yielding
+[[~/phd/Figs/median_charge_binned_90min_filtered_crSilver_normalized.pdf]]
+
+
+
 *** Potential causes for the variability [0/6]
 :PROPERTIES:
 :CUSTOM_ID: sec:calib:causes_variability
@@ -12834,53 +12867,86 @@ one of the most problematic from a data analysis point of view and
 thus it should be taken seriously for future endeavors!
 
 
-- [ ] *INSERT THE PIXEL TEMP GASGAIN PLOT INTO THESIS ROTATED FULL PAGE?*
+- [X] *INSERT THE PIXEL TEMP GASGAIN PLOT INTO THESIS ROTATED FULL
+  PAGE?*
 
 - [ ] *ADD VERSION OF PLOTS THAT SHOW FULL DATA WITHOUT CUT TO RUN-3*
 
 - [X] *ADD A SIMILAR PLOT, BUT NOT USING 55FE POSITIONS, BUT GAS GAIN
   SLICES*
   -> done by *adding* Gas gain data as well for all chips! 
-  
+
+*** TODO Section covering our plots of logL variables over time? :noexport:
+
+We have those plots in ~statusAndProgress~! Maybe add them here?
+Section: ~Time behavior of logL variables~
+
 *** Gas gain binning
 :PROPERTIES:
-:CUSTOM_ID: sec:?:gas_gain_time_binning
+:CUSTOM_ID: sec:calib:gas_gain_time_binning
 :END:
 
-The why is plainly the strong variation, so just explain using 90 min.
+Motivated by the strong variation seen over timescales much shorter
+than the typical length of a background run, the gas gain needs to be
+computed in time slices of a fixed length. This is naturally a trade
+off between assigning accurate gas gains to a data slice and acquiring
+enough statistics to compute said gas gain correctly.
 
-Explain why we did it and how we ended up at 90 min time binning.
+To determine a suitable time window the gas gain was computed for a
+fixed set of different time intervals and figures similar to
+fig. [[fig:calib:total_charge_over_time]] were considered not only for the
+median charge, but also different geometric cluster
+distributions. Further, by applying the energy calibration (as
+explained in detail in the next section
+[[#sec:calib:energy_calibration_gas_gain]]) based on each different set of
+time intervals to the background data, the histograms of the median
+cluster energy in the background data was studied. The ideal time
+interval is one in which the resulting energy distribution is narrow
+and unimodal approaching a normal distribution. That is because the
+background is expected to be equivalent between all time slices, if
+some average is considered.
 
-*** Generate plot for median of charge over time                 :noexport:
+- [ ] *INSERT THE PLOT SHOWING THE DIFFERENT DISTRIBUTIONS?*
 
-Let's generate the plot for the median charge within 90 minutes,
-filtered to only clusters with less than 500 hits, also showing the
-calibration data, filtered to the silver region & each data type
-(calibration & background) normalized to 1, as a facet plot.
+In this approach a time interval length of $\SI{90}{min}$ was chosen
+as a trade off between enough statistics and a stable energy
+distribution over time. Of course no run is a perfect multiple of
+$\SI{90}{min}$. The last slice smaller than the time interval is
+either added to the second to last slice (making it longer than
+$\SI{90}{min}$) if it is smaller than some fixed interval or will be
+kept as a single shorter interval. This is controlled by an additional
+parameter that is set to $\SI{25}{min}$ by default. [fn:configuration_slicing]
 
-We hand ~StartHue=285~ manually here for now, but we should change
-that to become a thesis wide setting for everything we compile.
+- [ ] *INSERT FIG OF MEDIAN ENERGY OF BACKGROUND DATA USING 90 MIN* 
+- [ ] *INSERT FIG OF RIDGELINE FOR MEDIAN ENERGY HISTO FOR DIFFERENT TIMES*  
 
-For a note on why the median and not the mean, see the whole section
-on "Detector behavior over time" in the ~statusAndProgress~ and in
-particular the 'Addendum' there (extreme outliers in some cases is the tl/dr).
-#+begin_src sh
-nim c -d:danger -d:StartHue=285 plotTotalChargeOverTime && \
-    ./plotTotalChargeOverTime ~/CastData/data/DataRuns2017_Reco.h5 \
-                              ~/CastData/data/DataRuns2018_Reco.h5 \
-                              --interval 90 --cutoffCharge 0 \
-                              --cutoffHits 500 \
-                              --calibFiles ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-                              --calibFiles ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-                              --applyRegionCut --timeSeries \
-                              --useMedian --normalizeMedian
-#+end_src
+- [ ] *EXPLAIN ~minimumGasGainSlice~*: how we deal with last pieces in
+  a run!
+  #+begin_src
+  # minutes the gas gain interval has to be long at least. This comes into play
+  # at the end of a run `(tRun mod gasGainInterval) = lastSliceLength`. If the
+  # remaining time `lastSliceLength` is less than `minimumGasGainInterval`, the
+  # slice will be absorbed into the second to last, making that longer.
+  minimumGasGainInterval = 25
+  #+end_src
 
-yielding
-[[~/phd/Figs/median_charge_binned_90min_filtered_crSilver_normalized.pdf]]
+- [ ] *NOTE: The ~optimizeGasGainSliceTime.nim~ tool writes the CSV
+  files to the ~TPA/Tools/out/~ directory! So we needn't rerun the
+  whole thing and can just generate the plot we want to show here!
 
+[fn:configuration_slicing] Both the gas gain time slicing and the
+minimum length for the last slice in a run to be kept as a shorter
+slice can be configured from the TPA configuration file, via the
+~gasGainInterval~ and ~minimumGasGainInterval~ fields, respectively.
+  
+[fn:optimize_gas_gain_window] The code for this optimization can be
+found here *GITHUB/TPA/Tools/optimizaGasGainSliceTime.nim*. Further see
+the ~statusAndProgress~ notes on this!  
 
 ** Energy calibration dependence on the gas gain [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:energy_calibration_gas_gain
+:END:
 
 - [ ] *REWRITE ME WITH NEW STRUCTURE IN MIND!*
 
