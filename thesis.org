@@ -12425,8 +12425,7 @@ change during operation.
 This finally leaves the properties of the gas itself, for which three
 variables are (partially) known:
 1. the gas flow
-2. the chamber pressure via the pressure controller on the inlet *OR
-   OUTLET* side
+2. the chamber pressure via the pressure controller on the outlet side
 3. the temperature
 
 The gas flow was at a relatively constant $\SI{2}{\liter\per\hour}$. The
@@ -12468,31 +12467,34 @@ statistics. But the gas gains of each chip compared to the temperature
 lines does imply an (imperfect) inverse correlation between the
 temperature and the gas gain.
 
-- [ ] *REWRITE BELOW OBV*
-- ideal gas, temp + constant pressure, lower density, higher mobility
-- less visible in old detector, as absolute temperatures under grid
-  much lower, therefore on a "less steep" part of the exponential that
-  makes up the gas gain temperature dependence!
-This *should* imply:
-- A higher temperature in the CAST hall, while keeping the same
-  pressure in the detector, means a lower gas density according to the
-  ideal gas law, p·V = nRT ⇔ n₁RT₁ = n₂RT₂ ⇔ T₁/T₂ = n₁/n₂ ⇔ T₁ > T₂ ⇒
-  n₁ < n₂. n ∝ ρ.
-- A lower density according to the quote then implies a _higher_
-  mobility.
-- The 'mobility' should be proportional to the mean free path.
-  - [ ] *CHECK THIS*
-- *Assuming* the mean free path is _long enough_ in 'both'
-  temperatures as to have enough kinetic energy to cause an ionization
-  ~typically, *then* a _higher mobility_ means *less* gas gain, as
-  there will be *less* collisions!
-  *However* if the mean free path would lead to typical collisions
-  that do *not* have enough energy to cause ionization, then the gas
-  gain would be *lower* for a *lower* mobility, as the gas would then
-  act as a dampener. But the former should always be true in the
-  amplification region I guess.
+While an inverse correlation between temperature and gas gain may
+appear counter intuitive, it is sensible when considering the
+amplification region of the GridPix as an ideal gas. The pressure
+controller keeps the pressure inside the gas chamber constant
+independent of the temperature. This implies that an increase in
+temperature results in a decrease in density in the amplification
+region. The mobility of the charge carriers in the region is inversely
+proportional to the density *CITE CITE CITE* (for now PDG chapter
+detectors!, *REF THEORY SEC*) and a higher mobility implies a longer
+mean free path. This in turn leads to _less_ additional ionization
+events for higher temperatures, reducing the full amplification.
   
+- [ ] *FIND GOOD REFERENCE FOR MOBILITY IN GAS INVERSELY PROP TO
+  DENSITY!*
+  -> Generally better understand this, add section to gaseous detector
+  theory about this, show equation for mean free path based on
+  mobility!
+  Once section in theory there, reference theory instead!
 
+This behavior was likely less relevant in single GridPix detectors as
+the heat emission of a single GridPix is much lower and thus the
+absolute temperatures are lower. For a fixed change in ambient
+temperature this means a single GridPix detector undergoes temperature
+changes in the amplification region at lower absolute temperatures. As
+the behavior is highly non-linear the effect is likely less evident
+for a single GridPix.
+- [ ] *MAYBE REWRITE ABOVE*
+  
 This explanation is not meant as a definitive statement about the
 origins of the gas gain variations in the Septemboard detector
 data. *However*, it clearly motivates the need for an in depth study
@@ -12501,10 +12503,10 @@ constant pressures and more precise logging of temperatures in future
 detectors. Further, a significantly improved cooling setup (to more
 closely approach a region where temperature changes have a smaller
 relative impact), or theoretically even a temperature controlled setup
-with known inlet gas temperatures might be useful. This behavior is
-one of the most problematic from a data analysis point of view and
-thus it should be taken seriously for future endeavors!
-
+(to avoid temperature changes in the first place) with known inlet gas
+temperatures might be useful. This behavior is one of the most
+problematic from a data analysis point of view and thus it should be
+taken seriously for future endeavors.
 
 #+CAPTION: Normalized data for Run-3 of the temperature sensors from the CAST slow control log
 #+CAPTION: files compared to the behavior of the mean peak position in the \cefe pixel spectra
@@ -12517,12 +12519,7 @@ thus it should be taken seriously for future endeavors!
 #+ATTR_LATEX: :float sideways
 [[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain.pdf]]
 
-
-
-
-
-
-
+- [ ] *(RE)MOVE THE PARAGRAPH BELOW?*
 Note that even if the temperature logs were still available, it is not
 obvious how they could lead to a correction that goes beyond the gas
 gain binning in time that was eventually settled on. The variations
@@ -12545,11 +12542,7 @@ amplification region (same as the Septemboard temperature sensors, but
 just with a larger offset and lack of detail regarding local
 temperature changes due to water cooling related variations).
 
-
-
-  
-
-- [ ] Reasons for peak position moving:
+- [X] Reasons for peak position moving:
   - [X] electronic causing the effective threshold to change
   - [X] change in gas temperature (seems uncorrelated going by
     plots!. *Maybe* correlated to ambient temperature?)
@@ -12566,24 +12559,26 @@ temperature changes due to water cooling related variations).
     in reality not relative to the pixel layer, but rather to something
     else so that it was floating around that?
 
-- [ ] *WAS GAS PRESSURE CONTROLLER ON INLET OR OUTLET SIDE??? CHECK
+- [X] *WAS GAS PRESSURE CONTROLLER ON INLET OR OUTLET SIDE??? CHECK
   AND ADJUST ABOVE*
+  -> Outlet
 
 - [X] Plot of the (known) temperature at PCB from shift forms.
 Unfortunately, most of the high resolution temperature logs were lost due to a
 software bug.
 Cooling power varied over time, probably due to slight clogging.
 
-- [ ] *CHECK NAME OF BRONKHORST ? OR WHATEVER PRESSURE CONTROLLER AND
+- [X] *CHECK NAME OF BRONKHORST ? OR WHATEVER PRESSURE CONTROLLER AND
   ADJUST IN FOOTNOTE!*
+  -> Bronkhorst.
 
 [fn:hv_logging] Once again, in hindsight writing a log file of the
 high voltage values would have been valuable, especially as it could
 have been done straight from TOS. However, similar to what lead to
-losses of the temperature log files, this was simply not prioritized to
-implement at the time. The same holds for the gas pressure in the
-chamber, which should have been logged using the *CHECK ME NAME*
-software of the pressure controller used to control it.
+losses of the temperature log files, this was simply not prioritized
+to implement at the time. The same holds for the gas pressure in the
+chamber, which should have been logged using the ~FlowView~ software
+of the Bronkhorst pressure controller used to control it.
 
 [fn:hv_variability_lab_course] From other Iseg HV modules used in lab
 course experiments we know that when they _are_ faulty it is very
