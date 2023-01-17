@@ -13306,7 +13306,7 @@ The resulting fit of a linear function with offset for the Run-2 data
 can be seen in fig. \ref{fig:calib:gasgain_vs_energy_calib}.
 
 - [ ] *HAVE TABLE OF FIT PARAMETERS SOMEWHERE FOR RUN-2 AND RUN-3!*
-- [ ] *Instead of single plot as now, have both plots in a subfig for
+- [X] *Instead of single plot as now, have both plots in a subfig for
   each of the two run periods!*
 
 - [X] *THINK ABOUT INSTEAD OF EXPLAINING HOW THE CALIBRATION IS DONE*
@@ -13360,7 +13360,7 @@ explain how a limit / physics result is obtained.
 - [ ] turn the ingrid reconstruction schematic into a generalized flow chart?
 
 ** Take data. Output data is ASCII files
-
+- [X] In [[#sec:reco:tos_data_parsing]]
 Parsing of data in format.
 
 Present format.
@@ -13382,7 +13382,7 @@ What does reconstruction mean?
 Multiple things.
 
 *** 1. perform cluster finding
-
+- [X] In [[#sec:reco:data_reconstruction]] (subsection)
 Present our current two clustering algorithms. 
 
 - dumb search in radius around each pixel (add foot note that the
@@ -13394,6 +13394,8 @@ Present our current two clustering algorithms.
 **** Investigation of buggy clustering in MarlinTPC             :noexport:
 
 *** 2. for each cluster, compute geometric properties
+
+- [X] In [[#sec:reco:data_reconstruction]] (subsection)
 
 Table of the computed properties.
 
@@ -13408,6 +13410,8 @@ talks. Maybe need to fix the radius variable?
 
 *** 3. (optional / required for analysis) charge calibration
 
+- [X] In [[#sec:daq:tot_calibration]]
+
 Use Timepix ToT calibration (ref theory section before where we
 explain how it works).
 
@@ -13415,6 +13419,8 @@ Given ToT calibration apply function to get number of electrons (given
 that we ran in ToT mode).
 
 *** 4. (optional / required for analysis) compute gas gain
+
+- [X] [[#sec:daq:polya_distribution_threshold]]
 
 Computing gas gain. Polya fit. Explain not fit parameter used, but
 mean of data.
@@ -13436,6 +13442,8 @@ else?
 
 
 *** 5. (optional / required for analysis) energy computation
+
+- [X] [[#sec:calibration:energy]]
 
 Requires: charge calibration, gas gain
 
@@ -13461,7 +13469,7 @@ Fit.
 Apply fit.
 
 *** 6. (optional) FADC reconstruction
-
+- [X] In [[#sec:calib:fadc]]
 Apply pedestals.
 
 Determine lowest point. Determine rising / falling times in ns.
@@ -15274,19 +15282,19 @@ safeLowerTempSeptem             = 0
 
 * Calibrations                                                     :Appendix:
 
-** Septemboard calibration
+** Septemboard calibration [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:septemboard_calibrations
 :END:
 
-Show all calibrations for each of the runs.
+- [ ] Show all calibrations for each of the runs.
 
 That means, for all chips:
-- THS optimization & equalization bits
-- equalized matrix of all pixels  
-- ToT calibration
-- S-curves
-- fit to 50% point of S-curves to get #electrons / THL DAC value    
+- [ ] THS optimization & equalization bits
+- [ ] equalized matrix of all pixels  
+- [ ] ToT calibration
+- [ ] S-curves
+- [ ] fit to 50% point of S-curves to get #electrons / THL DAC value    
 
 ** Calibration measurements of the veto scintillator paddle
 :PROPERTIES:
@@ -15435,14 +15443,6 @@ Then use [[file:PyS_mm_veto_szinti_calib.py]] to plot the data.
 
 A threshold of $\SI{-110}{\milli\volt}$ was selected, after analysis.
 
-
-* Detector behavior over time                                      :Appendix:
-
-In section [[#sec:calib:detector_behavior_over_time]] we covered the
-median charge and energies of clusters in the background and
-calibration data. Here in the appendix
-
-- [ ] *PROBABLY SCRAP THIS IF WE PUT BOTH DATA INTO ONE PLOT*
 
 * CAST data taking run list
 :PROPERTIES:
@@ -15632,6 +15632,10 @@ calibration data. Here in the appendix
 * Full data reconstruction [/]                                     :Appendix:
 
 - [ ] well, actually we want to reduce all this to a single script...
+- [ ] Replace all this by a call to ~runAnalysisChain~.
+- [ ] This chapter may still be one that contains some other stuff
+  that needs to be run. Not sure. Or it might contain the code to set
+  everything up, we'll see.  
 
 This part of the appendix contains the full set of operations to
 perform the data reconstruction.
@@ -15644,7 +15648,6 @@ perform the data reconstruction.
 5. cdl same
 6. background rate
 7. limit   
-
 
 2017 data:
 #+begin_src sh 
@@ -15679,7 +15682,6 @@ reconstruction ~/CastData/data/DataRuns2018_Raw.h5 --out ~/CastData/data/DataRun
 #+begin_src sh
 reconstruction ~/CastData/data/DataRuns2018_Reco_withFadc.h5 --only_fadc
 #+end_src
-
 
 
 * CAST data taking notes [0/1]                            :Appendix:noexport:
