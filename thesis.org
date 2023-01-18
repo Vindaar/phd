@@ -13721,50 +13721,20 @@ Likelihood method demands info about X-ray properties, hence:
 :CUSTOM_ID: sec:background:method
 :END:
 
-
-As a reference first the background rate achievable using only a
-single GridPix1 without any additional features will be discussed.
-
 The detection principle of the GridPix detector implies physically
-different kinds of events will have different geometrical shapes.
-
-*TODO:* merge these into a subfig environment or something
-
-#+begin_center
-#+CAPTION: Example event of a \cefe X-ray photon taken with the
-#+CAPTION: GridPix1 detector at CAST. The event shape is mostly spherical
-#+CAPTION: as there is a single point of origin for the photo-electron.
-#+CAPTION: Diffusion as a random process yields the shape.
-[[~/org/Figs/statusAndProgress/exampleEvents/calibration_event_run266_chip3_event5791_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Example background event taken with the GridPix1 event at CAST.
-#+CAPTION: A typical track like shape is visible, likely from a muon with
-#+CAPTION: some additional interaction. The irregular shape is caused by
-#+CAPTION: background events not having a single origin, but rather ionizing
-#+CAPTION: the gas at many points on their path through the detector.
-#+CAPTION: *TODO MAYBE CHANGE EVENT*
-[[~/org/Figs/statusAndProgress/exampleEvents/background_event_run267_chip3_event1456_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.pdf]]
-#+end_center
-
-Combined caption (once merged):
-- [ ] *REPLACE EVENT FIGURES BY EXAMPLE HISTOGRAM OF DIFFERENT
-  PROPERTIES BACKGROUND / CALIBRATION*
-
-Use the individual captions as is, with references to a) and b).  On
-the left hand side of each plot, a list of all geometric properties
-and their values that are calculated for the visible clusters is
-shown. Some of these properties are used for the classification of
-events into signal and background like events.
-
-The method to distinguish the two types of events, is based on a
-likelihood cut, based on the ideas in \cite{krieger2018search}.
+different kinds of events will have different geometrical shapes. An
+example can be seen in
+fig. \ref{fig:background:eccentricity_signal_background}, comparing
+the cluster eccentricity of \cefe calibration events with background
+data. This motivates usage of a geometry based approach to determine
+likely signal-like or background-like clusters. The method to
+distinguish the two types of events is a likelihood cut, based on the
+one in \cite{krieger2018search}. It effectively assigns a single value
+to each cluster for the likelihood that it is a signal-like event. 
 
 - [ ] *REPHRASE SUCH THAT THIS XRAY DATA BECOMES A REQUIREMENT*
-X-ray data taken at multiple energies (possibly taken with an X-ray
-tube) are used to define reference distributions for (currently) 3
-different geometrical variables:
+Specifically, this likelihood method is based on three different
+geometric properties:  
 1. the eccentricity $ε$ of the cluster, determined by
    computing the long and short axis of the two dimensional cluster and
    then computing the ratio of the RMS of the projected positions of
@@ -13780,20 +13750,40 @@ background events. They mainly characterize the "spherical-ness" as
 well as the density near the center of the cluster, which is precisely
 the intuitive sense in which these type of events differ.
 
-*TODO*: rewrite / remove parts of the ln L part. Don't use ln
-The reference distributions are then treated as a probability density,
-specifically the likelihood for a cluster to be "X-ray-like". For one
-property $i$ we thus define a likelihood $\mathcal{L}_i(x_i)$, where $x_i$ is the
-value of the property $i$. This gives us the total likelihood:
-
-\[
+#+NAME: eq:background:likelihood_def
+\begin{equation}
 \mathcal{L}(ε, f, l) = \mathcal{L}_{ε}(ε) \cdot \mathcal{L}_{f}(f)
 \cdot \mathcal{L}_l(l)
-\]
+\end{equation}
 
 where the subscript is denoting the individual likelihood distribution
-and the argument corresponds to the individual value of each property.
+and the argument corresponds to the individual value of each
+property. This raises the important question of what defines such a
+likelihood distribution $\mathcal{L}_i$. In principle it can be
+defined by computing a normalized density distribution of a known
+dataset, which contains representative signal-like data. The \cefe
+calibration data from CAST contains such representative data, if not
+for one problem: the properties used in the likelihood method are
+energy dependent, as seen in
+fig. \ref{fig:background:eccentricity_photo_escape}, a comparison of
+the eccentricity of X-rays from the photopeak of the \cefe calibration
+source compared to those from the escape peak. The CAST calibration
+data can only characterize two different energies, but the expected
+axion signal is a (model dependent) continuous spectrum. 
 
+For this reason data was taken using an X-ray tube with 8 different
+target / filter combinations to provide the needed data to compute
+likelihood distributions for X-rays of a range of different
+energies. The details will be discussed in the next section,
+[[#sec:preparation:cdl]].
+
+Due to the energy dependence eq. [[eq:background:likelihood_def]] needs to
+be understood to be valid in the energy range that defines the
+used likelihood distributions. 
+
+- [ ] *PUT THE COMMENT BELOW HERE BACK INTO TEXT, BUT TO WHERE IT
+  LATER FITS PROPERLY, AS CURRENTLY THE ABOVE IS MOSTLY AN
+  INTRODUCTION MOTIVATING THE NEED FOR CDL DATA*
 #+begin_comment
 Due to numerical issues dealing with very small probabilities, instead
 of using the raw likelihood $\mathcal{L}$, instead the negative log is
@@ -13816,6 +13806,46 @@ interpolation of the reference distributions between the nearest two
 neighboring distributions is performed.
 #+end_comment
 
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/background/eccentricity_calibration_background.pdf}
+    \caption{Calibration \& background}
+    \label{fig:background:eccentricity_signal_background}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/background/eccentricity_photo_escape_peak.pdf}
+    \caption{Photo \& Escapepeak}
+    \label{fig:background:eccentricity_photo_escape}
+  \end{subfigure}%
+  \label{fig:background:properties_energy_type_dependent}
+  \caption{\subref{fig:background:eccentricity_signal_background} Comparison of the eccentricity of
+  clusters from a calibration and a background run.
+  Background events are clearly much more eccentric on average.
+  \subref{fig:background:eccentricity_photo_escape} The X-ray properties are energy dependent as can
+  be seen in the comparison between the eccentricity of X-rays from the photo peak compared to those
+  from the escape peak. A kernel density estimation is used in both figures.
+}
+\end{figure}
+
+- [X] *REPLACE EVENT FIGURES BY EXAMPLE HISTOGRAM OF DIFFERENT
+  PROPERTIES BACKGROUND / CALIBRATION*
+
+- [X] *ADD NOTE THAT THERE IS _ALSO_ AN ENERGY DEPENDENCE ON SIGNAL
+  CLUSTER SHAPES*
+
+*TODO*: rewrite / remove parts of the ln L part. Don't use ln
+The reference distributions are then treated as a probability density,
+specifically the likelihood for a cluster to be "X-ray-like". For one
+property $i$ we thus define a likelihood $\mathcal{L}_i(x_i)$, where $x_i$ is the
+value of the property $i$. This gives us the total likelihood:
+
+- [ ] *BELOW MUST GO TO PART WHERE WE FINISH HOW ALL THIS WORKS WITH
+  CDL DATA, INCL LINEAR INTERPOLATION. ALTERNATIVELY, FINISH THAT
+  EXPLANATION ABOVE BEFORE TALKING ABOUT CDL DETAILS?*
 To finally classify events as signal or background, one then sets a
 desired "software efficiency" $ε_{\text{eff}}$, which is defined as:
 \[
@@ -13829,25 +13859,76 @@ normalized cumulative sum of the log likelihood and searches for the point at
 which the desired $ε_{\text{eff}}$ is reached.
 #+end_comment
 
-The software efficiency commonly used and for all figures presented
-below is $\SI{80}{\percent}$.
+*** Generate plot of eccentricity signal vs. background          :noexport:
 
-With the software efficiency defined, the $-\ln\mathcal{L}$ of each
-cluster is simply computed using the linear interpolation of the log
-likelihood distribution determined based on the cluster energy. A
-cluster is considered a signal if its $L$ is smaller than the $L$
-computed for the desired $ε_{\text{eff}}$ at the energy of the cluster.
+We will now generate a plot comparing the eccentricity of signal
+events from calibration data to background events. In addition another
+comparison will be made between photopeak photons and escape peak
+photons to show that events at different energies have different
+shapes, motivating the need for the X-ray tube data at different energies.
 
-Using this approach for the GridPix1 data taken at CAST, a background
-rate shown in fig. [[fig:background_rate_eff80_only_center]] is achieved.
+#+begin_src nim :tangle code/eccentricity_background_signal.nim
+import ggplotnim, nimhdf5
+import ingrid / [tos_helpers, ingrid_types]
 
-#+begin_center
-#+CAPTION: Background rate achieved based on the $\ln\mathcal{L}$ method at
-#+CAPTION: $ε_{\text{eff}} = \SI{80}{\percent}$ using the GridPix1 CAST 2017/18 data
-#+CAPTION: without the application of any vetoes.
-#+NAME: fig:background_rate_eff80_only_center
-[[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_no_vetoes.pdf]]
-#+end_center
+proc read(f: string, run: int): DataFrame =
+  withH5(f, "r"):
+    result = h5f.readRunDsets(
+      run = run,
+      chipDsets = some((chip: 3, dsets: @["eccentricity", "centerX", "centerY", "energyFromCharge"]))
+    )
+
+proc main(calib, back: string) =
+
+  # read data from each file, one fixed run with good statistics
+  # cut on silver region
+  let dfC = read(calib, 128)
+  let dfB = read(back, 124)
+  var df = bind_rows([("Calibration", dfC), ("Background", dfB)], "Type")
+    .filter(f{float -> bool: inRegion(`centerX`, `centerY`, crSilver)},
+            f{float: `eccentricity` < 10.0})
+  ggplot(df, aes("eccentricity", fill = "Type")) +
+    #geom_histogram(bins = 100,
+    #               hdKind = hdOutline, 
+    #               position = "identity",
+    #               alpha = 0.5,
+    #               density = true) +
+    geom_density(color = "black", size = 1.0, alpha = 0.7, normalize = true) + 
+    ggtitle("Comparison of the eccentricity of calibration and background data") + 
+    ggsave("Figs/background/eccentricity_calibration_background.pdf", useTeX = true, standalone = true)
+
+  proc splitPeaks(x: float): string =
+    if x >= 2.75 and x <= 3.25:
+      "Escapepeak"
+    elif x >= 5.55 and x <= 6.25:
+      "Photopeak"
+    else:
+      "Unclear"
+
+  let dfP = dfC
+      .mutate(f{float: "Peak" ~ splitPeaks(`energyFromCharge`)})
+      .filter(f{string: `Peak` != "Unclear"},
+              f{`eccentricity` <= 2.0})
+  ggplot(dfP, aes("eccentricity", fill = "Peak")) +
+    #geom_histogram(bins = 50,
+    #               hdKind = hdOutline, 
+    #               position = "identity",
+    #               alpha = 0.5,
+    #               density = true) +
+    geom_density(color = "black", size = 1.0, alpha = 0.7, normalize = true) +
+    ggtitle(r"Comparison of the X-rays from the $^{55}\text{Fe}$ photopeak (5.9 keV) and escapepeak (3 keV)",
+      titleFont = font(10.0)) + 
+    ggsave("Figs/background/eccentricity_photo_escape_peak.pdf", useTeX = true, standalone = true)
+    
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+yielding
+[[~/phd/Figs/background/eccentricity_calibration_background.pdf]]
+and
+[[~/phd/Figs/background/eccentricity_photo_escape_peak.pdf]]
 
 
 ** CAST Detector Lab [/]
@@ -13866,7 +13947,14 @@ of course.
 
 - [ ] *FINISH CDL FIRST*
 - [ ] *FIND OUT WHAT CHIP CALIBRATION USED FOR CDL*
-- [ ] *REFERENCE HENDRIK MSC FOR CDL*    
+- [ ] *REFERENCE HENDRIK MSC FOR CDL*
+
+- [ ] *CREATE PLOT SIMILAR TO*:
+  ~statusAndProgress/cdl_vs_background/eccentricity_ridgeline_XrayReferenceFile2018.h5_2018.pdf~
+  but using our custom colors and shown as a KDE similar to the median
+  energy cluster KDE plot!
+
+*** CDL setup [/]
 
 *** CDL measurements (from =StatusAndProgress=)
 
@@ -14056,6 +14144,14 @@ https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibrati
 
 The fits to all spectra are shown below.
 
+*** Energy resolution [/]
+
+- [ ] this should be a small aside, as it is not extremely important
+  for us. Only serves as an input to our systematics. I guess it is
+  important in that sense after all, heh.
+
+*** How to derive a likelihood distribution (which cuts etc) [/]
+
 ** FROM IAXO TDR PART: Analysis software & background rate
 :PROPERTIES:
 :CUSTOM_ID: sec:background:apply_method
@@ -14105,8 +14201,33 @@ parsing, to clustering and characterisation of individual cluster
 properties, it provides a large number of convenience tools and
 plotting utilities.
 
-*** Basic background rate
-- [X] moved to likelihood method section
+*** Basic background rate [/]
+- [X] most of it moved to likelihood method section
+- [ ] *REWRITE ME*  
+
+The software efficiency commonly used and for all figures presented
+below is $\SI{80}{\percent}$.
+
+With the software efficiency defined, the $-\ln\mathcal{L}$ of each
+cluster is simply computed using the linear interpolation of the log
+likelihood distribution determined based on the cluster energy. A
+cluster is considered a signal if its $L$ is smaller than the $L$
+computed for the desired $ε_{\text{eff}}$ at the energy of the cluster.
+
+Using this approach for the GridPix1 data taken at CAST, a background
+rate shown in fig. [[fig:background_rate_eff80_only_center]] is achieved.
+
+#+begin_center
+#+CAPTION: Background rate achieved based on the $\ln\mathcal{L}$ method at
+#+CAPTION: $ε_{\text{eff}} = \SI{80}{\percent}$ using the GridPix1 CAST 2017/18 data
+#+CAPTION: without the application of any vetoes.
+#+NAME: fig:background_rate_eff80_only_center
+[[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_no_vetoes.pdf]]
+#+end_center
+
+
+  
+  
 *** Scintillators as vetoes
 
 *TODO*: rewrite this paragraph in context of full chapter
