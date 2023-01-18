@@ -13758,7 +13758,18 @@ the intuitive sense in which these type of events differ.
 
 where the subscript is denoting the individual likelihood distribution
 and the argument corresponds to the individual value of each
-property. This raises the important question of what defines such a
+property.
+
+To avoid numerical issues dealing with very small probabilities, the
+actual relation evaluated numerically is the negative log of the
+likelihood:
+
+\[
+-\ln \mathcal{L}(ε, f, l) = - \ln \mathcal{L}_ε(ε) -
+  \ln \mathcal{L}_f(f) - \ln \mathcal{L}_l(l)
+\]
+
+This raises the important question of what defines such a
 likelihood distribution $\mathcal{L}_i$. In principle it can be
 defined by computing a normalized density distribution of a known
 dataset, which contains representative signal-like data. The \cefe
@@ -13781,31 +13792,34 @@ Due to the energy dependence eq. [[eq:background:likelihood_def]] needs to
 be understood to be valid in the energy range that defines the
 used likelihood distributions. 
 
-- [ ] *PUT THE COMMENT BELOW HERE BACK INTO TEXT, BUT TO WHERE IT
-  LATER FITS PROPERLY, AS CURRENTLY THE ABOVE IS MOSTLY AN
-  INTRODUCTION MOTIVATING THE NEED FOR CDL DATA*
-#+begin_comment
-Due to numerical issues dealing with very small probabilities, instead
-of using the raw likelihood $\mathcal{L}$, instead the negative log is
-used:
+For the GridPix1 detector similar X-ray tube data was taken and each
+of the 8 X-ray tube energies were assigned an energy interval. In that
+interval the likelihood distributions of the associated X-ray tube
+data were used to compute a likelihood value for the given
+cluster. This leads to discontinuities of the properties at the
+interval boundaries, while the actual properties of the clusters
+change continuously. It can then lead to jumps in the efficiency of
+the background suppression method and thus in the achieved background
+rate. To avoid this issue we perform a linear interpolation along the
+energy between the closest two neighboring X-ray tube energies at the
+exact property value the cluster provides.
+- [ ] *EXPAND ON THIS, GIVE AN EQUATION DEFINING WHAT WE MEAN
+  INCLUDING THE BINNING!*
 
-\[
--\ln \mathcal{L}(ε, f, l) = - \ln \mathcal{L}_ε(ε) - \ln \mathcal{L}_f(f)- \ln \mathcal{L}_l(l)
-\]
-
-For the GridPix1 detector, data with 8 different X-ray energies (via
-multiple targets and filters with an X-ray tube) was taken. Each of
-these energies first define the X-ray property in a fixed energy
-range. Consider fig. [[fig:eccentrility_mn]] for an example comparing the
-distribution for the eccentricity of the X-ray data around
-$\SI{6}{keV}$ for X-ray vs. background like data.
-
+- [ ] *INCORPORATE / REWRITE LAST SENTENCE ABOVE USING NEXT PARAGRAPH*
 As only 8 energies is problematic for multiple reasons (e.g. discontinuities of the
 properties at the interval boundaries), for each cluster with energy $E_i$ a linear
 interpolation of the reference distributions between the nearest two
 neighboring distributions is performed.
-#+end_comment
 
+- [ ] *WE STILL HAVEN'T TALKED ABOUT BINNING ETC OF ALL THIS!*
+
+- [ ] *ADD PLOT OF LINEAR INTERPOLATION 'RECOVERING' MIDDLE
+  DISTRIBUTION*
+- [ ] *IN APPENDIX PUT PLOTS THAT SHOW HEATMAP OF KDE(?)/INTERPOLATION
+  OF FULL ECCENTRICITY/... BEHAVIOR*
+- [ ] What about 2D heatmap showing energy ranges?
+  
 
 \begin{figure}[htbp]
   \centering
@@ -13930,6 +13944,19 @@ yielding
 and
 [[~/phd/Figs/background/eccentricity_photo_escape_peak.pdf]]
 
+*** Study of interpolation of CDL distributions [/]              :noexport:
+
+The full study and notes about how we ended up at using a linear
+interpolation, can be found in appendix [[#sec:appendix:morphing_cdl_spectra]].
+
+- [X] This is now in the appendix. Good enough? Link
+  
+
+Put here all our studies of how and why we ended up at linear
+interpolation!
+
+The actual linear interpolation results (i.e. reproducing the "middle"
+one will be shown in the actual thesis).
 
 ** CAST Detector Lab [/]
 :PROPERTIES:
@@ -17677,7 +17704,7 @@ related to this in the ~Figs/behavior_over_time~ directory.
 
 * Morphing of CDL reference spectra                                :noexport:
 :PROPERTIES:
-:CUSTOM_ID: sec:morphing_cdl_spectra
+:CUSTOM_ID: sec:appendix:morphing_cdl_spectra
 :END:
 
 This section of the (not exported) appendix contains our notes about
