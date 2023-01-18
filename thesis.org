@@ -17675,6 +17675,535 @@ related to this in the ~Figs/behavior_over_time~ directory.
 
 
 
+* Morphing of CDL reference spectra                                :noexport:
+:PROPERTIES:
+:CUSTOM_ID: sec:morphing_cdl_spectra
+:END:
+
+This section of the (not exported) appendix contains our notes about
+building and implementing the linear interpolation of CDL data. It
+should give an understanding of what was considered and why the final
+choice is a linear interpolation.
+
+
+One problem with the current approach of utilizing the CDL data is that the
+reference distributions for the different logL variables are non continuous
+between two energy bins. This means that if a cluster is moved from one bin to
+another it suddenly has a very different cut for each property.
+
+It might be possible to morph CDL spectra between two energies. That is to
+allow interpolation between the shape of two neighboring reference
+datasets.
+
+This is the likely cause for the sudden steps visible in the background
+rate. With a fully morphed function this should hopefully disappear.
+
+** References & ideas
+
+Read up on morphing of different functions:
+- in HEP: https://indico.cern.ch/event/507948/contributions/2028505/attachments/1262169/1866169/atlas-hcomb-morphwshop-intro-v1.pdf
+- https://mathematica.stackexchange.com/questions/208990/morphing-between-two-functions
+- https://mathematica.stackexchange.com/questions/209039/convert-symbolic-to-numeric-code-speed-up-morphing
+
+Aside from morphing, the theory of optimal transport seems to be directly
+related to such problems:
+- https://de.wikipedia.org/wiki/Optimaler_Transport
+  (funny, this can be described by topology using GR lingo; there's no English
+  article on this)
+- https://en.wikipedia.org/wiki/Transportation_theory_(mathematics)
+  see in particular: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Continuous_optimal_transport.png/200px-Continuous_optimal_transport.png
+This seems to imply that given some functions $f(x)$, $g(x)$ we are looking for
+the transport function $T$ which maps $T: f(x) \rightarrow g(x)$ in the language
+of transportation theory.
+
+See the linked article about the Wasserstein metric:
+- https://en.wikipedia.org/wiki/Wasserstein_metric
+  in particular the section about its connection to the optimal transport
+  problem
+It describes a distance metric between two probability distributions. In that
+sense the distance between two distributions to be transported is directly
+related to the Wasserstein distance.
+
+One of the major constraints of transportation theory is that the transportation
+has to preserve the integral of the transported function. Technically, this is
+not the case for our application to the CDL data, due to different amount of
+data available for each target. However, of course we normalize the CDL data and
+assume that the given data actually is a PDF. At that point each distribution is
+normalized to 1 and thus each morphed function has to be normalized to 1 as
+well. This is a decent check for a morph result. If a morphing technique does
+*not* satisfy this property we need to renormalize the result.
+
+On the other hand, considering the slides by Verkerke (indico.cern.ch link
+above), the morphing between two functions can also be interpreted as a simple
+interpolation problem.
+
+In that sense there are multiple approaches to compute an intermediate
+step of the CDL distributions.
+
+1. visualize the CDL data as a 2D heatmap:
+   - value of the logL variable is x
+   - energy of each fluorescence line is y
+2. linear interpolation at a specific energy $E$ based on the two
+   neighboring CDL distributions (interpolation thus *only* along y axis)
+3. spline interpolation over all energy ranges
+4. KDE along the energy axis (only along *y*)
+   Extend KDE to 2D?
+5. bicubic interpolation (-> problematic, because our energies/variables are
+   *not* spread on a rectilinear grid (energy is not spread evenly)
+6. other distance based interpolations, i.e. KD-tree? Simply perform
+   an interpolation based on all neighboring points in a certain
+   distance?
+
+Of these 2 and 4 seem to be the easiest implementations. KD-tree would
+also be easy, provided I finish the implementation finally.
+
+We will investigate different ideas in
+[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/cdlMorphing/cdlMorphing.nim]].
+
+*** DONE Visualize CDL data as a 2D heatmap
+
+In each of the following plots each distribution (= target filter
+combination) is normalized to 1.
+
+First let's visualize all of the CDL data as a scatter plot. That is
+pretty simple and gives an idea where the lines are and what the shape
+is roughly, fig. [[logL_scatter_lengthDivRmsTrans]].
+
+#+begin_center
+#+CAPTION: Scatter plot of the reference dataset for the length / transverse RMS
+#+CAPTION: logL variable, colored by the normalized counts for each distribution
+#+CAPTION: (each is normalized to 1). The distributions are drawn at the energy
+#+CAPTION: of the fluorescence lines.
+#+NAME: logL_scatter_lengthDivRmsTrans
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_as_scatter_lengthDivRmsTrans.pdf]]
+#+end_center
+
+Now we can check out what the data looks like if we interpret the whole (value
+of each variable, Energy) phase space as a tile map. In this way, morphing can
+be interpreted as performing interpolation along the energy axis in the
+resulting tile map.
+
+Each figure contains in addition as colored lines the *start* of each energy
+range as currently used. So clusters will be with the distribution defined by
+the line below.
+
+In addition the energy of each fluorescence lines is plotted in red at the
+corresponding energy value. This also shows that the intervals and the energy
+of the lines are highly asymmetric.
+
+#+begin_center
+#+CAPTION: Tile map of the reference dataset for the eccentricity
+#+CAPTION: logL variable, colored by the normalized counts for each distribution
+#+CAPTION: (each is normalized to 1 along the x axis). Each tile covers the range
+#+CAPTION: from start to end interval. In addition in red the energy of each
+#+CAPTION: fluorescence line is plotted.
+#+NAME: logL_tile_eccentricity
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_as_tile_eccentricity.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Tile map of the reference dataset for the length / transverse RMS
+#+CAPTION: logL variable, colored by the normalized counts for each distribution
+#+CAPTION: (each is normalized to 1 along the x axis). Each tile covers the range
+#+CAPTION: from start to end interval. In addition in red the energy of each
+#+CAPTION: fluorescence line is plotted.
+#+NAME: logL_tile_lengthDivRmsTrans
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_as_tile_lengthDivRmsTrans.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Tile map of the reference dataset for the fraction within transverse RMS
+#+CAPTION: logL variable, colored by the normalized counts for each distribution
+#+CAPTION: (each is normalized to 1 along the x axis). Each tile covers the range
+#+CAPTION: from start to end interval. In addition in red the energy of each
+#+CAPTION: fluorescence line is plotted.
+#+NAME: logL_tile_fracRmsTrans
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_as_tile_fractionInTransverseRms.pdf]]
+#+end_center
+
+*** DONE Morph by linear interpolation bin by bin
+
+Based on the tile maps in the previous section it seems like a decent idea to
+perform a linear interpolation for any point in between two intervals:
+#+begin_export latex
+\[f(E, x) = f_\text{low}(x) \cdot \left(1 - \frac{ |L_\text{low} - E|}{\Delta E}\right) +
+            f_\text{high}(x) \cdot \left(1 - \frac{ |L_\text{high} - E|}{\Delta E}\right)  \]
+#+end_export
+where $f_\text{low,high}$ are the distributions below / above the given energy
+$E$. $L_\text{low,high}$ corresponds to the energy of the fluorescence line
+corresponding to the distribution below / above $E$. $\Delta E$ is the
+difference in energy between the lower and higher fluorescence lines. $x$ is the
+value of the given logL variable.
+
+In code this is:
+#+begin_src nim
+  let E = ... # given as argument to function
+  let lineEnergies = getXrayFluorescenceLines()
+  let refLowT = df.filter(f{string -> bool: `Dset` == refLow})["Hist", float]
+  let refHighT = df.filter(f{string -> bool: `Dset` == refHigh})["Hist", float]
+  result = zeros[float](refLowT.size.int)
+  let deltaE = abs(lineEnergies[idx] - lineEnergies[idx+offset])
+  # walk over each bin and compute linear interpolation between
+  for i in 0 ..< refLowT.size:
+    result[i] = refLowT[i] * (1 - (abs(lineEnergies[idx] - E)) / deltaE) +
+      refHighT[i] * (1 - (abs(lineEnergies[idx+offset] - E)) / deltaE)
+#+end_src
+
+Since doing this for a point between two lines is not particularly helpful,
+because we do not /know/ what the distribution in between does actually look
+like. Instead for validation we will now try to compute the =Cu-EPIC-0.9kV=
+distribution (corresponding to the $\text{O K}_{\alpha}$ line at
+$\SI{0.525}{\kilo \electronvolt}$) based on the =C-EPIC-0.6kV= and =Cu-EPIC-2kV=
+distributions.
+That means the interpolate the second ridge from the first and third in the
+CDL ridgeline plots.
+
+This is shown in fig. [[linear_interpolation_morph_eccentricity]],
+[[linear_interpolation_morph_lengthDivRmsTrans]] and
+[[linear_interpolation_morph_fracRmsTrans]]. The real data for each distribution is
+shown in red and the morphed linear bin-wise interpolation for the second ridge
+is shown in red.
+
+#+begin_center
+#+CAPTION: Interpolation of the =Cu-EPIC-0.9kV= distribution for the eccentricity logL variable
+#+CAPTION: using bin wise linear interpolation based on the =C-EPIC-0.6kV= and =Cu-EPIC-2kV= distributions.
+#+CAPTION: The real data is shown in the second ridge in red and the morphed interpolation is
+#+CAPTION: is shown in blue. The agreement is remarkable for the simplicity of the method.
+#+NAME: linear_interpolation_morph_eccentricity
+[[~/org/Figs/statusAndProgress/cdlMorphing/eccentricity_ridgeline_XrayReferenceFile2018.h5_2018.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Interpolation of the =Cu-EPIC-0.9kV= distribution for the length / transverse RMS logL variable
+#+CAPTION: using bin wise linear interpolation based on the =C-EPIC-0.6kV= and =Cu-EPIC-2kV= distributions.
+#+CAPTION: The real data is shown in the second ridge in red and the morphed interpolation is
+#+CAPTION: is shown in blue. The agreement is remarkable for the simplicity of the method.
+#+NAME: linear_interpolation_morph_lengthDivRmsTrans
+[[~/org/Figs/statusAndProgress/cdlMorphing/lengthDivRmsTrans_ridgeline_XrayReferenceFile2018.h5_2018.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Interpolation of the =Cu-EPIC-0.9kV= distribution for the fraction in transverse RMS logL variable
+#+CAPTION: using bin wise linear interpolation based on the =C-EPIC-0.6kV= and =Cu-EPIC-2kV= distributions.
+#+CAPTION: The real data is shown in the second ridge in red and the morphed interpolation is
+#+CAPTION: is shown in blue. This in particular is the problematic variable, due to the integer nature
+#+CAPTION: of the data at low energies. However, even here the interpolation works extremely well.
+#+NAME: linear_interpolation_morph_fracRmsTrans
+[[~/org/Figs/statusAndProgress/cdlMorphing/fractionInTransverseRms_ridgeline_XrayReferenceFile2018.h5_2018.pdf]]
+#+end_center
+
+*** DONE Compute all reference spectra from neighbors
+
+Similar to the plots in the previous section we can now compute all
+reference spectra based on the next neighboring spectras.
+
+This is done in fig. [[linear_interpolation_morph_eccentricity_all]],
+[[linear_interpolation_morph_lengthDivRmsTrans_all]], [[linear_interpolation_morph_fracRmsTrans_all]].
+
+#+begin_center
+#+CAPTION: Interpolation of all reference distribution for the eccentricity logL variable
+#+CAPTION: using bin wise linear interpolation based on the neighboring distributions.
+#+CAPTION: The real data is shown in red while the morphed data is shown in cyan.
+#+CAPTION: In most ridges the agreement is very good.
+#+NAME: linear_interpolation_morph_eccentricity_all
+[[~/org/Figs/statusAndProgress/cdlMorphing/eccentricity_ridgeline_morph_all_XrayReferenceFile2018.h5_2018.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Interpolation of all reference distribution for the length / transverse RMS logL variable
+#+CAPTION: using bin wise linear interpolation based on the neighboring distributions.
+#+CAPTION: The real data is shown in red while the morphed data is shown in cyan.
+#+CAPTION: In most ridges the agreement is very good.
+#+NAME: linear_interpolation_morph_lengthDivRmsTrans_all
+[[~/org/Figs/statusAndProgress/cdlMorphing/lengthDivRmsTrans_ridgeline_morph_all_XrayReferenceFile2018.h5_2018.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Interpolation of all reference distribution for the fraction in transverse RMS logL variable
+#+CAPTION: using bin wise linear interpolation based on the neighboring distributions.
+#+CAPTION: The real data is shown in red while the morphed data is shown in cyan.
+#+CAPTION: In most ridges the agreement is very good.
+#+NAME: linear_interpolation_morph_fracRmsTrans_all
+[[~/org/Figs/statusAndProgress/cdlMorphing/fractionInTransverseRms_ridgeline_morph_all_XrayReferenceFile2018.h5_2018.pdf]]
+#+end_center
+
+*** DONE Compute full linear interpolation between fluorescence lines
+
+We can now apply the lessons from the last section to compute
+arbitrary reference spectra. We will use this to compute a heatmap of
+all possible energies in between the first and last fluorescence line.
+
+For all three logL variables, these are shown in fig.
+
+#+begin_center
+#+CAPTION: Heatmap of a fully linear interpolated view of the energy / eccentricity
+#+CAPTION: phase space in between the first and last fluorescence line.
+#+NAME: linear_interpolation_raster_eccentricity
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_as_raster_interpolated_eccentricity.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Heatmap of a fully linear interpolated view of the energy / lenthDivRmsTrans
+#+CAPTION: phase space in between the first and last fluorescence line.
+#+NAME: linear_interpolation_raster_lengthDivRmsTrans
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_as_raster_interpolated_lengthDivRmsTrans.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Heatmap of a fully linear interpolated view of the energy / fracRmsTrans
+#+CAPTION: phase space in between the first and last fluorescence line.
+#+NAME: linear_interpolation_raster_fracRmsTrans
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_as_raster_interpolated_fractionInTransverseRms.pdf]]
+#+end_center
+
+** KDE approach
+
+Using a KDE is problematic, because our data is already pre-binned of
+course. This leads to a very sparse phase space, which either makes
+the local prediction around a known distribution good, but fails
+miserably in between them (small bandwidth) or gives decent
+predictions in between, but pretty bad reconstruction of the known
+distributions (larger bandwidth).
+
+There is also a strong conflict in bandwidth selection, due to the
+non-linear steps in energy between the different CDL
+distributions. This leads to a too large / too small bandwidth at
+either end of the energy range.
+
+Fig. [[eccentricity_ridgeline_morph_kde]],
+[[fracTransRms_ridgeline_morph_kde]],
+[[lengthDivRmsTrans_ridgeline_morph_kde]] show the default bandwidth
+(Silverman's rule of thumb). In comparison Fig. [[eccentricity_ridgeline_morph_kde_small_bw]],
+[[fracTransRms_ridgeline_morph_kde_small_bw]],
+[[lengthDivRmsTrans_ridgeline_morph_kde_small_bw]] show the same plot
+using a much smaller custom bandwidth of 0.3 keV. The agreement is
+much better, but the actual prediction between the different
+distributions becomes much worse. Compare
+fig. [[eccentricity_raster_morph_kde]] (default bandwidth) to
+fig. [[eccentricity_raster_morph_kde_small_bw]]. The latter has regions of
+almost no counts, which is obviously wrong.
+
+Note that also the fig. [[eccentricity_raster_morph_kde]] is
+problematic. An effect of a bad KDE input is visible, namely that the
+bandwidth vs. number of datapoints is such that the center region (in
+energy) has higher values than the edges, due to the fact that
+predictions near the boundaries see no signal (this boundary effect
+could be corrected for by assuming a suitable boundary conditions,
+e.g. just extending the first/last distributions in the respective
+ranges. It is not clear however in what spacing such a distribution
+should be placed etc.
+
+#+begin_center
+#+CAPTION: Reconstruction of the different eccentricity CDL distributions using a KDE
+#+CAPTION: with the bin counts as weights with the automatically computed
+#+CAPTION: bandwidth using Silverman's rule of thumb (about 1.6 keV in this case).
+#+CAPTION: Bad match with real data for low energies (top ridges).
+#+NAME: eccentricity_ridgeline_morph_kde
+[[~/org/Figs/statusAndProgress/cdlMorphing/eccentricity_ridgeline_morph_kde.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Reconstruction of the different fraction in transverse RMS CDL distributions using a KDE
+#+CAPTION: with the bin counts as weights with the automatically computed
+#+CAPTION: bandwidth using Silverman's rule of thumb (about 1.6 keV in this case).
+#+CAPTION: Bad match with real data for low energies (top ridges).
+#+NAME: fracTransRms_ridgeline_morph_kde
+[[~/org/Figs/statusAndProgress/cdlMorphing/fractionInTransverseRms_ridgeline_morph_kde.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Reconstruction of the different length / transverse RMS CDL distributions using a KDE
+#+CAPTION: with the bin counts as weights with the automatically computed
+#+CAPTION: bandwidth using Silverman's rule of thumb (about 1.6 keV in this case).
+#+CAPTION: Bad match with real data for low energies (top ridges).
+#+NAME: lengthDivRmsTrans_ridgeline_morph_kde
+[[~/org/Figs/statusAndProgress/cdlMorphing/lengthDivRmsTrans_ridgeline_morph_kde.pdf]]
+#+end_center
+
+\clearpage
+
+#+begin_center
+#+CAPTION: Reconstruction of the different eccentricity CDL distributions using a KDE
+#+CAPTION: with the bin counts as weights with a custom bandwidth of 0.3 keV.
+#+CAPTION: Bad match with real data for low energies (top ridges).
+#+NAME: eccentricity_ridgeline_morph_kde_small_bw
+[[~/org/Figs/statusAndProgress/cdlMorphing/eccentricity_ridgeline_morph_kde_small_bw.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Reconstruction of the different fraction in transverse RMS CDL distributions using a KDE
+#+CAPTION: with the bin counts as weights with a custom bandwidth of 0.3 keV.
+#+CAPTION: Bad match with real data for low energies (top ridges).
+#+NAME: fracTransRms_ridgeline_morph_kde_small_bw
+[[~/org/Figs/statusAndProgress/cdlMorphing/fractionInTransverseRms_ridgeline_morph_kde_small_bw.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Reconstruction of the different length / transverse RMS CDL distributions using a KDE
+#+CAPTION: with the bin counts as weights with a custom bandwidth of 0.3 keV.
+#+CAPTION: Bad match with real data for low energies (top ridges).
+#+NAME: lengthDivRmsTrans_ridgeline_morph_kde_small_bw
+[[~/org/Figs/statusAndProgress/cdlMorphing/lengthDivRmsTrans_ridgeline_morph_kde_small_bw.pdf]]
+#+end_center
+
+\clearpage
+
+#+begin_center
+#+CAPTION: Raster of the KDE interpolation for the eccentricity using the automatically
+#+CAPTION: determined bandwidth based on Silverman's rule of thumb (about 1.6 keV in this case).
+#+CAPTION: Boundary effects are visible due to apparent more activity near the center
+#+CAPTION: energies.
+#+NAME: eccentricity_raster_morph_kde
+[[~/org/Figs/statusAndProgress/cdlMorphing/eccentricity_raster_kde.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Raster of the KDE interpolation for the eccentricity using a custom
+#+CAPTION: bandwidth of 0.3 keV.
+#+CAPTION: Better agreement at the different CDL target energies at the expense of
+#+CAPTION: a reasonable prediction between the different regions.
+#+NAME: eccentricity_raster_morph_kde_small_bw
+[[~/org/Figs/statusAndProgress/cdlMorphing/eccentricity_raster_kde_small_bw.pdf]]
+#+end_center
+
+** Spline approach
+
+Another idea is to use a spline interpolation. This has the advantage
+that the existing distributions will be correctly predicted (as for
+the linear interpolation), but possibly yields better results between
+distributions (or in the case of predicting a known distributions.
+
+Fig. [[eccentricity_ridgeline_morph_spline]],
+[[fracTransRms_ridgeline_morph_spline]],
+[[lengthDivRmsTrans_ridgeline_morph_spline]] show the prediction using a
+spline. Same as for the linear interpolation each morphed distribution
+was computed by excluding that distribution from the spline definition
+and then predicting the energy of the respective fluorescence line.
+
+The result looks somewhat better in certain areas than the linear
+interpolation, but has unphysical artifacts in other areas (negative
+values) while also deviating quite a bit. For that reason it seems
+like simpler is better in case of CDL morphing (at least if it's done
+bin-wise).
+
+#+begin_center
+#+CAPTION: Reconstruction of the different eccentricity CDL distributions using a spline
+#+CAPTION: interpolation (by excluding each distribution that is being predicted).
+#+CAPTION: Prediction sometimes even yields negative values, highlighting the
+#+CAPTION: problems of a spline in certain use cases (unphysical results).
+#+NAME: eccentricity_ridgeline_morph_spline
+[[~/org/Figs/statusAndProgress/cdlMorphing/eccentricity_ridgeline_morph_spline.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Reconstruction of the different fraction in transverse RMS CDL distributions using a spline
+#+CAPTION: interpolation (by excluding each distribution that is being predicted).
+#+CAPTION: Prediction sometimes even yields negative values, highlighting the
+#+CAPTION: problems of a spline in certain use cases (unphysical results).
+#+NAME: fracTransRms_ridgeline_morph_spline
+[[~/org/Figs/statusAndProgress/cdlMorphing/fractionInTransverseRms_ridgeline_morph_spline.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Reconstruction of the different length / transverse RMS CDL distributions using a spline
+#+CAPTION: interpolation (by excluding each distribution that is being predicted).
+#+CAPTION: Prediction sometimes even yields negative values, highlighting the
+#+CAPTION: problems of a spline in certain use cases (unphysical results).
+#+NAME: lengthDivRmsTrans_ridgeline_morph_spline
+[[~/org/Figs/statusAndProgress/cdlMorphing/lengthDivRmsTrans_ridgeline_morph_spline.pdf]]
+#+end_center
+
+\clearpage
+
+** Summary
+
+For the time being we will use the linear interpolation method and see
+where this leads us. Should definitely be a big improvement over the
+current interval based option.
+
+For the results of applying linear interpolation based morphing to the
+likelihood analysis see section [[Effects of Morphing on background rate]].
+
+** Implementation in =likelihood.nim=
+
+Thoughts on the implememntition in =likelihood.nim= or CDL morphing.
+
+0. Add interpolation code from =cdlMorphing.nim= in
+   =private/cdl_cuts.nim=.
+1. Add a field to =config.nim= that describes the morphing technique
+   to be used.
+2. Add an enum for the possible morphing techniques, =MorphingKind=
+   with fields =mkNone=, =mkLinear=
+3. In =calcCutValueTab= we currently return a =Table[string, float]=
+   mapping target/filter combinations to cut values. This needs to be
+   modified such that we have something that hides away input ->
+   output and yields what we need.
+   Define an =CutValueInterpolator= type, which is returned
+   instead. It will be a variant object with case =kind:
+   MorphingKind=.
+   This object will allow access to cut values based on:
+   - =string=: a target/filter combination.
+     - =mkNone=: access internal =Table[string, float]= as done
+       currently
+     - =mkLinear=: raise exception, since does not make sense
+   - =float=: an energy in keV:
+     - =mkNone=: convert energy to a target/filter combination and
+       access internal =Table=
+     - =mkLinear=: access the closest energy distribution and return
+       its cut value
+4. in =filterClustersByLogL= replace =cutTab= name and access by
+   energy of cluster instead of converted to target/filter dataset
+
+With these steps we should have a working interpolation routine. The
+code used in the =cdlMorphing.nim= test script needs to be added of
+course to provide the linearly interpolated logic (see step 0).
+
+*** Bizarre Al-Al 4kV behavior with =mkLinear=
+
+After the first implementation we see some very bizarre behavior in
+the case of linear interpolation for the logL distributions.
+
+This is both visible with the =plotCdl.nim= as well as plotting code
+in =likelihood.nim=.
+
+See fig. [[cdl_logL_linear_bizarre_Al_Al_4kV]].
+
+#+begin_center
+#+CAPTION: LogL distribitions after implementing linear interpolation and running
+#+CAPTION: with =mkLinear=. The Al-Al 4kV line is noweher near where we expect it.
+#+CAPTION: The code currently recomputes the logL values by
+#+CAPTION: default, in which the =mkLinear= plays a role. The bug has to be somewhere
+#+CAPTION: in that part of the interpolation.
+#+NAME: cdl_logL_linear_bizarre_Al_Al_4kV
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_logl_linear_bizarre_Al_Al_4kV.pdf]]
+#+end_center
+
+*UPDATE*: The issue was a couple of bugs & design choices in the
+implementation of the linear interpolation in
+=likelihood_utils.nim=. In particular about the design of the DF
+returned from =getInterpolatedWideDf= and a bug accessing not the sub
+DF, but the actual DF in the loop.
+
+The fixed result is shown in fig. [[cdl_logL_linear_fixed]] and in
+comparison the result using no interpolation (the reference in a way)
+in fig. [[cdl_logL_no_interp]].
+
+#+begin_center
+#+CAPTION: LogL distribitions after implementing linear interpolation and running
+#+CAPTION: with =mkLinear= and after the above mentioned bug has been fixed.
+#+CAPTION: This is the same result as for =mkNone=, see fig. [[cdl_logL_no_interp]].
+#+NAME: cdl_logL_linear_fixed
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_logl_linear_fixed.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: LogL distribitions after implementing linear interpolation and running
+#+CAPTION: with =mkLinear= and after the above mentioned bug has been fixed.
+#+CAPTION: This is the same result as for =mkNone=, see fig. [[cdl_logL_no_interp]].
+#+NAME: cdl_logL_no_interp
+[[~/org/Figs/statusAndProgress/cdlMorphing/cdl_logl_no_interp.pdf]]
+#+end_center
+
 
 * Software                                                         :Software:Appendix:
 :PROPERTIES:
