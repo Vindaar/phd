@@ -13977,28 +13977,126 @@ one will be shown in the actual thesis).
 
 ** CAST Detector Lab [/]
 :PROPERTIES:
-:CUSTOM_ID: sec:preparation:cdl
+:CUSTOM_ID: sec:cdl
 :END:
 
-Measurements for X-ray reference data
-
-Detector lab measurements were only performed after the data taking
-period at CAST was over. From a logical standpoint it makes more sense
-to talk about it before though.
-
-Everything required in StatusAndProgress. Will need to redo all plots
-of course.
+In this section we will cover the X-ray tube data taken at the CAST
+Detector Lab (CDL) at CERN. First, we will show the setup in
+sec. [[#sec:cdl:setup]]. Next the different target / filter combinations
+that were used will be discussed and the measurements presented in
+sec. [[#sec:cdl:measurements]]. These measurements then are used to define
+the probability densities for the likelihood method, see
+sec. [[#sec:cdl:derive_probability_density]]. Further, they can be used to
+measure the energy resolution of the detector at different energies,
+sec. [[#sec:cdl:energy_resolution]]. And finally, in
+sec. [[#sec:cdl:cdl_morphing]] we cover a few more details on the linear
+interpolation we perform to compute a likelihood distribution at an
+arbitrary energy.
 
 - [ ] *FINISH CDL FIRST*
 - [ ] *FIND OUT WHAT CHIP CALIBRATION USED FOR CDL*
 - [ ] *REFERENCE HENDRIK MSC FOR CDL*
 
 - [ ] *CREATE PLOT SIMILAR TO*:
-  ~statusAndProgress/cdl_vs_background/eccentricity_ridgeline_XrayReferenceFile2018.h5_2018.pdf~
+  ~/org/Figs/statusAndProgress/cdl_vs_background/eccentricity_ridgeline_XrayReferenceFile2018.h5_2018.pdf~
   but using our custom colors and shown as a KDE similar to the median
   energy cluster KDE plot!
 
 *** CDL setup [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cdl:setup
+:END:
+
+The CAST detector lab provides a vacuum test stand, which contains an
+X-ray tube. A Micromegas like detector can easily be mounted to the
+rear end of the test stand. An X-ray tube uses a filament to produce
+free electrons, which are then accelerated with a high voltage of the
+order of multiple \si{kV}. The main part of the setup is a rotateable
+wheel inside the vacuum chamber, which contains a set of 18 different
+positions with 8 different target materials, as seen in
+tab. [[tab:cdl:targets]]. The highly energetic electrons interacting with
+the target material generates Bremsstrahlung with characteristic lines
+depending on the target and a continuous portion. A second rotateable
+wheel contains a set of 11 different filters, see
+tab. [[tab:cdl:filters]]. These can be used to filter out undesired parts
+of the generated spectrum by choosing a filter that is opaque in the
+undesired energy ranges.
+
+As mentioned previously in sec. [[#sec:cast:timeline]] the detector was
+dismounted from CAST in Feb. 2019 and installed in the CAST detector
+lab on <2019-02-14 Thu>. The week from <2019-02-15 Fri> to
+<2019-02-21 Thu> X-ray tube data was taken in the CDL.
+
+- [ ] *CHECK XRAY TUBE EXPLANATION FOR CORRECTNESS!*
+
+- 2 pictures of setup, side by side
+- [X] one paragraph about how X-ray tube works. Bremsstrahlung via HV, hit
+  target & then filter  
+- [X] table of available targets & filters
+- [X] measurement dates (which week)
+- ?
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/IMG_20190214_155459.jpg}
+    \caption{Full setup}
+    \label{fig:cdl:cdl_setup}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/IMG_20190214_191752.jpg}
+    \caption{Detector setup}
+    \label{fig:cdl:detector_setup}
+  \end{subfigure}%
+  \label{fig:cdl:cdl}
+  \caption{\subref{fig:cdl:cdl_setup} shows the full vacuum test stand containing the X-ray tube with
+  the Septemboard detector installed at the rear, visible by the red HV and yellow HDMI cables.
+  \subref{fig:cdl:detector_setup} is a view of the detector setup from above. On the left hand side
+  is the detector mounted to the vacuum setup. The water cooling is seen in the bottom right, connected via
+  the blue tubes. The gas supply is in red tubing and the power supply is visible on the right above the
+  water cooling (with a green Phoenix connector). The copper shielded cable is a LEMO cable for the FADC
+  signal going to the pre-amplifier (with the University of Bonn sticker).}
+\end{figure}
+  
+#+CAPTION: Table of all available target materials in the CAST detector lab and their respective
+#+CAPTION: position on a rotateable wheel.
+#+NAME: tab:cdl:targets
+#+ATTR_LATEX: :booktabs t  
+| Target Material | Position |
+|-----------------+----------|
+| Ti              |        1 |
+| Ag              |        2 |
+| Mn              |        3 |
+| C               |        4 |
+| BN              |        5 |
+| Au              |        6 |
+| Al              |   7 - 11 |
+| Cu              |  12 - 18 |
+
+Position 1 is the position "closest" to the vacuum line.
+4 turns of the handle are needed to bring the filter in position after
+being visible in the window.
+
+#+CAPTION: Table of all available filters in the CAST detector lab and their respective
+#+CAPTION: position on a rotateable wheel.
+#+NAME: tab:cdl:filters
+#+ATTR_LATEX: :booktabs t  
+| Filter material                             | Position |
+|---------------------------------------------+----------|
+| Ni 0.1 mm                                   |        1 |
+| Al 5 µm                                     |        2 |
+| PP G12                                      |        3 |
+| PP G12                                      |        4 |
+| Cu 10 µm                                    |        5 |
+| Ag 5 µm (99.97%) AG000130/24                |        6 |
+| Fe 50 µm                                    |        7 |
+| Mn foil 50 µm (98.7% + permanent polyester) |        8 |
+| Co 50 µm (99.99%) CO0000200                 |        9 |
+| Cr 40 µm (99.99% + permanent polyester)     |       10 |
+| Ti 50 µm (99.97%) TI000315                  |       11 |
+  
 
 *** CDL measurements (from =StatusAndProgress=)
 
@@ -14188,13 +14286,30 @@ https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibrati
 
 The fits to all spectra are shown below.
 
+- [ ] *MAKE NOTES ABOUT VARIABILITY, TEMPERATURE CHANGES & SLIGHTLY
+  HIGHER PRESSURE IN DETECTOR THAN NORMAL*
+  -> in hindsight shouldn't have opened / closed windows etc.
+
 *** Energy resolution [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cdl:energy_resolution
+:END:
 
 - [ ] this should be a small aside, as it is not extremely important
   for us. Only serves as an input to our systematics. I guess it is
   important in that sense after all, heh.
 
 *** How to derive a likelihood distribution (which cuts etc) [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cdl:derive_probability_density
+:END:
+
+
+*** CDL morphing / linear interpolation [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cdl:cdl_morphing
+:END:
+
 
 ** FROM IAXO TDR PART: Analysis software & background rate
 :PROPERTIES:
