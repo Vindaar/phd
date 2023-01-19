@@ -8843,6 +8843,7 @@ taken with the Septemboard detector. The final section
 [[#sec:cast:problems_lessons]] finishes by discussing different issues
 encountered and lessons learned.  
 
+- [ ] *REWRITE ABOVE WITH FINAL STRUCTURE!!*
 
 bla bla bla, the setup includes a \cefe source mounted to a
 pneumatic manipulator, see sec. [[#sec:cast:55fe_manipulator]], ...
@@ -8883,6 +8884,9 @@ shutdown of the experiment, it is not discussed here.
   finger and what we actually got?
 
 ** Timeline
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:timeline
+:END:
 
 The Septemboard detector was prepared for data taking at the CAST
 experiment in July 2017 for preliminary alignment and fit tests. The
@@ -9120,6 +9124,9 @@ https://www.amptek.com/internal-products/obsolete-products/cool-x-pyroelectric-x
 
 
 ** Alignment
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:alignment
+:END:
 
 - [ ] MAYBE rename to Detector setup & alignment
 - [ ] maybe explain X-ray finger measurements here fully instead of a
@@ -11657,7 +11664,7 @@ campaign at CAST. One is a data taking campaign behind an X-ray tube
 at the CAST Detector Lab (CDL) to characterize the geometric
 properties of X-rays at different energies (as the foundation for
 discrimination methods), discussed in section
-[[#sec:preparation:cdl]]. The second are measurements using \cefe
+[[#sec:cdl]]. The second are measurements using \cefe
 source installed on a pneumatic manipulator at CAST to perform regular
 calibration runs to monitor the detector behavior and serve as a basis
 for the energy calibration of events, see section
@@ -13712,7 +13719,7 @@ work. We can plot some funny plots explaining how it works.
 With the CAST data fully reconstructed and energy calibrated it is
 time to define the method used to derive a background rate from the
 data (sec. [[#sec:background:method]]) and introduce the necessary extra
-inputs required (sec. [[#sec:preparation:cdl]]). Next apply it to the data
+inputs required (sec. [[#sec:cdl]]). Next apply it to the data
 (sec. [[#sec:background:apply_method]]) and then improve it further using
 additional detector features (sec. *???*). Finally, we compare the
 resulting background rate to other detectors and try to understand the
@@ -13755,15 +13762,18 @@ These variables are obviously highly correlated, but still provide a
 very good separation between the typical shapes of X-rays and
 background events. They mainly characterize the "spherical-ness" as
 well as the density near the center of the cluster, which is precisely
-the intuitive sense in which these type of events differ.
+the intuitive sense in which these type of events differ. For each of
+these properties we define a probability density function
+$\mathcal{P}_i$, which can then be used to define the likelihood of a
+cluster with properties $(ε, f, l)$ to be signal-like:
 
 #+NAME: eq:background:likelihood_def
 \begin{equation}
-\mathcal{L}(ε, f, l) = \mathcal{L}_{ε}(ε) \cdot \mathcal{L}_{f}(f)
-\cdot \mathcal{L}_l(l)
+\mathcal{L}(ε, f, l) = \mathcal{P}_{ε}(ε) \cdot \mathcal{P}_{f}(f)
+\cdot \mathcal{P}_l(l)
 \end{equation}
 
-where the subscript is denoting the individual likelihood distribution
+where the subscript is denoting the individual probability density 
 and the argument corresponds to the individual value of each
 property.
 
@@ -13772,12 +13782,12 @@ actual relation evaluated numerically is the negative log of the
 likelihood:
 
 \[
--\ln \mathcal{L}(ε, f, l) = - \ln \mathcal{L}_ε(ε) -
-  \ln \mathcal{L}_f(f) - \ln \mathcal{L}_l(l)
+-\ln \mathcal{L}(ε, f, l) = - \ln \mathcal{P}_ε(ε) -
+  \ln \mathcal{P}_f(f) - \ln \mathcal{P}_l(l)
 \]
 
-This raises the important question of what defines such a
-likelihood distribution $\mathcal{L}_i$. In principle it can be
+This raises the important question of what defines each individual
+probability density $\mathcal{P}_i$. In principle it can be
 defined by computing a normalized density distribution of a known
 dataset, which contains representative signal-like data. The \cefe
 calibration data from CAST contains such representative data, if not
@@ -13793,7 +13803,7 @@ For this reason data was taken using an X-ray tube with 8 different
 target / filter combinations to provide the needed data to compute
 likelihood distributions for X-rays of a range of different
 energies. The details will be discussed in the next section,
-[[#sec:preparation:cdl]].
+[[#sec:cdl]].
 
 Due to the energy dependence eq. [[eq:background:likelihood_def]] needs to
 be understood to be valid in the energy range that defines the
@@ -13807,17 +13817,23 @@ cluster. This leads to discontinuities of the properties at the
 interval boundaries, while the actual properties of the clusters
 change continuously. It can then lead to jumps in the efficiency of
 the background suppression method and thus in the achieved background
-rate. To avoid this issue we perform a linear interpolation along the
-energy between the closest two neighboring X-ray tube energies at the
-exact property value the cluster provides.
-- [ ] *EXPAND ON THIS, GIVE AN EQUATION DEFINING WHAT WE MEAN
-  INCLUDING THE BINNING!*
+rate. To avoid this issue we perform a linear interpolation for each
+cluster with energy $E_α$ between the closest two neighboring X-ray
+tube energies $E_β$ and $E_γ$ in each probability density $\mathcal{P}_i$ at the
+cluster's properties. With $ΔE = E_β - E_γ$ the difference in energy
+between the closest two X-ray tube energies, each probability density
+is then interpolated to:
 
-- [ ] *INCORPORATE / REWRITE LAST SENTENCE ABOVE USING NEXT PARAGRAPH*
-As only 8 energies is problematic for multiple reasons (e.g. discontinuities of the
-properties at the interval boundaries), for each cluster with energy $E_i$ a linear
-interpolation of the reference distributions between the nearest two
-neighboring distributions is performed.
+\[
+\mathcal{P}_i(E_α, x_i) = \left(1 - \frac{|E_α - E_β|}{ΔE}\right) · \mathcal{P}_i(E_β, x_i) +
+  \left( 1 - \frac{|E_α - E_γ|}{ΔE} \right) · \mathcal{P}_i(E_γ, x_i) .
+\]
+
+Each probability density of the closest neighbors are evaluated at the
+cluster's property $x_i$ and the linear interpolation weighted by the
+distance to each energy is computed. More on this in sec. [[#sec:cdl:cdl_morphing]].
+- [X] *EXPAND ON THIS, GIVE AN EQUATION DEFINING WHAT WE MEAN
+  INCLUDING THE BINNING!*
 
 - [ ] *WE STILL HAVEN'T TALKED ABOUT BINNING ETC OF ALL THIS!*
 
@@ -13825,6 +13841,7 @@ neighboring distributions is performed.
   DISTRIBUTION*
 - [ ] *IN APPENDIX PUT PLOTS THAT SHOW HEATMAP OF KDE(?)/INTERPOLATION
   OF FULL ECCENTRICITY/... BEHAVIOR*
+  -> Partially done, notes of CDL morphing study added in appendix as :noexport:
 - [ ] What about 2D heatmap showing energy ranges?
   
 
@@ -13848,8 +13865,7 @@ neighboring distributions is performed.
   Background events are clearly much more eccentric on average.
   \subref{fig:background:eccentricity_photo_escape} The X-ray properties are energy dependent as can
   be seen in the comparison between the eccentricity of X-rays from the photo peak compared to those
-  from the escape peak. A kernel density estimation is used in both figures.
-}
+  from the escape peak. A kernel density estimation is used in both figures.}
 \end{figure}
 
 - [X] *REPLACE EVENT FIGURES BY EXAMPLE HISTOGRAM OF DIFFERENT
@@ -13857,12 +13873,6 @@ neighboring distributions is performed.
 
 - [X] *ADD NOTE THAT THERE IS _ALSO_ AN ENERGY DEPENDENCE ON SIGNAL
   CLUSTER SHAPES*
-
-*TODO*: rewrite / remove parts of the ln L part. Don't use ln
-The reference distributions are then treated as a probability density,
-specifically the likelihood for a cluster to be "X-ray-like". For one
-property $i$ we thus define a likelihood $\mathcal{L}_i(x_i)$, where $x_i$ is the
-value of the property $i$. This gives us the total likelihood:
 
 - [ ] *BELOW MUST GO TO PART WHERE WE FINISH HOW ALL THIS WORKS WITH
   CDL DATA, INCL LINEAR INTERPOLATION. ALTERNATIVELY, FINISH THAT
