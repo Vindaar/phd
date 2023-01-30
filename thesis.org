@@ -12651,6 +12651,12 @@ taken seriously for future endeavors.
 #+ATTR_LATEX: :float sideways
 [[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain.pdf]]
 
+- [ ] *WE COULD CREATE A PLOT SIMILAR TO ABOVE, BUT ACTUALLY PLOTTING
+  TEMPERATURE AGAINST THE GAS GAIN DIRECTLY*
+  -> we'd just have to assign a temperature to each gas gain value
+  (compute a mean of all temps in a gas gain slice interval?) and
+  see what happens!
+
 - [ ] *(RE)MOVE THE PARAGRAPH BELOW?*
 Note that even if the temperature logs were still available, it is not
 obvious how they could lead to a correction that goes beyond the gas
@@ -14166,6 +14172,15 @@ freely opening and closing windows. [fn:weather_at_cdl]
 
 
 - [ ] *HOW VARIANCE IN TABLE DETERMINED?*
+  -> I can't figure out anymore how the variance was calculated in the
+  table. For that reason I suppose the better idea is to make a plot
+  of:
+  gas gain in our 90 min bins with colors based on target/filter and
+  shape based on run? For run we need to replace real run numbers by
+  run count (1, 2, 3, ...) to all target/filters start at same shape.
+  That's easier to understand & clearer to have all data and doesn't
+  rely on pixel information. Ah, we can have discrete X-axis actually
+  or run number as x! then we don't even need different shapes?
 - [ ] *UPDATE PEAK POSITIONS IN THE TABLE!*
 #+CAPTION: Overview of all runs taken behind the X-ray tube, whether they ran with or without FADC,
 #+CAPTION: their targets, filters and high voltage setting and information about the major fluorescence
@@ -14379,6 +14394,11 @@ dominated by detector resolution, resulting in Gaussian lines.
 | C      | EPIC   | $\ce{C }$ $\text{K}_{α}$ | 0.6 | $G^{\mathrm{C}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{O}}_{\mathrm{K}_{α}}(N,μ,σ)$                                                                              |
 |--------+--------+--------------------------+-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
+- [ ] *HAVE
+  [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/calcCdlCutsFromFitParams.nim]]
+  TO COMPUTE CHARGE CUT VALUES FROM DUMPED FITS!*
+  -> We now handle this in code, write them to CDL H5 file. The above
+  could still be useful to generate a table of the final used values!
 
 #+CAPTION: All fit functions for the charge spectra for the different combinations.
 #+NAME: fit_func_charge
@@ -14432,6 +14452,10 @@ The fits to all spectra are shown below.
 
 - [ ] *CHANGE THE USED CHARGES AGAIN IN ~cdl_cuts.nim~ AFTER OUR NEW
   FITS!*
+
+- [ ] *NOTE*: We do have some information about FADC gains in CDL run
+  in ~CDL_measurements.org~ in the text portion of the notes for each
+  target / filter!
 
 - [X] *LOOK UP LOCAL WEATHER IN GENEVA DURING WEEK OF CDL DATA TAKING
   AND CREATE A PLOT!*
@@ -14531,6 +14555,8 @@ Among them are:
   MEASUREMENTS*
   -> As a simple point plot where the points can be colored by the
   target/filter kind
+- [ ] *INSERT RIDGELINE PLOT OF DIFFERENT PROPERTIES PER RUN, SHOWING
+  NO SIGNIFICANT CHANGE DESPITE DIFFERENT GAS GAINS*  
 
 As we ran the command from ~/tmp/~ the output plots will be in a
 ~/tmp/out/CDL*~ directory. We copy over the generated files files
