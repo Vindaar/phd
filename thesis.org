@@ -14188,21 +14188,87 @@ The measurements were performed with 8 different target and filter
 combinations, with a higher density towards lower energies due to the
 nature of the expected solar axion flux. For each target and filter at
 least two runs were measured, one with and one without using the FADC
-as a trigger. Table [[tab:cdl:run_overview_tab]] provides an overview of
+as a trigger. The latter was taken to collect more statistics in a
+shorter amount of time, as the FADC readout slows down the data taking
+speed somewhat. Table [[tab:cdl:run_overview_tab]] provides an overview of
 all data taking runs, the target, filter and HV setting, the main
 X-ray fluorescence line targeted and its energy. Finally, the mean
-position of that line in the pixel spectrum as determined by the fit
-and its variance within the run *HOW DETERMINED?* is shown. The
-variability both between runs for the same target and filter as well
-as within a run shows the detector was undergoing gas gain changes
-similar to the variations at CAST
+position of the main fluorescence line in the charge spectrum as
+determined by the fit and its width is shown. As can be seen the
+position moves in some cases significantly between different runs, for
+example in case of the $\ce{Cu}-\ce{Ni}$ measurements. Also within a
+single run some stronger variation can be seen, evident by the much
+larger line width for example in run *FILL MEE KKKKKKKKKKKKK*.
+
+- [ ] *REMOVE PIXEL MEAN*
+  -> replace by some measure of charge position? More importantly, we
+  need to replace the table anyway due to our new fit by run approach.
+  Better to show the mean charges and then the σ of the line width?
+  The variance of that over the different runs is a good enough
+  approximator for "run internal" variation. 
+
+The variability both between runs for the same target and filter as
+well as within a run shows the detector was undergoing gas gain
+changes similar to the variations at CAST
 (sec. [[#sec:calib:detector_behavior_over_time]]). With an understanding
 that the variation is correlated to the temperature this can be
 explained. The small laboratory underwent significant temperature
 changes due to the presence of 3 people, all running machines and
-freely opening and closing windows. [fn:weather_at_cdl] 
+freely opening and closing windows, in particular due to very warm
+temperatures relative to a typical February in
+Geneva. [fn:weather_at_cdl] Fig. [[fig:cdl:gas_gain_by_cdl_run]] shows the
+calculated gas gains (based on $\SI{90}{min}$ intervals) for each run
+colored by the target/filter combination. It undergoes an extreme,
+almost exponential change over the course of the data taking
+campaign.
 
-- [ ] *MAYBE TEMPERATURE REFERENCE ONLY IN FOOTNOTE?*
+- [ ] *LOOK INTO THE CDL TEMPERATURES THAT WE HAVE. CREATE A PLOT OF
+  ALL TEMP DATA NOW THAT IT'S PART OF RAW_DATA*.
+  -> possibly just add them to the gas gain plot here.
+  -> once we have that maybe decide if it's worth including them. For
+  sure include those in the extended version!
+
+#+CAPTION: Gas gain of each gas gain slice of $\SI{90}{min}$ in all CDL runs.
+#+CAPTION: A significant decrease over the runs (equivalent to the week of data taking)
+#+CAPTION: is visible. Multiple points for the same run correspond to multiple
+#+CAPTION: gas gain time slices as explained in sec. [[#sec:calib:gas_gain_time_binning]].
+#+NAME: fig:cdl:gas_gain_by_cdl_run
+[[~/phd/Figs/CDL/gas_gain_by_run_and_tfkind.pdf]]
+
+- [ ] *CREATE PLOT LIKE RIDGE LINE PLOT BUT NOT COMPARING BETWEEN
+  RUNS, BUT BETWEEN ENERGIES!*
+  -> As in combine all Mn-Cr data and all Cu-Ni data and create same
+  ridges. If my understanding is correct there _should_ be a
+  difference there, despite there not being a difference in the cases
+  of different gas gains! However, I'm not even sure how different the
+  change was in the first place between Mn-Cr and Cu-Ni. Need to check
+  that of course (well I guess that plot _would_ be such a comparison).
+Fortunately, this significant change of gas gain does not have an
+impact on the distributions of the cluster properties. See appendix
+[[#sec:appendix:fit_by_run:gas_gain_var_cluster_prop]] for comparisons of the
+properties of different gas gains.
+- [ ] *HAVE EXPLICIT SUBSECTION IN ABOVE APPENDIX ONLY ABOUT
+  PROPERTIES PER ENERGY*
+  -> Note: this is too important as a general concept to not show up
+  in the thesis at all! So not only for extended version, but at least
+  in appendix!
+
+
+- explain idea behind it: different targets & filters for different
+  energies. Same ones as krieger
+- data is handled on a per run basis, where we have 2-3 runs per
+  target & filter. Always at least one with and one without FADC to
+  collect more data (FADC readout slows out readout a bit)
+- clean the data slightly, depending on target/filter, cleaning cuts  
+- perform fit according to expected lines on cleaned data _per run_
+- main fluorescence line is the important one, as that one defines
+  a further cut to extract clusters matching that energy
+- optional: each run is energy calibrated based on the mean position
+  of the main peak in charge and its known charge position, *different
+  from regular energy calibration!*
+- cleaned data + individual fits extract that data which is used to
+  define reference probability distributions for each energy!
+- combine PDFs to get likelihood, done.  
 
 
 - [ ] *MAYBE TEMPERATURE REFERENCE ONLY IN FOOTNOTE?*
@@ -14504,7 +14570,9 @@ I remember correctly. The laboratory has windows towards the
 south-east. With reasonably cold outside temperatures and sunshine
 warming the lab in addition to machines and people, opening and
 closing windows changed the temperature on short time scales, likely
-significantly contributing to the detector instability.  
+significantly contributing to the detector instability. In the
+extended version of this thesis you'll find a section below this one
+containing the weather data at the time of the CDL data taking.
 
 **** Table of fit lines                                         :noexport:  
 
@@ -14600,12 +14668,6 @@ As we ran the command from ~/tmp/~ the output plots will be in a
 ~/tmp/out/CDL*~ directory. We copy over the generated files files
 including ~calibrated_cdl_energy_histos.pdf~ and
 ~calibrated_cdl_energy_kde.pdf~ here to ~/phd/Figs/CDL/~.
-
-#+CAPTION: Gas gain of each gas gain slice of $\SI{90}{min}$ in all CDL runs.
-#+CAPTION: A significant decrease over the runs (equivalent to the week of data taking)
-#+CAPTION: is visible.
-#+NAME: fig:cdl:gas_gain_by_cdl_run
-[[~/phd/Figs/CDL/gas_gain_by_run_and_tfkind.pdf]]
 
 **** Historical weather data for Geneva during CDL data taking  :noexport:
 
