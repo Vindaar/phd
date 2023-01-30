@@ -14531,6 +14531,102 @@ As we ran the command from ~/tmp/~ the output plots will be in a
 including ~calibrated_cdl_energy_histos.pdf~ and
 ~calibrated_cdl_energy_kde.pdf~ here to ~/phd/Figs/CDL/~.
 
+**** Historical weather data for Geneva during CDL data taking  :noexport:
+
+More or less location of CDL (side of building 17 at Meyrin CERN site):
+#+begin_src
+46.22965, 6.04984
+#+end_src
+(https://www.openstreetmap.org/search?whereami=1&query=46.22965%2C6.04984#map=19/46.22965/6.04984)
+
+Here we can see historic weather data plots from Meyrin from the
+relevant time range:
+https://meteostat.net/en/place/ch/meyrin?s=06700&t=2019-02-15/2019-02-21
+
+This at least proves the weather was indeed very nice outside, sunny
+and over 10°C peak temperatures during the day!
+
+I exported the data and it's available here:
+[[~/phd/resources/weather_data_meyrin_cdl_data_taking.csv]]
+
+Legend of the columns:
+|----+--------+------------------------|
+|  # | Column | Description            |
+|----+--------+------------------------|
+|  1 | time   | Time                   |
+|  2 | temp   | Temperature            |
+|  3 | dwpt   | Dew Point              |
+|  4 | rhum   | Relative Humidity      |
+|  5 | prcp   | Total Precipitation    |
+|  6 | snow   | Snow Depth             |
+|  7 | wdir   | Wind Direction         |
+|  8 | wspd   | Wind Speed             |
+|  9 | wpgt   | Peak Gust              |
+| 10 | pres   | Air Pressure           |
+| 11 | tsun   | Sunshine Duration      |
+| 12 | coco   | Weather Condition Code |
+
+#+begin_src nim
+import ggplotnim, times
+var df = readCsv("/home/basti/phd/resources/weather_data_meyrin_cdl_data_taking.csv")
+  .mutate(f{string -> int: "timestamp" ~ parseTime(`time`, "yyyy-MM-dd HH:mm:ss", local()).toUnix()})
+  .rename(f{"Temperature [°C]" <- "temp"}, f{"Pressure [mbar]" <- "pres"})
+df = df.gather(["Temperature [°C]", "Pressure [mbar]"], "Data", "Value")
+echo df
+ggplot(df, aes("timestamp", "Value", color = "Data")) +
+  facet_wrap("Data", scales = "free") +
+  facetMargin(0.5) + 
+  geom_line() +
+  xlab("Date", rotate = -45.0, alignTo = "right", margin = 2.0) +
+  margin(bottom = 2.5, right = 4.75) +
+  legendPosition(0.84, 0.0) + 
+  scale_x_date(isTimestamp = true,
+               dateSpacing = initDuration(hours = 12),
+               formatString = "yyyy-MM-dd HH:mm", 
+               timeZone = local()) +
+  ggtitle("Meyrin, Geneva weather during CDL data taking campaign") + 
+  ggsave("/home/basti/phd/Figs/CDL/weather_meyrin_during_cdl_data_taking.pdf", width = 1000, height = 600)
+#+end_src
+
+#+RESULTS:
+| DataFrame | with         |      13 | columns |         and |  336 | rows: |               |              |            |      |             |       |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|       Idx | Data         |   Value | snow    |        dwpt | wdir |  coco |          prcp |         time |  timestamp | rhum |        wspd | tsun  |      wpgt |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|    dtype: | string       |   float | float   |       float |  int |   int |           int |       string |        int |  int |       float | float |     float |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         0 | Temperatu... |    -0.3 | -nan    |        -1.7 |  200 |     1 |             0 | 2019-02-1... | 1550185200 |   90 |         1.8 | -nan  |        12 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         1 | Temperatu... |    -0.7 | -nan    |        -2.6 |  230 |     1 |             0 | 2019-02-1... | 1550188800 |   87 |         3.6 | -nan  |       3.7 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         2 | Temperatu... |    -1.7 | -nan    |        -2.5 |  280 |     1 |             0 | 2019-02-1... | 1550192400 |   94 |         1.8 | -nan  |         7 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         3 | Temperatu... |    -1.9 | -nan    |        -2.9 |  240 |     1 |             0 | 2019-02-1... | 1550196000 |   93 |         1.8 | -nan  |        13 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         4 | Temperatu... |    -2.1 | -nan    |        -3.4 |  320 |     1 |             0 | 2019-02-1... | 1550199600 |   91 |         1.8 | -nan  |       3.7 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         5 | Temperatu... |    -2.5 | -nan    |        -3.8 |  330 |     1 |             0 | 2019-02-1... | 1550203200 |   91 |         1.8 | -nan  |        13 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         6 | Temperatu... |    -2.7 | -nan    |        -3.5 |  290 |     1 |             0 | 2019-02-1... | 1550206800 |   94 |         1.8 | -nan  |        12 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         7 | Temperatu... |      -2 | 0       |        -3.3 |  240 |     1 |             0 | 2019-02-1... | 1550210400 |   91 |         1.8 | 0     |       5.5 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         8 | Temperatu... |    -1.8 | -nan    |        -2.8 |  330 |     1 |             0 | 2019-02-1... | 1550214000 |   93 |         1.8 | -nan  |        12 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|         9 | Temperatu... |    -0.1 | -nan    |        -1.8 |  300 |     2 |             0 | 2019-02-1... | 1550217600 |   88 |         1.8 | -nan  |        13 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        10 | Temperatu... |     3.6 | -nan    |         0.3 |  110 |     1 |             0 | 2019-02-1... | 1550221200 |   79 |         1.8 | -nan  |       5.5 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        11 | Temperatu... |     5.2 | -nan    |           0 |   70 |     2 |             0 | 2019-02-1... | 1550224800 |   69 |         3.6 | -nan  |        10 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        12 | Temperatu... |     7.4 | -nan    |         0.8 |   20 |     2 |             0 | 2019-02-1... | 1550228400 |   63 |         3.6 | -nan  |        11 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        13 | Temperatu... |     8.7 | -nan    |         0.4 |   70 |     1 |             0 | 2019-02-1... | 1550232000 |   56 |         5.4 | -nan  |       9.3 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        14 | Temperatu... |     9.7 | -nan    |         0.3 |   80 |     1 |             0 | 2019-02-1... | 1550235600 |   52 |         7.6 | -nan  |        15 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        15 | Temperatu... |     9.8 | -nan    |        -0.4 |   90 |     1 |             0 | 2019-02-1... | 1550239200 |   49 |         7.6 | -nan  |        19 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        16 | Temperatu... |    10.5 | -nan    |        -0.3 |   80 |     1 |             0 | 2019-02-1... | 1550242800 |   47 |         5.4 | -nan  |       9.3 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        17 | Temperatu... |      10 | -nan    |        -0.2 |   80 |     1 |             0 | 2019-02-1... | 1550246400 |   49 |         5.4 | -nan  |        11 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        18 | Temperatu... |     7.3 | -nan    |        -0.4 |   60 |     1 |             0 | 2019-02-1... | 1550250000 |   58 |         3.6 | -nan  |         6 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|        19 | Temperatu... |     4.7 | 0       |        -0.7 |   50 |     1 |             0 | 2019-02-1... | 1550253600 |   68 |         1.8 | -nan  |       7.4 |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|           |              |         |         |             |      |       |               |              |            |      |             |       |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |           |        |
+|     INFO: | The          | integer | column  | `timestamp` |  has |  been | automatically |   determined |         to |   be | continuous. | To    | overwrite | this | behavior | add | a | `+ | scale_x/y_discrete()` | call | to | the | plotting | chain. | Choose | `x` | or | `y` | depending | on | which | axis | this | column | refers | to. | Or | apply | a | `factor` | to | the | column | name | in | the | `aes` | call, | i.e. | `aes(..., | timestamp | ...)`. |
+
+The weather during the data taking campaign is shown in
+fig. [[fig:cdl:weather_meyrin_during_cdl_data_taking]]. It's good to see
+my memory served me right.
+
+#+CAPTION: Weather during the data taking campaign at the CDL in Meyrin, Geneva.
+#+CAPTION: The weather was sunny and warm for a Februray during the day. As a result
+#+CAPTION: the small laboratory heat up significantly and opening / closing windows
+#+CAPTION: lead to significant temperature changes.
+#+NAME: fig:cdl:weather_meyrin_during_cdl_data_taking
+[[~/phd/Figs/CDL/weather_meyrin_during_cdl_data_taking.pdf]]
+
+
 *** Energy resolution [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:cdl:energy_resolution
