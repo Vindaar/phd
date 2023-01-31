@@ -14174,14 +14174,11 @@ similarly shielded LEMO cable should have been used for the
 measurements at CAST. Unfortunately, due to lack of experience with
 electromagnetic interference this was not considered before.
   
-*** CDL measurements (from =StatusAndProgress=) [/]
+*** CDL measurements (from =StatusAndProgress=) [0/9]
 :PROPERTIES:
 :CUSTOM_ID: sec:cdl:measurements
 :END:
 
-- [X] *PLOT OF ALL SPECTRA AS SINGLE W/ CALIBRATED ENERGY*
-- [X] *FOR APPENDIX/EXTENDED: HISTOGRAMS OF ALL SPECTRA BY RUN*
-  -> what we hacked into cdl_spectrum_creation!
 - [ ] *ADD SCHMICK THESIS REFERENCE*
 
 The measurements were performed with 8 different target and filter
@@ -14200,13 +14197,6 @@ example in case of the $\ce{Cu}-\ce{Ni}$ measurements. Also within a
 single run some stronger variation can be seen, evident by the much
 larger line width for example in run *FILL MEE KKKKKKKKKKKKK*.
 
-- [ ] *REMOVE PIXEL MEAN*
-  -> replace by some measure of charge position? More importantly, we
-  need to replace the table anyway due to our new fit by run approach.
-  Better to show the mean charges and then the σ of the line width?
-  The variance of that over the different runs is a good enough
-  approximator for "run internal" variation. 
-
 The variability both between runs for the same target and filter as
 well as within a run shows the detector was undergoing gas gain
 changes similar to the variations at CAST
@@ -14221,12 +14211,8 @@ calculated gas gains (based on $\SI{90}{min}$ intervals) for each run
 colored by the target/filter combination. It undergoes an extreme,
 almost exponential change over the course of the data taking
 campaign.
-
-- [ ] *LOOK INTO THE CDL TEMPERATURES THAT WE HAVE. CREATE A PLOT OF
-  ALL TEMP DATA NOW THAT IT'S PART OF RAW_DATA*.
-  -> possibly just add them to the gas gain plot here.
-  -> once we have that maybe decide if it's worth including them. For
-  sure include those in the extended version!
+- [ ] *THIS STRONGER VARIATION IS NOT REALLY VISIBLE IN THE WAY WE
+  LOOK AT THE DATA NOW, I.E. VIA FITS TO FULL SPECTRA!* 
 
 #+CAPTION: Gas gain of each gas gain slice of $\SI{90}{min}$ in all CDL runs.
 #+CAPTION: A significant decrease over the runs (equivalent to the week of data taking)
@@ -14235,14 +14221,6 @@ campaign.
 #+NAME: fig:cdl:gas_gain_by_cdl_run
 [[~/phd/Figs/CDL/gas_gain_by_run_and_tfkind.pdf]]
 
-- [ ] *CREATE PLOT LIKE RIDGE LINE PLOT BUT NOT COMPARING BETWEEN
-  RUNS, BUT BETWEEN ENERGIES!*
-  -> As in combine all Mn-Cr data and all Cu-Ni data and create same
-  ridges. If my understanding is correct there _should_ be a
-  difference there, despite there not being a difference in the cases
-  of different gas gains! However, I'm not even sure how different the
-  change was in the first place between Mn-Cr and Cu-Ni. Need to check
-  that of course (well I guess that plot _would_ be such a comparison).
 Fortunately, this significant change of gas gain does not have an
 impact on the distributions of the cluster properties. See appendix
 [[#sec:appendix:fit_by_run:gas_gain_var_cluster_prop]] for comparisons of the
@@ -14253,37 +14231,6 @@ properties of different gas gains.
   in the thesis at all! So not only for extended version, but at least
   in appendix!
 
-
-- explain idea behind it: different targets & filters for different
-  energies. Same ones as krieger
-- data is handled on a per run basis, where we have 2-3 runs per
-  target & filter. Always at least one with and one without FADC to
-  collect more data (FADC readout slows out readout a bit)
-- clean the data slightly, depending on target/filter, cleaning cuts  
-- perform fit according to expected lines on cleaned data _per run_
-- main fluorescence line is the important one, as that one defines
-  a further cut to extract clusters matching that energy
-- optional: each run is energy calibrated based on the mean position
-  of the main peak in charge and its known charge position, *different
-  from regular energy calibration!*
-- cleaned data + individual fits extract that data which is used to
-  define reference probability distributions for each energy!
-- combine PDFs to get likelihood, done.  
-
-
-- [ ] *MAYBE TEMPERATURE REFERENCE ONLY IN FOOTNOTE?*
-
-- [ ] *HOW VARIANCE IN TABLE DETERMINED?*
-  -> I can't figure out anymore how the variance was calculated in the
-  table. For that reason I suppose the better idea is to make a plot
-  of:
-  gas gain in our 90 min bins with colors based on target/filter and
-  shape based on run? For run we need to replace real run numbers by
-  run count (1, 2, 3, ...) to all target/filters start at same shape.
-  That's easier to understand & clearer to have all data and doesn't
-  rely on pixel information. Ah, we can have discrete X-axis actually
-  or run number as x! then we don't even need different shapes?
-- [ ] *UPDATE PEAK POSITIONS IN THE TABLE!*
 #+CAPTION: Overview of all runs taken behind the X-ray tube, whether they ran with or without FADC,
 #+CAPTION: their targets, filters and high voltage setting and information about the major fluorescence
 #+CAPTION: line and its energy. Finally, the fitted peak position in the pixel spectrum (easier to gauge
@@ -14392,41 +14339,6 @@ charges in different runs.
 #+NAME: fig:cdl:calibrated_energy_histos
 [[~/phd/Figs/CDL/calibrated_cdl_energy_histos.pdf]]
 
-- [ ] *AT LEAST THE Cu EPIC 2 KV ROW FIT FUNCTION IS WRONG!! NOT ONLY
-  ONE AND NOT Kα!*
-  -> Also: Cu EPIC 2kV is Cu Lα and Lβ, but their energies: α = 929.7,
-  929.7, β = 949.8
-  That's a single pixel difference! Our plot for Cu EPIC 2 kV shows 2
-  very clear peaks though. Those *cannot* be two lines, but must be
-  detector changing its behavior again! CHeck runs above.
-  Also explains why the charge spectrum of this only shows a single
-  one!
-  -> *NOTE*: When plotting the hits information by run for the Cu EPIC
-  2kV we see that the 2 peak structure is only visible in *2* of 3
-  runs. 335 has one, 336 and 337 have two. And the latter two are the
-  runs *without* the FADC! So likely a double hit thing? The thing is
-  though the main peak present in the FADC run is the *larger* one of
-  the two present in 336, 337. If it was double hits we'd expect the
-  smaller one to be that.
-  -> Looking at event displays of 336:
-  There's a *large* number of multi hit events and some that at least
-  _look_ like higher energetic X-rays. Quite possibly though those
-  could also be higher energy events.
-  The run with FADC looks much better in this regard.
-  It's still unclear though, why the peaks in the runs w/o FADC are at
-  even lower pixel counts...
-  -> how to proceed?
-  -> CDL program cleaned up. Almost everything looks but, but Ti-Ti
-  9kV charge is a bit off in NLOPT fit.
-  - [X] Investigate. Fixed.
-  - [X] Also: the error bars on feCharge are huge in the energy
-    resolution plot now. Fixed.
-- [ ] *NOTE: ALSO OTHER FUNCTIONS ARE NOT QUITE CORRECT. THEY
-  CURRENTLY CONTAIN THE STUFF THAT IS CONTAINED IN THE SPECTRUM, BUT
-  NOT WHAT WE FIT! ALSO THE FIXED PARAMETERS ARE NOT SHOWN!*
-- [ ] *APPENDIX WITH THE EXACT FIT FUNCTIONS AND THE FIXED
-  PARAMETERS!* (well, this is what the table is for, no?)
-
 - [ ] *REWRITE BELOW, FIND CITATION FOR LORENTZ SHAPE OF X-ray transitions*
 Note that while the physical X-ray transition lines are shaped like a
 Lorentzian, the lines as detected by a gaseous detector are entirely
@@ -14483,19 +14395,6 @@ dominated by detector resolution, resulting in Gaussian lines.
 |                                        |                                       | $\ μ = μ(\ce{Ti}_{Kα}) · \frac{4.932}{4.511}$  |                                                |                      |                                                 |                                         |                                              |
 |                                        |                                       | $\ σ = σ(\ce{Ti}_{Kα})$                        |                                                |                      |                                                 |                                         |                                              |
 
-|--------+--------+--------------------------+-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Target | Filter | line                     |  HV | Fit function                                                                                                                                                   |
-|--------+--------+--------------------------+-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Cu     | Ni     | $\ce{Cu}$ $\text{K}_{α}$ |  15 | $EG^{\mathrm{Cu,esc}}_{\mathrm{K}_{α}}(a,b,N,μ,σ) + EG^{\mathrm{Cu}}_{\mathrm{K}_{α}}(a,b,N,μ,σ)$                                                              |
-| Mn     | Cr     | $\ce{Mn}$ $\text{K}_{α}$ |  12 | $EG^{\mathrm{Mn,esc}}_{\mathrm{K}_{α}}(a,b,N,μ,σ) + EG^{\mathrm{Mn}}_{\mathrm{K}_{α}}(a,b,N,μ,σ)$                                                              |
-| Ti     | Ti     | $\ce{Ti}$ $\text{K}_{α}$ |   9 | $G^{\mathrm{Ti,esc}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{Ti}}_{\mathrm{K}_{β}}(N,μ,σ) + EG^{\mathrm{Ti}}_{K_{α}}(a,b,N,μ,σ) + G^{\mathrm{Ti}}_{K_{β}}(N,μ,σ)$ |
-| Ag     | Ag     | $\ce{Ag}$ $\text{L}_{α}$ |   6 | $EG^{\mathrm{Ag}}_{\mathrm{L}_{α}}(a,b,N,μ,σ) + G^{\mathrm{Ag}}_{\mathrm{L}_{β}}(N,μ,σ)$                                                                       |
-| Al     | Al     | $\ce{Al}$ $\text{K}_{α}$ |   4 | $EG^{\mathrm{Al}}_{\mathrm{K}_{α}}(a,b,N,μ,σ)$                                                                                                                 |
-| Cu     | EPIC   | $\ce{Cu}$ $\text{L}_{α}$ |   2 | $G^{\mathrm{Cu}}_{\mathrm{L}_{α}}(N,μ,σ) + G^{\mathrm{Cu}}_{\mathrm{L}_{β}}(N,μ,σ)$                                                                            |
-| Cu     | EPIC   | $\ce{O }$ $\text{K}_{α}$ | 0.9 | $G^{\mathrm{O}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{C}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{Fe,esc}}_{L_{α,β}}(N,μ,σ) + G^{\mathrm{Ni}}_{L_{α,β}}(N,μ,σ)$    |
-| C      | EPIC   | $\ce{C }$ $\text{K}_{α}$ | 0.6 | $G^{\mathrm{C}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{O}}_{\mathrm{K}_{α}}(N,μ,σ)$                                                                              |
-|--------+--------+--------------------------+-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-
 - [ ] *HAVE
   [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/calcCdlCutsFromFitParams.nim]]
   TO COMPUTE CHARGE CUT VALUES FROM DUMPED FITS!*
@@ -14548,6 +14447,116 @@ https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibrati
 
 The fits to all spectra are shown below.
 
+[fn:weather_at_cdl] The measurement campaign at the CDL was done in
+February. However, the weather was nice and sunny most of the week, if
+I remember correctly. The laboratory has windows towards the
+south-east. With reasonably cold outside temperatures and sunshine
+warming the lab in addition to machines and people, opening and
+closing windows changed the temperature on short time scales, likely
+significantly contributing to the detector instability. In the
+extended version of this thesis you'll find a section below this one
+containing the weather data at the time of the CDL data taking.
+
+**** TODOs from the section above [9/15]                        :noexport:
+
+This section contains the more generic TODOs that are longer / done
+and have no specific relevance to an existing paragraph / fig / tab
+
+- [X] *PLOT OF ALL SPECTRA AS SINGLE W/ CALIBRATED ENERGY*
+- [X] *FOR APPENDIX/EXTENDED: HISTOGRAMS OF ALL SPECTRA BY RUN*
+  -> what we hacked into cdl_spectrum_creation!
+
+- [X] *REMOVE PIXEL MEAN*
+  -> replace by some measure of charge position? More importantly, we
+  need to replace the table anyway due to our new fit by run approach.
+  Better to show the mean charges and then the σ of the line width?
+  The variance of that over the different runs is a good enough
+  approximator for "run internal" variation. 
+
+- [X] *LOOK INTO THE CDL TEMPERATURES THAT WE HAVE. CREATE A PLOT OF
+  ALL TEMP DATA NOW THAT IT'S PART OF RAW_DATA*.
+  -> possibly just add them to the gas gain plot here.
+  - [ ] once we have that maybe decide if it's worth including them. For
+  sure include those in the extended version!
+
+- [ ] *CREATE PLOT LIKE RIDGE LINE PLOT BUT NOT COMPARING BETWEEN
+  RUNS, BUT BETWEEN ENERGIES!*
+  -> As in combine all Mn-Cr data and all Cu-Ni data and create same
+  ridges. If my understanding is correct there _should_ be a
+  difference there, despite there not being a difference in the cases
+  of different gas gains! However, I'm not even sure how different the
+  change was in the first place between Mn-Cr and Cu-Ni. Need to check
+  that of course (well I guess that plot _would_ be such a
+  comparison).
+
+- [ ] GENERAL OUTLINE OF MEASUREMENT / IDEAS SECTION:  
+  - [X] explain idea behind it: different targets & filters for different
+    energies. Same ones as krieger
+  - data is handled on a per run basis, where we have 2-3 runs per
+    target & filter. Always at least one with and one without FADC to
+    collect more data (FADC readout slows out readout a bit)
+  - clean the data slightly, depending on target/filter, cleaning cuts  
+  - perform fit according to expected lines on cleaned data _per run_
+  - main fluorescence line is the important one, as that one defines
+    a further cut to extract clusters matching that energy
+  - optional: each run is energy calibrated based on the mean position
+    of the main peak in charge and its known charge position, *different
+    from regular energy calibration!*
+  - cleaned data + individual fits extract that data which is used to
+    define reference probability distributions for each energy!
+  - combine PDFs to get likelihood, done.  
+
+
+- [ ] *MAYBE TEMPERATURE REFERENCE ONLY IN FOOTNOTE?*
+
+- [X] *HOW VARIANCE IN TABLE DETERMINED?*
+  -> I can't figure out anymore how the variance was calculated in the
+  table. For that reason I suppose the better idea is to make a plot
+  of:
+  gas gain in our 90 min bins with colors based on target/filter and
+  shape based on run? For run we need to replace real run numbers by
+  run count (1, 2, 3, ...) to all target/filters start at same shape.
+  That's easier to understand & clearer to have all data and doesn't
+  rely on pixel information. Ah, we can have discrete X-axis actually
+  or run number as x! then we don't even need different shapes?
+  -> Not used anymore now, so doesn't matter.
+- [X] *UPDATE PEAK POSITIONS IN THE TABLE!*
+
+- [X] *AT LEAST THE Cu EPIC 2 KV ROW FIT FUNCTION IS WRONG!! NOT ONLY
+  ONE AND NOT Kα!*
+  -> Also: Cu EPIC 2kV is Cu Lα and Lβ, but their energies: α = 929.7,
+  929.7, β = 949.8
+  That's a single pixel difference! Our plot for Cu EPIC 2 kV shows 2
+  very clear peaks though. Those *cannot* be two lines, but must be
+  detector changing its behavior again! CHeck runs above.
+  Also explains why the charge spectrum of this only shows a single
+  one!
+  -> *NOTE*: When plotting the hits information by run for the Cu EPIC
+  2kV we see that the 2 peak structure is only visible in *2* of 3
+  runs. 335 has one, 336 and 337 have two. And the latter two are the
+  runs *without* the FADC! So likely a double hit thing? The thing is
+  though the main peak present in the FADC run is the *larger* one of
+  the two present in 336, 337. If it was double hits we'd expect the
+  smaller one to be that.
+  -> Looking at event displays of 336:
+  There's a *large* number of multi hit events and some that at least
+  _look_ like higher energetic X-rays. Quite possibly though those
+  could also be higher energy events.
+  The run with FADC looks much better in this regard.
+  It's still unclear though, why the peaks in the runs w/o FADC are at
+  even lower pixel counts...
+  -> how to proceed?
+  -> CDL program cleaned up. Almost everything looks but, but Ti-Ti
+  9kV charge is a bit off in NLOPT fit.
+  - [X] Investigate. Fixed.
+  - [X] Also: the error bars on feCharge are huge in the energy
+    resolution plot now. Fixed.
+- [ ] *NOTE: ALSO OTHER FUNCTIONS ARE NOT QUITE CORRECT. THEY
+  CURRENTLY CONTAIN THE STUFF THAT IS CONTAINED IN THE SPECTRUM, BUT
+  NOT WHAT WE FIT! ALSO THE FIXED PARAMETERS ARE NOT SHOWN!*
+- [ ] *APPENDIX WITH THE EXACT FIT FUNCTIONS AND THE FIXED
+  PARAMETERS!* (well, this is what the table is for, no?)
+
 - [X] *MAKE NOTES ABOUT VARIABILITY, TEMPERATURE CHANGES & SLIGHTLY
   HIGHER PRESSURE IN DETECTOR THAN NORMAL*
   -> in hindsight shouldn't have opened / closed windows etc.
@@ -14564,15 +14573,9 @@ The fits to all spectra are shown below.
 - [X] *LOOK UP LOCAL WEATHER IN GENEVA DURING WEEK OF CDL DATA TAKING
   AND CREATE A PLOT!*
 
-[fn:weather_at_cdl] The measurement campaign at the CDL was done in
-February. However, the weather was nice and sunny most of the week, if
-I remember correctly. The laboratory has windows towards the
-south-east. With reasonably cold outside temperatures and sunshine
-warming the lab in addition to machines and people, opening and
-closing windows changed the temperature on short time scales, likely
-significantly contributing to the detector instability. In the
-extended version of this thesis you'll find a section below this one
-containing the weather data at the time of the CDL data taking.
+  
+  
+
 
 **** Table of fit lines                                         :noexport:  
 
