@@ -14345,159 +14345,6 @@ cluster properties as needed for the likelihood method.
 | C      | EPIC   | $\ce{C }$ $\text{K}_{\alpha}$ | 0.6 |    6.0 |       0.1 |       1.1 |              |
 |--------+--------+-------------------------------+-----+--------+-----------+-----------+--------------|
 
-With these in place both to the pixel as well as charge spectra a
-mixture of Gaussian / exponential Gaussian functions is fitted.
-
-Specifically the Gaussian:
-#+BEGIN_EXPORT latex
-\begin{equation}
-G(E; \mu, \sigma, N) = \frac{N}{\sqrt{2 \pi}} \exp\left(-\frac{(E - \mu)^2}{2\sigma^2}\right)
-\end{equation}
-#+END_EXPORT
-and exponential Gaussian:
-#+BEGIN_EXPORT latex
-\begin{equation}
-EG(E; \mu, \sigma, N, a, b) =
-\begin{cases}
-N \exp\left(-\frac{(E-\mu)^2}{2\sigma^2}\right) & \mathrm{for}: E \geq c\\
-   \exp(aE + b) & \mathrm{for}: E < c \\
-\end{cases}
-\end{equation}
-#+END_EXPORT
-where the constant $c$ is chosen such that the resulting function is
-continuous. The idea being that in the pixel spectra can have a longer
-exponential tail on the left side due to threshold effects and
-multiple electrons entering a single grid hole.
-
-The functions fitted to the different spectra then depend on which
-fluorescence lines are visible. The full list of all combinations is shown
-in tab. [[fit_funcs_pixel]] and [[fit_func_charge]].
-
-- [ ] *SHOW EXAMPLE FIT WITH RAW+CUTS & FIT PARAMETERS PLOT*
-
-Fig. [[fig:cdl:calibrated_energy_histosc]] shows normalized histograms of all
-CDL data after applying basic cuts and calibrating the data in energy
-using the charge of the main fitted line and its known energy as a
-baseline. Some targets show a wider distribution, due to detector
-variability which results in different gas gains and thus different
-charges in different runs.
-
-#+CAPTION: Normalized histograms of all CDL data after applying basic cuts
-#+CAPTION: and calibrating the data in energy using the charge of the main fitted line
-#+CAPTION: and its known energy as a baseline. Some targets show a wider distribution, due
-#+CAPTION: to detector variability which results in different gas gains and thus different
-#+CAPTION: charges in different runs.
-#+NAME: fig:cdl:calibrated_energy_histos
-[[~/phd/Figs/CDL/calibrated_cdl_energy_histos.pdf]]
-
-- [ ] *REWRITE BELOW, FIND CITATION FOR LORENTZ SHAPE OF X-ray transitions*
-Note that while the physical X-ray transition lines are shaped like a
-Lorentzian, the lines as detected by a gaseous detector are entirely
-dominated by detector resolution, resulting in Gaussian lines.
-  
-#+CAPTION: All fit functions for the pixel spectra for the different combinations. If a function misses
-#+CAPTION: a parameter below (out of $(N, μ, σ)$ for the Gaussian and $(a, b, N, μ, σ)$ for the exponential
-#+CAPTION: Gaussian) means that parameter has been fixed relative to another.
-#+NAME: fit_funcs_pixel
-|--------+--------+--------------------------+-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Target | Filter | line                     |  HV | Fit function                                                                                                                                                   |
-|--------+--------+--------------------------+-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Cu     | Ni     | $\ce{Cu}$ $\text{K}_{α}$ |  15 | $EG^{\mathrm{Cu,esc}}_{\mathrm{K}_{α}}(a,b,N,μ,σ) + EG^{\mathrm{Cu}}_{\mathrm{K}_{α}}(a,b,N,μ,σ)$                                                              |
-| Mn     | Cr     | $\ce{Mn}$ $\text{K}_{α}$ |  12 | $EG^{\mathrm{Mn,esc}}_{\mathrm{K}_{α}}(a,b,N,μ,σ) + EG^{\mathrm{Mn}}_{\mathrm{K}_{α}}(a,b,N,μ,σ)$                                                              |
-| Ti     | Ti     | $\ce{Ti}$ $\text{K}_{α}$ |   9 | $G^{\mathrm{Ti,esc}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{Ti}}_{\mathrm{K}_{β}}(N,μ,σ) + EG^{\mathrm{Ti}}_{K_{α}}(a,b,N,μ,σ) + G^{\mathrm{Ti}}_{K_{β}}(N,μ,σ)$ |
-| Ag     | Ag     | $\ce{Ag}$ $\text{L}_{α}$ |   6 | $EG^{\mathrm{Ag}}_{\mathrm{L}_{α}}(a,b,N,μ,σ) + G^{\mathrm{Ag}}_{\mathrm{L}_{β}}(N,μ,σ)$                                                                       |
-| Al     | Al     | $\ce{Al}$ $\text{K}_{α}$ |   4 | $EG^{\mathrm{Al}}_{\mathrm{K}_{α}}(a,b,N,μ,σ)$                                                                                                                 |
-| Cu     | EPIC   | $\ce{Cu}$ $\text{L}_{α}$ |   2 | $G^{\mathrm{Cu}}_{\mathrm{L}_{α}}(N,μ,σ) + G^{\mathrm{Cu}}_{\mathrm{L}_{β}}(N,μ,σ)$                                                                            |
-| Cu     | EPIC   | $\ce{O }$ $\text{K}_{α}$ | 0.9 | $G^{\mathrm{O}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{C}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{Fe,esc}}_{L_{α,β}}(N,μ,σ) + G^{\mathrm{Ni}}_{L_{α,β}}(N,μ,σ)$    |
-| C      | EPIC   | $\ce{C }$ $\text{K}_{α}$ | 0.6 | $G^{\mathrm{C}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{O}}_{\mathrm{K}_{α}}(N,μ,σ)$                                                                              |
-|--------+--------+--------------------------+-----+----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-
-
-- [ ] *THINK THIS TABLE THROUGH AGAIN. POSSIBLY REPLACE IT BY AN
-  ENUMERATION WITH ONE ITEM BY TARGET / FILTER*
-#+CAPTION: The fun table!
-#+CAPTION: ~(*)~: The ratio used in these amplitudes is not physical, but motivated by the very rough ratios seen in the data.
-#+CAPTION: ~(**)~:  The physical origin of this additional contribution modeled by a Gaussian is not entirely clear. The used
-#+CAPTION: EPIC filter contains an aluminum coating. As such it has the aluminum absorption edge at about $\SI{1.5}{keV}$, matching the additional
-#+CAPTION: contribution. Whether it is from a continuous part of the spectrum or a form of aluminum fluorescence is not clear however.
-#+NAME: test
-#+ATTR_LATEX: :float sideways :booktabs t
-| $\ce{CuNi} \SI{15}{kV}$                | $\ce{MnCr} \SI{12}{kV}$               | tiTi9                                          | agAg6                                          | alAl4                | cuEpic2                                         | cuEpic0.9                               | cEpic0.6                                     |
-|----------------------------------------+---------------------------------------+------------------------------------------------+------------------------------------------------+----------------------+-------------------------------------------------+-----------------------------------------+----------------------------------------------|
-| $\text{EG}(\ce{Cu}_{Kα})$              | $\text{EG}(\ce{Mn}_{Kα})$             | $\text{EG}(\ce{Ti}_{Kα})$                      | $\text{EG}(\ce{Ag}_{Lα})$                      | $\text{EG}(Al_{Kα})$ | $\text{G}(\ce{Cu}_{Lα})$                        | $\text{G}(O_{Kα})$                      | $\text{G}(\ce{C}_{Kα})$                      |
-| $\text{EG}(\ce{Cu}^{\text{esc}}_{Kα})$ | $\text{G}(\ce{Mn}^{\text{esc}}_{Kα})$ | $\text{G}(\ce{Ti}^{\text{esc}}_{Kα})$          | G($\ce{Ag}_{Lβ}$)                              |                      | G($\ce{Cu}_{Lβ}$):                              |                                         | G($\ce{O}_{Kα}$):                            |
-|                                        |                                       | G($\ce{Ti}^{\text{esc}}_{Kβ}$):                | $\ N = eN(\ce{Ag}_{Lα}) · 0.56$                |                      | $\ N = N(\ce{Cu}_{Lα}) · \frac{0.65}{1.11}$     |                                         | $\ μ = μ(\ce{C}_{Kα}) · \frac{0.525}{0.277}$ |
-|                                        |                                       | $\ μ = eμ(\ce{Ti}_{Kα}) · \frac{1.959}{4.511}$ | $\ μ = eμ(\ce{Ag}_{Lα}) · \frac{3.151}{2.984}$ |                      | $\ μ = μ(\ce{Cu}_{Lα}) · \frac{0.9498}{0.9297}$ |                                         | $\ σ = σ(\ce{C}_{Kα})$                       |
-|                                        |                                       | $\ σ = σ(\ce{Ti}^{\text{esc}}_{Kα})$           | $\ σ = eσ(\ce{Ag}_{Lα})$                       |                      | $\ σ = σ(\ce{Cu}_{Lα})$                         |                                         |                                              |
-|                                        |                                       | G($\ce{Ti}_{Kβ}$):                             |                                                |                      | G($\ce{O}_{Kα}$):                               |                                         |                                              |
-|                                        |                                       | $\ μ = eμ(\ce{Ti}_{Kα}) · \frac{4.932}{4.511}$ |                                                |                      | $\ N = N(\ce{Cu}_{Lα}) / 3.5$ ~(*)~             |                                         |                                              |
-|                                        |                                       | $\ σ = eσ(\ce{Ti}_{Kα})$                       |                                                |                      | $\ μ = μ(\ce{Cu}_{Lα}) · \frac{0.5249}{0.9297}$ |                                         |                                              |
-|                                        |                                       |                                                |                                                |                      | $\ σ = σ(\ce{Cu}_{Lα}) / 2.0$                   |                                         |                                              |
-|                                        |                                       |                                                |                                                |                      | G($\ce{Al}_K$) ~(**)~                           |                                         |                                              |
-|----------------------------------------+---------------------------------------+------------------------------------------------+------------------------------------------------+----------------------+-------------------------------------------------+-----------------------------------------+----------------------------------------------|
-| cuNi15 Q                               | mnCr12 Q                              | tiTi9 Q                                        | agAg6 Q                                        | alAl4 Q              | cuEpic2 Q                                       | cuEpic0.9 Q                             | cEpic0.6 Q                                   |
-|----------------------------------------+---------------------------------------+------------------------------------------------+------------------------------------------------+----------------------+-------------------------------------------------+-----------------------------------------+----------------------------------------------|
-| $\text{G}(\ce{Cu}_{Kα})$               | $\text{G}(\ce{Mn}_{Kα})$              | $\text{G}(\ce{Ti}_{Kα})$                       | $\text{G}(\ce{Ag}_{Lα})$                       | $\text{G}(Al_{Kα})$  | $\text{G}(\ce{Cu}_{Lα})$                        | $\text{G}(O_{Kα})$                      | $\text{G}(\ce{C}_{Kα})$                      |
-| $\text{G}(\ce{Cu}^{\text{esc}}_{Kα})$  | $\text{G}(\ce{Mn}^{\text{esc}}_{Kα})$ | $\text{G}(\ce{Ti}^{\text{esc}}_{Kα})$          | G($\ce{Ag}_{Lβ}$):                             |                      | G($\ce{Cu}_{Lβ}$):                              | G($\ce{C}_{Kα}$):                       | G($\ce{O}_{Kα}$):                            |
-|                                        |                                       | G($\ce{Ti}^{\text{esc}}_{Kβ}$):                | $\ N = N(\ce{Ag}_{Lα}) · 0.56$                 |                      | $\ N = N(\ce{Cu}_{Lα}) · \frac{0.65}{1.11}$     | $\ N = N(O_{Kα}) / 10.0$ ~(*)~          | $\ μ = μ(\ce{C}_{Kα}) · \frac{0.525}{0.277}$ |
-|                                        |                                       | $\ μ = μ(\ce{Ti}_{Kα}) · \frac{1.959}{4.511}$  | $\ μ = μ(\ce{Ag}_{Lα}) · \frac{3.151}{2.984}$  |                      | $\ μ = μ(\ce{Cu}_{Lα}) · \frac{0.9498}{0.9297}$ | $\ μ = μ(O_{Kα}) · \frac{277.0}{524.9}$ | $\ σ = σ(\ce{C}_{Kα})$                       |
-|                                        |                                       | $\ σ = σ(\ce{Ti}^{\text{esc}}_{Kα})$           | $\ σ = σ(\ce{Ag}_{Lα})$                        |                      | $\ σ = σ(\ce{Cu}_{Lα})$                         | $\ σ = σ(O_{Kα})$                       |                                              |
-|                                        |                                       | G($\ce{Ti}_{Kβ}$):                             |                                                |                      |                                                 |                                         |                                              |
-|                                        |                                       | $\ μ = μ(\ce{Ti}_{Kα}) · \frac{4.932}{4.511}$  |                                                |                      |                                                 |                                         |                                              |
-|                                        |                                       | $\ σ = σ(\ce{Ti}_{Kα})$                        |                                                |                      |                                                 |                                         |                                              |
-
-- [ ] *HAVE
-  [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/calcCdlCutsFromFitParams.nim]]
-  TO COMPUTE CHARGE CUT VALUES FROM DUMPED FITS!*
-  -> We now handle this in code, write them to CDL H5 file. The above
-  could still be useful to generate a table of the final used values!
-
-#+CAPTION: All fit functions for the charge spectra for the different combinations.
-#+NAME: fit_func_charge
-|--------+--------+--------------------------+-----+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Target | Filter | line                     |  HV | fit functions                                                                                                                                                               |
-|--------+--------+--------------------------+-----+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Cu     | Ni     | $\ce{Cu}$ $\text{K}_{α}$ |  15 | $G^{\mathrm{Cu,esc}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{Cu}}_{\mathrm{K}_{α}}(N,μ,σ)$                                                                                     |
-| Mn     | Cr     | $\ce{Mn}$ $\text{K}_{α}$ |  12 | $G^{\mathrm{Mn,esc}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{Mn}}_{\mathrm{K}_{α}}(N,μ,σ)$                                                                                     |
-| Ti     | Ti     | $\ce{Ti}$ $\text{K}_{α}$ |   9 | $G^{\mathrm{Ti,esc}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{Ti}}_{\mathrm{K}_{β}}(N,μ,σ) + G^{\mathrm{Ti}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{Ti}}_{\mathrm{K}_{β}}(N,μ,σ)$ |
-| Ag     | Ag     | $\ce{Ag}$ $\text{L}_{α}$ |   6 | $G^{\mathrm{Ag}}_{\mathrm{L}_{α}}(N,μ,σ) + G^{\mathrm{Ag}}_{\mathrm{L}_{β}}(N,μ,σ)$                                                                                         |
-| Al     | Al     | $\ce{Al}$ $\text{K}_{α}$ |   4 | $G^{\mathrm{Al}}_{\mathrm{K}_{α}}(N,μ,σ)$                                                                                                                                   |
-| Cu     | EPIC   | $\ce{Cu}$ $\text{L}_{α}$ |   2 | $G^{\mathrm{Cu}}_{\mathrm{L}_{α}}(N,μ,σ) + G^{\mathrm{Cu}}_{\mathrm{L}_{β}}(N,μ,σ)$                                                                                                                                |
-| Cu     | EPIC   | $\ce{O }$ $\text{K}_{α}$ | 0.9 | $G^{\mathrm{O}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{C}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{Fe,esc}}_{L_{α,β}}(N,μ,σ) + G^{\mathrm{Ni}}_{\mathrm{L}_{α,β}}(N,μ,σ)$        |
-| C      | EPIC   | $\ce{C }$ $\text{K}_{α}$ | 0.6 | $G^{\mathrm{C}}_{\mathrm{K}_{α}}(N,μ,σ) + G^{\mathrm{O}}_{\mathrm{K}_{α}}(N,μ,σ)$                                                                                           |
-|--------+--------+--------------------------+-----+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-
-- [ ] *REWRITE THE BELOW* (much of that is irrelevant for the full
-  thesis)
-The exact implementation in use for both the gaussian and
-exponential gaussian:
-- Gauss:
-  https://github.com/Vindaar/seqmath/blob/master/src/seqmath/smath.nim#L997-L1009
-- exponential Gauss:
-  https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibration.nim#L182-L194
-
-The fitting was performed both with [[https://www.physics.wisc.edu/~craigm/idl/cmpfit.html][MPFit]] (Levenberg Marquardt C
-implementation) as a comparison, but mainly using [[https://nlopt.readthedocs.io/en/latest/][NLopt]]. Specifically
-the gradient based [[http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.146.5196]["Method of Moving Asymptotes"]] algorithm was used
-(NLopt provides a large number of different minimization /
-maximization algorithms to choose from) to perform maximum likelihood
-estimation written in the form of a poisson distributed log likelihood
-$\chi^2$:
-#+BEGIN_EXPORT latex
-\begin{equation}
-\chi^2_{\lambda, P} = 2 \sum_i y_i - n_i + n_i \ln\left(\frac{n_i}{y_i}\right),
-\end{equation}
-#+END_EXPORT
-where $n_i$ is the number of events in bin $i$ and $y_i$ the model
-prediction of events in bin $i$.
-
-The required gradient was calculated simply using the [[https://en.wikipedia.org/wiki/Symmetric_derivative][symmetric
-derivative]]. Other algorithms and minimization functions were tried,
-but this proved to be the most reliable.  See the implementation:
-https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibration.nim#L131-L162
-
-The fits to all spectra are shown below.
-
 [fn:weather_at_cdl] The measurement campaign at the CDL was done in
 February. However, the weather was nice and sunny most of the week, if
 I remember correctly. The laboratory has windows towards the
@@ -14625,9 +14472,12 @@ and have no specific relevance to an existing paragraph / fig / tab
   AND CREATE A PLOT!*
 
   
+- [ ] *NOTE THAT GAS PRESSURES DURING CDL WERE:*
+  - <2019-02-15 Fri 15:06>: 1052 mbar
+  - <2019-02-16 Sat 15:01>: 1053 mbar
+  - <2019-02-17 Sun 10:25>: 1052 mbar
+  - <2019-02-19 Tue 16:17>: 1052 mbar
   
-
-
 **** Table of fit lines                                         :noexport:  
 
 This is the full table.
@@ -14665,7 +14515,12 @@ This is the full table.
 |                                   |                                  | $μ = μ(\ce{Ti}_{Kα}) · \frac{4.932}{4.511}$    |                                              |                      | #  $σ = σ(\ce{Cu}_{Lα}) / 2.0$                   |                                         |                                            |
 |                                   |                                  | $σ = σ(\ce{Ti}_{Kα})$                          |                                              |                      |                                                  |                                         |                                            |
 
+
 **** Extra info
+
+- [ ] *EXTEND THIS TO INCLUDE CITATIONS*
+- [ ] *ADD OUR OWN POLYIAMID + ALUMINUM TRANSMISSION PLOT*
+  -> 1650 Å PP + 800 Å Al
 
 EPIC filters:
 https://www.cosmos.esa.int/web/xmm-newton/technical-details-epic
@@ -14832,6 +14687,311 @@ my memory served me right.
 #+NAME: fig:cdl:weather_meyrin_during_cdl_data_taking
 [[~/phd/Figs/CDL/weather_meyrin_during_cdl_data_taking.pdf]]
 
+*** Charge spectra of the CDL data [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cdl:fits_to_spectra
+:END:
+
+With these in place both to the pixel as well as charge spectra a
+mixture of Gaussian functions is fitted. [fn:pixel_spectra_fitting]
+
+Specifically the Gaussian:
+#+BEGIN_EXPORT latex
+\begin{equation}
+G(E; \mu, \sigma, N) = \frac{N}{\sqrt{2 \pi}} \exp\left(-\frac{(E - \mu)^2}{2\sigma^2}\right)
+\end{equation}
+#+END_EXPORT
+
+The functions fitted to the different spectra then depend on which
+fluorescence lines are visible. The full list of all combinations is
+shown in tab. [[tab:cdl:fit_func_charge]]. Typically each line that is
+expected from the choice of target, filter and chosen voltage and
+visible in the data is fit. If no 'argument' is shown in the table it
+means each parameter ($N, μ, σ$) is fit. Any specific argument given
+implies that parameter is _fixed_ relative to another parameter,
+e.g. $μ^{\ce{Ag}}_{Lα}·(\frac{3.151}{2.984})$ fixes the $Lβ$ line of
+silver to the fit parameter $μ^{\ce{Ag}}_{Lα}$ of the $Lα$ line with a
+multiplicative shift based on the relative eneries of $Lα$ to $Lβ$.
+In some cases the amplitude is fixed between different lines where
+relative amplitudes cannot be easily predicted, e.g. in one of the
+$\ce{Cu}-\text{EPIC}$ the $\ce{C}_{Kα}$ line is fixed to a tenth of
+the $\ce{O}_{Kα}$ line. This is done to get a good fit based on trial
+and error. Finally, in both $\ce{Cu}-\text{EPIC}$ lines two 'unknown'
+Gaussians are added to cover the behavior of the data at higher
+charges. It is unclear what the real cause is, in particular in the
+lower energy case. For the $\SI{2}{kV}$ data there is a chance it is
+related to an aluminum coating that is present on the EPIC filters
+*CITE REFERENCE*. It could be a continuous contribution cut by the
+absorption edge of aluminum or potentially slight fluorescence. This
+explanation doesn't work in the $\SI{0.9}{kV}$ case, which is why the
+line is deemed 'unknown'. There is also simply a possibility it is a
+case of multi-cluster events, which are too close to be split, but
+with properties close enough to a single X-ray as to not be removed by
+the cleaning cuts (which gets more likely the lower the energy is).
+- [ ] *REWRITE ABOVE PART ABOUT UNKNOWN LINE ACCORDING TO*:
+  #+begin_quote
+  The physical origin of this additional contribution modeled by a Gaussian is not entirely clear. The used
+  EPIC filter contains an aluminum coating. As such it has the aluminum absorption edge at about $\SI{1.5}{keV}$, matching the additional
+  contribution. Whether it is from a continuous part of the spectrum or a form of aluminum fluorescence is not clear however.  
+  #+end_quote
+
+The full set of all fits (including the pixel spectra) is shown in
+appendix
+[[#sec:appendix:cdl:all_spectra_fits]]. Fig. [[fig:cdl:ti_ti_charge_spectrum_run_326]]
+shows the charge spectrum of the $\ce{Ti}$ target and $\ce{Ti}$ filter
+at $\SI{9}{kV}$ for one of the runs. These plots show the raw data in
+the green histogram and the data left after application of the
+cleaning cuts in the purple histogram. The black line is the result of
+the fit as described in tab. [[tab:cdl:fit_func_charge]] with the
+resulting parameters shown in the box (parameters that were fixed are
+not shown). The black straight lines with grey error bands represent
+the $3σ$ region around the main fluorescence line, which is used to
+extract those clusters likely from the fluorescence line and therefore
+known energy. 
+
+#+CAPTION: Charge spectrum of the $\ce{Ti}-\ce{Ti}$ spectrum at $\SI{9}{kV}$ from run
+#+CAPTION: 326. The green histograms shows the raw data of this run and the purple
+#+CAPTION: histogram indicating the data left after the cleaning cuts are applied.
+#+CAPTION: The purple line indicates the result of the fit as described in tab. [[tab:cdl:fit_func_charge]]
+#+CAPTION: with the resulting parameters shown in the box. The black lines represent the
+#+CAPTION: $3σ$ region around the main fluorescence line (with grey error bands),
+#+CAPTION: which is later used to extract those clusters likely from the
+#+CAPTION: fluorescence line and therefore known energy.
+#+NAME: fig:cdl:ti_ti_charge_spectrum_run_326
+[[~/phd/Figs/CDL/Ti-Ti-9kVCharge-2019_run_326.pdf]]
+
+- [ ] *REWRITE BELOW, FIND CITATION FOR LORENTZ SHAPE OF X-ray
+  transitions*
+  -> And also this could maybe go to where we first show 
+Note that while the physical X-ray transition lines are shaped like a
+Lorentzian, the lines as detected by a gaseous detector are entirely
+dominated by detector resolution, resulting in Gaussian lines.
+
+- [ ] *REWRITE THE BELOW* (much of that is irrelevant for the full
+  thesis)
+The exact implementation in use for both the gaussian:
+- Gauss:
+  https://github.com/Vindaar/seqmath/blob/master/src/seqmath/smath.nim#L997-L1009
+
+The fitting was performed both with [[https://www.physics.wisc.edu/~craigm/idl/cmpfit.html][MPFit]] (Levenberg Marquardt C
+implementation) as a comparison, but mainly using [[https://nlopt.readthedocs.io/en/latest/][NLopt]]. Specifically
+the gradient based [[http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.146.5196]["Method of Moving Asymptotes"]] algorithm was used
+(NLopt provides a large number of different minimization /
+maximization algorithms to choose from) to perform maximum likelihood
+estimation written in the form of a poisson distributed log likelihood
+$\chi^2$:
+#+BEGIN_EXPORT latex
+\begin{equation}
+\chi^2_{\lambda, P} = 2 \sum_i y_i - n_i + n_i \ln\left(\frac{n_i}{y_i}\right),
+\end{equation}
+#+END_EXPORT
+where $n_i$ is the number of events in bin $i$ and $y_i$ the model
+prediction of events in bin $i$.
+
+The required gradient was calculated simply using the [[https://en.wikipedia.org/wiki/Symmetric_derivative][symmetric
+derivative]]. Other algorithms and minimization functions were tried,
+but this proved to be the most reliable.  See the implementation:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibration.nim#L131-L162
+
+The fits to all spectra are shown below.
+
+\footnotesize
+#+CAPTION: All fit functions for the charge spectra used for each target / filter combination. Typically each
+#+CAPTION: line that is expected and visible in the data is fit. $G$ is a normal Gaussian. If no 'argument'
+#+CAPTION: is shown it means each parameter ($N, μ, σ$) is fit. Any specific argument given implies that
+#+CAPTION: parameter is _fixed_ relative to another parameter, e.g. $μ^{\ce{Ag}}_{Lα}·(\frac{3.151}{2.984}$ fixes
+#+CAPTION: the $Lβ$ line of silver to the fit parameter $μ^{\ce{Ag}}_{Lα}$ of the $Lα$ line with a multiplicative
+#+CAPTION: shift based on the relative eneries of $Lα$ to $Lβ$.
+#+CAPTION: In some cases the amplitude is fixed between different lines where relative amplitudes cannot be
+#+CAPTION: easily predicted, e.g. in one of the $\ce{Cu}-\text{EPIC}$ the $\ce{C}_{Kα}$ line is fixed to a tenth of the
+#+CAPTION: $\ce{O}_{Kα}$ line. This is done to get a good fit based on trial and error. Finally, in both $\ce{Cu}-\text{EPIC}$
+#+CAPTION: lines two 'unknown' Gaussians are added to cover the behavior of the data at higher charges. It is unclear
+#+CAPTION: what the real cause is, in particular in the lower energy case.
+#+NAME: tab:cdl:fit_func_charge
+#+ATTR_LATEX: :environment longtable :width \textwidth :spread 
+|--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Target | Filter | HV [kV] | Fit functions                                                                                                                                                                                                                                                                                                  |
+|--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Cu     | Ni     |      15 | $G^{\ce{Cu}}_{Kα} + G^{\ce{Cu}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                              |
+| Mn     | Cr     |      12 | $G^{\ce{Mn}}_{Kα} + G^{\ce{Mn}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                              |
+| Ti     | Ti     |       9 | $G^{\ce{Ti}}_{Kα} + G^{\ce{Ti}, \text{esc}}_{Kα} + G^{\ce{Ti}}_{Kβ}\left( μ^{\ce{Ti}}_{Kα}·(\frac{4.932}{4.511}), σ^{\ce{Ti}}_{Kα} \right) + G^{\ce{Ti}, \text{esc}}_{Kβ}\left( μ^{\ce{Ti}}_{Kα}·(\frac{1.959}{4.511}), σ^{\ce{Ti}, \text{esc}}_{Kα} \right)$                                                  |
+| Ag     | Ag     |       6 | $G^{\ce{Ag}}_{Lα} + G^{\ce{Ag}}_{Lβ}\left( N^{\ce{Ag}}_{Lα}·0.56, μ^{\ce{Ag}}_{Lα}·(\frac{3.151}{2.984}), σ^{\ce{Ag}}_{Lα} \right)$                                                                                                                                                                            |
+| Al     | Al     |       4 | $G^{\ce{Al}}_{Kα}$                                                                                                                                                                                                                                                                                             |
+| Cu     | EPIC   |       2 | $G^{\ce{Cu}}_{Lα} + G^{\ce{Cu}}_{Lβ}\left( N^{\ce{Cu}}_{Lα}·(\frac{0.65}{1.11}), μ^{\ce{Cu}}_{Lα}·(\frac{0.9498}{0.9297}), σ^{\ce{Cu}}_{Lα} \right) + G^{\ce{O}}_{Kα}\left( \frac{N^{\ce{Cu}}_{Lα}}{3.5}, μ^{\ce{Cu}}_{Lα}·(\frac{0.5249}{0.9297}), \frac{σ^{\ce{Cu}}_{Lα}}{2.0} \right) + G_{\text{unknown}}$ |
+| Cu     | EPIC   |     0.9 | $G^{\ce{O}}_{Kα} + G^{\ce{C}}_{Kα}\left( \frac{N^{\ce{O}}_{Kα}}{10.0}, μ^{\ce{O}}_{Kα}·(\frac{277.0}{524.9}), σ^{\ce{O}}_{Kα} \right) + G_{\text{unknown}}$                                                                                                                                                    |
+| C      | EPIC   |     0.6 | $G^{\ce{C}}_{Kα} + G^{\ce{O}}_{Kα}\left( μ^{\ce{C}}_{Kα}·(\frac{0.525}{0.277}), σ^{\ce{C}}_{Kα} \right)$                                                                                                                                                                                                       |
+|--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+\normalsize
+
+[fn:pixel_spectra_fitting] Note that similar fits can be performed for
+the pixel spectra as well. However, as these are not needed for
+anything further they are only presented in the extended version of
+the thesis.
+
+**** TODOs of the above section                                 :noexport:
+
+- [X] *HAVE
+  [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/calcCdlCutsFromFitParams.nim]]
+  TO COMPUTE CHARGE CUT VALUES FROM DUMPED FITS!*
+  -> We now handle this in code, write them to CDL H5 file. The above
+  could still be useful to generate a table of the final used values!
+  -> We generate the table from the code now. The script above might
+  still serve as some reference though.
+
+- [X] Only mention pixel spectra in passing? We don't use them for
+  anything. So there's no need for why they should really appear here!
+  -> Yes, this is better. See section below now.
+
+- [X] *SHOW EXAMPLE FIT WITH RAW+CUTS & FIT PARAMETERS PLOT*
+  
+- [X] *PROBABLY REPLACE PURPLE LINE FOR PLOT WITHOUT NLOPT & START BY
+  BLACK LINE!*
+
+- [X] *THINK THIS TABLE THROUGH AGAIN. POSSIBLY REPLACE IT BY AN
+  ENUMERATION WITH ONE ITEM BY TARGET / FILTER*
+  -> I think that's better, yes. (hence it's now here)
+#+CAPTION: The fun table!
+#+CAPTION: ~(*)~: The ratio used in these amplitudes is not physical, but motivated by the very rough ratios seen in the data.
+#+CAPTION: ~(**)~:  The physical origin of this additional contribution modeled by a Gaussian is not entirely clear. The used
+#+CAPTION: EPIC filter contains an aluminum coating. As such it has the aluminum absorption edge at about $\SI{1.5}{keV}$, matching the additional
+#+CAPTION: contribution. Whether it is from a continuous part of the spectrum or a form of aluminum fluorescence is not clear however.
+#+NAME: test
+#+ATTR_LATEX: :float sideways :booktabs t
+| $\ce{CuNi} \SI{15}{kV}$                | $\ce{MnCr} \SI{12}{kV}$               | tiTi9                                          | agAg6                                          | alAl4                | cuEpic2                                         | cuEpic0.9                               | cEpic0.6                                     |
+|----------------------------------------+---------------------------------------+------------------------------------------------+------------------------------------------------+----------------------+-------------------------------------------------+-----------------------------------------+----------------------------------------------|
+| $\text{EG}(\ce{Cu}_{Kα})$              | $\text{EG}(\ce{Mn}_{Kα})$             | $\text{EG}(\ce{Ti}_{Kα})$                      | $\text{EG}(\ce{Ag}_{Lα})$                      | $\text{EG}(Al_{Kα})$ | $\text{G}(\ce{Cu}_{Lα})$                        | $\text{G}(O_{Kα})$                      | $\text{G}(\ce{C}_{Kα})$                      |
+| $\text{EG}(\ce{Cu}^{\text{esc}}_{Kα})$ | $\text{G}(\ce{Mn}^{\text{esc}}_{Kα})$ | $\text{G}(\ce{Ti}^{\text{esc}}_{Kα})$          | G($\ce{Ag}_{Lβ}$)                              |                      | G($\ce{Cu}_{Lβ}$):                              |                                         | G($\ce{O}_{Kα}$):                            |
+|                                        |                                       | G($\ce{Ti}^{\text{esc}}_{Kβ}$):                | $\ N = eN(\ce{Ag}_{Lα}) · 0.56$                |                      | $\ N = N(\ce{Cu}_{Lα}) · \frac{0.65}{1.11}$     |                                         | $\ μ = μ(\ce{C}_{Kα}) · \frac{0.525}{0.277}$ |
+|                                        |                                       | $\ μ = eμ(\ce{Ti}_{Kα}) · \frac{1.959}{4.511}$ | $\ μ = eμ(\ce{Ag}_{Lα}) · \frac{3.151}{2.984}$ |                      | $\ μ = μ(\ce{Cu}_{Lα}) · \frac{0.9498}{0.9297}$ |                                         | $\ σ = σ(\ce{C}_{Kα})$                       |
+|                                        |                                       | $\ σ = σ(\ce{Ti}^{\text{esc}}_{Kα})$           | $\ σ = eσ(\ce{Ag}_{Lα})$                       |                      | $\ σ = σ(\ce{Cu}_{Lα})$                         |                                         |                                              |
+|                                        |                                       | G($\ce{Ti}_{Kβ}$):                             |                                                |                      | G($\ce{O}_{Kα}$):                               |                                         |                                              |
+|                                        |                                       | $\ μ = eμ(\ce{Ti}_{Kα}) · \frac{4.932}{4.511}$ |                                                |                      | $\ N = N(\ce{Cu}_{Lα}) / 3.5$ ~(*)~             |                                         |                                              |
+|                                        |                                       | $\ σ = eσ(\ce{Ti}_{Kα})$                       |                                                |                      | $\ μ = μ(\ce{Cu}_{Lα}) · \frac{0.5249}{0.9297}$ |                                         |                                              |
+|                                        |                                       |                                                |                                                |                      | $\ σ = σ(\ce{Cu}_{Lα}) / 2.0$                   |                                         |                                              |
+|                                        |                                       |                                                |                                                |                      | G($\ce{Al}_K$) ~(**)~                           |                                         |                                              |
+|----------------------------------------+---------------------------------------+------------------------------------------------+------------------------------------------------+----------------------+-------------------------------------------------+-----------------------------------------+----------------------------------------------|
+| cuNi15 Q                               | mnCr12 Q                              | tiTi9 Q                                        | agAg6 Q                                        | alAl4 Q              | cuEpic2 Q                                       | cuEpic0.9 Q                             | cEpic0.6 Q                                   |
+|----------------------------------------+---------------------------------------+------------------------------------------------+------------------------------------------------+----------------------+-------------------------------------------------+-----------------------------------------+----------------------------------------------|
+| $\text{G}(\ce{Cu}_{Kα})$               | $\text{G}(\ce{Mn}_{Kα})$              | $\text{G}(\ce{Ti}_{Kα})$                       | $\text{G}(\ce{Ag}_{Lα})$                       | $\text{G}(Al_{Kα})$  | $\text{G}(\ce{Cu}_{Lα})$                        | $\text{G}(O_{Kα})$                      | $\text{G}(\ce{C}_{Kα})$                      |
+| $\text{G}(\ce{Cu}^{\text{esc}}_{Kα})$  | $\text{G}(\ce{Mn}^{\text{esc}}_{Kα})$ | $\text{G}(\ce{Ti}^{\text{esc}}_{Kα})$          | G($\ce{Ag}_{Lβ}$):                             |                      | G($\ce{Cu}_{Lβ}$):                              | G($\ce{C}_{Kα}$):                       | G($\ce{O}_{Kα}$):                            |
+|                                        |                                       | G($\ce{Ti}^{\text{esc}}_{Kβ}$):                | $\ N = N(\ce{Ag}_{Lα}) · 0.56$                 |                      | $\ N = N(\ce{Cu}_{Lα}) · \frac{0.65}{1.11}$     | $\ N = N(O_{Kα}) / 10.0$ ~(*)~          | $\ μ = μ(\ce{C}_{Kα}) · \frac{0.525}{0.277}$ |
+|                                        |                                       | $\ μ = μ(\ce{Ti}_{Kα}) · \frac{1.959}{4.511}$  | $\ μ = μ(\ce{Ag}_{Lα}) · \frac{3.151}{2.984}$  |                      | $\ μ = μ(\ce{Cu}_{Lα}) · \frac{0.9498}{0.9297}$ | $\ μ = μ(O_{Kα}) · \frac{277.0}{524.9}$ | $\ σ = σ(\ce{C}_{Kα})$                       |
+|                                        |                                       | $\ σ = σ(\ce{Ti}^{\text{esc}}_{Kα})$           | $\ σ = σ(\ce{Ag}_{Lα})$                        |                      | $\ σ = σ(\ce{Cu}_{Lα})$                         | $\ σ = σ(O_{Kα})$                       |                                              |
+|                                        |                                       | G($\ce{Ti}_{Kβ}$):                             |                                                |                      |                                                 |                                         |                                              |
+|                                        |                                       | $\ μ = μ(\ce{Ti}_{Kα}) · \frac{4.932}{4.511}$  |                                                |                      |                                                 |                                         |                                              |
+|                                        |                                       | $\ σ = σ(\ce{Ti}_{Kα})$                        |                                                |                      |                                                 |                                         |                                              |
+  
+
+
+**** Pixel spectra                                              :noexport:
+
+In case of the pixel spectra the fit functions are generally very
+similar, but in some cases the regular Gaussian is replaced by an
+'exponential Gaussian' defined as follows:
+#+BEGIN_EXPORT latex
+\begin{equation}
+EG(E; \mu, \sigma, N, a, b) =
+\begin{cases}
+N \exp\left(-\frac{(E-\mu)^2}{2\sigma^2}\right) & \mathrm{for}: E \geq c\\
+   \exp(aE + b) & \mathrm{for}: E < c \\
+\end{cases}
+\end{equation}
+#+END_EXPORT
+where the constant $c$ is chosen such that the resulting function is
+continuous. The idea being that in the pixel spectra can have a longer
+exponential tail on the left side due to threshold effects and
+multiple electrons entering a single grid hole.
+
+The implementation of the exponential Gaussian is found here:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibration.nim#L182-L194
+- [ ] *REPLACE LINKS SUCH AS THESE BY TAGGED VERSION AND NOT DIRECT
+  INLINE LINKS*
+
+The full list of all fit combinations for the pixel spectra is shown
+in tab. [[tab:cdl:fit_func_pixel]]. The fitting otherwise works the same
+way, using a non-linear least square fit both implemented by hand
+using MMA as well as a standard Levenberg-Marquardt fit.
+  
+#+CAPTION: All fit functions for the pixel spectra for the different combinations. If a function misses
+#+CAPTION: a parameter below (out of $(N, μ, σ)$ for the Gaussian and $(a, b, N, μ, σ)$ for the exponential
+#+CAPTION: Gaussian) means that parameter has been fixed relative to another.
+#+NAME: tab:cdl:fit_funcs_pixel
+|--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Target | Filter | HV [kV] | Fit functions                                                                                                                                                                                                                                                                                                  |
+|--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Cu     | Ni     |      15 | $EG^{\ce{Cu}}_{Kα} + EG^{\ce{Cu}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                            |
+| Mn     | Cr     |      12 | $EG^{\ce{Mn}}_{Kα} + G^{\ce{Mn}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                             |
+| Ti     | Ti     |       9 | $EG^{\ce{Ti}}_{Kα} + G^{\ce{Ti}, \text{esc}}_{Kα} + G^{\ce{Ti}, \text{esc}}_{Kβ}\left( eμ^{\ce{Ti}}_{Kα}·(\frac{1.959}{4.511}), σ^{\ce{Ti}, \text{esc}}_{Kα} \right) + G^{\ce{Ti}}_{Kβ}\left( eμ^{\ce{Ti}}_{Kα}·(\frac{4.932}{4.511}), eσ^{\ce{Ti}}_{Kα} \right)$                                              |
+| Ag     | Ag     |       6 | $EG^{\ce{Ag}}_{Lα} + G^{\ce{Ag}}_{Lβ}\left( eN^{\ce{Ag}}_{Lα}·0.56, eμ^{\ce{Ag}}_{Lα}·(\frac{3.151}{2.984}), eσ^{\ce{Ag}}_{Lα} \right)$                                                                                                                                                                        |
+| Al     | Al     |       4 | $EG^{\ce{Al}}_{Kα}$                                                                                                                                                                                                                                                                                            |
+| Cu     | EPIC   |       2 | $G^{\ce{Cu}}_{Lα} + G^{\ce{Cu}}_{Lβ}\left( N^{\ce{Cu}}_{Lα}·(\frac{0.65}{1.11}), μ^{\ce{Cu}}_{Lα}·(\frac{0.9498}{0.9297}), σ^{\ce{Cu}}_{Lα} \right) + G^{\ce{O}}_{Kα}\left( \frac{N^{\ce{Cu}}_{Lα}}{3.5}, μ^{\ce{Cu}}_{Lα}·(\frac{0.5249}{0.9297}), \frac{σ^{\ce{Cu}}_{Lα}}{2.0} \right) + G_{\text{unknown}}$ |
+| Cu     | EPIC   |     0.9 | $G^{\ce{O}}_{Kα} + G_{\text{unknown}}$                                                                                                                                                                                                                                                                         |
+| C      | EPIC   |     0.6 | $G^{\ce{C}}_{Kα} + G^{\ce{O}}_{Kα}\left( μ^{\ce{C}}_{Kα}·(\frac{0.525}{0.277}), σ^{\ce{C}}_{Kα} \right)$                                                                                                                                                                                                       |
+|--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+
+
+*** Overview of CDL data in energy
+
+With the fits to the charge spectra performed on a run-by-run basis,
+they can be utilized to calibrate the energy of each cluster in the
+data. [fn:using_regular_energy_calib] This is done by using the linear
+relationship between charge and energy and therefore using the charge
+of the main fluorescence line as computed from the fit.
+Fig. [[fig:cdl:calibrated_energy_histos]] shows normalized histograms of
+all CDL data after applying basic cuts and performing said energy
+calibrations. 
+
+#+CAPTION: Normalized histograms of all CDL data after applying basic cuts
+#+CAPTION: and calibrating the data in energy using the charge of the main fitted line
+#+CAPTION: and its known energy as a baseline. Some targets show a wider distribution, due
+#+CAPTION: to detector variability which results in different gas gains and thus different
+#+CAPTION: charges in different runs.
+#+NAME: fig:cdl:calibrated_energy_histos
+[[~/phd/Figs/CDL/calibrated_cdl_energy_histos.pdf]]
+
+[fn:using_regular_energy_calib] We can of course apply the regular
+energy calibration based on the multiple fits to the CAST calibration
+data as explained in
+sec. [[#sec:calib:final_energy_calibration]]. However, due to the very
+different gas gains observed in the CDL the applicability is not
+ideal. Add to that the fact that we know for certain the energy of the
+clusters in the main fluorescence peak there is simply no need either.
+
+*** Definition of the reference distributions
+
+Having performed fits to all charge spectra of each run and the
+position of the main fluorescence line and its width determined, the
+reference distributions for the cluster properties entering the
+likelihood can be computed. By taking all clusters within the
+$3σ$ bounds around the main fluorescence line of the data used for the
+fit, the dataset is selected. This guarantees to leave mainly X-rays
+of the targeted energy for each line in the dataset. As the fit is
+performed for each run separately, the $3σ$ charge cut is performed
+run by run and then all data combined for each fluorescence line
+(target, filter & HV setting).
+
+The desired reference distributions then are simply ...................
+
+The resulting histogram can then interpreted as a probability density
+distribution that describes ...........................
+
+To summarize the approach:
+1. apply cleaning cuts according to tab. [[tab:cdl:cdl_cleaning_cuts]]
+2. perform fits according to tab. [[tab:cdl:fit_func_charge]]
+3. cut to the $3σ$ region around the main fluorescence line of the
+   performed fit (i.e. the first term in tab. [[tab:cdl:fit_func_charge]])
+4. combine all remaining clusters for the same fluorescence line from
+   each run
+5. compute a histogram for each desired cluster property and each
+   fluorescence line, defining the reference distribution.
+
+- [ ] mention what kind of binning we use
+- [ ] present plot of reference distributions. How?
+  -> ridge line of all targets & then show one property?
+  -> ridge line of all properties
+  -> side-by-side facet of all properties of one line?
+  -> 
+
 
 *** Energy resolution [/]
 :PROPERTIES:
@@ -14841,6 +15001,22 @@ my memory served me right.
 - [ ] this should be a small aside, as it is not extremely important
   for us. Only serves as an input to our systematics. I guess it is
   important in that sense after all, heh.
+
+With the main fluorescence lines fitted in all the charge spectra, the
+position and line width can be used to compute the energy resolution
+of the detector:
+
+\[
+ΔE = \frac{σ}{μ}
+\]
+
+where $σ$ is a measure of the line width and $μ$ the position (in this
+case in total cluster charge). In some cases the full width at half
+maximum (FWHM) is used and in others the standard deviation (for a normal
+distribution the FWHM is about $2.35 σ$).
+
+- [ ] *COMPUTE ENERGY RESOLUTION FOR EVERY 55FE SPECTRUM AND ADD NOTE
+  ABOUT IT HERE!*
 
 #+CAPTION: Energy resolutions depending on the energy of the fluorescence lines based on the
 #+CAPTION: charge and pixel spectra. As expected the behavior of the energy resolution is
