@@ -14538,9 +14538,41 @@ Cu-EPIC 2kV data contains something that might be either aluminum
 fluorescence or at least just continuous spectrum that is not filtered
 due to the absorption edge of aluminum there!
 
+**** Reconstruct all CDL data                                   :noexport:
+
+Reconstructing all CDL data is done by either using ~runAnalysisChain~
+on the directory (currently not tested) or by manually running
+~raw_data_manipulation~ and ~reconstruction~ as follows:
+
+Take note that you may change the paths of course. The paths chosen
+here are those in use during the writing process of the thesis.
+
+#+begin_src sh
+cd ~/CastData/data/CDL_2019
+raw_data_manipulation -p . -r Xray -o ~/CastData/data/CDL_2019/CDL_2019_Raw.h5
+#+end_src
+
+And now for the reconstruction:
+#+begin_src sh
+cd ~/CastData/data/CDL_2019
+reconstruction -i ~/CastData/data/CDL_2019/CDL_2019_Raw.h5 -o ~/CastData/data/CDL_2019/CDL_2019_Reco.h5
+reconstruction -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 --only_charge
+reconstruction -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 --only_fadc
+reconstruction -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 --only_gas_gain
+reconstruction -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 --only_energy_from_e
+#+end_src
+
+At this point the reconstructed CDL H5 file is generally done and
+ready to be used in the next section.
+
 **** Generate plots for this section                            :noexport:
 
-- [ ] *DISCUSS HOW ~CDL_2019_RECO.h5~ IS GENERATED*
+- [X] *DISCUSS HOW ~CDL_2019_RECO.h5~ IS GENERATED*
+
+To generate the plots of the above section (and much more) we continue
+with the ~cdl_spectrum_creation~ tool as follows:
+
+Make sure the config file uses ~fitByRun~ to reproduce the same plots!
 
 #+begin_src sh
 cd /tmp
@@ -14591,6 +14623,60 @@ As we ran the command from ~/tmp/~ the output plots will be in a
 ~/tmp/out/CDL*~ directory. We copy over the generated files files
 including ~calibrated_cdl_energy_histos.pdf~ and
 ~calibrated_cdl_energy_kde.pdf~ here to ~/phd/Figs/CDL/~.
+
+Finally, running the code snippet as mentioned above also produces
+table [[tab:cdl:run_overview_tab]] as well as the equivalent for the pixel
+spectra and writes them to stdout at the end!
+
+**** Generate the ~calibration-cdl-2018.h5~ file
+
+This is also done using the ~cdl_spectrum_creation~. Assuming the
+reconstructed CDL H5 file exists, it is as simple as:
+#+begin_src sh
+cdl_spectrum_creation -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 --genCdlFile \
+                      --outfile ~/CastData/data/CDL_2019/calibration-cdl
+#+end_src
+which generates ~calibration-cdl-2018.h5~ for us.
+
+Make sure the config file uses ~fitByRun~ to reproduce the same plots!
+
+**** Get the table of fit lines from code                       :noexport:
+
+Our code ~cdl_spectrum_creation~ can be used to output the final
+fitting functions in a format like the table inserted in the main
+text, thanks to using a CT declarative definition of the fit
+functions.
+
+We do this by running:
+#+begin_src sh :results drawer
+cdl_spectrum_creation --printFunctions
+#+end_src
+
+#+RESULTS:
+:results:
+Charge functions:
+| Target | Filter | HV [kV] | Fit functions                                                                                                                                                                                                                                                                                                  |
+| Cu     | Ni     |      15 | $G^{\ce{Cu}}_{Kα} + G^{\ce{Cu}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                              |
+| Mn     | Cr     |      12 | $G^{\ce{Mn}}_{Kα} + G^{\ce{Mn}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                              |
+| Ti     | Ti     |       9 | $G^{\ce{Ti}}_{Kα} + G^{\ce{Ti}, \text{esc}}_{Kα} + G^{\ce{Ti}}_{Kβ}\left( μ^{\ce{Ti}}_{Kα}·(\frac{4.932}{4.511}), σ^{\ce{Ti}}_{Kα} \right) + G^{\ce{Ti}, \text{esc}}_{Kβ}\left( μ^{\ce{Ti}}_{Kα}·(\frac{1.959}{4.511}), σ^{\ce{Ti}, \text{esc}}_{Kα} \right)$                                                  |
+| Ag     | Ag     |       6 | $G^{\ce{Ag}}_{Lα} + G^{\ce{Ag}}_{Lβ}\left( N^{\ce{Ag}}_{Lα}·0.56, μ^{\ce{Ag}}_{Lα}·(\frac{3.151}{2.984}), σ^{\ce{Ag}}_{Lα} \right)$                                                                                                                                                                            |
+| Al     | Al     |       4 | $G^{\ce{Al}}_{Kα}$                                                                                                                                                                                                                                                                                             |
+| Cu     | EPIC   |       2 | $G^{\ce{Cu}}_{Lα} + G^{\ce{Cu}}_{Lβ}\left( N^{\ce{Cu}}_{Lα}·(\frac{0.65}{1.11}), μ^{\ce{Cu}}_{Lα}·(\frac{0.9498}{0.9297}), σ^{\ce{Cu}}_{Lα} \right) + G^{\ce{O}}_{Kα}\left( \frac{N^{\ce{Cu}}_{Lα}}{3.5}, μ^{\ce{Cu}}_{Lα}·(\frac{0.5249}{0.9297}), \frac{σ^{\ce{Cu}}_{Lα}}{2.0} \right) + G_{\text{unknown}}$ |
+| Cu     | EPIC   |     0.9 | $G^{\ce{O}}_{Kα} + G^{\ce{C}}_{Kα}\left( \frac{N^{\ce{O}}_{Kα}}{10.0}, μ^{\ce{O}}_{Kα}·(\frac{277.0}{524.9}), σ^{\ce{O}}_{Kα} \right) + G_{\text{unknown}}$                                                                                                                                                    |
+| C      | EPIC   |     0.6 | $G^{\ce{C}}_{Kα} + G^{\ce{O}}_{Kα}\left( μ^{\ce{C}}_{Kα}·(\frac{0.525}{0.277}), σ^{\ce{C}}_{Kα} \right)$                                                                                                                                                                                                       |
+
+Pixel functions:
+| Target | Filter | HV [kV] | Fit functions                                                                                                                                                                                                                                                                                                  |
+| Cu     | Ni     |      15 | $EG^{\ce{Cu}}_{Kα} + EG^{\ce{Cu}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                            |
+| Mn     | Cr     |      12 | $EG^{\ce{Mn}}_{Kα} + G^{\ce{Mn}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                             |
+| Ti     | Ti     |       9 | $EG^{\ce{Ti}}_{Kα} + G^{\ce{Ti}, \text{esc}}_{Kα} + G^{\ce{Ti}}_{Kβ}\left( eμ^{\ce{Ti}}_{Kα}·(\frac{4.932}{4.511}), eσ^{\ce{Ti}}_{Kα} \right) + G^{\ce{Ti}, \text{esc}}_{Kβ}\left( eμ^{\ce{Ti}}_{Kα}·(\frac{1.959}{4.511}), σ^{\ce{Ti}, \text{esc}}_{Kα} \right)$                                              |
+| Ag     | Ag     |       6 | $EG^{\ce{Ag}}_{Lα} + G^{\ce{Ag}}_{Lβ}\left( eN^{\ce{Ag}}_{Lα}·0.56, eμ^{\ce{Ag}}_{Lα}·(\frac{3.151}{2.984}), eσ^{\ce{Ag}}_{Lα} \right)$                                                                                                                                                                        |
+| Al     | Al     |       4 | $EG^{\ce{Al}}_{Kα}$                                                                                                                                                                                                                                                                                            |
+| Cu     | EPIC   |       2 | $G^{\ce{Cu}}_{Lα} + G^{\ce{Cu}}_{Lβ}\left( N^{\ce{Cu}}_{Lα}·(\frac{0.65}{1.11}), μ^{\ce{Cu}}_{Lα}·(\frac{0.9498}{0.9297}), σ^{\ce{Cu}}_{Lα} \right) + G^{\ce{O}}_{Kα}\left( \frac{N^{\ce{Cu}}_{Lα}}{3.5}, μ^{\ce{Cu}}_{Lα}·(\frac{0.5249}{0.9297}), \frac{σ^{\ce{Cu}}_{Lα}}{2.0} \right) + G_{\text{unknown}}$ |
+| Cu     | EPIC   |     0.9 | $G^{\ce{O}}_{Kα} + G_{\text{unknown}}$                                                                                                                                                                                                                                                                         |
+| C      | EPIC   |     0.6 | $G^{\ce{C}}_{Kα} + G^{\ce{O}}_{Kα}\left( μ^{\ce{C}}_{Kα}·(\frac{0.525}{0.277}), σ^{\ce{C}}_{Kα} \right)$                                                                                                                                                                                                       |
+
+:end:
 
 **** Historical weather data for Geneva during CDL data taking  :noexport:
 
