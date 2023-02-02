@@ -14266,11 +14266,26 @@ properties of different gas gains.
   in appendix!
 
 For a reference of the X-ray fluorescence lines (for more exact values
-and $\alpha_1$, $\alpha_2$ values etc.) see: https://xdb.lbl.gov/Section1/Table_1-2.pdf.
+and $\alpha_1$, $\alpha_2$ values etc.) see:
+https://xdb.lbl.gov/Section1/Table_1-2.pdf.
 
-The raw data is combined by target / filter combinations. To clean the
-data somewhat a few simple cuts are applied, as shown in
-tab. [[cdl_cleaning_cuts]].
+As the main purpose is to use the CDL data to generate reference
+distributions for certain cluster properties, the relevant clusters
+that correspond to known X-ray energies must be extracted from the
+data. This is done in two different ways:
+1. A set of fixed cuts (one set for each target/filter combination) is
+   applied to each run, as presented in
+   tab. [[tab:cdl:cdl_cleaning_cuts]]. This is the same set as used in
+   \cite{krieger2018search}. Its main purpose is to remove events with
+   multiple clusters and potential background contributions.
+2. By cutting around the main fluorescence line in the charge spectrum
+   in a $3σ$ region, for which the spectrum needs to be fitted with
+   the expected lines, see sec. [[#sec:cdl:fits_to_spectra]]. This is done
+   on a run-by-run basis.
+
+The remaining data after both sets of cuts can then be combined for
+each target/filter combination to make up the distributions for the
+cluster properties as needed for the likelihood method.
 
 - [ ] *CONSIDER TAKING EXPONENTIAL PART 10⁵ OF CHARGES AND PUT INTO HEADER!*
 #+CAPTION: Overview of all runs taken behind the X-ray tube, whether they ran with or without FADC,
@@ -14315,7 +14330,7 @@ tab. [[cdl_cleaning_cuts]].
 #+CAPTION: Cuts applied to the CDL datasets in order to roughly clean of potential
 #+CAPTION: background events and double hits (recognized as single cluster).
 #+CAPTION: RMS refers to the transverse RMS of the clusters.
-#+NAME: cdl_cleaning_cuts
+#+NAME: tab:cdl:cdl_cleaning_cuts
 #+ATTR_LATEX: :align lllrrrrr
 |--------+--------+-------------------------------+-----+--------+-----------+-----------+--------------|
 | Target | Filter | line                          |  HV | length | rms_T_min | rms_T_max | eccentricity |
