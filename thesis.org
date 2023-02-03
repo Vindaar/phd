@@ -13834,15 +13834,6 @@ where the subscript is denoting the individual probability density
 and the argument corresponds to the individual value of each
 property.
 
-To avoid numerical issues dealing with very small probabilities, the
-actual relation evaluated numerically is the negative log of the
-likelihood:
-
-\[
--\ln \mathcal{L}(ε, f, l) = - \ln \mathcal{P}_ε(ε) -
-  \ln \mathcal{P}_f(f) - \ln \mathcal{P}_l(l)
-\]
-
 This raises the important question of what defines each individual
 probability density $\mathcal{P}_i$. In principle it can be
 defined by computing a normalized density distribution of a known
@@ -13860,47 +13851,7 @@ For this reason data was taken using an X-ray tube with 8 different
 target / filter combinations to provide the needed data to compute
 likelihood distributions for X-rays of a range of different
 energies. The details will be discussed in the next section,
-[[#sec:cdl]].
-
-Due to the energy dependence eq. [[eq:background:likelihood_def]] needs to
-be understood to be valid in the energy range that defines the
-used likelihood distributions. 
-
-For the GridPix1 detector similar X-ray tube data was taken and each
-of the 8 X-ray tube energies were assigned an energy interval. In that
-interval the likelihood distributions of the associated X-ray tube
-data were used to compute a likelihood value for the given
-cluster. This leads to discontinuities of the properties at the
-interval boundaries, while the actual properties of the clusters
-change continuously. It can then lead to jumps in the efficiency of
-the background suppression method and thus in the achieved background
-rate. To avoid this issue we perform a linear interpolation for each
-cluster with energy $E_α$ between the closest two neighboring X-ray
-tube energies $E_β$ and $E_γ$ in each probability density $\mathcal{P}_i$ at the
-cluster's properties. With $ΔE = E_β - E_γ$ the difference in energy
-between the closest two X-ray tube energies, each probability density
-is then interpolated to:
-
-\[
-\mathcal{P}_i(E_α, x_i) = \left(1 - \frac{|E_α - E_β|}{ΔE}\right) · \mathcal{P}_i(E_β, x_i) +
-  \left( 1 - \frac{|E_α - E_γ|}{ΔE} \right) · \mathcal{P}_i(E_γ, x_i) .
-\]
-
-Each probability density of the closest neighbors are evaluated at the
-cluster's property $x_i$ and the linear interpolation weighted by the
-distance to each energy is computed. More on this in sec. [[#sec:cdl:cdl_morphing]].
-- [X] *EXPAND ON THIS, GIVE AN EQUATION DEFINING WHAT WE MEAN
-  INCLUDING THE BINNING!*
-
-- [ ] *WE STILL HAVEN'T TALKED ABOUT BINNING ETC OF ALL THIS!*
-
-- [ ] *ADD PLOT OF LINEAR INTERPOLATION 'RECOVERING' MIDDLE
-  DISTRIBUTION*
-- [ ] *IN APPENDIX PUT PLOTS THAT SHOW HEATMAP OF KDE(?)/INTERPOLATION
-  OF FULL ECCENTRICITY/... BEHAVIOR*
-  -> Partially done, notes of CDL morphing study added in appendix as :noexport:
-- [ ] What about 2D heatmap showing energy ranges?
-  
+[[#sec:cdl]]. 
 
 \begin{figure}[htbp]
   \centering
@@ -13930,22 +13881,6 @@ distance to each energy is computed. More on this in sec. [[#sec:cdl:cdl_morphin
 
 - [X] *ADD NOTE THAT THERE IS _ALSO_ AN ENERGY DEPENDENCE ON SIGNAL
   CLUSTER SHAPES*
-
-- [ ] *BELOW MUST GO TO PART WHERE WE FINISH HOW ALL THIS WORKS WITH
-  CDL DATA, INCL LINEAR INTERPOLATION. ALTERNATIVELY, FINISH THAT
-  EXPLANATION ABOVE BEFORE TALKING ABOUT CDL DETAILS?*
-To finally classify events as signal or background, one then sets a
-desired "software efficiency" $ε_{\text{eff}}$, which is defined as:
-\[
-ε_{\text{eff}} = \frac{∫_0^{L} \mathcal{L}(ε, f, l) \, \mathrm{d} L'}{∫_0^{∞} \mathcal{L}(ε, f, l) \, \mathrm{d} L'}
-\]
-where $L'$ denotes a specific $\mathcal{L}$ value, which yields the
-desired $ε_{\text{eff}}$.
-#+begin_comment
-In practical terms one computes the
-normalized cumulative sum of the log likelihood and searches for the point at
-which the desired $ε_{\text{eff}}$ is reached.
-#+end_comment
 
 *** Generate plot of eccentricity signal vs. background          :noexport:
 
@@ -14056,7 +13991,14 @@ follows the ideas used for the single GridPix detector in
 \cite{krieger2018search} with some notable differences. For a
 reasoning for one particular difference, see appendix
 [[#sec:appendix:fit_by_run_justification]].
-- [ ] *(RE)WRITE THE FIT BY RUN JUSTIFICATION SECTION AND REFERENCE HERE*
+- [ ] *(RE)WRITE THE FIT BY RUN JUSTIFICATION SECTION AND REFERENCE
+  HERE*
+
+Note: in the course of the CDL related sections the terms
+target/filter combination (implicitly including the used high voltage
+setting) is used interchangeably with the main fluorescence line (or
+just 'the fluorescence line') targeted in a specific measurement.
+
 
 - [X] *FIND OUT WHAT CHIP CALIBRATION USED FOR CDL*
   -> It was the Run-3 calibration. Checked by comparing the ~fsr~
@@ -14964,8 +14906,6 @@ the thesis.
 |                                        |                                       | $\ μ = μ(\ce{Ti}_{Kα}) · \frac{4.932}{4.511}$  |                                                |                      |                                                 |                                         |                                              |
 |                                        |                                       | $\ σ = σ(\ce{Ti}_{Kα})$                        |                                                |                      |                                                 |                                         |                                              |
   
-
-
 **** Pixel spectra                                              :noexport:
 
 In case of the pixel spectra the fit functions are generally very
@@ -15012,7 +14952,6 @@ using MMA as well as a standard Levenberg-Marquardt fit.
 | C      | EPIC   |     0.6 | $G^{\ce{C}}_{Kα} + G^{\ce{O}}_{Kα}\left( μ^{\ce{C}}_{Kα}·(\frac{0.525}{0.277}), σ^{\ce{C}}_{Kα} \right)$                                                                                                                                                                                                       |
 |--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
-
 *** Overview of CDL data in energy
 
 With the fits to the charge spectra performed on a run-by-run basis,
@@ -15041,6 +14980,9 @@ ideal. Add to that the fact that we know for certain the energy of the
 clusters in the main fluorescence peak there is simply no need either.
 
 *** Definition of the reference distributions
+:PROPERTIES:
+:CUSTOM_ID: sec:cdl:derive_probability_density
+:END:
 
 Having performed fits to all charge spectra of each run and the
 position of the main fluorescence line and its width determined, the
@@ -15051,14 +14993,45 @@ fit, the dataset is selected. This guarantees to leave mainly X-rays
 of the targeted energy for each line in the dataset. As the fit is
 performed for each run separately, the $3σ$ charge cut is performed
 run by run and then all data combined for each fluorescence line
-(target, filter & HV setting).
+(target, filter & HV setting). 
 
-The desired reference distributions then are simply ...................
+The desired reference distributions then are simply the normalized
+histograms of the clusters in each of the properties. With 8 targeted
+fluorescence lines and 3 properties this yields a total of 24
+reference distributions. Each histogram is then interpreted as a
+probability density function (PDF) for clusters 'matching' (more on this in
+sec. [[#sec:cdl:cdl_morphing]]) the energy of its fluorescence line. An
+overview of all the reference distributions is shown in
+fig. [[fig:cdl:reference_distributions_overview_ridgeline]]. We can see
+that all distributions tend to get wider towards lower energies
+(towards the top of the plot). This is expected and due to smaller
+clusters having less primary electrons and therefore statistical
+variations in geometric properties playing a more important role. The
+binning shown in the figure is the exact binning used to define the
+PDF. In case of the fraction of pixels within a transverse RMS radius
+bins with significantly higher counts are observed at low
+energies. This is _not_ a binning artifact, but a result of the
+definition of the variable. The property computes the fraction of
+pixels that lie within a circle of the radius corresponding to the
+transverse RMS of the cluster around the cluster center. At energies
+with few pixels in total, the integer nature of $N$ or $N+1$ primary
+electrons (active pixels) inside the radius becomes apparent.
 
-The resulting histogram can then interpreted as a probability density
-distribution that describes ...........................
+The binning in the histograms is chosen by hand such that the binning
+is as fine as possible without leading to significant statistical
+fluctuations, as those would have a direct effect on the PDFs leading
+to unphysical effects on the probabilities. Ideally an approach of
+either an automatic bin selection algorithm or something like a kernel
+density estimation should be used. However, the latter is slightly
+problematic due to the integer effects in the low energies of the
+fraction in transverse RMS variable.
 
-To summarize the approach:
+See appendix [[#sec:appendix:cdl_reference_distributions]] for an overview
+of the distributions with each histogram in a separate plot.
+
+- [ ] *ADD THAT APPENDIX*
+
+The summarized 'recipe' of the approach is therefore:
 1. apply cleaning cuts according to tab. [[tab:cdl:cdl_cleaning_cuts]]
 2. perform fits according to tab. [[tab:cdl:fit_func_charge]]
 3. cut to the $3σ$ region around the main fluorescence line of the
@@ -15069,12 +15042,277 @@ To summarize the approach:
    fluorescence line, defining the reference distribution.
 
 - [ ] mention what kind of binning we use
-- [ ] present plot of reference distributions. How?
+  
+#+CAPTION: Overview of all reference distributions for each target/filter combination and property.
+#+CAPTION: The binning is the same as used to compute the probabilities. Towards lower energies
+#+CAPTION: (towards the top) the distributions all become wider, as the clusters have fewer electrons
+#+CAPTION: and statistical fluctuations play a larger role. The 'fraction in transverse RMS' property
+#+CAPTION: becomes partially discrete, which is _not_ a binning effect, but due to integer counting effects
+#+CAPTION: of the number of electrons within the transverse RMS radius.
+#+NAME: fig:cdl:reference_distributions_overview_ridgeline
+[[~/phd/Figs/CDL/ridgeline_all_properties_side_by_side.pdf]]
+
+**** TODOs for the above section                                :noexport:
+
+- [X] present plot of reference distributions. How?
   -> ridge line of all targets & then show one property?
   -> ridge line of all properties
   -> side-by-side facet of all properties of one line?
-  -> 
+  -> Finally: side by side of 3 ridge line plots!
 
+*** Define likelihood distribution and interpolating it [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cdl:cdl_morphing
+:END:
+
+With our reference distributions defined it is time to look back at
+equation [[eq:background:likelihood_def]]. 
+
+- [ ] *REWRITE TEXT AROUND SO THAT THIS MAKES SENSE HERE*
+  Maybe we could create a "box" environment that is a side-note of
+  sorts?
+  I think that could work well. Something like this
+  https://tex.stackexchange.com/questions/179197/framed-or-colored-box-with-text-and-margin-notes
+  possibly.
+To avoid numerical issues dealing with very small probabilities, the
+actual relation evaluated numerically is the negative log of the
+likelihood:
+
+\[
+-\ln \mathcal{L}(ε, f, l) = - \ln \mathcal{P}_ε(ε) -
+  \ln \mathcal{P}_f(f) - \ln \mathcal{P}_l(l)
+\]
+
+By considering a single fluorescence line the three reference
+distributions makes up the $\mathcal{P}_i(i)$ of the likelihood
+$\mathcal{L}(ε, l, f)$ for that energy. However, the reference
+distributions do not strictly speaking define the likelihood
+distribution. They only represent a PDF to look up a probability-like
+value for a given cluster with properties $(ε, l, f)$ for a single
+likelihood value $\mathcal{L}$. For that reason the definition of the
+likelihood distributions for each energy is a two-step process:
+1. compute the reference distributions as described in
+   sec. [[#sec:cdl:derive_probability_density]]
+2. take the raw cluster data (unbinned data that is!) of those
+   clusters that define the reference distributions and feed each of
+   these into eq. [[eq:background:likelihood_def]] for a single likelihood
+   value each.
+The resulting distribution made up of all those likelihood values is
+the likelihood distribution for that energy. All these distributions
+are shown in fig. [[fig:cdl:likelihood_distributions]] as a negative log
+likelihood. [fn:logL_instead_of_L] Note that due to the usage of
+negative log likelihoods the raw data often contains infinities, which
+are just a side effect of picking up a zero probability from one of
+the reference distributions for a particular cluster. In reality the
+reference distributions should be a continuous distribution that is
+nowhere exactly zero. However, due to limited statistics there is a
+small range of non-zero probabilities (most bins are empty outside the
+main range). For all practical purposes this does not matter, but it
+does explain the rather hard cutoff from 'sensible' likelihood values
+to infinities.
+
+#+CAPTION: $-\ln\mathcal{L}$ distributions for each of the targeted fluorescence lines
+#+CAPTION: and thus target/filter combinations.
+#+NAME: fig:cdl:likelihood_distributions
+[[~/phd/Figs/CDL/logL_ridgeline.pdf]]
+
+- [ ] *BELOW MUST GO TO PART WHERE WE FINISH HOW ALL THIS WORKS WITH
+  CDL DATA, INCL LINEAR INTERPOLATION. ALTERNATIVELY, FINISH THAT
+  EXPLANATION ABOVE BEFORE TALKING ABOUT CDL DETAILS?*
+To finally classify events as signal or background using the
+likelihood distribution, one sets a desired "software efficiency"
+$ε_{\text{eff}}$, which is defined as:
+
+\[
+ε_{\text{eff}} = \frac{∫_0^{L} \mathcal{L}(ε, f, l) \, \mathrm{d}L'}{∫_0^{∞}\mathcal{L}(ε, f, l) \, \mathrm{d} L'}
+\]
+
+where $\mathcal{L}'$ denotes a specific $\mathcal{L}$ value, which yields the
+desired $ε_{\text{eff}}$. In practical terms one computes the
+normalized cumulative sum of the log likelihood and searches for the
+point at which the desired $ε_{\text{eff}}$ is reached. The typical
+software efficiency we aim for is $\SI{80}{\percent}$.
+- [ ] *THINK ABOUT OPTIMIZING CUT EFFICIENCY AGAIN!*
+
+Note that this value $\mathcal{L}'$ has to be determined for _each_
+likelihood distribution. 
+
+**** Interpolation between lines
+
+- [ ] *MAYBE MOVE NEXT PARAGRAPH BACK TO INTRODUCTION OF METHOD*
+Due to the energy dependence eq. [[eq:background:likelihood_def]] needs to
+be understood to be valid in the energy range that defines the
+used likelihood distributions.  
+
+For the GridPix detector used in 2014/15 similar X-ray tube data was
+taken and each of the 8 X-ray tube energies were assigned an energy
+interval. In that interval the likelihood distributions of the
+associated X-ray tube data were used to compute a likelihood value for
+the given cluster. This leads to discontinuities of the properties at
+the interval boundaries, while the actual properties of the clusters
+change continuously. It can then lead to jumps in the efficiency of
+the background suppression method and thus in the achieved background
+rate. It seems a safe assumption that the reference distributions
+undergo a continuous change for changing energies of the
+X-rays. Therefore, to avoid such issues we perform a linear
+interpolation for each cluster with energy $E_α$ between the closest
+two neighboring X-ray tube energies $E_β$ and $E_γ$ in each
+probability density $\mathcal{P}_i$ at the cluster's properties. With
+$ΔE = E_β - E_γ$ the difference in energy between the closest two
+X-ray tube energies, each probability density is then interpolated to:
+
+\[
+\mathcal{P}_i(E_α, x_i) = \left(1 - \frac{|E_α - E_β|}{ΔE}\right) · \mathcal{P}_i(E_β, x_i) +
+  \left( 1 - \frac{|E_α - E_γ|}{ΔE} \right) · \mathcal{P}_i(E_γ, x_i) .
+\]
+
+Each probability density of the closest neighbors are evaluated at the
+cluster's property $x_i$ and the linear interpolation weighted by the
+distance to each energy is computed.
+
+The choice for a linear interpolation was made after different ideas
+were tried. Most importantly, a linear interpolation does not yield
+unphysical results (for example negative bin counts in interpolated
+data, which can happen in a spline interpolation) and yields very good
+results in the cases that can be tested, namely reconstructing a known
+likelihood distribution $B$ by doing a linear interpolation between
+the two outer neighbors $A$ and
+$C$. \ref{fig:cdl:cdl_morphing_frac_known_lines} shows this idea using
+the fraction in transverse RMS variable. This variable is shown here
+as it has the strongest obvious shape differences going from line to
+line. The blue histogram corresponds to interpolated bins based on the
+difference in energy between the line above and below the target
+(hence it is not done for the outer lines, as there is no 'partner'
+above / below). While the interpolation (blue) sometimes over- or
+undershoots it needs to be kept in mind it covers almost twice the
+energy that is needed when interpolating in the space between two
+lines. To give an idea of what this results in for the interpolation,
+fig. \ref{fig:cdl:cdl_morphing_frac_all_energies} shows a heatmap of
+the same variable showing how the interpolation describes the energy
+and fraction in transverse RMS space continuously. 
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/cdlMorphing/fractionInTransverseRms_ridgeline_morph_all_XrayReferenceFile2018.h5_2018.pdf}
+    \caption{Known lines}
+    \label{fig:cdl:cdl_morphing_frac_known_lines}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/cdlMorphing/cdl_as_raster_interpolated_fractionInTransverseRms.pdf}
+    \caption{All energies}
+    \label{fig:cdl:cdl_morphing_frac_all_energies}
+  \end{subfigure}%
+  \label{fig:cdl:cdl_morphing_examples}
+  \caption{\subref{fig:cdl:cdl_morphing_frac_known_lines} shows recovering the known lines (aside from the outer ones)
+  using a binwise linear interpolation from the neighbors. While the interpolation (blue) sometimes over- or undershoots
+  it needs to be kept in mind it covers almost twice the energy that is needed.
+  \subref{fig:cdl:cdl_morphing_frac_all_energies} is a heatmap of the full energy vs. fraction in transverse RMS
+  space interpolated using this binwise linear interpolation.}
+\end{figure}
+- [ ] *REDO THESE TWO PLOTS!* 
+
+Given that such an interpolation works as well as it does on
+recovering a known line, implies that a linear interpolation on
+'half' [fn:why_not_half_energy] the energy interval in practice should
+yield reasonably realistic distributions, certainly much better than
+allowing a discrete jump at specific boundaries.
+
+See appendix [[#sec:appendix:morphing_cdl_spectra]] for a lot more
+information about the ideas considered and comparisons between the not
+interpolated data.
+
+The need to define cut values $\mathcal{L}'$ for each likelihood
+distribution to have a variable to cut on is one reason why the
+practical implementation does not use full interpolation to compute
+the reference distributions on the fly each time for every individual
+cluster energy, but instead uses a pre-calculated high resolution mesh
+of \num{1000} interpolated distributions. This allows to compute the
+cut value as well as the distributions before starting to classify all
+clusters, saving significant performance. With a mesh of \num{1000}
+energies the largest error on the energy is $<\SI{5}{eV}$ anyhow. 
+
+- [X] *EXPAND ON THIS, GIVE AN EQUATION DEFINING WHAT WE MEAN
+  INCLUDING THE BINNING!*
+
+- [ ] *WE STILL HAVEN'T TALKED ABOUT BINNING ETC OF ALL THIS!*
+
+- [X] *ADD PLOT OF LINEAR INTERPOLATION 'RECOVERING' MIDDLE
+  DISTRIBUTION*
+- [X] *IN APPENDIX PUT PLOTS THAT SHOW HEATMAP OF KDE(?)/INTERPOLATION
+  OF FULL ECCENTRICITY/... BEHAVIOR*
+  -> Partially done, notes of CDL morphing study added in appendix as :noexport:
+- [X] What about 2D heatmap showing energy ranges?
+
+[fn:logL_instead_of_L] The $-\ln\mathcal{L}$ values in the
+distributions give a good idea of why. Roughly speaking the values go
+from 5 to 20, meaning the actual likelihood values are in the range
+from \num{1e-5} to \num{1e-20} *XXX FIX ME*! While 64-bit floating
+point numbers don't have any issues providing good enough precision
+for these numbers (but you _do_ run into problems for small
+probabilities on the tails earlier!), producing a figure covering such
+a large range is not very nice (obviously requiring a log-plot) and
+importantly would require a histogram with unequal bin widths. That's
+why negative log likelihoods are used in practice.
+
+[fn:why_not_half_energy] It's not half the energy as all the lines are
+not evenly spaced.
+
+**** TODOs for the above sections                               :noexport:
+
+
+- [X] explain why Inf is a common value
+  
+- [ ] explain why if interpreted as probabilities in reference
+  distributions it's not to be thought of as "is 0.2% probability to
+  be an X-ray", but rather is a generalized concept of probability,
+  which when combined into a likelihood is just a distribution where
+  all we care about is the cumulative fraction below a certain cutoff
+  (our software efficiency)
+- [ ] potentially rephrase the footnote, in particular after actually
+  generating the likeilhood distributions as non-log plot!
+- [ ] *REFERENCE OF 1e-5 to 1e-20 IS NOT TRUE, AS WE USE LN INSTEAD OF LOG10!*
+
+
+- [ ] Note: an interesting plot could be to compute the likelihood
+  distributions for each CDL _run_ separately and produce such a
+  ridgeline plot, with all runs in each target/filter row. Similar to
+  the ridgeline plots we have comparing the properties. Given the
+  similarity of the properties there won't be a significant
+  difference, but that alone would be valuable insight!
+
+*** Generate plots of the likelihood and reference distributions  :noexport:
+
+In order to generate plots of the reference distributions as well as
+the likelihood distributions, we use the ~plotCdl~ tool:
+
+#+begin_src sh
+cd $TPA/Plotting/plotCdl
+./plotCdl
+#+end_src
+which generates a range of figures in the local ~out~ directory.
+
+Among them:
+- ridgeline plots for each property, as well as facet plots
+- a combined ridgeline plot of all reference distributions side by
+  side as a ridgeline each (used in the above section)
+- plots of the CDL energies using ~energyFromCharge~
+- plots of the likelihood distributions. Both as a outline and
+  ridgeline plot.
+
+Note that this tool can also create comparisons between a background
+dataset and their properties and the reference data!
+
+For now we use:
+- ~out/ridgeline_all_properties_side_by_side.pdf~
+- ~out/eccentricity_facet_calibration-cdl-2018.h5.pdf~
+- ~out/fractionInTransverseRms_facet_calibration-cdl-2018.h5.pdf~
+- ~out/lengthDivRmsTrans_facet_calibration-cdl-2018.h5.pdf~
+- ~out/logL_ridgeline.pdf~
+
+which also all live in ~phd/Figs/CDL~.
 
 *** Energy resolution [/]
 :PROPERTIES:
@@ -15114,16 +15352,6 @@ Our energy resolutions, if converted to FWHM seem to be rather bad
 compared to best in class gaseous detectors, for which sometimes
 almost as low as 10% was achieved. 
 
-*** How to derive a likelihood distribution (which cuts etc) [/]
-:PROPERTIES:
-:CUSTOM_ID: sec:cdl:derive_probability_density
-:END:
-
-
-*** CDL morphing / linear interpolation [/]
-:PROPERTIES:
-:CUSTOM_ID: sec:cdl:cdl_morphing
-:END:
 
 
 ** FROM IAXO TDR PART: Analysis software & background rate
@@ -15177,7 +15405,7 @@ plotting utilities.
 
 *** Basic background rate [/]
 - [X] most of it moved to likelihood method section
-- [ ] *REWRITE ME*  
+- [ ] *REWRITE ME*
 
 The software efficiency commonly used and for all figures presented
 below is $\SI{80}{\percent}$.
@@ -19081,10 +19309,14 @@ remain stable even in the cases that vary strongly.
 | 343 | n     | C      | EPIC   |     0.6 |                               |              | $\num{1.7930(66)e+01}$ | $\num{5.243(51)e+00}$ | $\num{2.924(30)e-01}$ |
 |-----+-------+--------+--------+---------+-------------------------------+--------------+------------------------+-----------------------+-----------------------|
 
-* Morphing of CDL reference spectra                                :Appendix:noexport:
+* Morphing of CDL reference spectra [/]                            :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:morphing_cdl_spectra
 :END:
+
+
+- [ ] *NEED TO REREAD THIS AND FIX UP THE WORST ISSUES!*
+  -> especially if this is to remain in the final thesis!
 
 This section of the (not exported) appendix contains our notes about
 building and implementing the linear interpolation of CDL data. It
