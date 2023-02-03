@@ -15323,9 +15323,9 @@ which also all live in ~phd/Figs/CDL~.
   for us. Only serves as an input to our systematics. I guess it is
   important in that sense after all, heh.
 
-With the main fluorescence lines fitted in all the charge spectra, the
-position and line width can be used to compute the energy resolution
-of the detector:
+On a slight tangent, with the main fluorescence lines fitted in all
+the charge spectra, the position and line width can be used to compute
+the energy resolution of the detector:
 
 \[
 ΔE = \frac{σ}{μ}
@@ -15343,6 +15343,8 @@ distribution the FWHM is about $2.35 σ$).
 #+CAPTION: charge and pixel spectra. As expected the behavior of the energy resolution is
 #+CAPTION: more or less $1/E$. The uncertainty for each point is the error propagated uncertainty
 #+CAPTION: based on the fit parameter uncertainties for the mean position and the line width.
+#+CAPTION: There are multiple data points for each energy owing to the fact that each run
+#+CAPTION: is fit separately.
 #+NAME: fig:cdl:energy_resolution
 [[~/phd/Figs/CDL/energyresoplot-2019.pdf]]
 
@@ -15427,8 +15429,26 @@ rate shown in fig. [[fig:background_rate_eff80_only_center]] is achieved.
 [[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_no_vetoes.pdf]]
 #+end_center
 
+**** Verification of software efficiency using calibration data [/]
 
-  
+- [ ] *SHOW OUR VERIFICATION USING 55FE DATA*
+  -> Check and if not possibly do:
+  Using fake energies (by leaving out pixel info) to generate
+  arbitrary energies check the efficiency. I think this is what we did
+  in that context. Right, that was it:
+  [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/determineEffectiveEfficiency.nim]]
+- [ ] *CREATE PLOT OF THE LOGL CUT VALUES TO ACHIEVE THE USED
+  EFFICIENCY!*
+  -> essentially take our morphed likelihood distributions and for
+  each of those calculate the logL value for the cut value. Then
+  create a plot of energy vs. cut value and show that. Should be a
+  continuous function through the logL values that fixes the desired efficiency.  
+- [ ] *THINK ABOUT OPTIMIZING EFFICIENCY*
+  -> We can think about writing a short script to optimize the
+  efficiency
+
+- [ ] *AFAIR WE STILL COMPUTE LOGL CUT VALUE BASED ON BINNED
+  HISTOGRAM. CHANGE THAT TO UNBINNED DATA*  
   
 *** Scintillators as vetoes
 
