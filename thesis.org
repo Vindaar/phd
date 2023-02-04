@@ -15143,11 +15143,14 @@ $ε_{\text{eff}}$, which is defined as:
 ε_{\text{eff}} = \frac{∫_0^{L} \mathcal{L}(ε, f, l) \, \mathrm{d}L'}{∫_0^{∞}\mathcal{L}(ε, f, l) \, \mathrm{d} L'}
 \]
 
-where $\mathcal{L}'$ denotes a specific $\mathcal{L}$ value, which yields the
-desired $ε_{\text{eff}}$. In practical terms one computes the
-normalized cumulative sum of the log likelihood and searches for the
-point at which the desired $ε_{\text{eff}}$ is reached. The typical
-software efficiency we aim for is $\SI{80}{\percent}$.
+where $\mathcal{L}'$ denotes a specific $\mathcal{L}$ value, which
+yields the desired $ε_{\text{eff}}$. In practical terms one computes
+the normalized cumulative sum of the log likelihood and searches for
+the point at which the desired $ε_{\text{eff}}$ is reached. The
+typical software efficiency we aim for is
+$\SI{80}{\percent}$. Classification as X-ray like then is simply any
+cluster with a $\ln\mathcal{L}$ value smaller than the cut value
+$\ln\mathcal{L}'$.
 - [ ] *THINK ABOUT OPTIMIZING CUT EFFICIENCY AGAIN!*
 
 Note that this value $\mathcal{L}'$ has to be determined for _each_
@@ -15238,7 +15241,12 @@ allowing a discrete jump at specific boundaries.
 
 See appendix [[#sec:appendix:morphing_cdl_spectra]] for a lot more
 information about the ideas considered and comparisons between the not
-interpolated data.
+interpolated data. In particular
+fig. [[fig:appendix:cdl_morphing_logL_vs_energy]] which computes the
+$\ln\mathcal{L}$ values for all of the (cleaned, cuts
+tab. [[tab:cdl:cdl_cleaning_cuts]] applied) CDL data comparing the case of
+no interpolation with interpolation showing a clear improvement in the
+smoothness of the point cloud.
 
 The need to define cut values $\mathcal{L}'$ for each likelihood
 distribution to have a variable to cut on is one reason why the
@@ -19371,6 +19379,15 @@ remain stable even in the cases that vary strongly.
 
 - [ ] *NEED TO REREAD THIS AND FIX UP THE WORST ISSUES!*
   -> especially if this is to remain in the final thesis!
+
+- [ ] *PLACE ME SOMEWHERE MORE IMPORTANT?*  
+#+CAPTION: $\ln\mathcal{L}$ values for all the cleaned CDL cluster data against the
+#+CAPTION: energy of the cluster. Left is the calculation using the old \cite{krieger2018search}
+#+CAPTION: approach of fixed energy intervals and right the linear interpolation explained below
+#+CAPTION: in this appendix. The bin wise linear interpolation clearly significantly helps to
+#+CAPTION: provide a smoother description of the $\ln\mathcal{L}$ data.
+#+NAME: fig:appendix:cdl_morphing_logL_vs_energy
+[[~/phd/Figs/background/logL_of_CDL_vs_energy.pdf]]
 
 This section of the (not exported) appendix contains our notes about
 building and implementing the linear interpolation of CDL data. It
