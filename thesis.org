@@ -15380,62 +15380,81 @@ almost as low as 10% was achieved.
 
 
 
-** FROM IAXO TDR PART: Analysis software & background rate
+** Application of likelihood cut for background rate [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:background:apply_method
 :END:
 
-*NOTE*: This needs to be split up into a part that explains the vetoes
-& the parts that show the achieved background rates. Also needs more
-explanation on most topics, e.g. how likelihood cut works.
+- [ ] This *COULD* become its own chapter after all. That way make the
+  CDL part a likelihood method & stuff chapter and this an apply
+  method for background rate chapter.
 
-
-To achieve the desired background rates both special hardware features
-as well sophisticated software features are required.
-
-The main hardware features beyond the general ability to achieve
-single electron efficiency and thus reconstruct the geometric event
-shapes and their energies, are:
-- scintillators allowing to tag likely background induced X-rays
-- either in case of pure ToT & shutter based readout: an FADC reading
-  out the induced signal on the grid to act as a trigger and provide
-  longitudinal shape information
-  or in case of the GridPix3, which allows ToT and ToA readout at the
-  same time, in a stream based manner: ToA information yields
-  precise longitudinal shape information and allows to perform offline
-  time based clustering
-- multiple GridPix around the central 'main' GridPix to clarify event
-  shapes of either sparse events or events near the edge of the chip
-
-Each of these requires specific methods to achieve a background
-reduction. In the following each aspect will be explained separately
-and their possible effect is shown based on a GridPix1 based detector,
-which was deployed at CAST in 2017 and 2018.
-
-*TODO*: write summary of following sections
-
-*** Analysis software [/]
-
-- [ ] *OBSOLETE*
-
-Data reconstruction and analysis of GridPix data is performed with the
-[[https://github.com/Vindaar/TimepixAnalysis][TimepixAnalysis]] framework, written in the [[https://nim-lang.org][Nim programming language]].
-
-The software is capable of reading GridPix1 data from multiple readout
-systems as well as GridPix3 data.
-
-In addition to providing a full analysis readout chain, from raw data
-parsing, to clustering and characterisation of individual cluster
-properties, it provides a large number of convenience tools and
-plotting utilities.
-
-*** Basic background rate [/]
 - [X] most of it moved to likelihood method section
 - [ ] *REWRITE ME*
+- [ ] *BETTER CLARIFY DISTINCTION BETWEEN BACKGROUND AND TRACKING*  
 
-The software efficiency commonly used and for all figures presented
-below is $\SI{80}{\percent}$.
+By applying the likelihood cut method introduced in the first part of
+this chapter to the background data of CAST we can extract all
+clusters that are X-ray like and therefore describe the background
+rate. Unless otherwise stated the following plots use a software
+efficiency of $\SI{80}{\percent}$.
 
+Fig. [[fig:background:cluster_centers_no_vetoes_2017_18]] shows the
+cluster centers and their distribution over the whole center GridPix,
+which highlights the extremely uneven distribution of background. The
+increase towards the edges and in particular the corners is due to
+events being cut off. Statistically by cutting of a piece of a
+track-like event, the resulting event likely more spherical than
+before. In particular in a corner where two sides are cut off
+potentially. This is an aspect the detector vetoes help with, see
+sec. [[#sec:background:septem_veto]]. In addition the plot shows some
+smaller regions of few pixel diameter that have more activity. With
+about \num{95000} clusters left on the center chip, the likelihood cut
+at $\SI{80}{\percent}$ software efficiency represents a background
+suppression of about a factor \num{15} (compare
+tab. [[tab:cast:data_stats_overview]], $\sim\num{1.5e6}$ events on the
+center chip). In the regions towards the center of the chip, the
+suppression is of course much
+higher. Fig. [[fig:background:background_suppression_tiles_no_vetoes_2017_18]]
+shows what the background suppression looks like locally when
+comparing the number of clusters in a small region of the chip to the
+total number of raw clusters that were detected. Note that this is
+based on the assumption that the raw data is homogeneously
+distributed. See appendix [[#sec:appendix:background_occupancy]] for
+occupancy maps of the raw data.
+
+- [ ] *ADD OCCUPANCIES TO APPENDIX!*
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/backgroundClusters/background_cluster_centers_no_vetoes.pdf}
+    \caption{Cluster centers $\ln\mathcal{L}$}
+    \label{fig:background:cluster_centers_no_vetoes_2017_18}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/backgroundClusters/background_suppression_tiles_no_vetoes.pdf}
+    \caption{Background suppression}
+    \label{fig:background:background_suppression_tiles_no_vetoes_2017_18}
+  \end{subfigure}%
+  \label{fig:background:background_no_vetoes_clusters}
+  \caption{\subref{fig:background:background_clusters_no_vetoes}
+  Cluster centers of all X-ray like clusters in the 2017/18 CAST background
+  data. The number of these clusters increases drastically towards the edges
+  and in particular corners, due to geometric effects. Some regions with
+  minor sparking are visible as small yellow points of few pixel sizes.
+  \subref{fig:background:background_suppression_tiles_no_vetoes_2017_18} shows the local
+  background suppression over the total number of raw clusters detected. It assumes a
+  homogeneous background distribution in the raw data. 
+}
+\end{figure}
+
+- [ ] *REWRITE BELOW TO MAKE A BIT MORE SENSE IN CONTEXT OF ABOVE*
+- [ ] *EXPLAIN THAT THIS USES GOLD REGION!!!*
+  -> cluster distribution motivates that!
+  
 With the software efficiency defined, the $-\ln\mathcal{L}$ of each
 cluster is simply computed using the linear interpolation of the log
 likelihood distribution determined based on the cluster energy. A
@@ -15445,6 +15464,10 @@ computed for the desired $ε_{\text{eff}}$ at the energy of the cluster.
 Using this approach for the GridPix1 data taken at CAST, a background
 rate shown in fig. [[fig:background_rate_eff80_only_center]] is achieved.
 
+Note that by applying the exact same method to the CAST data taken
+during the solar tracking time, the dataset containing candidates for
+the solar axion search is extracted. 
+
 #+begin_center
 #+CAPTION: Background rate achieved based on the $\ln\mathcal{L}$ method at
 #+CAPTION: $ε_{\text{eff}} = \SI{80}{\percent}$ using the GridPix1 CAST 2017/18 data
@@ -15453,7 +15476,288 @@ rate shown in fig. [[fig:background_rate_eff80_only_center]] is achieved.
 [[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_no_vetoes.pdf]]
 #+end_center
 
-**** Verification of software efficiency using calibration data [/]
+The background rate presented here uses a comparable technique to one
+presented in \cite{krieger2018search} and shown in
+fig. [[fig:detector:background_rate_2014]] and uses the same detector
+features. The septemboard detector of this thesis however has multiple
+aspects to improve on this. We will now go through the different
+detector features and discuss how they can improve the background
+rate.
+
+- [ ] *!!!*
+
+*** TODOs for above                                              :noexport:
+
+1. show all clusters left over after likelihood cut?
+  Introduces discussion of different chip regions. For a pure
+   "background rate" thus taking a center region is good idea and also
+   introduces talking point again that vetoes can help.
+2. show that background rate in center.
+
+- [ ] What to do with raw data vs. applying rate?
+- [ ] how to treat different chip regions?
+
+
+- [X] Create a plot of the likelihood distributions interpolated over
+  all energies!
+  Well, it doesn't work in the way I thought, because obviously we cannot just compute
+  the likelihood distributions directly! We can compute *a* likelihood value for a cluster
+  at an arbitrary energy, but to get a likelihood distribution we'd need actual X-ray data
+  at all energies! The closest we have to that is the general CDL data (not just the main
+  peak & using correct energies for each cluster)
+  -> Attempt to use the CDL data with only the cleaning cuts
+  -> Question: Which tool do we add this to? Or separate here using
+  CDL reconstructed data?
+
+  How much statistics do we even have if we end up splitting
+  everything over 1000 energies? Like nothing...
+  Done in:
+  [[~/phd/Figs/background/logL_of_CDL_vs_energy.pdf]]
+  now where we compare the no morphing vs. the linear morphing
+  case. Much more interesting than I would have thought, because one
+  can clearly see the effect of the morphing on the logL values that
+  are computed!
+  This is a pretty nice result to showcase the morphing is actually
+  useful. Will be put into appendix and linked.
+
+- [X] *ADD LINE SHOWING WHERE THE CUT VALUES ARE TO THE PLOT*
+  -> The hard corners in the interpolated data is because the
+  reference distributions are already pre-binned of course! So if by
+  just changing the bins slightly the 
+  
+#+begin_src nim :tangle code/generate_interp_likelihood.nim
+import std / [os, strutils]
+import ingrid / ingrid_types
+import ingrid / private / [cdl_utils, cdl_cuts, hdf5_utils, likelihood_utils]
+import pkg / [ggplotnim, nimhdf5]
+
+
+const TpxDir = "/home/basti/CastData/ExternCode/TimepixAnalysis"
+const cdl_runs_file = TpxDir / "resources/cdl_runs_2019.org"
+const fname = "/home/basti/CastData/data/CDL_2019/CDL_2019_Reco.h5"
+const cdlFile = "/home/basti/CastData/data/CDL_2019/calibration-cdl-2018.h5"
+const dsets = @["totalCharge", "eccentricity", "lengthDivRmsTrans", "fractionInTransverseRms"]
+
+proc calcEnergyFromFits(df: DataFrame, fit_μ: float, tfKind: TargetFilterKind): DataFrame =
+  ## Given the fit result of this data type & target/filter combination compute the energy
+  ## of each cluster by using the mean position of the main peak and its known energy
+  result = df
+  result["Target"] = $tfKind
+  let invTab = getInverseXrayRefTable()
+  let energies = getXrayFluorescenceLines()
+  let lineEnergy = energies[invTab[$tfKind]]
+  result = result.mutate(f{float: "energy" ~ `totalCharge` / fit_μ * lineEnergy})
+
+let h5f = H5open(fname, "r")
+var df = newDataFrame()
+for tfKind in TargetFilterKind:
+  for (run, grp) in tfRuns(h5f, tfKind, cdl_runs_file):
+    var dfLoc = newDataFrame()
+    for dset in dsets:
+      if dfLoc.len == 0:
+        dfLoc = toDf({ dset : h5f.readCutCDL(run, 3, dset, tfKind, float64) })
+      else:
+        dfLoc[dset] = h5f.readCutCDL(run, 3, dset, tfKind, float64)
+    dfLoc["runNumber"] = run
+    dfLoc["tfKind"] = $tfKind
+    # calculate energy from fit
+    let fit_μ = grp.attrs["fit_μ", float]
+    dfLoc = dfLoc.calcEnergyFromFits(fit_μ, tfKind)
+    df.add dfLoc
+
+proc calcInterp(ctx: LikelihoodContext, df: DataFrame): DataFrame =
+  # walk all rows
+  # feed ecc, ldiv, frac into logL and return a DF with
+  result = df.mutate(f{float: "logL" ~ ctx.calcLikelihoodForEvent(`energy`,
+                                                            `eccentricity`,
+                                                            `lengthDivRmsTrans`,
+                                                            `fractionInTransverseRms`)
+  })
+
+# first make plots of 3 logL variables to see their correlations  
+ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations") + 
+  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac.pdf")
+
+ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv.pdf")
+  
+# now generate the plot of the logL values for all cleaned CDL data. We will compare the
+# case of no morphing with the linear morphing case
+proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) = 
+  let ctx = initLikelihoodContext(cdlFile, yr2018, crGold, igEnergyFromCharge, Timepix1, mk)
+  var dfMorph = ctx.calcInterp(df)
+  dfMorph["Morphing?"] = $mk
+  let cutVals = ctx.calcCutValueTab()
+  case cutVals.kind
+  of mkNone:
+    let lineEnergies = getEnergyBinning()
+    let tab = getInverseXrayRefTable()
+    var cuts = newSeq[float]()
+    var energies = @[0.0]
+    var lastCut = Inf
+    var lastE = Inf
+    for k, v in tab:
+      let cut = cutVals[k]
+      if classify(lastCut) != fcInf:
+        cuts.add lastCut
+        energies.add lastE
+      cuts.add cut
+      lastCut = cut
+      let E = lineEnergies[v]
+      energies.add E
+      lastE = E
+    let dfCuts = toDf({energies, cuts, "Morphing?" : $cutVals.kind})
+    result = (dfCuts, dfMorph)
+  of mkLinear:
+    let dfCuts = toDf({"energies" : cutVals.cutEnergies, "cuts" : cutVals.cutValues, "Morphing?" : $cutVals.kind})
+    result = (dfCuts, dfMorph)
+
+var dfMorph = newDataFrame()
+let (dfCutsNone, dfNone) = getLogL(df, mkNone)
+let (dfCutsLinear, dfLinear) = getLogL(df, mkLinear)
+dfMorph.add dfNone
+dfMorph.add dfLinear
+
+var dfCuts = newDataFrame()
+dfCuts.add dfCutsNone
+dfCuts.add dfCutsLinear
+
+ggplot(dfMorph, aes("logL", "energy", color = factor("Target"))) +
+  facet_wrap("Morphing?") +
+  geom_point(size = 1.0) +
+  geom_line(data = dfCuts, aes = aes("cuts", "energies")) + # , color = "Morphing?")) + 
+  ggtitle("lnL values of all (cleaned) CDL data against energy") + 
+  ggsave("/home/basti/phd/Figs/background/logL_of_CDL_vs_energy.pdf", width = 1000, height = 600)
+
+#+end_src
+-> anyhow finish it with a clear mind:
+  - just compute the logL for all clusters
+  - assign cluster's energy & logL value to some data structure
+  - plot, we can start by just plotting it as a point cloud? Or do a
+    rough 2D histogram
+
+*** Generate background rate and cluster plot [/]                :noexport:
+
+- [ ] *NOTE: THE PLOT WE CURRENTLY GENERATE: DOES IT USE TRACKING INFO
+  OR NOT?*
+
+To generate the background rate plot we need:
+1. the reconstructed data files for the background data at CAST
+   - (optional for this part): the slow control and tracking logs of
+     CAST
+   - the tracking information added to the reconstructed background
+     data files to compute the background rate only for tracking or
+     only for signal candidate data, done by running the
+     ~cast_log_reader~ with the reconstructed data files as input
+2. the reconstructed CDL data and the ~calibration-cdl-2018.h5~ file
+   generated from it for the reference and likelihood distributions
+
+To compute the background rate using these inputs we use the
+~likelihood~ tool first in order to apply the likelihood cut method
+according to a desired software efficiency defined in the
+~config.toml~ file. Afterwards we can use another tool to generate the
+plot of the background rate (which takes care of scaling the data to a
+rate etc.).
+
+The relevant section of the ~config.toml~ file should look like this:
+#+begin_src toml
+[Likelihood]
+# the signal efficiency to be used for the logL cut (percentage of X-rays of the
+# reference distributions that will be recovered with the corresponding cut value)
+signalEfficiency = 0.8
+# the CDL morphing technique to be used (see `MorphingKind` enum), none or linear
+morphingKind = "Linear"
+# clustering algorithm for septem veto
+clusterAlgo = "dbscan" # choose from {"default", "dbscan"}
+# the search radius for the cluster finding algorithm in pixel
+searchRadius = 50 # for default clustering algorithm
+epsilon = 65 # for DBSCAN algorithm
+
+[CDL]
+# whether to fit the CDL spectra by run or by target/filter combination.
+# If `true` the resulting `calibration-cdl*.h5` file will contain sub groups
+# for each run in each target/filter combination group!
+fitByRun = true
+#+end_src
+(linear morphing, 80% efficiency, and CDL based on fits per run)
+
+First let's apply the likelihood tool to the 2017 data for the gold
+region:
+#+begin_src sh
+likelihood -f ~/CastData/data/DataRuns2017_Reco.h5 --computeLogL \
+           --region crGold \
+           --h5out /tmp/lhood_2017_crGold_80eff_no_vetoes.h5 \
+           --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5
+#+end_src
+and the same for the end of 2018 data:
+#+begin_src sh
+likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 --computeLogL \
+           --region crGold \
+           --h5out /tmp/lhood_2018_crGold_80eff_no_vetoes.h5 \
+           --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5
+#+end_src           
+
+and now the same for the whole chip:
+#+begin_src sh
+likelihood -f ~/CastData/data/DataRuns2017_Reco.h5 --computeLogL \
+           --region crAll \
+           --h5out /tmp/lhood_2017_crAll_80eff_no_vetoes.h5 \
+           --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5
+#+end_src
+and the same for the end of 2018 data:
+#+begin_src sh
+likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 --computeLogL \
+           --region crAll \
+           --h5out /tmp/lhood_2018_crAll_80eff_no_vetoes.h5 \
+           --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5
+#+end_src           
+
+
+With this we can first create the plot of the cluster centers from the
+all chip files using ~plotClusterCenters~:
+#+begin_src sh
+cd $TPA/Plotting/plotBackgroundClusters
+./plotBackgroundClusters /t/lhood_2017_crAll_80eff_no_vetoes.h5 \
+                         /t/lhood_2018_crAll_80eff_no_vetoes.h5 \
+                         --zMax 30 --title "X-ray like clusters of CAST data"
+#+end_src
+
+
+- [ ] *FINISH THIS*
+
+*** Background suppression [/]                                   :noexport:
+
+In tab. [[tab:cast:data_stats_overview]] we see that the total CAST data
+contains $\num{984319} + \num{470188} = \num{1454507}$
+events. Compared to our $\num{94625}$ clusters left on the whole chip,
+this represents a:
+#+begin_src nim
+let c17 = 984319'f64
+let c18 = 470188'f64
+let cCut = 94625'f64
+echo (c17 + c18) / cCut
+#+end_src
+
+#+RESULTS:
+: 15.37127608982827
+background suppression of about 15.3. 
+
+- [X] We could make a plot showing the background suppression? A tile
+  map with text on taking X times Y squares and printing the
+  suppression? Would be a nice way to give better understanding how
+  the vetoes help to improve things over the chip.
+
+Running ~plotBackgroundClusters~ now also produces a tile map of the
+background suppression over the total raw number of clusters on the
+chip!
+~plots/background_suppression_tile_map.pdf~ which is in
+[[file:Figs/backgroundClusters/background_suppression_tiles_no_vetoes.pdf]].
+
+*** Verification of software efficiency using calibration data [/]
 
 - [ ] *SHOW OUR VERIFICATION USING 55FE DATA*
   -> Check and if not possibly do:
@@ -15591,6 +15895,9 @@ usefulness of the approach.
 *TODO: get correct numbers!*
 
 *** Outer GridPix as veto - 'septem veto'
+:PROPERTIES:
+:CUSTOM_ID: sec:background:septem_veto
+:END:
 
 The final hardware feature that is used to improve the background
 rate, is the outer ring of GridPix. The size of large clusters is a
