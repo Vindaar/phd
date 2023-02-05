@@ -15656,7 +15656,25 @@ features and discuss how they can improve the background rate.
 - [X] *ADD LINE SHOWING WHERE THE CUT VALUES ARE TO THE PLOT*
   -> The hard corners in the interpolated data is because the
   reference distributions are already pre-binned of course! So if by
-  just changing the bins slightly the 
+  just changing the bins slightly the ε cut value still lies in the
+  same bin, of course we see a 'straight' line in energy. Hence a non
+  smooth curve.
+  We could replace this all:
+  - either by a smooth KDE and interpolate based on
+    that as an alternative. I should really try this, the only
+    questionable issue is the fracRms distribution and its discrete
+    features. *However* we don't actually guarantee in any way that
+    in current approach the bins _actually_ correspond to any fixed
+    integer values. It is quite likely that the bins that show
+    smaller/larger values are too wide/small!
+  - or by keeping everything as is, but then performing a spline
+    interpolation on the *distinct* (logL, energy) pairs such that the
+    result is a smooth logL value. "Better bang for buck" than doing
+    full KDE and avoids the issue of discreteness in the fracRms
+    distribution. Even though the interpolated values probably
+    correspond to something as if the fracRms distribution _had_ been smooth.
+- [ ] Try to replace the binning of reference distributions and
+  therefore logL distribution by a KDE.
   
 #+begin_src nim :tangle code/generate_interp_likelihood.nim
 import std / [os, strutils]
