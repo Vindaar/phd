@@ -3770,6 +3770,21 @@ well as fluorescence of the argon gas with its $Kα$ lines at
 $\sim\SI{2.95}{keV}$ (see. table [[tab_all_xray_fluorescence]] in
 sec. [[#sec:theory:xray_fluorescence]]).
 
+- [ ] *MERGE BETTER INTO TEXT FLOW*
+Fig. \ref{fig:detector:fadc_veto_paddle_expl} shows a schematic of a
+side view of the detector chamber with the scintillator paddle on top.
+When a muon traverses the scintillator a counter $t_{\text{Veto}}$
+starts on the FPGA. Two different cases are shown. In the extreme, a
+muon may traverse close to the cathode or close to the anode / readout
+plane. This changes the time of the total drift time and therefore the
+time difference between the trigger time $t_{\text{Veto}}$ and the
+readout time, which in the readout is precisely the value of the
+counter on the FPGA. The drift velocity and height of the detector
+chamber ($\SI{3}{cm}$) therefore allow to set an upper limit on the
+maximum number of clock cycles counted after the scintillator trigger
+before an event recorded by the GridPix cannot be related to the
+scintillator. 
+
 The second scintillator is a small silicon photomultiplier (SiPM)
 installed on the underside of the PCB on which the septemboard is
 installed. This scintillator was calibrated and set up as part of
@@ -3784,7 +3799,40 @@ as used in the detector at CAST (see
 fig. [[fig:theory:muon_argon_3cm_bethe_loss]] for the energy loss). This
 coincides with the copper Kα lines and should lead to another source
 of background in this energy range. Although the muon background will
-have a much wider distribution than the copper lines.
+have a much wider distribution than the copper lines which is
+dominated by the energy resolution of the detector.
+
+- [ ] *EXPLAIN FIG*
+Fig. \ref{fig:detector:fadc_sipm_expl} ionization of a muon is a
+statistical process. Depending on the density of the charge cloud for
+muons orthogonal to readout plane, time to accumulate enough charge to
+trigger FADC differs.
+
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{./Figs/detector/fadc_scintillators/FADC_veto_explanation.pdf}
+    \caption{Veto paddle}
+    \label{fig:detector:fadc_veto_paddle_expl}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{./Figs/detector/fadc_scintillators/FADC_sipm_explanation.pdf}
+    \label{fig:detector:fadc_sipm_expl}
+    \caption{SiPM}
+  \end{subfigure}
+  \label{fig:detector:fadc_scintillators_explanation}
+  \caption{\subref{fig:detector:fadc_veto_paddle_expl} Schematic of expected signals for different muons
+    from the zenith passing through scintillator paddle and detector. $t_{\text{Veto}}$ marks beginning
+    of a counter. Where the muon traverses changes drift time and thus time difference between two times.
+    \subref{fig:detector:fadc_sipm_expl} Ionization of a muon is a statistical process. Depending on the
+    density of the charge cloud for muons orthogonal to readout plane, time to accumulate enough charge
+    to trigger FADC differs.
+  }
+\end{figure}
+
 
 - [ ] *REFERENCE SECTION ON MUON LOSSES*
 
@@ -3801,6 +3849,26 @@ have a much wider distribution than the copper lines.
 
 - [ ] *NOTE: MAYBE INSTEAD START WITH SEPTEMBOARD? THEN IN OTHER FEATURES
 CAN MENTION THAT THINGS ARE ONLY FOR CENTER CHIP EG*
+
+- [ ] *SHOW THE EXPLANATION PLOTS FOR WHAT HAPPENS WITH MUONS HERE?*
+
+- [ ] *QUESTION*: This is *VERY IMPORTANT* for our interpretation.
+  Given the 'slow' drift velocity of about 2cm/μs, this means
+  orthogonal muons of course take about 1.5μs to traverse the
+  detector. The FADC trigger window is 2560 ns = 2.56 μs.
+  So: Does the FADC even *TRIGGER* if the charge accumulates that
+  slowly??? *UHHHHHH*
+  I mean from this we expect to have signals that are extremely long,
+  no? 1.5/2.5 = 0.58 of the whole trigger window! In *RISING EDGE* Or
+  rather a sort of flat thing, as the charge is removed 'quickly' on
+  those time scales. Very confusing thought....
+  I mean there is a chance the FADC *DID NOT* trigger in those events,
+  which could explain why the FADC + SIPM aren't that effective!
+  -> We *could* study this a bit, if we look into the FADC dataset in
+  which we placed the detector towards the zenith. Question: what does
+  the data look like, in which the *FADC DID NOT TRIGGER*? If there is
+  significant contribution of spherical events of ~8 keV then DUHHH.
+    
 
 ** FADC [0/4]
 :PROPERTIES:
@@ -12306,6 +12374,25 @@ be a change in the gas gain, but some other effect like electronics!
   charge up effects (changing effective voltage) and gas flow
   (unlikely as flow constant & pressure always stable).
 
+
+** Scintillators [/]
+
+- [ ] *DO THE SCINTILLATORS DESERVE A SECTION HERE TO EXPLAIN THEIR
+  USAGE?*
+  -> probably not, as this really should be about the stuff we do to
+  calibrate and use data. But none of this is needed for
+  scintillators.
+  -> As a matter of fact the explanation for the FADC above about
+  being of 4-fold use might actually be better placed somewhere else?
+
+- [ ] Well, at the very least we should present the information
+  about the number of triggers, clock cycle distributions
+  etc. somewhere. Either do it here somewhere or do it before we
+  perform the cuts. Both can work.
+  -> In principle this chapter here could really be about the detector
+  energy etc. while other calculations could be presented before?
+  Or we have another short chapter/section about "data overview"?
+
 ** Energy calibration, how done? [0/1]
 :PROPERTIES:
 :CUSTOM_ID: sec:calibration:energy
@@ -15660,13 +15747,7 @@ ggplot(dfMorph, aes("logL", "energy", color = factor("Target"))) +
   geom_line(data = dfCuts, aes = aes("cuts", "energies")) + # , color = "Morphing?")) + 
   ggtitle("lnL values of all (cleaned) CDL data against energy") + 
   ggsave("/home/basti/phd/Figs/background/logL_of_CDL_vs_energy.pdf", width = 1000, height = 600)
-
 #+end_src
--> anyhow finish it with a clear mind:
-  - just compute the logL for all clusters
-  - assign cluster's energy & logL value to some data structure
-  - plot, we can start by just plotting it as a point cloud? Or do a
-    rough 2D histogram
 
 *** Generate background rate and cluster plot [/]                :noexport:
 
@@ -15811,32 +15892,53 @@ chip!
 - [ ] *ADD SECTION ABOUT EXPECTATIONS OF THE VETOS. USING THE PLOTS
   HENDRIK ALREADY SHOWED IN HIS THESIS ABOUT IONIZATION*
 
-*TODO*: rewrite this paragraph in context of full chapter
-The usage of scintillators (ideally 4π around the whole detector
-setup) can be very helpful to reduce the background rate further. The
-likelihood method presented in the previous section is capable of
-separating X-rays from background events. However, given the
-required background levels, cosmic induced X-ray fluorescence plays a
-significant role in the datasets. A muon that excites a piece of the
-detector material, which as a result emits an X-ray cannot be
-separated from a desired X-ray originating from an axion.
+  
 
-A scintillator setup can be used to tag events. For a fully
-encapsulated detector, any (at least) muon induced X-ray would be
-preceded by a signal in one (or multiple) scintillators. As such, if
-the time $t_s$ between the scintillator trigger and the time of activity
-recorded with the GridPix is small enough, the two are likely to be in
-real coincidence.
+*TODO*: rewrite this paragraph in context of full chapter
+  -> in particular references to GridPix1 & language that is more
+  theoretical than actually referring to the setup of the Septemboard
+  detector.
+
+- [ ] *IMPORTANT*: These ideas *ARE* already explained in the detector
+  chapter where the features are introduced!
+  I think such explanations really should better be there, no? And
+  here just explain what is done and why?
+  -> take some of the explanations and language from here to
+  sec. [[#sec:detector:scintillators]]!
+
+- [ ] Show the clock cycle histograms here? Or before in a section?
+
+As introduced in theory section [[#sec:theory:xray_fluorescence]] one
+problematic source of background is X-ray fluorescence created due to
+abundant muons interacting with material of - or close to - the
+detector. The resulting X-rays, if detected, are indistinguishable
+from those X-rays originating from an axion (or other particle of
+study). And given the required background levels, cosmic induced X-ray
+fluorescence plays a significant role in the datasets.
+  
+The usage of scintillators (ideally 4π around the whole detector
+setup) can be very helpful to reduce the influence of such background
+events by 'tagging' certain events. For a fully encapsulated detector,
+any (at least) muon induced X-ray would be preceded by a signal in one
+(or multiple) scintillators. As such, if the time $t_s$ between the
+scintillator trigger and the time of activity recorded with the
+GridPix is small enough, the two are likely to be in real coincidence.
+
+In the setup used at CAST with a 
+
 
 In addition the scintillator triggers are only taken into account for
 clusters, which are signal like. If one applies a strict cut on $t_s$,
 for example $400\,\text{clock cycles}$ at \SI{40}{MHz} ($\SI{10}{μs}$,
-the value used for the GridPix1 detector at CAST), the rate of random
+the value used for the single GridPix1 detector at CAST), the rate of random
 coincidences should be extremely low (or in other words the added dead
 time is minuscule). The cutoff of $\SI{10}{μs}$ for the GridPix1 is
 chosen as that is the order of the time scale associated with the maximum drift
 time in the gas volume, which is of course much longer than any
 fluorescence related time scales.
+
+
+
 
 The resulting improvement of the background rate is shown in
 fig. [[fig:background_rate_scinti_veto]], albeit only for the end of 2018
