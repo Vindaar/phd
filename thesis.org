@@ -16000,56 +16000,233 @@ abundant muons interacting with material of - or close to - the
 detector. The resulting X-rays, if detected, are indistinguishable
 from those X-rays originating from an axion (or other particle of
 study). And given the required background levels, cosmic induced X-ray
-fluorescence plays a significant role in the datasets.
-  
-The usage of scintillators (ideally 4π around the whole detector
-setup) can be very helpful to reduce the influence of such background
-events by 'tagging' certain events. For a fully encapsulated detector,
-any (at least) muon induced X-ray would be preceded by a signal in one
-(or multiple) scintillators. As such, if the time $t_s$ between the
-scintillator trigger and the time of activity recorded with the
-GridPix is small enough, the two are likely to be in real coincidence.
+fluorescence plays a significant role in the datasets. Scintillators
+(ideally 4π around the whole detector setup) can be very helpful to
+reduce the influence of such background events by 'tagging' certain
+events. For a fully encapsulated detector, any (at least) muon induced
+X-ray would be preceded by a signal in one (or multiple)
+scintillators. As such, if the time $t_s$ between the scintillator
+trigger and the time of activity recorded with the GridPix is small
+enough, the two are likely to be in real coincidence. 
 
-In the setup used at CAST with a ... *FINISH*
+In the setup used at CAST with a $\SI{42}{\cm}$ times $\SI{82}{\cm}$
+scintillator paddle sitting about $\sim\SI{30}{cm}$ away from the
+detector center and a $\cos²(θ)$ distribution for muons a significant
+fraction of muons should be tagged. Similarly, the second scintillator
+on the Septemboard detector, the small SiPM behind the readout area
+should trigger precisely in those cases where a muon traverses the
+detector from the front or back such that the muon track is orthogonal
+to the readout plane.
+
+The term 'non trivial trigger' in the following indicates events in
+which a scintillator triggered and the number of clock cycles to the
+GridPix readout was larger than \num{0} (scintillator had a trigger in
+the first place) and smaller than \num{300}. The latter cut is
+somewhat arbitrary, as the idea is on two things: 1. no clock cycles
+of \num{4095} (indicates clock ran over) and 2. the physics involved
+leading to coincidences typically takes place on time scales shorter
+than $\SI{100}{clock\;cycles} = \SI{2.5}{μs}$ (see
+sec. [[#sec:detector:scintillators]]). Anything above should just be a
+random coincidence. \num{300} is therefore just chosen to have a
+buffer to where physical clock cycles start.
+
+During the Run-3 data taking period a total of \num{69243} non trivial
+veto paddle triggers were recorded. [fn:estimation_of_tagged_muons]
+The distribution of the clock cycles after which the GridPix readout
+happened is shown in fig. [[fig:background:scintillator_clock_cycles]] on
+the right. The narrow peak at $\SI{255}{clock;cycles}$ seems to be
+some kind of artifact, potentially a firmware bug. The data was looked
+at and there is nothing unusual about it (neither cluster properties
+nor individual events). The source therefore remains unclear, but a
+physical origin is extremely unlikely as the peak is exactly one clock
+cycle wide (unrealistic for a physical process in this context) and
+coincidentally exactly \num{255} (~0xFF~ in hexadecimal), hinting
+towards a counting issue in the firmware. The actual distribution
+looks as expected, being a more or less flat distribution
+corresponding to muons traversing at different distances to the
+readout. The real distribution does not start at exactly
+$\SI{0}{clock;cycles}$ due to inherent processing delays and even
+close tracks requiring some time to drift to the readout and
+activating the FADC. Further, geometric effects play a role as very
+close to the grid only perfectly parallel tracks can achieve low clock
+cycles, but the further away different angles contribute to the same
+times.
+
+The SiPM recorded \num{4298} non trivial triggers in the same time,
+which are shown in fig. [[fig:background:scintillator_clock_cycles]] on
+the left. [fn:estimation_of_tagged_muons_sipm] Also this distribution
+looks more or less as expected, showing a peak towards low clock
+cycles (typical ionization and therefore similar times to accumulate
+enough charge to trigger) with a tail for less and less ionizing
+tracks. The same physical cut off as in the veto paddle distribution
+is visible corresponding to the full $\SI{3}{cm}$ of drift time.
+
+Both of these distributions and the physically motivated cutoffs in
+clock cycles motivate a scintillator veto at clock cycles somewhere
+above $\SIrange{60}{70}{clock;cycles}$. To be on the conservative side
+and because random coincidences are very unlikely (on the time scales
+of several clock cycles; picking a value slightly larger implies a
+negligible dead time), a scintillator veto cut of
+$\SI{150}{clock;cycles}$ was chosen.
+
+- [ ] *PUT SCINTI CUT OFF INTO CONFIG.TOML*
+- [ ] *CHECK THE BACKGROUND RATE USING 60, 100, 150, 300 CLOCK
+  CYCLES*
+  -> if everything from 100 looks the same, choose 100.  
+
+The resulting improvement of the background rate is shown in
+fig. [[fig:background_rate_scinti_veto]], albeit only for the end of 2018
+data as the scintillator trigger was not working correctly (as
+mentioned in sec. [[#sec:cast:data_taking_woes]]). The improvements are
+visible, but not dramatic in most bins. This is likely due to a
+collection of different things. First of all many events are already
+removed due to their geometric properties. Secondly, the efficiency of
+the scintillator was not ideal, resulting in some likely muon induced
+X-rays to remain untagged. Lastly, the coverage of the scintillators
+is leaving large angular areas without a possibility to be
+tagged. However, one bin close to $\SI{8}{keV}$ can be seen to go down
+significantly. The removed clusters are very likely real
+$\ce{Cu}_{Kα}$ X-rays produced by muon induced fluorescence. Similarly
+close to $\SI{3}{keV}$ one bin shows significant improvement, which
+might be from $\ce{Ar}_{Kα}$ fluorescence.
+
+For a future detector an almost $4π$ scintillator setup and correctly
+calibrated and tested scintillators are an extremely valuable upgrade.
 
 #+CAPTION: Clock cycle distributions of both scintillators of the end of 2018 data.
 #+CAPTION: The data is filtered to all non-trivial triggers (non zero and
 #+CAPTION: less than \num{300}; there are individual random coincidences in
 #+CAPTION: values up to \num{4095} where all triggers whose counter overran are).
-#+CAPTION: The origin of the peak at above \SI{250}{clocks} in the data of the paddle is
+#+CAPTION: The origin of the peak at \SI{255}{clocks} in the data of the paddle is
 #+CAPTION: unclear.
 #+NAME: fig:background:scintillator_clock_cycles
 [[~/phd/Figs/scintillators/scintillators_facet_main_2018.pdf]]
 
-- [ ] *INVESTIGATE THE >250 PEAK IN VETO PADDLE DATA BY CHECKING
-  EVENTS THAT HAVE SUCH VALUES. DISPLAY AND PROPERTIES!*
-
-In addition the scintillator triggers are only taken into account for
-clusters, which are signal like. If one applies a strict cut on $t_s$,
-for example $400\,\text{clock cycles}$ at \SI{40}{MHz} ($\SI{10}{μs}$,
-the value used for the single GridPix1 detector at CAST), the rate of random
-coincidences should be extremely low (or in other words the added dead
-time is minuscule). The cutoff of $\SI{10}{μs}$ for the GridPix1 is
-chosen as that is the order of the time scale associated with the maximum drift
-time in the gas volume, which is of course much longer than any
-fluorescence related time scales.
-
-
-
-
-The resulting improvement of the background rate is shown in
-fig. [[fig:background_rate_scinti_veto]], albeit only for the end of 2018
-data as the scintillator trigger was not working correctly before.
-
-#+begin_center
 #+CAPTION: Background rate achieved based on the addition of a scintillator cut veto
 #+CAPTION: of $\SI{10}{μs}$ for any cluster that initially passes the log likelihood
-#+CAPTION: cut. Improvements are relatively small, which is mainly due to the relatively
-#+CAPTION: small coverage of the veto scintillator used & generally low expected rates of
-#+CAPTION: indcued signal like events.
-#+NAME: fig:background_rate_scinti_veto
+#+CAPTION: cut. Differences are mainly seen from $\sim\SI{1.8}{keV}$ as this corresponds more or
+#+CAPTION: less to the FADC activation threshold (and therefore scintillator triggers).
+#+NAME: fig:background:background_rate_scinti_veto
 [[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2018_scinti_veto.pdf]]
-#+end_center
+
+[fn:estimation_of_tagged_muons] A ball park estimate yields a coverage
+of about $\SI{35}{°}$ around the zenith. Assuming $\cos²(θ)$ muons it
+covers about $\SI{68}{\%}$ of muons in that axis. With a rate of
+$\sim\SI{1}{cm⁻².min⁻¹}$, $\SI{1125}{h}$ of data with scintillator and
+$\SI{4.2}{cm²}$ of active area in front of center GridPix roughly
+\num{194000} muons are expected. About \num{70000} non trivial
+triggers were recorded. Efficiency of $\sim\SI{35}{\%}$.
+
+[fn:estimation_of_tagged_muons_sipm] Estimating the number of expected
+muons for the SiPM is much more difficult, because there is little
+literature on the actual muon rate at angles close to $\SI{90}{°}. The
+extended version of this thesis contains some calculations, which try
+to estimate energy distribution and rate under these angles in the
+detector based on numerically transporting muons from the upper
+atmosphere to the surface undergoing relativistic effects, changing
+atmospheric pressures and the related energy loss per distance.
+
+**** TODOs for the above section                                :noexport:
+
+- [X] *INVESTIGATE THE >250 PEAK IN VETO PADDLE DATA BY CHECKING
+  EVENTS THAT HAVE SUCH VALUES. DISPLAY AND PROPERTIES!*
+  -> Done, see the extra section about it.
+
+- [X] *WHY IS THE FADC POST TRIGGER NOT VISIBLE IN THE DATA?*
+  -> because post trig is unrelated to when the *trigger is sent*  
+
+**** Angle estimate covered by veto paddle                      :noexport:
+
+Given a veto paddle size of $\SI{42}{\cm}$ times $\SI{82}{\cm}$ we can
+calculate the rough arc angle covered by the paddle for muons hitting
+detector material. The exact calculation of course would need to take
+into account the extent of the detector, the fact that there is copper
+in the vacuum tube in front of the detector etc. For now let's just
+look at the center of the detector volume and see what is covered by
+the paddle.
+
+The lead shielding is $\SI{10}{cm}$ above the detector. There are
+maybe a bit less than another $\SI{10}{cm}$ above the lead shielding
+to the scintillator and the detector center is also a bit less than
+$\SI{10}{cm}$ away from the lead shielding above ($\SI{78}{mm}$
+diameter gas volume diameter, with the rest of the housing and a
+couple of centimeter spacing to the lead shielding).
+
+Assuming $\SI{30}{cm}$ from the center to the veto scintillator, the
+angle to the sides is:
+
+\[
+α = \arctan\left(\frac{\SI{21}{cm}}{\SI{30}{cm}}\right) = \SI{35}{°}
+\]
+
+#+begin_src nim
+import math
+echo arctan(21.0/30.0).radToDeg
+#+end_src
+
+#+RESULTS:
+: 34.99202019855866
+
+so about $\SI{35}{°}$ covering to either side. This implies
+$\SI{70}{°}$ coverage above the detector. In the long direction it's
+even more due to the length of the paddle.
+
+Given a roughly $\cos²(θ)$ distribution of the muon background, this
+should cover
+
+#+begin_src nim
+import numericalnim, math
+
+proc cos2(θ: float, ctx: NumContext[float, float]): float = cos(θ)*cos(θ)
+
+proc integrate(start, stop: float): float =
+  result = simpson(cos2, start, stop)
+echo "Integrate from -π/2 to π/2 = ", integrate(-PI/2.0, PI/2.0), " = π/2"
+echo "Integrate from -π/2 to π/2 = ", integrate(-35.0.degToRad, 35.0.degToRad)
+echo "Fraction of total flux *in this dimension* = ", integrate(-35.0.degToRad, 35.0.degToRad) / (PI/2.0)
+#+end_src
+
+#+RESULTS:
+| Integrate | from | -π/2  | to   | π/2 | =    | 1.570796326794897 | = |               π/2 |
+| Integrate | from | -π/2  | to   | π/2 | =    | 1.080711548592458 |   |                   |
+| Fraction  | of   | total | flux | *in | this |        dimension* | = | 0.688002340059947 |
+
+So assuming a 2D case it already covers about 68% of the expected muon
+flux, assuming a perfect trigger efficiency of the scintillator.
+
+**** Estimate expected number of muons in data taking           :noexport:
+
+The detection volume of relevance for the center chip can be roughly
+said to be $\SI{4.2}{cm²}$ (1.4 cm wide chip, 3 cm height orthogonal
+to sky). Assuming a muon rate of 1 cm⁻²·min⁻¹ yields for 1125 h of
+background time:
+#+begin_src nim
+import unchained
+let rate = 1.cm⁻²•min⁻¹
+let time = 1125.h
+let area = 4.2.cm²
+echo "Expected number of muon counts = ", rate * time * area
+#+end_src
+
+#+RESULTS:
+: Expected number of muon counts = 283500 UnitLess
+
+So about \num{284500} expected muons in front of the
+detector. Assuming I can trust the ~scintiInfo~ tool of an output of
+(see next section):
+#+begin_quote
+Main triggers: 69243
+FADC triggers 211683
+Relevant triggers 142440
+Open shutter time in s: 13.510434
+Scinti1 rate: 0.3050257995269533 s^-1
+Scinti2 rate: 57.21503839180888 s^-1
+#+end_quote
+so about 69k veto paddle triggers. That puts the efficiency at knowing
+the paddle will only see about 68% of all muons
+$\sim\SI{35.8}{\%}$. Not great, but also not horrible. Given that we
+know our threshold was likely a bit high, this seems to be a possible
+ball park estimate.
 
 **** Generate plots of scintillator data                        :noexport:
 
@@ -16062,10 +16239,114 @@ It generates output into the ~out/<plot path>/~ directory:
 which generates 3 plots for each scintillator containing all data,
 all non trivial data and all hits > 0 and < 300.
 
+Now let's investigate what the events of the veto paddle look like in
+which we have a peak >250 clocks.
+
+#+begin_src nim :tangle code/scintillator_data_paddle_250.nim
+import std / [sequtils, strformat]
+import ingrid / [tos_helpers, ingrid_types]
+import pkg / [ggplotnim, nimhdf5, datamancer]
+
+proc allData(h5f: H5File): DataFrame =
+  result = h5f.readDsets(chipDsets = some((chip: 3, dsets: TpaIngridDsetKinds.mapIt(it.toDset()))),
+                         commonDsets = @["fadcReadout", "szint1ClockInt", "szint2ClockInt"])
+
+proc plotEvents(df: DataFrame, run: int) =
+  for (tup, subDf) in groups(df.group_by("eventNumber")):
+    let dfEv = subDf.dfToSeptemEvent()
+    let eventNumber = tup[0][1].toInt
+    ggplot(dfEv, aes(x, y, color = "charge")) +
+      geom_point(size = 1.0) +
+      xlim(0, 768) + ylim(0, 768) + scale_x_continuous() + scale_y_continuous() +
+      geom_linerange(aes = aes(y = 0, xMin = 128, xMax = 640)) +
+      geom_linerange(aes = aes(y = 256, xMin = 0, xMax = 768)) +
+      geom_linerange(aes = aes(y = 512, xMin = 0, xMax = 768)) +
+      geom_linerange(aes = aes(y = 768, xMin = 128, xMax = 640)) +
+      geom_linerange(aes = aes(x = 0, yMin = 256, yMax = 512)) +
+      geom_linerange(aes = aes(x = 256, yMin = 256, yMax = 512)) +
+      geom_linerange(aes = aes(x = 512, yMin = 256, yMax = 512)) +
+      geom_linerange(aes = aes(x = 768, yMin = 256, yMax = 512)) +
+      geom_linerange(aes = aes(x = 128, yMin = 0, yMax = 256)) +
+      geom_linerange(aes = aes(x = 384, yMin = 0, yMax = 256)) +
+      geom_linerange(aes = aes(x = 640, yMin = 0, yMax = 256)) +
+      geom_linerange(aes = aes(x = 128, yMin = 512, yMax = 768)) +
+      geom_linerange(aes = aes(x = 384, yMin = 512, yMax = 768)) +
+      geom_linerange(aes = aes(x = 640, yMin = 512, yMax = 768)) +
+      margin(top = 1.5) +
+      ggtitle(&"Septem event of event {eventNumber} and run {run}. ") + 
+      ggsave(&"Figs/scintillators/peakAt255/septemEvents/septemEvent_run_{run}_event_{eventNumber}.pdf")
+
+proc main(fname: string, plotEvents = true) =
+  let h5f = H5open(fname, "r")
+  let fileInfo = h5f.getFileInfo()
+  let df = h5f.allData()
+
+  let toGather = df.getKeys().filterIt(it notin ["runNumber", "eventNumber"])
+    
+  let dfF = df.filter(f{int: `szint2ClockInt` > 250 and `szint2ClockInt` < 265})
+    .filter(f{`eccentricity` < 10.0})
+    .gather(toGather, "key", "value")
+    
+  echo dfF
+  ggplot(dfF, aes("value", fill = "key")) +
+    facet_wrap("key", scales = "free") + 
+    geom_histogram(position = "identity", binBy = "subset") +
+    legendPosition(0.90, 0.0) +
+    ggtitle("Cluster properties of all events with veto paddle trigger clock cycles = 255") + 
+    ggsave("Figs/scintillators/peakAt255/cluster_properties.pdf", width = 2000, height = 2000)
+
+  if plotEvents:
+    for (tup, subDf) in dfF.group_by(@["runNumber"]).groups:
+      let run = tup[0][1].toInt
+      echo "Run ", run
+      let events = subDf["eventNumber", int].toSeq1D
+      let dfS = getSeptemDataFrame(h5f, run)
+        .filter(f{int: `eventNumber` in events})
+      echo dfS
+      plotEvents(dfS, run)
+
+  discard h5f.close()
+    
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+-> Conclusion from all this:
+I don't see any real cause for these kinds of events. They are all
+relatively busy background events of mostly standard tracks.
+Maybe these events are the events that follow the events where the
+FPGA has a hiccup and doesn't take the FADC trigger? Who knows or it
+may be something completely different. At 255 * 25ns = 6.375μs I don't
+see any physical source. More importantly are two things:
+1. a physical source is *extremely unlikely* to be so narrow that it
+   _always_ give 255 clock cycles.
+2. 255 is 2^8 when counting from 0 (= it's ~1111 1111~), which implies
+   there is a high chance it is a bug in the counting logic where
+   maybe the clock stopped at 2^8 instead of 2^12 (4095) or something
+   along those lines.
+A physical event that always appears at 255 clock cycles is rather
+unlikely! See fig. [[fig:scintillators:peak_at_255_cluster_properties]]
+for the cluster properties and the
+~Figs/scintillators/peakAt255/septemEvents~ directory for all the
+event displays of these events. 
 
 
+#+CAPTION: Overview of the cluster properties of all the events with a trigger at
+#+CAPTION: $\SI{255}{clock\;cycles}$. Nothing out of the ordinary for background data here.
+#+NAME: fig:scintillators:peak_at_255_cluster_properties
+[[~/phd/Figs/scintillators/peakAt255/cluster_properties.pdf]]
 
-*** FADC / ToA as veto
+- [ ] *SIMILARLY DO THE SAME FOR SIPM*
+  -> Extend the code above such that we also do plots for the SiPM. so
+  properties & events. In addition to that add the FADC events! Read
+  FADC data and place it next to the SiPM event displays. What do we see?
+
+*** FADC / ToA as veto [/]
+
+- [ ] *PUT THE IDEAS FROM THIS SECTION INTO AN 'OUTLOOK FOR BACKGROUND
+  IMPROVEMENTS' SECTION?*
+  -> This could be a useful section to extend the ideas and provide 
 
 Beyond the usage of a likelihood method for geometrically X-ray like
 signals and scintillators to suppress X-ray fluorescence, another
