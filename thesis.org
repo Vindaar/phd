@@ -5440,7 +5440,9 @@ The different fields in the header, see listing
 - ~channel mask~: decimal value of a 4-bit field to (de-)activate
   channels. ~15~ corresponds to all 4 channels active.
 - ~posttrig~: how many clock cycles in the \SI{50}{MHz} [fn:base_clock] base clock of
-  the FADC after the threshold is crossed a trigger is sent.
+  the FADC it continues taking data before commencing the readout
+  (useful to record the rest of the signal and center it in the
+  readout window)
 - ~pretrig~: the minimum acquisition time before a trigger is allowed
   to happen, in units of the \SI{50}{MHz} [fn:base_clock] base clock.
 - ~triggerrecord~: together with ~posttrig~ allows to reconstruct the
@@ -5457,9 +5459,14 @@ The different fields in the header, see listing
 
 - [X] *Introduce FADC data files.*
 - [ ] *VERIFY THE EXPLANATION OF THE HEADER FIELDS*
-- [ ] *ISN'T THE POSTTRIG VALUE SOMETHING ONE SHOULD TAKE INTO ACCOUNT
+- [X] *ISN'T THE POSTTRIG VALUE SOMETHING ONE SHOULD TAKE INTO ACCOUNT
   WHEN COMPUTING THE TIME OF THE ACTUAL TRIGGER IN RELATION TO OTHER
   DETECTOR FEATURES?*
+  -> No, because our explanation was wrong. It has nothing to do with
+  when the trigger is sent! It is sent, whenever it appears. It just
+  changes the time *after the trigger* that the FADC continues
+  recording data into the registers to record full signal shapes and
+  center the signal!
 
 #+CAPTION: The file starts with a header indicated by ~#~. Some of the values are
 #+CAPTION: decimal representation of bit fields, hence the weird values like
