@@ -15963,8 +15963,19 @@ any (at least) muon induced X-ray would be preceded by a signal in one
 scintillator trigger and the time of activity recorded with the
 GridPix is small enough, the two are likely to be in real coincidence.
 
-In the setup used at CAST with a 
+In the setup used at CAST with a ... *FINISH*
 
+#+CAPTION: Clock cycle distributions of both scintillators of the end of 2018 data.
+#+CAPTION: The data is filtered to all non-trivial triggers (non zero and
+#+CAPTION: less than \num{300}; there are individual random coincidences in
+#+CAPTION: values up to \num{4095} where all triggers whose counter overran are).
+#+CAPTION: The origin of the peak at above \SI{250}{clocks} in the data of the paddle is
+#+CAPTION: unclear.
+#+NAME: fig:background:scintillator_clock_cycles
+[[~/phd/Figs/scintillators/scintillators_facet_main_2018.pdf]]
+
+- [ ] *INVESTIGATE THE >250 PEAK IN VETO PADDLE DATA BY CHECKING
+  EVENTS THAT HAVE SUCH VALUES. DISPLAY AND PROPERTIES!*
 
 In addition the scintillator triggers are only taken into account for
 clusters, which are signal like. If one applies a strict cut on $t_s$,
@@ -15992,6 +16003,20 @@ data as the scintillator trigger was not working correctly before.
 #+NAME: fig:background_rate_scinti_veto
 [[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2018_scinti_veto.pdf]]
 #+end_center
+
+**** Generate plots of scintillator data                        :noexport:
+
+The tool we use to plot the scintillator data is ~Tools/scintiInfo~.
+
+It generates output into the ~out/<plot path>/~ directory:
+#+begin_src sh
+./scintiInfo -f ~/CastData/data/DataRuns2018_Reco.h5
+#+end_src
+which generates 3 plots for each scintillator containing all data,
+all non trivial data and all hits > 0 and < 300.
+
+
+
 
 *** FADC / ToA as veto
 
