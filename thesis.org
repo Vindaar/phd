@@ -3791,11 +3791,17 @@ muon may traverse close to the cathode or close to the anode / readout
 plane. This changes the time of the total drift time and therefore the
 time difference between the trigger time $t_{\text{Veto}}$ and the
 readout time, which in the readout is precisely the value of the
-counter on the FPGA. The drift velocity and height of the detector
-chamber ($\SI{3}{cm}$) therefore allow to set an upper limit on the
-maximum number of clock cycles counted after the scintillator trigger
-before an event recorded by the GridPix cannot be related to the
-scintillator. 
+counter on the FPGA. The drift velocity of $\sim\SI{2}{cm.μs⁻¹}$ and
+height of the detector chamber ($\SI{3}{cm}$) therefore allow to set
+an upper limit on the maximum time between a veto paddle trigger and
+the GridPix readout of about $\SI{1.5}{μs}$. At a clock speed of
+$\SI{40}{MHz}$ this corresponds to $\SI{60}{clock;cycles}$, a number
+we will later try to see in the data. As the location at which the
+muon traverses through the detector is random and homogeneous
+throughout the detection volume, we expect to see a flat distribution
+up to the maximum possible time and then a sharp drop (equivalent to
+muons at the cathode).
+- [ ] *MOVE EXACT NUMBERS TO ANALYSIS PART OF BACKGROUND W SCINTIS?*
 
 The second scintillator is a small silicon photomultiplier (SiPM)
 installed on the underside of the PCB on which the septemboard is
@@ -3812,14 +3818,33 @@ fig. [[fig:theory:muon_argon_3cm_bethe_loss]] for the energy loss). This
 coincides with the copper Kα lines and should lead to another source
 of background in this energy range. Although the muon background will
 have a much wider distribution than the copper lines which is
-dominated by the energy resolution of the detector.
+dominated by the energy resolution of the detector. In a similar
+manner to the veto paddle we can make an estimate on the typical time
+scales associated from the time of the scintillator trigger to the
+GridPix detection. A muon that traverses orthogonally trough the
+detector can be taken to leave an instant ionization track and trigger
+the SiPM at the same time ($\mathcal{O}(\SI{100}{ps}) \ll \SI{25}{ns}$
+for one clock cycle). As such, the relevant time scale is the drift
+time until enough charge has drifted towards the grid as to pass the
+activation threshold. 
 
 - [ ] *EXPLAIN FIG*
 Fig. \ref{fig:detector:fadc_sipm_expl} ionization of a muon is a
 statistical process. Depending on the density of the charge cloud for
 muons orthogonal to readout plane, time to accumulate enough charge to
-trigger FADC differs.
+trigger FADC differs. With an average energy deposition of a muon in
+argon gas of $\sim{2.67}{keV.cm⁻¹}$ and drift velocity again of
+$\SI{2}{cm.μs⁻¹}$ the accumulation time can be estimated. For example
+assuming an FADC activation threshold of $\SI{1.5}{keV}$ the necessary
+charge is accumulated on $\SI{0.56}{cm}$, which takes about
+$\SI{280}{ns} \approx \SI{11}{clock;cycles}$ to accumulate. As the
+ionization is a statistical process, different tracks will have
+deposited different amounts of energy. Therefore we expect a peak at
+relatively low clock cycles with a tail up to the same
+$\SI{60}{clock;cycles}$ (in case the full $\SI{3}{cm}$ track needs to be
+accumulated to activate the FADC). 
 
+- [ ] *PROVIDE EXPECTED TIMES FOR EACH OF THESE TWO CASES*
 
 \begin{figure}[htbp]
   \centering
@@ -7839,6 +7864,9 @@ ggplot(df, aes("Thr", "Coinc")) +
 See the appendix [[#sec:appendix:scintillator_calibration_notes]] for a
 reproduction of the notes taken during the calibration of the veto
 paddle scintillator.
+
+- [ ] *MUON RATE MEN TIONED IN FOOTNOTE. Hz/min ? WHAT IS
+  THAT. MISSING cm²?*
 
 [fn:threshold_choice] While it is unclear to me now given it's been 5
 years, I believe at the time of the calibration we wrongly assumed a
