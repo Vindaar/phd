@@ -16685,7 +16685,492 @@ the septem veto is seen in fig. [[fig:background_clusters_septem_veto]].
 
 In total this is a reduction of a factor of 4 over the whole chip. But
 even in the center most region (a square of the center \SI{25}{mm²})
-sees an improvement, especially at low energies. 
+sees an improvement, especially at low energies.
+
+*** Estimating the random coincidence rate of the septem & line veto [/]
+
+- [ ] *IMPORTANT:*
+  The random coincidence we calculate here changes not only the dead
+  time for the tracking time, but also for the background rate! As
+  such we need to regulate both!
+
+One potential issue with the septem and line veto is that the shutter
+times we ran with at CAST are very long ($> \SI{2}{s}$), but only the
+center chip is triggered by the FADC. This means that the outer chips
+can record cluster data that is not correlated to what the center chip
+sees. When applying one of these two vetoes the chance for random
+coincidence might be non negligible.
+
+In order to estimate this we can create fake events from real clusters
+on the center chip and clusters for the outer chips using different
+events. This way we bootstrap a larger number of events than otherwise
+available and knowing that the geometric data cannot be
+correlated. Any vetoing in these cases therefore *must* be a random
+coincidence.
+
+As the ~likelihood~ tool already uses effectively an index to map the
+cluster indices for each chip to their respective event number, we've
+implemented this there (~--estimateRandomCoinc~) by rewriting the
+index.
+
+It is a good idea to also run it together with the ~--plotseptem~
+option to actually see some events and verify with your own eyes that
+the events are actually "correct" (i.e. not the original ones). You
+will note that there are many events that "clearly" look as if the
+bootstrapping is not working correctly, because they look way too much
+as if they are "obviously correlated". To give yourself a better sense
+that this is indeed just coincidence, you can run the tool with the
+~--estFixedEvents~ option, which bootstraps events using a fixed
+cluster in the center for each run. Checking out the event displays of
+those is a convincing affair that unfortunately random coincidences
+are even convincing to our own eyes.
+
+#+begin_src sh
+likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+           --h5out /tmp/lhood_2018_crAll_80eff_septem_fake.h5 \
+           --region crAll --cdlYear 2018 \
+           --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+           --septemveto --estimateRandomCoinc
+#+end_src
+
+which writes the file ~/tmp/septem_fake_veto.txt~, which for this case
+is found
+[[file:~/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem.txt]]
+
+Mean value of and fraction (from script in next section):
+File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem.txt
+	Mean output = 1674.705882352941
+	Fraction of events left = 0.8373529411764704
+
+From this file the method seems to remove typically a bit more than
+300 out of 2000 bootstrapped fake events. This seems to imply a random
+coincidence rate of about 17% (or effectively a reduction of further
+17% in efficiency / 17% increase in dead time).
+
+Of course this does not even include the line veto, which will drop it
+further. Before we combine both of them, let's run it with the line
+veto _alone_:
+#+begin_src sh
+likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+           --h5out /tmp/lhood_2018_crAll_80eff_line_fake.h5 \
+           --region crAll --cdlYear 2018 \
+           --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+           --lineveto --estimateRandomCoinc
+#+end_src
+this results in:
+[[~/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_line.txt]]
+
+Mean value of:
+File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_line.txt
+	Mean output = 1708.382352941177
+	Fraction of events left = 0.8541911764705882
+
+And finally both together:
+#+begin_src sh
+likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+           --h5out /tmp/lhood_2018_crAll_80eff_septem_line_fake.h5 \
+           --region crAll --cdlYear 2018 \
+           --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+           --septemveto --lineveto --estimateRandomCoinc
+#+end_src
+
+which generated the following output:
+[[file:~/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem_line.txt]]
+
+Mean value of: 
+File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem_line.txt
+	Mean output = 1573.676470588235
+	Fraction of events left = 0.7868382352941178
+
+This comes out to a fraction of 78.68% of the events left after
+running the vetoes on our bootstrapped fake events. Combining it with
+a software efficiency of ε = 80% the total combined efficiency then
+would be $ε_\text{total} = 0.8 · 0.7868 = 0.629, so about 63%.
+
+
+Finally now let's prepare some event displays for the case of using
+different center clusters and using the same ones. We run the
+~likelihood~ tool with the ~--plotSeptem~ option and stop the program
+after we have enough plots.
+In this context note the energy cut range for the ~--plotseptem~
+option (by default set to 5 keV), adjustable by the
+~PLOT_SEPTEM_E_CUTOFF~ environment variable.
+
+First with different center clusters:
+#+begin_src sh
+PLOT_SEPTEM_E_CUTOFF=10.0 likelihood \
+                          -f ~/CastData/data/DataRuns2018_Reco.h5 \
+                          --h5out /tmp/dummy.h5 \
+                          --region crAll --cdlYear 2018 \
+                          --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+                          --septemveto --lineveto --estimateRandomCoinc --plotseptem
+#+end_src
+which are wrapped up using ~pdfunite~ and stored in:
+[[file:Figs/background/estimateSeptemVetoRandomCoinc/fake_events_septem_line_veto_all_outer_events.pdf]]
+
+and now with fixed clusters:
+#+begin_src sh
+PLOT_SEPTEM_E_CUTOFF=10.0 likelihood \
+                          -f ~/CastData/data/DataRuns2018_Reco.h5 \
+                          --h5out /tmp/dummy.h5 \
+                          --region crAll --cdlYear 2018 \
+                          --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+                          --septemveto --lineveto --estimateRandomCoinc --estFixedEvent --plotseptem
+#+end_src
+(Note that the cluster that is chosen can be set using
+~SEPTEM_FAKE_FIXED_CLUSTER~ to a different index, by default it just
+uses ~5~).
+These events are here:
+[[file:Figs/background/estimateSeptemVetoRandomCoinc/fake_events_fixed_cluster_septem_line_veto_all_outer_events.pdf]]
+
+**** Run a whole bunch more cases
+
+The below is running now <2023-02-10 Fri 01:43>.
+
+#+begin_src nim :tangle code/analyze_line_veto_different_ecc_cutoff.nim
+import shell, strutils, os
+
+let vals = @[1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]
+let vetoes = @["--lineveto", "--lineveto --estimateRandomCoinc"]
+
+let cmd = """
+LINE_VETO_KIND=lvRegularNoHLC \
+    ECC_LINE_VETO_CUT=$# \
+    USE_REAL_LAYOUT=true \
+    likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+    --h5out /t/lhood_2018_crAll_80eff_line_ecc_cutof_$#_real_layout$#.h5 \
+    --region crAll --cdlYear 2018 \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 $#
+"""
+proc toName(veto: string): string = (if veto == "--lineveto": "" else: "_fake_events")
+for val in vals:
+  for veto in vetoes:
+    let final = cmd % [ $val, $val, toName(veto),
+                        $veto ]
+    let (res, err) = shellVerbose:
+      one:
+        cd /tmp
+        ($final)
+    writeFile("/tmp/logL_output_line_ecc_cutoff_$#_real_layout$#.txt" % [$val, toName(veto)], res)
+    let outpath = "/home/basti/org/resources/septem_veto_random_coincidences/autoGen/"
+    let outfile = "septem_veto_before_after_only_line_ecc_cutoff_$#_real_layout$#.txt" % [$val, toName(veto)]
+    copyFile("/tmp/septem_veto_before_after.txt", outpath / outfile)
+#+end_src
+
+
+**** Number of events removed in real usage
+
+As a reference let's quickly run the code also for the normal use case
+where we don't do any bootstrapping:
+
+#+begin_src sh
+likelihood \
+  -f ~/CastData/data/DataRuns2018_Reco.h5 \
+  --h5out /tmp/dummy_real.h5 \
+  --region crAll --cdlYear 2018 \
+  --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+  --septemveto
+#+end_src
+
+which results in
+[[file:~/org/resources/septem_veto_random_coincidences/septem_veto_before_after_only_septem.txt]]
+
+Next the line veto alone:
+#+begin_src sh
+likelihood \
+  -f ~/CastData/data/DataRuns2018_Reco.h5 \
+  --h5out /tmp/dummy_real.h5 \
+  --region crAll --cdlYear 2018 \
+  --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+  --lineveto
+#+end_src
+
+which results in:
+[[file:~/org/resources/septem_veto_random_coincidences/septem_veto_before_after_only_line.txt]]
+
+And finally both together:
+#+begin_src sh
+likelihood \
+  -f ~/CastData/data/DataRuns2018_Reco.h5 \
+  --h5out /tmp/dummy_real_2.h5 \
+  --region crAll --cdlYear 2018 \
+  --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+  --septemveto --lineveto 
+#+end_src
+
+and this finally yields:
+
+[[file:~/org/resources/septem_veto_random_coincidences/septem_veto_before_after_septem_line.txt]]
+
+
+Run the line veto with new features:
+- real septemboard layout
+- eccentricity cut off for tracks participating (ecc > 1.6)
+#+begin_src sh
+LINE_VETO_KIND=lvRegularNoHLC \
+    ECC_LINE_VETO_CUT=1.6 \
+    USE_REAL_LAYOUT=true \
+    likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+    --h5out /tmp/lhood_2018_crAll_80eff_line_ecc_cutof_1.6_real_layout.h5 \
+    --region crAll \
+    --cdlYear 2018 \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --lineveto
+#+end_src
+
+- [ ] *WE SHOULD REALLY LOOK INTO RUNNING THE LINE VETO ONLY USING
+  DIFFERENT ε CUTOFFS!*
+  -> Then compare the real application with the fake bootstrap
+  application and see if there is a sweet spot in terms of S/N.
+
+
+Let's calculate the fraction in all cases:
+#+begin_src nim :results drawer
+import strutils
+let files = @["/home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_only_septem.txt",
+              "/home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_only_line.txt",              
+              "/home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_septem_line.txt",
+              "/home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem.txt",
+              "/home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_line.txt",              
+              "/home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem_line.txt"]
+proc parseFile(fname: string): float =
+  let lines = fname.readFile.strip.splitLines()
+  var line = 0
+  var numRuns = 0
+  var outputs = 0
+  while line < lines.len:
+    if lines[line].len == 0: break
+    # parse input
+    # `Septem events before: 1069 (L,F) = (false, false)`
+    let input = lines[line].split(':')[1].strip.split()[0].parseInt
+    # parse output
+    # `Septem events after fake cut: 137`
+    inc line
+    let output = lines[line].split(':')[1].strip.parseInt
+    result += output.float / input.float
+    outputs += output
+    inc numRuns
+    inc line
+  echo "\tMean output = ", outputs.float / numRuns.float
+  result = result / numRuns.float
+
+for f in files:
+  echo "File: ", f
+  echo "\tFraction of events left = ", parseFile(f)  
+#+end_src
+
+#+RESULTS:
+:results:
+File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_only_septem.txt
+	Mean output = 129.6176470588235
+	Fraction of events left = 0.1482137110344671
+File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_only_line.txt
+	Mean output = 279.9117647058824
+	Fraction of events left = 0.3226213387764036
+File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_septem_line.txt
+	Mean output = 86.79411764705883
+	Fraction of events left = 0.09919758241761836
+File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem.txt
+	Mean output = 1674.705882352941
+	Fraction of events left = 0.8373529411764704
+File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_line.txt
+	Mean output = 1708.382352941177
+	Fraction of events left = 0.8541911764705882
+File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem_line.txt
+	Mean output = 1573.676470588235
+	Fraction of events left = 0.7868382352941178
+:end:
+
+So about 14.8% in the only septem case and 9.9% in the septem + line
+veto case.
+
+**** On the line veto without septem veto
+
+When dealing with the line veto without the septem veto there are
+multiple questions that come up of course.
+
+First of all, what is the cluster that you're actually targeting with
+our 'line'? The original cluster (OC) that passed lnL or a
+hypothetical larger cluster that was found during the septem event
+reconstruction (HLC).
+
+Assuming the former, the next question is whether we want to allow an
+HLC to veto our OC? In a naive implementation this is precisely what's
+happening, because in the regular use case of septem veto + line veto,
+the line veto would never have any effect anymore, as an HLC would
+almost certainly be vetoed by the septem veto! But without the septem
+veto, this decision is fully up to the line veto and the question
+becomes relevant.
+(we will implement a switch, maybe based on an environment variable or
+flag)
+
+In the latter case the tricky part is mainly just identifying the
+correct cluster which to test for in order to find its
+center. However, this needs to be implemented to avoid the HLC in the
+above mentioned case. With it done, we then have 3 different ways to
+do the line veto:
+
+1. 'regular' line veto. *Every* cluster checks the line to the center
+   cluster. Without septem veto this includes HLC checking OC.
+2. 'regular without HLC' line veto: Lines check the OC, but the HLC is
+   explicitly *not* considered.
+3. 'checking the HLC' line veto: In this case *all* clusters check the
+   center of the HLC.
+
+
+Thoughts on LvCheckHLC:
+- The radii around the new HLC become so large that in practice this
+  won't be a very good idea I think!
+- The ~lineVetoRejected~ part of the title seems to be "true" in too
+  many cases. What's going on here? See:
+  [[file:~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/septem_events_only_line_veto_check_hlc_not_final.pdf]]
+  for example "2882 and run 297" on page 31. Like huh?
+  My first guess is that the distance calculation is off somehow?
+  Similar page 33 and probably many more. Even worse is page 34: "event 30 and run 297"!
+  -> Yeah, as it turns out the problem was just that our
+  ~inRegionOfInterest~ check had become outdated due to our change of
+
+- [ ] Select example events for each of the 'line veto kinds' to
+  demonstrate their differences.
+
+OC: Original Cluster (passing lnL cut on center chip)
+HCL: Hypothetical Large Cluster (new cluster that OC is part of after
+septemboard reco)
+Regular:  
+[[~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/example_event_line_veto_regular.pdf]]
+is an example event in which we see the "regular" line veto without
+using the septem veto. Things to note:
+- the black circle shows the 'radius' of the OC, *not* the HLC
+- the OC is actually part of a HLC
+- because of this and because the HLC is a nice track, the event is
+  *vetoed*, not by the green track, but by the HLC itself!
+This wouldn't be a problem if we also used the septem veto, as this
+event would already be removed due to the septem veto!
+(More plots: [[file:~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/septem_events_only_line_veto_regular_fixed_check.pdf]])
+
+Regular no HLC:
+[[~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/example_event_line_veto_regular_noHLC.pdf]]
+The reference cluster to check for is still the regular OC with the
+same radius. And again the OC is part of an HLC. However, in contrast
+to the 'regular' case, this event is not vetoed. The green and purple
+clusters simply don't point at the black circle and the HLC itself is
+*not considered* here. This defines the 'regular no HLC' veto.
+[[~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/example_event_line_veto_regular_noHLC_close_hit.pdf]]
+is just an example of an event that proves the method works & a nice
+example of a cluster _barely_ hitting the radius of the OC.
+On the other hand though this is also a good example for why we should
+have an eccentricity cut on those clusters that we use to check for
+lines! The green cluster in this second event is not even remotely
+eccentric enough and indeed is actually part of the orange track!
+(More plots: [[file:~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/septem_events_only_line_veto_regular_noHCL_fixed_check.pdf]])
+
+- [ ] *IMPLEMENT ECCENTRICITY CUT ON THOSE CLUSTERS TAKING PART IN
+  LINE VETO!*
+
+Check HLC cluster:
+[[~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/example_event_line_veto_check_hlc_is_problematic.pdf]]
+Is an example event where we can see how ridiculous the "check HLC"
+veto kind can become. There is a very large cluster that the OC is
+actually part of (in red). But because of that the radius is *SO
+LARGE* that it even encapsulates a whole other cluster (that
+technically should ideally be part of the 'lower' of the tracks!).
+For this reason I don't think this method is particularly useful. In
+other events of course it looks more reasonable, but still. There
+probably isn't a good way to make this work reliably. In any case
+though, for events that are significant in size, they would almost
+certainly never pass any lnL cuts anyhow.
+(More plots: [[file:~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/septem_events_only_line_veto_check_hlc_fixed_check.pdf]])
+
+
+
+The following is a broken event. THe purple cluster is not used for
+line veto. Why?
+/t/problem_event_12435_run_297.pdf
+
+
+- [X] Implement a cutoff for the eccentricity that a cluster must have
+  in order to partake in the line veto. Currently this can only be set
+  via an environment variable (~ECC_LINE_VETO_CUT~). A good value is
+  around the 1.4 - 1.6 range I think (anything that rules out most
+  X-ray like clusters!)
+  
+- [X] *UNRELATED TO HERE, BUT STILL IMPORTANT*
+  [[~/org/Figs/statusAndProgress/example_line_veto_needs_chip_spacing.pdf]]
+  is an example event that shows we need to introduce the correct chip
+  spacing *for the line veto*. For the septem veto it's not very
+  important, because the distance is way more important than the angle
+  of how things match up. But for the line veto it's essential, as can
+  be seen in that example (note that it uses ~lvRegularNoHLC~ and no
+  septem veto, i.e. that's why the veto is false, despite the purple HLC of
+  course "hitting" the original cluster)
+  -> This has been implemented now. Activated (for now) via an
+  environment variable ~USE_REAL_LAYOUT~.
+  An example event for the spacing & the eccentricity cutoff is:
+  [[file:~/org/Figs/statusAndProgress/exampleEvents/example_event_with_line_spacing_and_ecc_cutoff.pdf]]
+  which was generated using:
+  #+begin_src sh
+LINE_VETO_KIND=lvRegularNoHLC \
+    ECC_LINE_VETO_CUT=1.6 \
+    USE_REAL_LAYOUT=true \
+    likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+    --h5out /tmp/lhood_2018_crAll_80eff_line.h5 \
+    --region crAll --cdlYear 2018 \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --lineveto --plotseptem
+  #+end_src
+  and then just extract it from the ~/plots/septemEvents~
+  directory. Note the definition of the environment variables like this!
+  
+**** Outdated: Estimation using subset of outer ring events
+
+The text here was written when we were still bootstrapping events only
+from the subset of *event numbers* that actually have a cluster that
+passes lnL on the center chip. This subset is of course biased even on
+the outer chip. Assuming that center clusters often come with activity
+on the outer chips, means there are less events representing those
+cases where there isn't even any activity in the center. This
+over represents activity on the outer chip.
+
+
+#+begin_src sh
+likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+           --h5out /tmp/lhood_2018_crAll_80eff_septem_fake.h5 \
+           --region crAll --cdlYear 2018 \
+           --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+           --septemveto --estimateRandomCoinc
+#+end_src
+
+which writes the file ~/tmp/septem_fake_veto.txt~, which for this case
+is found
+[[file:~/org/resources/septem_veto_random_coincidences/estimates_septem_veto_random_coincidences.txt]]
+
+Mean value of: 1522.61764706.
+
+From this file the method seems to remove typically a bit less than
+500 out of 2000 bootstrapped fake events. This seems to imply a random
+coincidence rate of almost 25% (or effectively a reduction of further
+25% in efficiency / 25% increase in dead time). Pretty scary stuff.
+
+Of course this does not even include the line veto, which will drop it
+further. Let's run that:
+#+begin_src sh
+likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+           --h5out /tmp/lhood_2018_crAll_80eff_septem_line_fake.h5 \
+           --region crAll --cdlYear 2018 \
+           --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+           --septemveto --lineveto --estimateRandomCoinc
+#+end_src
+
+which generated the following output:
+[[file:~/org/resources/septem_veto_random_coincidences/estimates_septem_line_veto_random_coincidences.txt]]
+
+Mean value of: 1373.70588235.
+
+This comes out to a fraction of 68.68% of the events left after
+running the vetoes on our bootstrapped fake events. Combining it with
+a software efficiency of ε = 80% the total combined efficiency then
+would be $ε_\text{total} = 0.8 · 0.6868 = 0.5494$, so about 55%.
+
 
 *** Final background rate using all vetoes
 
