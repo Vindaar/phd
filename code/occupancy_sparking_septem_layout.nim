@@ -26,9 +26,6 @@ type
     top: float
     bottom: float
 
-## XXX: replace the logic by one where we compute the relative positions on a
-## 1x1 ratio grid for each chip separately instead of rows!
-
 proc initSeptemRow(nChips: int, x_size, y_size, x_dist, x_offset, y_t_offset, y_b_offset, dist_to_row_below: float): SeptemRow =
   # this class implements a single row of chips of the septem board
   # nChips: number of chips in row
