@@ -16989,6 +16989,8 @@ These events are here:
 **** Run a whole bunch more cases
 
 The below is running now <2023-02-10 Fri 01:43>.
+Still running as of <2023-02-10 Fri 11:55>, damn this is slow.
+- [ ] *INVESTIGATE PERFORMANCE AFTER IT'S DONE*
 
 #+begin_src nim :tangle code/analyze_line_veto_different_ecc_cutoff.nim
 import shell, strutils, os
@@ -17018,8 +17020,17 @@ for val in vals:
     let outpath = "/home/basti/org/resources/septem_veto_random_coincidences/autoGen/"
     let outfile = "septem_veto_before_after_only_line_ecc_cutoff_$#_real_layout$#.txt" % [$val, toName(veto)]
     copyFile("/tmp/septem_veto_before_after.txt", outpath / outfile)
+    removeFile("/tmp/septem_veto_before_after.txt") # remove file to not append more and more to file
 #+end_src
 
+It has finally finished some time before <2023-02-10 Fri 20:02>. Holy
+moly how slow.
+
+We will keep the generated ~lhood_*~ and ~logL_output_*~ files in
+[[file:~/org/resources/septem_veto_random_coincidences/autoGen/]] together
+with the ~septem_veto_befor_after_*~ files.
+
+See the code in one of the next sections for the 'analysis' of this dataset.
 
 **** Number of events removed in real usage
 
@@ -17097,10 +17108,15 @@ let files = @["/home/basti/org/resources/septem_veto_random_coincidences/septem_
               "/home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_line.txt",              
               "/home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem_line.txt"]
 proc parseFile(fname: string): float =
-  let lines = fname.readFile.strip.splitLines()
+  var lines = fname.readFile.strip.splitLines()
   var line = 0
   var numRuns = 0
   var outputs = 0
+  # if file has more than 68 lines, remove everything before, as that means
+  # those were from a previous run
+  if lines.len > 68:
+    lines = lines[^68 .. ^1]
+    doAssert lines.len == 68
   while line < lines.len:
     if lines[line].len == 0: break
     # parse input
@@ -17117,9 +17133,44 @@ proc parseFile(fname: string): float =
   echo "\tMean output = ", outputs.float / numRuns.float
   result = result / numRuns.float
 
+# first the predefined files:  
 for f in files:
   echo "File: ", f
-  echo "\tFraction of events left = ", parseFile(f)  
+  echo "\tFraction of events left = ", parseFile(f)
+
+# now all files in our eccentricity cut run directory
+const path = "/home/basti/org/resources/septem_veto_random_coincidences/autoGen/"
+import std / [os, parseutils, strutils]
+import ggplotnim
+proc parseEccentricityCutoff(f: string): float =
+  let str = "ecc_cutoff_"
+  let startIdx = find(f, str) + str.len
+  var res = ""
+  let stopIdx = parseUntil(f, res, until = "_", start = startIdx)
+  echo res
+  result = parseFloat(res)
+  
+
+var df = newDataFrame()
+# first all real use cases
+for f in walkFiles(path / "septem_veto_before_after*real_layout.txt"):
+  echo "File: ", f
+  let frac = parseFile(f)
+  let eccCut = parseEccentricityCutoff(f)
+  echo "\tFraction of events left = ", frac
+  df.add toDf({"Type" : "Real", "ε_cut" : eccCut, "FractionPass" : frac})
+# now all fake bootstrapped events
+for f in walkFiles(path / "septem_veto_before_after*fake*.txt"):
+  echo "File: ", f
+  let frac = parseFile(f)
+  let eccCut = parseEccentricityCutoff(f)
+  echo "\tFraction of events left = ", frac
+  df.add toDf({"Type" : "Fake", "ε_cut" : eccCut, "FractionPass" : frac})
+
+ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
+  geom_point() +
+  ggtitle("Fraction of events passing line veto based on ε cutoff") + 
+  ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf")
 #+end_src
 
 #+RESULTS:
@@ -17142,10 +17193,96 @@ File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_befo
 File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem_line.txt
 	Mean output = 1573.676470588235
 	Fraction of events left = 0.7868382352941178
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.2_real_layout.txt
+	Mean output = 212.9117647058823
+1.2
+	Fraction of events left = 0.2448954822130143
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.3_real_layout.txt
+	Mean output = 259.0294117647059
+1.3
+	Fraction of events left = 0.298249122852029
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.4_real_layout.txt
+	Mean output = 300.7058823529412
+1.4
+	Fraction of events left = 0.3451600875595187
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.5_real_layout.txt
+	Mean output = 337.8529411764706
+1.5
+	Fraction of events left = 0.3870727086070281
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.6_real_layout.txt
+	Mean output = 371.4411764705882
+1.6
+	Fraction of events left = 0.4247809821112402
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.7_real_layout.txt
+	Mean output = 411.0882352941176
+1.7
+	Fraction of events left = 0.4701821795207916
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.8_real_layout.txt
+	Mean output = 437.2647058823529
+1.8
+	Fraction of events left = 0.4991429318121404
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.9_real_layout.txt
+	Mean output = 461.3529411764706
+1.9
+	Fraction of events left = 0.5272497289008488
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_2.0_real_layout.txt
+	Mean output = 484.2647058823529
+2.0
+	Fraction of events left = 0.5524607162801253
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.2_real_layout_fake_events.txt
+	Mean output = 873.7941176470588
+1.2
+	Fraction of events left = 0.4368970588235294
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.3_real_layout_fake_events.txt
+	Mean output = 1155.882352941177
+1.3
+	Fraction of events left = 0.5779411764705883
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.4_real_layout_fake_events.txt
+	Mean output = 1370.529411764706
+1.4
+	Fraction of events left = 0.6852647058823529
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.5_real_layout_fake_events.txt
+	Mean output = 1531.823529411765
+1.5
+	Fraction of events left = 0.7659117647058824
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.6_real_layout_fake_events.txt
+	Mean output = 1646.35294117647
+1.6
+	Fraction of events left = 0.8231764705882353
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.7_real_layout_fake_events.txt
+	Mean output = 1747.382352941177
+1.7
+	Fraction of events left = 0.8736911764705886
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.8_real_layout_fake_events.txt
+	Mean output = 1798.588235294118
+1.8
+	Fraction of events left = 0.8992941176470588
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.9_real_layout_fake_events.txt
+	Mean output = 1831.970588235294
+1.9
+	Fraction of events left = 0.9159852941176472
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_2.0_real_layout_fake_events.txt
+	Mean output = 1851.735294117647
+2.0
+	Fraction of events left = 0.9258676470588233
 :end:
 
+(about the first set of files)
 So about 14.8% in the only septem case and 9.9% in the septem + line
 veto case.
+
+
+(about the ε cut)
+#+CAPTION: Fraction of events in Run-3 data (green), which pass (i.e. not rejected) the line
+#+CAPTION: veto depending on the eccentricity cut used, which decides how eccentric a
+#+CAPTION: cluster needs to be in order to be used for the veto. The purple points are
+#+CAPTION: using fake bootstrapped data from real clusters passing the $\ln\mathcal{L}$ cut
+#+CAPTION: together with real outer GridPix data from *other* events. The fraction of events
+#+CAPTION: being vetoed in the latter is a measure for the random coincidence rate. 
+#+NAME: fig:background:fraction_passing_line_veto_ecc_cut
+[[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf]]
+
+
 
 **** On the line veto without septem veto
 
