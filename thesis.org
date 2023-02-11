@@ -16486,45 +16486,37 @@ actually be _an_ explanation.
 
 - [ ] *PUT THE IDEAS FROM THIS SECTION INTO AN 'OUTLOOK FOR BACKGROUND
   IMPROVEMENTS' SECTION?*
-  -> This could be a useful section to extend the ideas and provide 
+  -> This could be a useful section to extend the ideas and provide
 
-Beyond the usage of a likelihood method for geometrically X-ray like
-signals and scintillators to suppress X-ray fluorescence, another
-background is expected at helioscope experiments, in particular during
-solar tracking periods.
+While the FADC serves as a very useful trigger to read out events,
+decrease the likelihood of multiple independent clusters on the center
+chip and serves as a reference time for triggers of the scintillators,
+its time information can theoretically provide an additional veto.
 
 Even for an almost fully 4π coverage of scintillators around the
 detector setup, there is exactly one part that is never covered: the
-window of the detector towards the magnet bore.
+window of the detector towards the magnet bore. If a muon traverses
+through this path it is unlikely to be
+shielded. [fn:shielding_magnet_other_end] In particular during solar
+trackings of a helioscope experiment this should contribute a more
+significant fraction of background due to the distribution of muons at
+surface level following a roughly $\cos²(θ)$ distribution ($θ$ the
+zenith angle).
 
-The distribution of muons at surface level follow a roughly
-$\cos²(θ)$ distribution ($θ$ the zenith angle). During background
-taking times (i.e. magnet is horizontal), few muons are expected to
-reach the detector via the magnet bore ($θ \approx
-\SI{90}{\degree}$). During solar tracking the expected rate is
-expected to increase as the magnet is pointed upwards.
-
+- [ ] *THIS STUFF HAS ALREADY BEEN MENTIONED IN CONTEXT OF
+  SCINTILLATORS!*
+  -> Rewrite it! However, the scinti part does not explain it as well
+  and leaves out some pieces (transverse distribution along Z)
+  -> But explanation better in [[#sec:detector:scintillators]].
 Muons entering in such a way traverse the gas volume orthogonally to
-the readout plane. The projection on the readout is thus also roughly
+the readout plane. The projection on the readout is thus roughly
 spherical (same as an X-ray). The speed of the muon compared to the
 time scale of gas diffusion & clock speed of the readout electronic
 means that a muon ionizes the gas along its path effectively
 instantly.
 
-*TODO*: likely remove part 1, then rewrite text accordingly
 Two distinctions can be made between X-rays and such muons:
-1. (hard to detect) Each ionized electron undergoes diffusion along
-   its path to the readout plane. Those that are ionized far away from
-   the readout yield large diffusion, whereas those close to the
-   readout barely any. Assuming a constant ionization per distance,
-   this implies the muon track is formed like a cone. The electrons
-   arriving at the readout first are almost exactly on the muon path
-   and the later ones have more and more diffusion.  In a setup with a
-   GridPix3, which allows for ToA readout this effect may be visible
-   (yet to be tested). With the CAST GridPix1 setup, which used an
-   FADC for the induced grid signal, this is not visible, as there is
-   no relation between pixel positions and time information.
-2. The effective instant ionization implies that such an cluster has a
+1. The effective instant ionization implies that such an cluster has a
    'duration' that is equivalent to the drift velocity times the gas
    volume height. For a typical GridPix setup of height $\SI{3}{cm}$
    with an Argon/Isobutane gas mixture, this implies times of
@@ -16535,6 +16527,20 @@ Two distinctions can be made between X-rays and such muons:
    velocity.
    Thus, if the duration of a cluster is reasonably well known, this
    can easily separate the two types of clusters.
+2. Each ionized electron undergoes diffusion along its path to the
+   readout plane. For these tracks those electrons that are produced
+   far away from the readout yield large diffusion, whereas those
+   close to the readout very little. Assuming a constant ionization
+   per distance, this implies the muon track is formed like a
+   cone. The electrons arriving at the readout first are almost
+   exactly on the muon path and the later ones have more and more
+   diffusion. This latter effect is invisible in a setup using the
+   kind of FADC as used in this detector combined with the Timepix1
+   based GridPix, because the FADC records no spatial
+   information. However, a detector based on GridPixes using Timepix3,
+   which allows for ToA readout at the same time as ToT this effect
+   may be visible and for this reason is important to keep in mind for
+   the future.
 
 For a Argon/Isobutane mixture at $\SI{1050}{mbar}$ the energy
 deposition of most muons will be in the range of
@@ -16548,6 +16554,18 @@ be enough to remove such events. A discrimination based on time
 information yields a more certain result than a large scintillator
 might, which (even if to a small degree) does introduce random
 coincidences.
+
+- [ ] *FINISH EXPLANATION AND WHAT WE DO WITH FADC REGARDING VETO
+  WHEN SEEN 2018 DATA*
+
+[fn:shielding_magnet_other_end] Of course a properly calibrated
+scintillator behind the magnet should detect any muons traversing
+orthogonally and a detector with good time resolution can also detect
+such events in principle. Despite this, it might be a decent idea to
+include some lead shielding on the opposite end of future helioscopes
+to provide some shielding against muons coming from such a
+direction. In particular a future experiment that tracks the Sun to much higher
+altitudes will see such muon background significantly more ($\cos²(θ)$!).
 
 *** Outer GridPix as veto - 'septem veto'
 :PROPERTIES:
