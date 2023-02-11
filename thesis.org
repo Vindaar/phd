@@ -16729,9 +16729,9 @@ and thus makes the cluster *more* spherical.
 Normally the individual chips are treated as separate in the analysis
 chain. The 'septem veto' is the name for an additional veto step,
 which can be optionally applied to the center chip. With it, each
-cluster that is considered signal like based on the likelihood cut,
-will be analysed in a second step. The full event is reconstructed
-again from the beginning, but this time as an event covering *all* 7
+cluster that is considered signal-like based on the likelihood cut,
+will be analyzed in a second step. The full event is reconstructed
+again from the beginning, but this time as an event covering *all 7*
 chips. This allows the cluster finding algorithm to detect clusters
 beyond the center chip boundaries. After finding all clusters, the
 normal cluster reconstruction to compute all properties is done
@@ -16740,6 +16740,19 @@ value is computed and compared with the likelihood cut. If now all
 clusters whose center is on the central chip are considered
 background-like, the event is vetoed (because the initial signal-like
 cluster turned out to be part of a larger cluster).
+
+There is a slight complication here. The layout of the septemboard
+includes spacing, which is required to mount the chips. This spacing,
+in addition to dropping efficiency towards the edges of a GridPix mean
+significant information is lost. When reconstructing the full
+'septemboard events' this spacing would break the cluster finding
+algorithms, as the spacing might extend the distance over the cutoff
+criterion. For this reason the cluster finding algorithm is actually
+performed on a 'tight layout' where the spacing has been reduced to
+zero. For the calculation of the geometric properties of all found
+clusters however, the found clusters are transformed into the real
+septemboard coordinates including spacing. [fn:spacing_impact_rms]
+
 
 An example that shows two clusters on the center chip, one of which
 was initially interpreted as a signal like event before being vetoed
@@ -16758,6 +16771,7 @@ rejected.
 It is a good example, as it shows a cluster that is still relatively
 close to the center, and yet still 'connects' to another chip.
 
+- [ ] *POSSIBLY REPLACE THIS EVENT, CERTAINLY REPLACE PLOT*
 #+begin_center
 #+CAPTION: An example event showing all 7 GridPix of the CAST GridPix1 detector.
 #+CAPTION: The outlines are the boundaries of each chip (without the real spacing between
@@ -16787,6 +16801,15 @@ most important region for the solar axion flux for the axion-electron coupling.
 #+NAME: fig:background_rate_septem_veto
 [[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_scinti_veto_septem_veto.pdf]]
 #+end_center
+
+[fn:spacing_impact_rms] In principle this has a small impact on the
+calculation of the RMS of the cluster, if there is now a large gap
+between two parts of the 'same' cluster. However, as we don't really
+rely on the properties too much it is of no real concern. Technically
+we still calculate the $\ln\mathcal{L}$ of each cluster, but any
+cluster passing the $\ln\mathcal{L}$ cut before being added to a
+larger cluster almost certainly won't pass it afterwards. The slight
+bias in the RMS won't change that.
 
 *** 'Line veto' 
 
