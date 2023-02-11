@@ -7703,6 +7703,7 @@ proc getFadcData(fadcRun: ProcessedFadcRun, pedestal: seq[uint16]): Tensor[float
     noisy: newSeq[int](numFiles),
     minVals: newSeq[float](numFiles)
   )
+
   for i in 0 ..< fadcRun.eventNumber.len:
     let slice = fadcRun.rawFadcData[i, _].squeeze
     let data = slice.fadcFileToFadcData(
@@ -8774,7 +8775,15 @@ found at *CITE*
 
 - [ ] *ADD CITATION FOR* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_helpers.nim
 
-*** Signal baseline, rise time and fall time [/]                 :analysis:
+*** Signal baseline, rise time and fall time [0/4]               :analysis:
+
+- [ ] *REWRITE EXPLANATION BASED ON NOW USING:*
+  - instead of median + 0.1 · max: truncated mean of 30-th to 95-th
+    percentile
+  - instead of times to exact baseline, go to baseline - 2.5%
+  - do not compute threshold based on individual value, but on a
+    moving average of window size 5
+  - Also: use all registers and do not set first two registers to 0!
 
 Assuming a singular event is recorded with the FADC, the main
 properties of interest of the resulting signal pulse are the signal
@@ -11935,6 +11944,10 @@ important:
 #+CAPTION: as expected.
 #+NAME: fig:fadc:mean_rise_times_55fe_fadc_run2
 [[~/phd/Figs/FADC/fadc_mean_riseTime_run2.pdf]]
+
+- [ ] *MOST LIKELY THESE RISE/FALL TIME PLOTS CHANGE SIGNIFICANTLY NOW
+  AFTER HAVING CHANGED FADC BASELINE & THRESHOLD CALCS!!!*
+
 
 - [X] show spectra (already one shown in previous chapter!)
 - [ ] show 55Fe spectrum of FADC data
