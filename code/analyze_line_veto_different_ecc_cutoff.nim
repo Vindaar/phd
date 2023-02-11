@@ -25,3 +25,4 @@ for val in vals:
     let outpath = "/home/basti/org/resources/septem_veto_random_coincidences/autoGen/"
     let outfile = "septem_veto_before_after_only_line_ecc_cutoff_$#_real_layout$#.txt" % [$val, toName(veto)]
     copyFile("/tmp/septem_veto_before_after.txt", outpath / outfile)
+    removeFile("/tmp/septem_veto_before_after.txt") # remove file to not append more and more to file
