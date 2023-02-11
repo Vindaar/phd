@@ -8792,34 +8792,51 @@ baseline and based on that the rise and fall time.
 Computing the position of the baseline is generally a non trivial
 problem, as a priori the position, width and number of signals in the
 spectrum is unknown. A reasonable expectation though is that the
-majority of points in a signal should lie close to the baseline. As
-such a somewhat empirical way to compute the baseline $B$ was chosen to
+majority of points in a signal should lie close to the baseline, as
+the fraction of the FADC window covered by a signal is typically less
+than a quarter. As such a somewhat empirical way to compute the
+baseline $B$ was chosen using a biased truncated mean 
 
 \[
-B = \text{median}(S) + 0.1 · \max(S)
+B = \text{mean}_{30^{\text{th}}}^{95^{\text{th}}}(S)  %\text{median}(S) + 0.1 · \max(S)
 \]
 
-that is, adding \SI{10}{\percent} of the maximum value of the spectrum
-$S$ to the median of it. Note that the signals are _negative_ and so
-the maximum represents some noise outlier to positive values. The
-median by itself is generally slightly too low. An optimal solution
+between the $30^{\text{th}}$ and $95^{\text{th}}$ percentile of the
+data. The bias is intended to remove the impact of the negative signal
+amplitude and remove the worst positive outliers. An optimal solution
 would perform a rigorous peak finding for a signal pulse, remove those
-points and compute the mean of the remainder of the points. 
+points and compute the mean of the remainder of the
+points. [fn:baseline_ideas]
 
 Once the baseline is defined it can be used to determine both the rise
-and the fall time. These are simply computed as the number of
+and the fall time. These are generally computed based on the number of
+registers between the minimum of the signal and some threshold
+slightly below the baseline in order to reduce the effect of local
+noise variations. While configurable, the default value is
+
+\[
+c = B - 0.025 · \left| B - \text{min}(S)\right|
+\]
+
+$\SI{2.5}{\%}$ of the difference between the baseline $B$ and the
+minimum value of the spectrum $S$ from the baseline. The position
+where the threshold is crossed in registers is based on where the
+_simple moving average_ (of window size 5) crosses $c$. The number of
 registers between the register of the minimum of the spectrum
-$\text{argmin}(S)$ and the baseline on the left (rise time) and right
-(fall time). [fn:naming_rise_fall] From the difference in number of
+$\text{argmin}(S)$ and $c$ defines the rise time (left) and fall time
+(right). [fn:naming_rise_fall] From the difference in number of
 registers, the time can be computed.
 
 - [ ] *CHANGE FADC CODE TO NOT USE MIN, BUT MEAN OF N POINTS AROUND
   MIN? -> ALREADY USES MEAN OF N-th PERCENTILE AROUND ARGMIN*
-
-Together, a reconstructed FADC spectrum including indications for
-baseline, rise and fall time as well as the minimum is shown in
+  -> but only for the minimum *amplitude* and not the minimum value
+  that is used to start the search around it! In the vast majority of
+  cases this shouldn't matter, but for some weird spectrum shapes it
+  might. 
+  
+A reconstructed FADC spectrum including indications for baseline, rise
+and fall time as well as the minimum is shown in
 fig. [[fig:reco:fadc_reco_example]].
-
 
 #+CAPTION: Example of a fully reconstructed FADC spectrum from a \SI{5.9}{keV} X-ray
 #+CAPTION: recorded with the Septemboard detector during a calibration run. *REPLACE PLOT
@@ -8834,6 +8851,16 @@ fig. [[fig:reco:fadc_reco_example]].
 context of a negative pulse is slightly confusing. Rise time refers to
 the _negative rise_ towards the minimum of the pulse and the fall time
 to the time to return-to-baseline.
+
+[fn:baseline_ideas] Aside from performing peak fitting (which is
+difficult and requires understanding of the expected signal shapes)
+another approach might be a local linear smoothing (e.g. a
+Savitzky-Golay filter with polynomial of order 1) in a suitable window
+range. The result would be a much more stable spectrum. This could
+then be used to compute the numerical derivative from which all those
+intervals with a slope smaller than some epsilon provide the dataset
+from which to compute the mean. The tricky aspect would be choice of
+window size and the behavior in very noisy events.
 
 *** Generate the FADC baseline plot [/]                          :noexport:
 
