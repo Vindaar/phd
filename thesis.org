@@ -11973,7 +11973,10 @@ important:
   Best use a CNN with 1D input data & kernel!
   
 
-**** Generate plots... [/]                                      :noexport:
+**** Generate plots of FADC fall & rise times and FADC \cefe spectrum [/] :noexport:
+:PROPERTIES:
+:CUSTOM_ID: sec:reco:fadc_rise_fall_plots
+:END:
 
 - [ ] *REPLACE THE ORIGIN OF THIS PLOT*
 
@@ -15680,6 +15683,10 @@ features and discuss how they can improve the background rate.
 - [ ] What to do with raw data vs. applying rate?
 - [ ] how to treat different chip regions?
 
+- [ ] Try to replace the binning of reference distributions and
+  therefore logL distribution by a KDE.
+
+*** Generate plots for interpolated likelihood distribution and logL variable correlations :noexport:
 
 - [X] Create a plot of the likelihood distributions interpolated over
   all energies!
@@ -15723,8 +15730,6 @@ features and discuss how they can improve the background rate.
     full KDE and avoids the issue of discreteness in the fracRms
     distribution. Even though the interpolated values probably
     correspond to something as if the fracRms distribution _had_ been smooth.
-- [ ] Try to replace the binning of reference distributions and
-  therefore logL distribution by a KDE.
   
 #+begin_src nim :tangle code/generate_interp_likelihood.nim
 import std / [os, strutils]
@@ -16569,6 +16574,9 @@ altitudes will see such muon background significantly more ($\cos²(θ)$!).
 
 **** Generate plots comparing rise/fall time of X-rays and background :noexport:
 
+- [X] fixed the issue causing the flat offset / background
+
+
 This is somewhat of a continuation of
 sec. [[#sec:reco:fadc_rise_fall_plots]].
 
@@ -16696,7 +16704,7 @@ when isMainModule:
 :END:
 
 The final hardware feature that is used to improve the background
-rate, is the outer ring of GridPix. The size of large clusters is a
+rate is the outer ring of GridPixes. The size of large clusters is a
 significant fraction of a single GridPix. This means that depending on
 the cluster center position, parts of the cluster may very well be
 outside of the chip. While the most important area of the chip is the
@@ -16713,6 +16721,7 @@ particular the corners. The closer the cluster center is to the edges,
 the higher the chance that parts of it are cut off. In particular,
 cutting of from a track like cluster most likely *reduces* the length
 and thus makes the cluster *more* spherical.
+- [ ] *REFER TO THE IMAGE OF CLUSTER CENTERS FIRST INTRODUCED IN LNL STUFF*
 
 #+begin_center
 #+CAPTION: Each point represents the cluster center of a single cluster that passes
@@ -16948,7 +16957,7 @@ File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_befo
 This comes out to a fraction of 78.68% of the events left after
 running the vetoes on our bootstrapped fake events. Combining it with
 a software efficiency of ε = 80% the total combined efficiency then
-would be $ε_\text{total} = 0.8 · 0.7868 = 0.629, so about 63%.
+would be $ε_\text{total} = 0.8 · 0.7868 = 0.629$, so about 63%.
 
 
 Finally now let's prepare some event displays for the case of using
