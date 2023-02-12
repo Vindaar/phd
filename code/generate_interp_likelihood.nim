@@ -79,7 +79,8 @@ ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentri
   ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
   ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc_ecc_smaller_2_5.pdf")
 
-  
+
+from std/sequtils import concat
 # now generate the plot of the logL values for all cleaned CDL data. We will compare the
 # case of no morphing with the linear morphing case
 proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) = 
@@ -105,10 +106,15 @@ proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) =
       let E = lineEnergies[v]
       energies.add E
       lastE = E
+    echo energies.len, " vs ", cuts.len
+    cuts.add cuts[^1]
     let dfCuts = toDf({energies, cuts, "Morphing?" : $cutVals.kind})
     result = (dfCuts, dfMorph)
   of mkLinear:
-    let dfCuts = toDf({"energies" : cutVals.cutEnergies, "cuts" : cutVals.cutValues, "Morphing?" : $cutVals.kind})
+    let energies = concat(@[0.0], cutVals.cutEnergies, @[20.0])
+    let cutsSeq = cutVals.cutValues.toSeq1D
+    let cuts = concat(@[cutVals.cutValues[0]], cutsSeq, @[cutsSeq[^1]])
+    let dfCuts = toDf({"energies" : energies, "cuts" : cuts, "Morphing?" : $cutVals.kind})
     result = (dfCuts, dfMorph)
 
 var dfMorph = newDataFrame()

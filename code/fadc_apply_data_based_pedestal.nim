@@ -71,6 +71,7 @@ proc getFadcData(fadcRun: ProcessedFadcRun, pedestal: seq[uint16]): Tensor[float
     noisy: newSeq[int](numFiles),
     minVals: newSeq[float](numFiles)
   )
+
   for i in 0 ..< fadcRun.eventNumber.len:
     let slice = fadcRun.rawFadcData[i, _].squeeze
     let data = slice.fadcFileToFadcData(
