@@ -56,6 +56,29 @@ ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsT
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
   ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv.pdf")
+
+ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc.pdf")
+
+
+df = df.filter(f{`eccentricity` < 2.5})
+ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac_ecc_smaller_2_5.pdf")
+
+ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv_ecc_smaller_2_5.pdf")
+
+ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc_ecc_smaller_2_5.pdf")
+
   
 # now generate the plot of the logL values for all cleaned CDL data. We will compare the
 # case of no morphing with the linear morphing case
