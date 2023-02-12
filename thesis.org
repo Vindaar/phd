@@ -17356,6 +17356,13 @@ ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
   geom_point() +
   ggtitle("Fraction of events passing line veto based on ε cutoff") + 
   ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf")
+
+df = df.spread("Type", "FractionPass").mutate(f{float: "Ratio" ~ `Real` / `Fake`})
+ggplot(df, aes("ε_cut", "Ratio")) +
+  geom_point() +
+  ggtitle("Ratio of fraction of events passing line veto real/fake based on ε cutoff") + 
+  ggsave("Figs/background/estimateSeptemVetoRandomCoinc/ratio_real_fake_fraction_passing_line_veto_ecc_cut.pdf")
+  
 #+end_src
 
 #+RESULTS:
@@ -17468,7 +17475,10 @@ veto case.
 #+NAME: fig:background:fraction_passing_line_veto_ecc_cut
 [[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf]]
 
-
+#+CAPTION: Ratio of the events passing in the real line veto application to the fake data application
+#+CAPTION: for different $ε_{\text{cut}}$ cutoff values. The optimum seems to be in the range of
+#+CAPTION: 1.4 to 1.5
+[[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/ratio_real_fake_fraction_passing_line_veto_ecc_cut.pdf]]
 
 **** On the line veto without septem veto
 
