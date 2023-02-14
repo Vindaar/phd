@@ -106,8 +106,8 @@ proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) =
       let E = lineEnergies[v]
       energies.add E
       lastE = E
+    cuts.add cuts[^1] # add last value again to draw line up 
     echo energies.len, " vs ", cuts.len
-    cuts.add cuts[^1]
     let dfCuts = toDf({energies, cuts, "Morphing?" : $cutVals.kind})
     result = (dfCuts, dfMorph)
   of mkLinear:

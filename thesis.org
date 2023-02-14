@@ -15973,7 +15973,7 @@ In total we'll want the following files:
     - FADC veto
     - septem veto
     - line veto
-- [ ] *USE ~createAllLikelihoodCombinations~ for it after short
+- [X] *USE ~createAllLikelihoodCombinations~ for it after short
   rewrite*
 
 In order to generate all likelihood output files (after having
@@ -16032,7 +16032,8 @@ We will run this over night <2023-02-13 Mon 00:37> now using the new
 default eccentricity cutoff for the line veto of 1.5 (motivated by the
 ratio of fraction passing real over fake!) as well as the
 ~lvRegularNoHLC~ line veto kind (although this should not matter, as
-we won't use the line veto without the septem veto!).
+we won't use the line veto without the septem veto!). The files are
+now in [[file:resources/background/autoGen/]].
 
 - [ ] *WARNING: THE GENERATED FILES HERE STILL USE OUR HACKED IN
   CHANGED NUMBER OF BINS FOR THE REFERENCE DISTRIBUTIONS!*
@@ -16817,7 +16818,6 @@ proc read(fname, typ: string): DataFrame =
     if typ == "calib":
       let xrayRefCuts = getXrayCleaningCuts()
       let cut = xrayRefCuts["Mn-Cr-12kV"]
-      echo "cut ", cut
       let grp = h5f[(recoBase() & $run / "chip_3").grp_str]
       let passIdx = cutOnProperties(
         h5f,
@@ -16832,11 +16832,7 @@ proc read(fname, typ: string): DataFrame =
       let dfChip = h5f.readRunDsets(run, chipDsets = some((chip: 3, dsets: @["eventNumber"])))
       let allEvNums = dfChip["eventNumber", int]
       let evNums = passIdx.mapIt(allEvNums[it]).toSet
-      echo evNums
-      echo "BEFORE FILTER ", df
       df = df.filter(f{int: `eventNumber` in evNums})
-      echo "AFTER FILTER ", df
-    #df = df.rename(df.getKeys.mapIt(f{it.stripPrefix("fadc/") <- it}))
     df["runNumber"] = run
     result.add df
   result["Type"] = typ
@@ -16859,7 +16855,6 @@ proc main(back, calib: string, year: int) =
 when isMainModule:
   import cligen
   dispatch main
-
 #+end_src
 
 - *EXPLANATION FOR FLAT BACKGROUND IN RISE / FALL TIME:*
@@ -17195,7 +17190,7 @@ These events are here:
 
 The below is running now <2023-02-10 Fri 01:43>.
 Still running as of <2023-02-10 Fri 11:55>, damn this is slow.
-- [ ] *INVESTIGATE PERFORMANCE AFTER IT'S DONE*
+- [X] *INVESTIGATE PERFORMANCE AFTER IT'S DONE*
 
 #+begin_src nim :tangle code/analyze_line_veto_different_ecc_cutoff.nim
 import shell, strutils, os
@@ -17235,7 +17230,10 @@ We will keep the generated ~lhood_*~ and ~logL_output_*~ files in
 [[file:~/org/resources/septem_veto_random_coincidences/autoGen/]] together
 with the ~septem_veto_befor_after_*~ files.
 
-See the code in one of the next sections for the 'analysis' of this dataset.
+See the code in one of the next sections for the 'analysis' of this
+dataset.
+
+- [ ] *RERUN THE ABOVE AFTER LINE VETO BUGFIX & PERF IMPROVEMENTS*
 
 **** Number of events removed in real usage
 
@@ -17500,6 +17498,29 @@ veto case.
 #+CAPTION: 1.4 to 1.5
 [[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/ratio_real_fake_fraction_passing_line_veto_ecc_cut.pdf]]
 
+
+***** Investigate significantly lower fake event fraction passing 
+*UPDATE*: <2023-02-13 Mon 16:50>
+
+The numbers visible in the plot are *MUCH LOWER* than what we had
+previously after implementing the line veto alone!!
+
+Let's run with the equivalent of the old parameters:
+#+begin_src sh
+LINE_VETO_KIND=lvRegular \
+    ECC_LINE_VETO_CUT=1.0 \
+    USE_REAL_LAYOUT=false \
+    likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+    --h5out /t/lhood_2018_crAll_80eff_line_ecc_cutof_1.0_tight_layout_lvRegular.h5 \
+    --region crAll --cdlYear 2018 \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 --lineveto --estimateRandomCoinc
+#+end_src
+
+
+-> As it turns out this was a bug in our logic that decides which
+cluster is of interest to the line veto. We accidentally always deemed
+it interesting, if the original cluster was on its own... Fixed now.
+
 **** On the line veto without septem veto
 
 When dealing with the line veto without the septem veto there are
@@ -17579,9 +17600,6 @@ have an eccentricity cut on those clusters that we use to check for
 lines! The green cluster in this second event is not even remotely
 eccentric enough and indeed is actually part of the orange track!
 (More plots: [[file:~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/septem_events_only_line_veto_regular_noHCL_fixed_check.pdf]])
-
-- [ ] *IMPLEMENT ECCENTRICITY CUT ON THOSE CLUSTERS TAKING PART IN
-  LINE VETO!*
 
 Check HLC cluster:
 [[~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/example_event_line_veto_check_hlc_is_problematic.pdf]]
