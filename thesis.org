@@ -16765,19 +16765,27 @@ proc stripPrefix(s, p: string): string =
   result = s
   result.removePrefix(p)
 
-from ginger import transparent    
 proc plotFallTimeRiseTime(df: DataFrame, suffix: string) =
   ## Given a full run of FADC data, create the
   ## Note: it may be sensible to compute a truncated mean instead
   proc plotDset(dset: string) =
+
+    let dfCalib = df.filter(f{`Type` == "calib"})
+    echo "============================== ", dset, " =============================="
+    echo "Percentiles:"
+    echo "\t 1-th: ", dfCalib[dset, float].percentile(1)
+    echo "\t 5-th: ", dfCalib[dset, float].percentile(5)
+    echo "\t95-th: ", dfCalib[dset, float].percentile(95)
+    echo "\t99-th: ", dfCalib[dset, float].percentile(99)    
+    
     ggplot(df, aes(dset, fill = "Type")) + 
       geom_histogram(position = "identity", bins = 100, hdKind = hdOutline, alpha = 0.7) +
       ggtitle(&"Comparison of FADC signal {dset} in ⁵⁵Fe vs background data in $#" % suffix) +
-      ggsave(&"Figs/FADC/fadc_{dset}_signal_vs_background_$#.pdf" % suffix)
+      ggsave(&"Figs/statusAndProgress/FADC/fadc_{dset}_signal_vs_background_$#.pdf" % suffix)
     ggplot(df, aes(dset, fill = "Type")) + 
       geom_density(normalize = true, alpha = 0.7, adjust = 2.0) +
       ggtitle(&"Comparison of FADC signal {dset} in ⁵⁵Fe vs background data in $#" % suffix) +
-      ggsave(&"Figs/FADC/fadc_{dset}_kde_signal_vs_background_$#.pdf" % suffix)
+      ggsave(&"Figs/statusAndProgress/FADC/fadc_{dset}_kde_signal_vs_background_$#.pdf" % suffix)
   plotDset("fallTime")
   plotDset("riseTime")
 
