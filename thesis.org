@@ -16725,15 +16725,7 @@ coincidences.
 - [ ] *FINISH EXPLANATION AND WHAT WE DO WITH FADC REGARDING VETO
   WHEN SEEN 2018 DATA*
 
-- [ ] *FOUND A HUGE BUG IN THE FADC VETO CODE*
-  -> The veto did not exclude anything *ABOVE* a cut... The comparison
-  was wrong. In particular in that light look at the veto properly
-  again. I put in some ~reasonable numbers for the cuts somewhere
-  between 1-th (99-th) and 5-th (95-th) percentile of the data.
-- [ ] Investigate FADC rise and fall time now that it is fixed based
-  on:
-  - FADC settings in Run-2
-  - energy of X-rays (calibration mainly, escape & photo)  
+- [ ] *FIX LINK IN FOOTNOTE!!*    
 
 [fn:shielding_magnet_other_end] Of course a properly calibrated
 scintillator behind the magnet should detect any muons traversing
@@ -16744,10 +16736,49 @@ to provide some shielding against muons coming from such a
 direction. In particular a future experiment that tracks the Sun to much higher
 altitudes will see such muon background significantly more ($\cos²(θ)$!).
 
+**** TODOs for above section [/] :noexport:
+
+- [X] *FOUND A HUGE BUG IN THE FADC VETO CODE*
+  -> The veto did not exclude anything *ABOVE* a cut... The comparison
+  was wrong. In particular in that light look at the veto properly
+  again. I put in some ~reasonable numbers for the cuts somewhere
+  between 1-th (99-th) and 5-th (95-th) percentile of the data.
+
+
+- [ ] Investigate FADC rise and fall time now that it is fixed based
+  on:
+  - [ ] FADC settings in Run-2
+    -> There seems to be a pretty small effect generally as the
+    difference is not very big between the two datasets. However, we
+    haven't actually looked at the data split by setting. 
+  - [X] energy of X-rays (calibration mainly, escape & photo)
+    - [ ] Look into CDL data!  
+
 **** Generate plots comparing rise/fall time of X-rays and background :noexport:
 
-- [X] fixed the issue causing the flat offset / background
+- [ ] *MOVE THE CODE CURRENTLY IN STATUS TO TPA!*
 
+Use our FADC plotting tool to generate the plots for the rise and fall
+time with a custom upper end
+#+begin_src sh
+cd /tmp
+ntangle ~/org/Doc/StatusAndProgress.org && nim c -d:danger /t/fadc_rise_fall_signal_vs_background
+./fadc_rise_fall_signal_vs_background \
+    -c ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    -b ~/CastData/data/DataRuns2017_Reco.h5 \
+    --year 2017 \
+    --riseTimeHigh 600
+./fadc_rise_fall_signal_vs_background \
+    -c ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    -b ~/CastData/data/DataRuns2018_Reco.h5 \
+    --year 2018 \
+    --riseTimeHigh 600
+#+end_src
+
+- [ ] *RE GENERATE PLOT FOR 2018 WHEN SEPTEM+LINE VETO APPLICATION DONE!*
+
+
+- [X] fixed the issue causing the flat offset / background
 
 This is somewhat of a continuation of
 sec. [[#sec:reco:fadc_rise_fall_plots]].
