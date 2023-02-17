@@ -16662,10 +16662,106 @@ actually be _an_ explanation.
 
 
 *** FADC / ToA as veto [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:background:fadc_veto
+:END:
 
 - [ ] *PUT THE IDEAS FROM THIS SECTION INTO AN 'OUTLOOK FOR BACKGROUND
   IMPROVEMENTS' SECTION?*
   -> This could be a useful section to extend the ideas and provide
+
+- [ ] create an appendix for FADC veto information? Could put stuff
+  like
+  - rise time vs skewness
+  - rise time KDE, fall time KDE
+  - explanation of noise stuff?
+
+- [ ] big question is still energy dependence of rise time, fall time
+  -> There is not much. Lower energy events *going by escape peak
+  clusters* are _slightly_ wider, but that is quite possibly just a
+  side effect of having worse data.
+
+- [ ] *REALLY MAKE SURE ALL THE POINTS MENTIONED HERE ARE ACTUALLY
+  EXPLAINED PROPERLY BEFORE FOR EXAMPLE*.
+
+As previously mentioned in [[#sec:detector:fadc]] the FADC not only serves
+as a trigger for the readout and reference time for the scintillator
+triggers. Because of its high temporal resolution it can in principle
+act as a veto of its own by providing insight into the longitudinal
+cluster shape.
+
+A cluster drifting towards the readout and finally through the grid
+induces a voltage measured by the FADC. As such the length of the FADC
+signal is a function of the time it takes the cluster to drift
+'through' the grid. The kind of orthogonal muon events that should be
+triggered by the SiPM as explained in the previous section
+[[#sec:background:scinti_veto]] for example should also be detectable by
+the FADC in the form of longer signal rise times than typical in an X-ray.
+
+From gaseous detector physics theory we can estimate the typical sizes
+and therefore expected signal rise times for an X-ray if we know the
+gas of our detector. For the $\SI{1050}{mbar}$, $97.7/2.3\,\%$
+$\ce{Ar}/\ce{iC4H10}$ mixture used with a $\SI{500}{V.cm⁻¹}$ drift
+field in the Septemboard detector at CAST, the relevant parameters
+are [fn:gas_properties_pyboltz]
+- drift velocity $v = \SI{2.28}{cm.μs⁻¹}$
+- transverse diffusion $σ_T = \SI{670}{μm.cm^{1/2}}$
+- longitudinal diffusion $σ_L = \SI{270}{μm.cm^{1/2}}$ 
+As the detector has a height of $\SI{3}{cm}$ we expect a typical X-ray
+interacting close to the cathode to form a cluster of
+$\sqrt{\SI{3}{cm}}·\SI{670}{μm.cm^{1/2}} \approx \SI{1160.5}{μm}$
+transverse extent and $\sqrt{\SI{3}{cm}}·\SI{270}{μm.cm^{1/2}} \approx
+\SI{467.5}{μm}$ in longitudinal size, where this corresponds to a $1
+σ$ environment. To get a measure for the cluster size a rough estimate
+for an upper limit is a $3 σ$ distance away from the center in each
+direction. For the transverse size it leads to about $\SI{7}{mm}$ and
+in longitudinal about $\SI{2.8}{mm}$. From the CAST \cefe data we see
+a peak at around $\SI{6}{mm}$ of transverse cluster size along the
+longer axis, which matches well with our expectation (see appendix
+[[#sec:appendix:fadc_veto_empirical_cluster_length]] for the length
+data). From the drift velocity and the upper bound on the longitudinal
+cluster size we can therefore also compute an equivalent effective
+drift time _seen by the FADC_. This comes out to be
+
+\[
+t = \SI{2.8}{mm} / \SI{22.8}{mm.μs⁻¹} = \SI{0.123}{μs}
+\]
+
+or about $\SI{123}{ns}$, equivalent to $\SI{123}{clock\;cycle}$ of the
+FADC clock. Alternatively, we can compute the most likely rise time
+based on the known peak of the cluster length, $\SI{6}{mm}$ and the
+ratio of the transverse and longitudinal diffusion, $σ_T / σ_L \approx
+2.5$ to end up at a time of $\frac{\SI{6}{mm}}{2.5} ·
+\SI{22.8}{mm.μs⁻¹} = \SI{105}{ns}$.
+
+Fig. [[fig:background:fadc_rise_time]] shows the measured rise time for
+the \cefe calibration data compared to the background
+data. Satisfyingly, the peak of the calibration rise time is indeed
+pretty close to $\SI{100}{clock;cycles}$. At the same time we see that
+the background data has a much longer tail towards higher clock cycle
+counts, as one expects. What this implies is that we can perform a cut
+on the rise time and be certain we do not remove any real X-rays
+beyond a certain point (at least up to a certain probability).
+
+#+CAPTION:
+#+NAME: fig:background:fadc_rise_time
+[[~/phd/Figs/FADC/fadc_riseTime_kde_signal_vs_background_run3.pdf]]
+
+For the signal decay time we do a simpler cut, with less of a physical
+motivation. As the decay time is highly dependent on the resistance
+and capacitance properties of the grid, high voltage and FADC readout
+chain, we simply introduce a conservative cut in such a range as to
+avoid cutting away any range that contains X-ray data. Any background
+removed is just a bonus.
+
+- [ ] *INSERT FADC RISE TIME EXAMPLE*
+
+- [ ] *GET THE CORRECT NUMBERS FROM SIMULATION*
+  -> In particular provide a few more words about how it compares to
+  the detected lengths of the calibration clusters, which drops above
+  6 significantly. Once final number easier to write this.
+- [ ] *INSERT APPENDIX WITH LENGTH PLOTS*
+
 
 While the FADC serves as a very useful trigger to read out events,
 decrease the likelihood of multiple independent clusters on the center
@@ -16747,6 +16843,14 @@ include some lead shielding on the opposite end of future helioscopes
 to provide some shielding against muons coming from such a
 direction. In particular a future experiment that tracks the Sun to much higher
 altitudes will see such muon background significantly more ($\cos²(θ)$!).
+
+[fn:gas_properties_pyboltz] The properties were calculated with
+~PyBoltz~, a Cython conversion of Magboltz. The code can be found
+here:
+https://github.com/Vindaar/TimepixAnalysis/Tools/septemboardCastGasPyboltz
+Further the numbers used here are for a temperature of $\SI{26}{°C}$,
+slightly above room temperature due to the heating of the Septemboard
+itself into the gas.
 
 **** TODOs for above section [/] :noexport:
 
