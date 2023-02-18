@@ -17396,7 +17396,7 @@ import shell, strutils, os
 #let vals = @[1.0, 1.1]
 let vals = @[1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]
 #let vetoes = @["--lineveto", "--lineveto --estimateRandomCoinc"]
-let vetoes = @["--septemveto --lineveto"] # , "--septemveto --lineveto --estimateRandomCoinc"]
+let vetoes = @["--septemveto --lineveto", "--septemveto --lineveto --estimateRandomCoinc"]
 
 ## XXX: ADD CODE DIFFERENTIATING SEPTEM + LINE & LINE ONLY IN NAMES AS WELL!
 #const lineVeto = "lvRegular"
@@ -17559,37 +17559,54 @@ proc parseEccentricityCutoff(f: string): float =
   let stopIdx = parseUntil(f, res, until = "_", start = startIdx)
   echo res
   result = parseFloat(res)
-  
+
+proc determineType(f: string): string =
+  ## I'm sorry for this. :) 
+  if "only_line_ecc" in f:
+    result.add "Line"
+  elif "septem_line_ecc" in f:
+    result.add "SeptemLine"
+  else:
+    doAssert false, "What? " & $f
+  if "lvRegularNoHLC" in f:
+    result.add "lvRegularNoHLC"
+  elif "lvRegular" in f:
+    result.add "lvRegular"
+  else: # also lvRegularNoHLC, could use else above, but clearer this way. Files 
+    result.add "lvRegularNoHLC" # without veto kind are older, therefore no HLC
+  if "_fake_events.txt" in f:
+    result.add "Fake"
+  else:
+    result.add "Real"
 
 var df = newDataFrame()
-# first all real use cases
-for f in walkFiles(path / "septem_veto_before_after*real_layout.txt"):
+# walk all files and determine the type
+for f in walkFiles(path / "septem_veto_before_after*.txt"):
   echo "File: ", f
   let frac = parseFile(f)
   let eccCut = parseEccentricityCutoff(f)
+  let typ = determineType(f)
   echo "\tFraction of events left = ", frac
-  df.add toDf({"Type" : "Real", "ε_cut" : eccCut, "FractionPass" : frac})
-# now all fake bootstrapped events
-for f in walkFiles(path / "septem_veto_before_after*fake*.txt"):
-  echo "File: ", f
-  let frac = parseFile(f)
-  let eccCut = parseEccentricityCutoff(f)
-  echo "\tFraction of events left = ", frac
-  df.add toDf({"Type" : "Fake", "ε_cut" : eccCut, "FractionPass" : frac})
+  df.add toDf({"Type" : typ, "ε_cut" : eccCut, "FractionPass" : frac})
 
+df.writeCsv("/tmp/test_csv_fractions.csv")  
 ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
   geom_point() +
-  ggtitle("Fraction of events passing line veto based on ε cutoff") + 
-  ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf")
-  #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf")
+  ggtitle("Fraction of events passing line veto based on ε cutoff") +
+  margin(right = 9) + 
+  ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf",
+         width = 800, height = 480)
+  #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf", width = 800, height = 480)
 
-df = df.spread("Type", "FractionPass").mutate(f{float: "Ratio" ~ `Real` / `Fake`})
-ggplot(df, aes("ε_cut", "Ratio")) +
-  geom_point() +
-  ggtitle("Ratio of fraction of events passing line veto real/fake based on ε cutoff") + 
-  ggsave("Figs/background/estimateSeptemVetoRandomCoinc/ratio_real_fake_fraction_passing_line_veto_ecc_cut.pdf")
-  #ggsave("/tmp/ratio_real_fake_fraction_passing_line_veto_ecc_cut.pdf")
-  
+## XXX: we probably don't need the following plot for the real data, as the eccentricity
+## cut does not cause anything to get worse at lower values. Real improvement better than
+## fake coincidence rate.
+#df = df.spread("Type", "FractionPass").mutate(f{float: "Ratio" ~ `Real` / `Fake`})
+#ggplot(df, aes("ε_cut", "Ratio")) +
+#  geom_point() +
+#  ggtitle("Ratio of fraction of events passing line veto real/fake based on ε cutoff") + 
+#  #ggsave("Figs/background/estimateSeptemVetoRandomCoinc/ratio_real_fake_fraction_passing_line_veto_ecc_cut.pdf")
+#  ggsave("/tmp/ratio_real_fake_fraction_passing_line_veto_ecc_cut.pdf")
 #+end_src
 
 #+RESULTS:
@@ -17612,78 +17629,270 @@ File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_befo
 File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem_line.txt
 	Mean output = 1573.676470588235
 	Fraction of events left = 0.7868382352941178
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.0_lvRegular_real_layout.txt
+	Mean output = 193.3235294117647
+1.0
+	Fraction of events left = 0.2213710741366144
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.0_lvRegular_real_layout_fake_events.txt
+	Mean output = 1720.35294117647
+1.0
+	Fraction of events left = 0.8601764705882353
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.0_real_layout.txt
+	Mean output = 610.3529411764706
+1.0
+	Fraction of events left = 0.690861976619262
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.0_real_layout_fake_events.txt
+	Mean output = 1834.0
+1.0
+	Fraction of events left = 0.9170000000000001
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.1_lvRegular_real_layout.txt
+	Mean output = 232.0294117647059
+1.1
+	Fraction of events left = 0.2658086845496733
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.1_lvRegular_real_layout_fake_events.txt
+	Mean output = 1740.617647058823
+1.1
+	Fraction of events left = 0.8703088235294119
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.1_real_layout.txt
+	Mean output = 625.7058823529412
+1.1
+	Fraction of events left = 0.7079137296253094
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.1_real_layout_fake_events.txt
+	Mean output = 1848.705882352941
+1.1
+	Fraction of events left = 0.9243529411764705
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.2_lvRegular_real_layout.txt
+	Mean output = 267.1176470588235
+1.2
+	Fraction of events left = 0.3053849927113212
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.2_lvRegular_real_layout_fake_events.txt
+	Mean output = 1758.85294117647
+1.2
+	Fraction of events left = 0.8794264705882355
 File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.2_real_layout.txt
-	Mean output = 212.9117647058823
+	Mean output = 639.1176470588235
 1.2
-	Fraction of events left = 0.2448954822130143
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.3_real_layout.txt
-	Mean output = 259.0294117647059
-1.3
-	Fraction of events left = 0.298249122852029
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.4_real_layout.txt
-	Mean output = 300.7058823529412
-1.4
-	Fraction of events left = 0.3451600875595187
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.5_real_layout.txt
-	Mean output = 337.8529411764706
-1.5
-	Fraction of events left = 0.3870727086070281
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.6_real_layout.txt
-	Mean output = 371.4411764705882
-1.6
-	Fraction of events left = 0.4247809821112402
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.7_real_layout.txt
-	Mean output = 411.0882352941176
-1.7
-	Fraction of events left = 0.4701821795207916
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.8_real_layout.txt
-	Mean output = 437.2647058823529
-1.8
-	Fraction of events left = 0.4991429318121404
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.9_real_layout.txt
-	Mean output = 461.3529411764706
-1.9
-	Fraction of events left = 0.5272497289008488
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_2.0_real_layout.txt
-	Mean output = 484.2647058823529
-2.0
-	Fraction of events left = 0.5524607162801253
+	Fraction of events left = 0.7226167303002865
 File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.2_real_layout_fake_events.txt
-	Mean output = 873.7941176470588
+	Mean output = 1861.35294117647
 1.2
-	Fraction of events left = 0.4368970588235294
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.3_real_layout_fake_events.txt
-	Mean output = 1155.882352941177
+	Fraction of events left = 0.9306764705882352
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.3_lvRegular_real_layout.txt
+	Mean output = 301.6764705882353
 1.3
-	Fraction of events left = 0.5779411764705883
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.4_real_layout_fake_events.txt
-	Mean output = 1370.529411764706
+	Fraction of events left = 0.3454157240905325
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.3_lvRegular_real_layout_fake_events.txt
+	Mean output = 1774.705882352941
+1.3
+	Fraction of events left = 0.8873529411764708
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.3_real_layout.txt
+	Mean output = 653.2941176470588
+1.3
+	Fraction of events left = 0.7387264181345766
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.3_real_layout_fake_events.txt
+	Mean output = 1872.294117647059
+1.3
+	Fraction of events left = 0.936147058823529
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.4_lvRegular_real_layout.txt
+	Mean output = 334.2058823529412
 1.4
-	Fraction of events left = 0.6852647058823529
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.5_real_layout_fake_events.txt
-	Mean output = 1531.823529411765
+	Fraction of events left = 0.3819518596290207
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.4_lvRegular_real_layout_fake_events.txt
+	Mean output = 1789.264705882353
+1.4
+	Fraction of events left = 0.8946323529411766
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.4_real_layout.txt
+	Mean output = 666.0588235294117
+1.4
+	Fraction of events left = 0.7536070159704531
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.4_real_layout_fake_events.txt
+	Mean output = 1881.705882352941
+1.4
+	Fraction of events left = 0.9408529411764706
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.5_lvRegular_real_layout.txt
+	Mean output = 364.1764705882353
 1.5
-	Fraction of events left = 0.7659117647058824
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.6_real_layout_fake_events.txt
-	Mean output = 1646.35294117647
+	Fraction of events left = 0.4153775763953914
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.5_lvRegular_real_layout_fake_events.txt
+	Mean output = 1802.088235294118
+1.5
+	Fraction of events left = 0.9010441176470585
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.5_real_layout.txt
+	Mean output = 677.5294117647059
+1.5
+	Fraction of events left = 0.7674234785251015
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.5_real_layout_fake_events.txt
+	Mean output = 1890.5
+1.5
+	Fraction of events left = 0.9452499999999998
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.6_lvRegular_real_layout.txt
+	Mean output = 392.3235294117647
 1.6
-	Fraction of events left = 0.8231764705882353
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.7_real_layout_fake_events.txt
-	Mean output = 1747.382352941177
+	Fraction of events left = 0.4465736613326556
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.6_lvRegular_real_layout_fake_events.txt
+	Mean output = 1815.176470588235
+1.6
+	Fraction of events left = 0.9075882352941179
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.6_real_layout.txt
+	Mean output = 688.5
+1.6
+	Fraction of events left = 0.7796355368668799
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.6_real_layout_fake_events.txt
+	Mean output = 1898.676470588235
+1.6
+	Fraction of events left = 0.9493382352941175
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.7_lvRegular_real_layout.txt
+	Mean output = 417.6470588235294
 1.7
-	Fraction of events left = 0.8736911764705886
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.8_real_layout_fake_events.txt
-	Mean output = 1798.588235294118
+	Fraction of events left = 0.4752128436833915
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.7_lvRegular_real_layout_fake_events.txt
+	Mean output = 1827.294117647059
+1.7
+	Fraction of events left = 0.9136470588235294
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.7_real_layout.txt
+	Mean output = 698.7058823529412
+1.7
+	Fraction of events left = 0.7910478112082485
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.7_real_layout_fake_events.txt
+	Mean output = 1905.764705882353
+1.7
+	Fraction of events left = 0.9528823529411765
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.8_lvRegular_real_layout.txt
+	Mean output = 441.5882352941176
 1.8
-	Fraction of events left = 0.8992941176470588
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.9_real_layout_fake_events.txt
-	Mean output = 1831.970588235294
+	Fraction of events left = 0.5016402435934247
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.8_lvRegular_real_layout_fake_events.txt
+	Mean output = 1838.558823529412
+1.8
+	Fraction of events left = 0.9192794117647062
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.8_real_layout.txt
+	Mean output = 708.9705882352941
+1.8
+	Fraction of events left = 0.8019786834892618
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.8_real_layout_fake_events.txt
+	Mean output = 1912.382352941177
+1.8
+	Fraction of events left = 0.956191176470588
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.9_lvRegular_real_layout.txt
+	Mean output = 464.5294117647059
 1.9
-	Fraction of events left = 0.9159852941176472
-File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_2.0_real_layout_fake_events.txt
-	Mean output = 1851.735294117647
+	Fraction of events left = 0.5285049560731815
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.9_lvRegular_real_layout_fake_events.txt
+	Mean output = 1848.5
+1.9
+	Fraction of events left = 0.9242499999999999
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.9_real_layout.txt
+	Mean output = 718.7352941176471
+1.9
+	Fraction of events left = 0.813399253104142
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_1.9_real_layout_fake_events.txt
+	Mean output = 1917.411764705882
+1.9
+	Fraction of events left = 0.9587058823529411
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_2.0_lvRegular_real_layout.txt
+	Mean output = 487.0294117647059
 2.0
-	Fraction of events left = 0.9258676470588233
+	Fraction of events left = 0.5530554088044699
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_2.0_lvRegular_real_layout_fake_events.txt
+	Mean output = 1857.176470588235
+2.0
+	Fraction of events left = 0.9285882352941174
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_2.0_real_layout.txt
+	Mean output = 727.7352941176471
+2.0
+	Fraction of events left = 0.8236163260425843
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_only_line_ecc_cutoff_2.0_real_layout_fake_events.txt
+	Mean output = 1922.911764705882
+2.0
+	Fraction of events left = 0.961455882352941
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.0_lvRegularNoHLC_real_layout.txt
+	Mean output = 121.5
+1.0
+	Fraction of events left = 0.1372058585160641
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.0_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1465.029411764706
+1.0
+	Fraction of events left = 0.732514705882353
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.1_lvRegularNoHLC_real_layout.txt
+	Mean output = 126.8529411764706
+1.1
+	Fraction of events left = 0.1432055704027816
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.1_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1474.617647058823
+1.1
+	Fraction of events left = 0.7373088235294116
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.2_lvRegularNoHLC_real_layout.txt
+	Mean output = 132.5588235294118
+1.2
+	Fraction of events left = 0.1493895345390256
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.2_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1483.029411764706
+1.2
+	Fraction of events left = 0.7415147058823529
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.3_lvRegularNoHLC_real_layout.txt
+	Mean output = 137.4705882352941
+1.3
+	Fraction of events left = 0.1551740781879195
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.3_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1489.85294117647
+1.3
+	Fraction of events left = 0.7449264705882355
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.4_lvRegularNoHLC_real_layout.txt
+	Mean output = 142.1176470588235
+1.4
+	Fraction of events left = 0.1605457614353923
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.4_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1496.323529411765
+1.4
+	Fraction of events left = 0.7481617647058825
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.5_lvRegularNoHLC_real_layout.txt
+	Mean output = 146.2058823529412
+1.5
+	Fraction of events left = 0.1649403056130558
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.5_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1502.470588235294
+1.5
+	Fraction of events left = 0.751235294117647
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.6_lvRegularNoHLC_real_layout.txt
+	Mean output = 150.2058823529412
+1.6
+	Fraction of events left = 0.1691456138087639
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.6_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1507.970588235294
+1.6
+	Fraction of events left = 0.7539852941176468
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.7_lvRegularNoHLC_real_layout.txt
+	Mean output = 153.8529411764706
+1.7
+	Fraction of events left = 0.173365478568938
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.7_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1512.705882352941
+1.7
+	Fraction of events left = 0.7563529411764706
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.8_lvRegularNoHLC_real_layout.txt
+	Mean output = 157.0
+1.8
+	Fraction of events left = 0.1769774598234377
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.8_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1517.058823529412
+1.8
+	Fraction of events left = 0.7585294117647059
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.9_lvRegularNoHLC_real_layout.txt
+	Mean output = 160.5
+1.9
+	Fraction of events left = 0.1813640335371248
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_1.9_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1520.323529411765
+1.9
+	Fraction of events left = 0.7601617647058823
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_2.0_lvRegularNoHLC_real_layout.txt
+	Mean output = 163.2647058823529
+2.0
+	Fraction of events left = 0.1846827506979342
+File: /home/basti/org/resources/septem_veto_random_coincidences/autoGen/septem_veto_before_after_septem_line_ecc_cutoff_2.0_lvRegularNoHLC_real_layout_fake_events.txt
+	Mean output = 1523.470588235294
+2.0
+	Fraction of events left = 0.761735294117647
 :end:
 
 (about the first set of files)
@@ -17706,7 +17915,6 @@ veto case.
 #+CAPTION: for different $ε_{\text{cut}}$ cutoff values. The optimum seems to be in the range of
 #+CAPTION: 1.4 to 1.5
 [[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/ratio_real_fake_fraction_passing_line_veto_ecc_cut.pdf]]
-
 
 ***** Investigate significantly lower fake event fraction passing 
 *UPDATE*: <2023-02-13 Mon 16:50>

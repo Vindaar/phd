@@ -4,7 +4,7 @@ import shell, strutils, os
 #let vals = @[1.0, 1.1]
 let vals = @[1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]
 #let vetoes = @["--lineveto", "--lineveto --estimateRandomCoinc"]
-let vetoes = @["--septemveto --lineveto"] # , "--septemveto --lineveto --estimateRandomCoinc"]
+let vetoes = @["--septemveto --lineveto", "--septemveto --lineveto --estimateRandomCoinc"]
 
 ## XXX: ADD CODE DIFFERENTIATING SEPTEM + LINE & LINE ONLY IN NAMES AS WELL!
 #const lineVeto = "lvRegular"
