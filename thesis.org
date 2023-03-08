@@ -8818,27 +8818,30 @@ Once the baseline is defined it can be used to determine both the rise
 and the fall time. These are generally computed based on the number of
 registers between the minimum of the signal and some threshold
 slightly below the baseline in order to reduce the effect of local
-noise variations. While configurable, the default value is
+noise variations. While configurable, the default value of the
+threshold $c_B$ ($B$ for baseline) is
 
 \[
-c = B - 0.025 · \left| B - \text{min}(S)\right|
+c_B = B - 0.1 · \left| B - \text{min}(S)\right|,
 \]
 
-$\SI{2.5}{\%}$ of the difference between the baseline $B$ and the
-minimum value of the spectrum $S$ from the baseline. The position
-where the threshold is crossed in registers is based on where the
-_simple moving average_ (of window size 5) crosses $c$. The number of
-registers between the register of the minimum of the spectrum
-$\text{argmin}(S)$ and $c$ defines the rise time (left) and fall time
-(right). [fn:naming_rise_fall] From the difference in number of
-registers, the time can be computed.
+$\SI{10}{\%}$ of the difference between the baseline $B$ and the
+minimum value of the spectrum $S$ from the baseline. Similarly for the
+end of the rise time / beginning of the fall time a similar offset is
+used. In this case the threshold value $c_P$ ($P$ for peak) is defined
+as
 
-- [ ] *CHANGE FADC CODE TO NOT USE MIN, BUT MEAN OF N POINTS AROUND
-  MIN? -> ALREADY USES MEAN OF N-th PERCENTILE AROUND ARGMIN*
-  -> but only for the minimum *amplitude* and not the minimum value
-  that is used to start the search around it! In the vast majority of
-  cases this shouldn't matter, but for some weird spectrum shapes it
-  might. 
+\[
+c_P = \text{min}(S) + 0.025 · \left| B - \text{min}(S)\right|,
+\]
+
+so $\SI{2.5}{\%}$ of the amplitude above the minimum of the signal
+$S$. The position where either threshold is crossed in registers is
+based on where the _simple moving average_ (of window size 5) crosses
+$c_B$ and $c_P$. The number of registers between $c_B$ and $c_P$
+defines the rise time (left of the peak) and fall time (right of the
+peak). [fn:naming_rise_fall] At the used clock frequency of
+$\SI{1}{GHz}$ each register corresponds to $\SI{1}{ns}$ in time.
   
 A reconstructed FADC spectrum including indications for baseline, rise
 and fall time as well as the minimum is shown in
@@ -8846,11 +8849,16 @@ fig. [[fig:reco:fadc_reco_example]].
 
 #+CAPTION: Example of a fully reconstructed FADC spectrum from a \SI{5.9}{keV} X-ray
 #+CAPTION: recorded with the Septemboard detector during a calibration run. *REPLACE PLOT
-#+CAPTION: BY PRETTY VERSION*.
+#+CAPTION: BY PRETTY VERSION. ADD EXPLANATIONS OF START AND END POSITIONS OF RISE TIME*.
+#+CAPTION: REFER BY $c_B$ and $c_p$.
 #+NAME: fig:reco:fadc_reco_example
-[[~/phd/Figs/FADC/fadc_spectrum_baseline_1533.pdf]]
+[[~/phd/Figs/FADC/example_fadc_spectrum_reason_for_offsets.pdf]]
 
 - [ ] *REPLACE THE PLOT!*
+  -> The plot we use now is quite nice as it allows us to explain
+  multiple aspects at the same time. Just need to decide what the plot
+  should look like and prettify it (probably don't want the properties
+  and InGrid event next to it!)
 - [ ] *ADD CITATION FOR* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_analysis.nim  
 
 [fn:naming_rise_fall] The naming of the rise and fall time in the
