@@ -18136,6 +18136,15 @@ somewhere in the middle.
 #+NAME: fig:background:fraction_passing_line_veto_ecc_cut
 [[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf]]
 
+**** TODOs for section above                                    :noexport:
+
+- [X] Not really a TODO, but interestingly the # of background
+  clusters on the whole chip with all vetoes increased from 9500
+  (ref. IAXO TDR plots) to ~10400 or so. But the number in the gold
+  region dropped significantly from ~500 to ~350! The changes are many
+  that were made in the mean time. All aspects of the method underwent
+  changes and fixes, so this is not really a surprise.
+
 **** Generate plot for background rate with all vetoes          :noexport:
 
 Let's generate the plot:
@@ -18794,7 +18803,9 @@ likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
 
 which writes the file ~/tmp/septem_fake_veto.txt~, which for this case
 is found
-[[file:~/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem.txt]]
+[[file:~/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem_old.txt]]
+(note: updated numbers from latest state of code is the same file
+without ~_old~ suffix)
 
 Mean value of and fraction (from script in next section):
 File: /home/basti/org/resources/septem_veto_random_coincidences/septem_veto_before_after_fake_events_septem.txt
@@ -18914,7 +18925,6 @@ may not be beneficial, compared to a higher dead time.
 #+CAPTION: being vetoed in the latter is a measure for the random coincidence rate. 
 #+NAME: fig:background:fraction_passing_line_veto_ecc_cut
 [[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf]]
-
 
 
 **** Run a whole bunch more cases
@@ -19829,6 +19839,9 @@ Maybe separate, maybe merged into the other sections.
 
 ** Understanding background rate
 
+- [ ] this is already partially handled in the summary section of
+  background with all vetoes.
+  
 3 keV is easy to understand.
 
 8-9 keV is more difficult. 
@@ -19843,6 +19856,9 @@ StatusAndProgress. Maybe shortened version will make it.
   
 - [ ] *IF NOT ALREADY DONE, ESTIMATE THE EXPECTED RATE OF MUONS UNDER
   THOSE ANGLES NUMERICALLY*
+  -> so that we have a total number of muons we should have detected
+  e.g. orthogonally in the CAST data, e.g. to compare with SiPM
+  trigger rates etc.
 
 * Limit calculation                                                :Analysis:
 #+LATEX: \minitoc
@@ -19878,7 +19894,9 @@ seems useful anyway.
 :CUSTOM_ID: sec:stats:limit_method
 :END:
 
-
+- [ ] *REPHRASE ALL THIS AS TO FIRST DERIVE THE ORIGIN OF THE NATURE
+  VERSION, THEN PRESENT OUR EXTENSION* 
+ 
 We will now present a limit calculation method that is based on the
 limit presented in \cite{cast_nature}, but extended to provide a fully
 generic limit calculation method that requires no restriction to
@@ -20005,6 +20023,10 @@ the constant $-\ln b_i$ term:
 where the sum now runs over each candidate instead of the abstract
 "channels".
 
+
+- [ ] *CLARIFY THE MEANING OF EACH TERM AND WHAT IT CORRESPONDS TO
+  BETTER!*
+  
 With an understanding of where the formula comes from, we can more
 safely make statements about what the shape of the logL curve is going
 to look like. For that it is important to realize that:
@@ -20012,7 +20034,8 @@ to look like. For that it is important to realize that:
 - $s_i$ depends on $g_{ae²}$, $\vec{x}$ and the cluster energy $E$,
   $s_i(g_{ae²}, \vec{x}, E)$
 - $b_i$ only depends on the cluster energy $E$
-
+- [ ] *IN OUR APPLICATION $b_i$ DOES DEPEND ON POSITION AS WELL!*
+  
 This means $b_i$ for all intents and purposes is constant under a
 change of the coupling constant for a fixed set of candidate
 clusters. For a scan over $\ln\mathcal{L}$ this is precisely given.
@@ -20072,6 +20095,7 @@ at which point the 1σ width (based on logL_max - 0.5) yield a width
 that leads to a physical limit at 0 (due to the gaussian CDF being
 essentially 1 many σ away from the center).
 
+- [ ] *THIS IS NOT A PROBLEM ANYMORE*
 Given our statistics of $O(30)$ candidates in our tracking time, this
 presents a problem. For toy experiments there is a high chance of
 getting precisely that problem. A large number of candidates (70 - 90%
@@ -20079,6 +20103,12 @@ maybe) will be outside the sensitive region, resulting in no good way
 to determine the limit.
 
 **** Further expl: Bayes integral *AFTER MAIL FROM IGOR ON <2021-10-03 Sun>*:
+
+- [ ] *THIS SHOULD BE REPHRASED (how it relates to final version /
+  application of nature version) AND BECOME NOEXPORT*
+  -> This is very useful knowledge, because otherwise one gets as
+  confused as I did!
+
 
 Essentially saying that we simply integrate over and demand:
 
