@@ -3181,7 +3181,8 @@ What effects affect diffusion?
 
 Random walk + a force acting on particles.
 
-*COMPUTE USING PYBOLTZ: https://github.com/UTA-REST/PyBoltz*
+- [X] *COMPUTE USING PYBOLTZ: https://github.com/UTA-REST/PyBoltz*
+  -> DONE
 
 *** Drift velocity
 
@@ -3229,7 +3230,8 @@ Boltzmann equation:
 
 *BOLTZMANN EQUATION: https://en.wikipedia.org/wiki/Boltzmann_equation*
 
-*COMPUTE USING PYBOLTZ: https://github.com/UTA-REST/PyBoltz*
+- [X] *COMPUTE USING PYBOLTZ: https://github.com/UTA-REST/PyBoltz*
+  -> DONE
 
 *** Gas amplification, avalanche effect [0/1]
 :PROPERTIES:
@@ -7672,8 +7674,8 @@ proc plotIdx(df: DataFrame, fadcData: Tensor[float], idx: int) =
   ggplot(df, aes("x", "data")) +
     geom_line() +
     geom_point(color = color(0.1, 0.1, 0.1, 0.1)) +
-    geom_line(aes = aes("x", "baseline"),
-              color = "blue") +
+    geom_line(data = df.head(2), aes = aes("x", "baseline"),
+                     color = "blue") +
     geom_line(data = df.head(2), aes = aes("xminX", "xminY"),
                      color = "red") +
     geom_line(data = df.head(2), aes = aes("riseStart", "xminY"),
@@ -8784,14 +8786,10 @@ found at *CITE*
 - [ ] *ADD CITATION FOR* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_helpers.nim
 
 *** Signal baseline, rise time and fall time [0/4]               :analysis:
+:PROPERTIES:
+:CUSTOM_ID: sec:fadc:definition_baseline_rise_fall_time
+:END:
 
-- [ ] *REWRITE EXPLANATION BASED ON NOW USING:*
-  - instead of median + 0.1 · max: truncated mean of 30-th to 95-th
-    percentile
-  - instead of times to exact baseline, go to baseline - 2.5%
-  - do not compute threshold based on individual value, but on a
-    moving average of window size 5
-  - Also: use all registers and do not set first two registers to 0!
 
 Assuming a singular event is recorded with the FADC, the main
 properties of interest of the resulting signal pulse are the signal
@@ -8869,6 +8867,26 @@ then be used to compute the numerical derivative from which all those
 intervals with a slope smaller than some epsilon provide the dataset
 from which to compute the mean. The tricky aspect would be choice of
 window size and the behavior in very noisy events.
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [X] *CHANGE FADC CODE TO NOT USE MIN, BUT MEAN OF N POINTS AROUND
+  MIN? -> ALREADY USES MEAN OF N-th PERCENTILE AROUND ARGMIN*
+  -> but only for the minimum *amplitude* and not the minimum value
+  that is used to start the search around it! In the vast majority of
+  cases this shouldn't matter, but for some weird spectrum shapes it
+  might.
+  -> This has since been implemented.
+
+- [X] *REWRITE EXPLANATION BASED ON NOW USING:*
+  - instead of median + 0.1 · max: truncated mean of 30-th to 95-th
+    percentile
+  - instead of times to exact baseline, go to baseline - 2.5%
+  - do not compute threshold based on individual value, but on a
+    moving average of window size 5
+- [ ] Also: use all registers and do not set first two registers to
+  0!
+  -> Need to check if this is still mentioned somewhere!
 
 *** Generate the FADC baseline plot [/]                          :noexport:
 
@@ -11961,6 +11979,7 @@ problems:
 What is it that we actually want from this? Aside from providing an
 *overview* the FADC is barely used for anything. Things that are
 important:
+- [ ] *barely used not true anymore!* Important veto.
 - [ ] *trigger threshold* deduced from calibration data / real data
   - [ ] define how to compute & compute for every run, plot trigger
     threshold vs run (correlate with settings)
@@ -12252,7 +12271,6 @@ Gain: 10x""" ]
 when isMainModule:
   import cligen
   dispatch main
-
 #+end_src
 
 - [X] *REGENERATE FADC DATA IN H5 FILES ON ~voidRipper~*
@@ -15654,7 +15672,7 @@ distributed. See appendix [[#sec:appendix:background_occupancy]] for
 occupancy maps of the raw data.
 
 - [ ] *ADD OCCUPANCIES TO APPENDIX!*
-
+- [ ] *FIX TITLE OF SUPPRESSION PLOT*
 \begin{figure}[htbp]
   \centering
   \begin{subfigure}{0.5\linewidth}
