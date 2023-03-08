@@ -15744,8 +15744,9 @@ the solar axion search is extracted.
 #+CAPTION: $ε_{\text{eff}} = \SI{80}{\percent}$ using the GridPix1 CAST 2017/18 data
 #+CAPTION: without the application of any vetoes.
 #+NAME: fig:background_rate_eff80_only_center
-[[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_no_vetoes.pdf]]
+[[~/phd/Figs/background/background_rate_crGold_no_vetoes.pdf]]
 #+end_center
+- [ ] *THINK ABOUT IF EVERYTHING IS CORRECT HERE* (see below)
 
 The background rate presented here uses a comparable technique to one
 presented in \cite{krieger2018search} and shown in
@@ -15754,6 +15755,12 @@ features. As a result the absolute background rate is comparable. The
 Septemboard detector of this thesis however has multiple aspects to
 improve on this. We will now go through the different detector
 features and discuss how they can improve the background rate.
+
+The average background rate between $\SIrange{0}{8}{keV}$ in this case
+is $\SI{2.07e-5}{keV⁻¹.cm⁻².s⁻¹}$. 
+#+begin_comment
+Integrated background rate/keV in range: 0.0 .. 8.0: 2.0739e-05 keV⁻¹·cm⁻²·s⁻¹
+#+end_comment
 
 - [ ] *!!!*
 
@@ -15770,6 +15777,28 @@ features and discuss how they can improve the background rate.
 
 - [ ] Try to replace the binning of reference distributions and
   therefore logL distribution by a KDE.
+
+
+Note on background rate plot above:
+- [ ] *THINK ABOUT THIS*
+-> The slight 'cut' at 3 keV is stronger than the I would have thought
+and in particular different from the background rate in
+[[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_no_vetoes.pdf]]
+which is much more "smooth" than the new background.
+My first intuition was that this was due to some bug related to the
+morphing kind. I.e. we weren't actually using the linear
+morphing. However, I've computed the equivalent crGold, no vetoes case
+[[~/org/Figs/statusAndProgress/backgroundRates/background_rate_crGold_no_morphing_no_vetoes.pdf]]
+and there _is_ a difference. So it's definitely related to the
+morphing.
+
+The other big difference between the old plot is the revamp of the
+calculation of the reference distributions (no use of the X-ray
+reference H5 file anymore) and obviously the fitting by run + adapted
+charge cuts for the reference data.
+I *ASSUME* that this is the reason we get the new results. *However*
+we should somehow maybe perform some check that we're actually doing
+everything correctly?
 
 *** Generate plots for interpolated likelihood distribution and logL variable correlations :noexport:
 
