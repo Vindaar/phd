@@ -16178,11 +16178,65 @@ likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 --computeLogL \
 
 With this we can first create the plot of the cluster centers from the
 all chip files using ~plotClusterCenters~:
+
 #+begin_src sh
-cd $TPA/Plotting/plotBackgroundClusters
-./plotBackgroundClusters /t/lhood_2017_crAll_80eff_no_vetoes.h5 \
-                         /t/lhood_2018_crAll_80eff_no_vetoes.h5 \
-                         --zMax 30 --title "X-ray like clusters of CAST data"
+plotBackgroundClusters ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crAll.h5 \
+                       ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crAll.h5 \
+                       --zMax 30 \
+                       --title "X-ray like clusters of CAST data" \
+                       --outpath ~/phd/Figs/backgroundClusters/
+#+end_src
+
+From the logL output files created by
+~createAllLikelihoodCombinations~, let's now create the 'classical'
+background rate in the gold region without any vetoes:
+
+#+begin_src sh
+plotBackgroundRate \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crGold.h5 \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crGold.h5 \
+ --combName 2017/18 \
+ --combYear 2017 \
+ --centerChip 3 \
+ --title "Background rate from CAST data" \
+ --showNumClusters \
+ --showTotalTime \
+ --topMargin 1.5 \
+ --energyDset energyFromCharge \
+ --outfile background_rate_crGold_no_vetoes.pdf \
+ --outpath ~/phd/Figs/background/ \
+ --useTeX
+#+end_src
+
+which generates
+[[file:Figs/background/background_rate_crGold_no_vetoes.pdf]] from the TikZ ~.tex~
+file of the same name with the following output about the background
+rates:
+#+begin_src
+[INFO] total time: 8059622.573708649 of file: likelihood_cdl2018_Run2_crGold.h5
+[INFO] total time: 3886553.012294403 of file: likelihood_cdl2018_Run3_crGold.h5
+# ...
+Dataset: 2017/18
+         Integrated background rate in range: 0.0 .. 12.0: 2.3355e-04 cm⁻² s⁻¹
+         Integrated background rate/keV in range: 0.0 .. 12.0: 1.9462e-05 keV⁻¹·cm⁻²·s⁻¹
+Dataset: 2017/18
+         Integrated background rate in range: 0.5 .. 2.5: 6.1610e-05 cm⁻² s⁻¹
+         Integrated background rate/keV in range: 0.5 .. 2.5: 3.0805e-05 keV⁻¹·cm⁻²·s⁻¹
+Dataset: 2017/18
+         Integrated background rate in range: 0.5 .. 5.0: 1.1669e-04 cm⁻² s⁻¹
+         Integrated background rate/keV in range: 0.5 .. 5.0: 2.5931e-05 keV⁻¹·cm⁻²·s⁻¹
+Dataset: 2017/18
+         Integrated background rate in range: 0.0 .. 2.5: 8.9066e-05 cm⁻² s⁻¹
+         Integrated background rate/keV in range: 0.0 .. 2.5: 3.5626e-05 keV⁻¹·cm⁻²·s⁻¹
+Dataset: 2017/18
+         Integrated background rate in range: 4.0 .. 8.0: 2.6285e-05 cm⁻² s⁻¹
+         Integrated background rate/keV in range: 4.0 .. 8.0: 6.5711e-06 keV⁻¹·cm⁻²·s⁻¹
+Dataset: 2017/18
+         Integrated background rate in range: 0.0 .. 8.0: 1.6591e-04 cm⁻² s⁻¹
+         Integrated background rate/keV in range: 0.0 .. 8.0: 2.0739e-05 keV⁻¹·cm⁻²·s⁻¹
+Dataset: 2017/18
+         Integrated background rate in range: 2.0 .. 8.0: 8.3039e-05 cm⁻² s⁻¹
+         Integrated background rate/keV in range: 2.0 .. 8.0: 1.3840e-05 keV⁻¹·cm⁻²·s⁻¹
 #+end_src
 
 
@@ -16393,6 +16447,29 @@ to estimate energy distribution and rate under these angles in the
 detector based on numerically transporting muons from the upper
 atmosphere to the surface undergoing relativistic effects, changing
 atmospheric pressures and the related energy loss per distance.
+
+**** Generate background rate plot with scintillator vetoes     :noexport:
+
+Let's generate the plot:
+
+#+begin_src sh
+plotBackgroundRate \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crGold.h5 \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crGold.h5 \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crGold_scinti.h5 \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crGold_scinti.h5 \
+ --names "No vetoes" --names "No vetoes" --names "Scinti" --names "Scinti" \
+ --centerChip 3 \
+ --title "Background rate from CAST data, incl. scinti veto" \
+ --showNumClusters \
+ --showTotalTime \
+ --topMargin 1.5 \
+ --energyDset energyFromCharge \
+ --outfile background_rate_crGold_scinti.pdf \
+ --outpath ~/phd/Figs/background/ \
+ --useTeX
+#+end_src
+
 
 **** TODOs for the above section                                :noexport:
 
@@ -16958,6 +17035,313 @@ itself into the gas.
     haven't actually looked at the data split by setting. 
   - [X] energy of X-rays (calibration mainly, escape & photo)
     - [ ] Look into CDL data!  
+**** Generate plot for background rate including FADC           :noexport:
+
+Let's generate the plot:
+
+#+begin_src sh :results drawer
+plotBackgroundRate \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crGold.h5 \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crGold.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run2_crGold_scinti.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run2_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99.h5 \
+ --names "No vetoes" --names "No vetoes" \
+ --names "Scinti" --names "Scinti" \
+ --names "FADC" --names "FADC" \
+ --centerChip 3 \
+ --title "Background rate from CAST data, incl. scinti and FADC veto" \
+ --showNumClusters \
+ --showTotalTime \
+ --topMargin 1.5 \
+ --energyDset energyFromCharge \
+ --outfile background_rate_crGold_scinti_fadc.pdf \
+ --outpath ~/phd/Figs/background/ \
+ --useTeX \
+ --quiet
+#+end_src
+
+#+RESULTS:
+:results:
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 1.7495e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 1.4579e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 2.3355e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 1.9462e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 2.1413e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 1.7844e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 4.9556e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 2.4778e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 6.1610e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 3.0805e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 5.9935e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 2.9968e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 8.4546e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 1.8788e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 1.1669e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 2.5931e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 1.0798e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 2.3997e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 7.2324e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 2.8930e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 8.9066e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 3.5626e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 8.6722e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 3.4689e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 1.6742e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 4.1854e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 2.6285e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 6.5711e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 2.3606e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 5.9015e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 1.2188e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 1.5235e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 1.6591e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 2.0739e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 1.5419e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 1.9274e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 5.2569e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 8.7615e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 8.3039e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.3840e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 7.2827e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.2138e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:DataFrame with 7 columns and 180 rows:
+     Idx       Energy         Rate    totalTime      RateErr      Dataset         yMin         yMax
+  dtype:        float        float     constant        float       string        float        float
+       0            0        2.679         3318       0.6697         FADC        2.009        3.348
+       1          0.2        1.339         3318       0.4735         FADC       0.8658        1.813
+       2          0.4        5.692         3318       0.9762         FADC        4.716        6.668
+       3          0.6        6.027         3318        1.005         FADC        5.023        7.032
+       4          0.8        5.692         3318       0.9762         FADC        4.716        6.668
+       5            1        5.023         3318        0.917         FADC        4.106         5.94
+       6          1.2        2.344         3318       0.6264         FADC        1.717         2.97
+       7          1.4        2.344         3318       0.6264         FADC        1.717         2.97
+       8          1.6        1.842         3318       0.5553         FADC        1.286        2.397
+       9          1.8        2.511         3318       0.6484         FADC        1.863         3.16
+      10            2        1.005         3318       0.4101         FADC       0.5944        1.415
+      11          2.2       0.8371         3318       0.3744         FADC       0.4627        1.211
+      12          2.4       0.3348         3318       0.2368         FADC      0.09807       0.5716
+      13          2.6        1.172         3318       0.4429         FADC        0.729        1.615
+      14          2.8       0.8371         3318       0.3744         FADC       0.4627        1.211
+      15            3        4.185         3318       0.8371         FADC        3.348        5.023
+      16          3.2        3.348         3318       0.7487         FADC          2.6        4.097
+      17          3.4        2.679         3318       0.6697         FADC        2.009        3.348
+      18          3.6        2.176         3318       0.6036         FADC        1.573         2.78
+      19          3.8        1.674         3318       0.5294         FADC        1.145        2.204
+
+[INFO]:INFO: storing plot in /home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc.pdf
+[WARNING]: Printing total background time currently only supported for single datasets.
+shellCmd: command -v xelatex
+shell 3833> /home/basti/texlive/2022/bin/x86_64-linux/xelatex
+shellCmd: xelatex -output-directory /home/basti/phd/Figs/background /home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc.tex
+shell 3841> This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex)
+shell 3841>  restricted \write18 enabled.
+shell 3841> entering extended mode
+shell 3841> (/home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc.tex
+shell 3841> LaTeX2e <2022-11-01> patch level 1
+shell 3841> L3 programming layer <2022-12-17>
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cls
+shell 3841> Document Class: standalone 2022/10/10 v1.3b Class to compile TeX sub-files stan
+shell 3841> dalone
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/tools/shellesc.sty)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/iftex/ifluatex.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/iftex/iftex.sty))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/xkeyval/keyval.tex))))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cfg)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/article.cls
+shell 3841> Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/size10.clo))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.t
+shell 3841> ex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-common-l
+shell 3841> ists.tex))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.de
+shell 3841> f)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/pgf.revision.tex)))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/graphicx.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/graphics.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/trig.sty)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics-def/xetex.def)))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.te
+shell 3841> x
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+shell 3841> 
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.
+shell 3841> code.tex))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-xetex.d
+shell 3841> ef
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-dvipdfm
+shell 3841> x.def
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-
+shell 3841> pdf.def))))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath
+shell 3841> .code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol
+shell 3841> .code.tex)) (/home/basti/texlive/2022/texmf-dist/tex/latex/xcolor/xcolor.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.te
+shell 3841> x (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+shell 3841> 
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.te
+shell 3841> x)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code
+shell 3841> .tex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basi
+shell 3841> c.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trig
+shell 3841> onometric.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rand
+shell 3841> om.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.comp
+shell 3841> arison.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base
+shell 3841> .code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.roun
+shell 3841> d.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc
+shell 3841> .code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.inte
+shell 3841> gerarithmetics.code.tex)))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+shell 3841> )) (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.c
+shell 3841> ode.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathcons
+shell 3841> truct.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusag
+shell 3841> e.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.c
+shell 3841> ode.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphics
+shell 3841> tate.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransfor
+shell 3841> mations.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.co
+shell 3841> de.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.
+shell 3841> code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproc
+shell 3841> essing.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.c
+shell 3841> ode.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.co
+shell 3841> de.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.co
+shell 3841> de.tex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal
+shell 3841> .code.tex))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.c
+shell 3841> ode.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspar
+shell 3841> ency.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns
+shell 3841> .code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.code
+shell 3841> .tex)))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.co
+shell 3841> de.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code
+shell 3841> .tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-versio
+shell 3841> n-0-65.sty)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-versio
+shell 3841> n-1-18.sty))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+shell 3841> )) (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.co
+shell 3841> de.tex
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/libraries/pgflibraryplotha
+shell 3841> ndlers.code.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.co
+shell 3841> de.tex)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librari
+shell 3841> es/tikzlibrarytopaths.code.tex))))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/inputenc.sty
+shell 3841> 
+shell 3841> Package inputenc Warning: inputenc package ignored with utf8 based engines.
+shell 3841> 
+shell 3841> ) (/home/basti/texlive/2022/texmf-dist/tex/latex/geometry/geometry.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/iftex/ifvtex.sty))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/l3kernel/expl3.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/l3backend/l3backend-xetex.def))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math-xetex.
+shell 3841> sty (/home/basti/texlive/2022/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+shell 3841> )
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty
+shell 3841> ) (/home/basti/texlive/2022/texmf-dist/tex/latex/fontspec/fontspec.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/fontenc.sty)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/fix-cm.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/ts1enc.def))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsmath.sty
+shell 3841> For additional information on amsmath, use the `?' option.
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amstext.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsgen.sty))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsopn.sty))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math-table.
+shell 3841> tex))) (/home/basti/texlive/2022/texmf-dist/tex/latex/siunitx/siunitx.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/translations/translations.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/infwarerr/infwarerr.sty)
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)))
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/tools/array.sty))
+shell 3841> (/home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc.aux)
+shell 3841> *geometry* driver: auto-detecting
+shell 3841> *geometry* detected driver: xetex
+shell 3841> 
+shell 3841> (/home/basti/texlive/2022/texmf-dist/tex/latex/translations/translations-basic-
+shell 3841> dictionary-english.trsl) [1]
+shell 3841> (/home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc.aux) )
+shell 3841> Output written on /home/basti/phd/Figs/background/background_rate_crGold_scinti
+shell 3841> _fadc.pdf (1 page).
+shell 3841> Transcript written on /home/basti/phd/Figs/background/background_rate_crGold_sc
+shell 3841> inti_fadc.log.
+:end:
 
 **** Generate plots comparing rise/fall time of X-rays and background :noexport:
 
@@ -17236,6 +17620,339 @@ cluster passing the $\ln\mathcal{L}$ cut before being added to a
 larger cluster almost certainly won't pass it afterwards. The slight
 bias in the RMS won't change that.
 
+**** Generate plot for background rate including septem veto    :noexport:
+
+Let's generate the plot:
+
+#+begin_src sh :results drawer
+plotBackgroundRate \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crGold.h5 \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crGold.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run2_crGold_scinti.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run2_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run2_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99_septem_vetoPercentile_0.99.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99_septem_vetoPercentile_0.99.h5 \
+ --names "No vetoes" --names "No vetoes" \
+ --names "Scinti" --names "Scinti" \
+ --names "FADC" --names "FADC" \
+ --names "Septem" --names "Septem" \
+ --centerChip 3 \
+ --title "Background rate from CAST data, incl. scinti, FADC, septem veto" \
+ --showNumClusters \
+ --showTotalTime \
+ --topMargin 1.5 \
+ --energyDset energyFromCharge \
+ --outfile background_rate_crGold_scinti_fadc_septem.pdf \
+ --outpath ~/phd/Figs/background/ \
+ --useTeX \
+ --quiet
+#+end_src
+
+#+RESULTS:
+:results:
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 1.7495e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 1.4579e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 2.3355e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 1.9462e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 2.1413e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 1.7844e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 1.1602e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 9.6684e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 4.9556e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 2.4778e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 6.1610e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 3.0805e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 5.9935e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 2.9968e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 2.1095e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 1.0547e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 8.4546e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 1.8788e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 1.1669e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 2.5931e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 1.0798e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 2.3997e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 5.0058e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 1.1124e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 7.2324e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 2.8930e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 8.9066e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 3.5626e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 8.6722e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 3.4689e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 3.2814e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 1.3126e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 1.6742e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 4.1854e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 2.6285e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 6.5711e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 2.3606e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 5.9015e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 1.4063e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 3.5158e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 1.2188e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 1.5235e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 1.6591e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 2.0739e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 1.5419e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 1.9274e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 7.4668e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 9.3335e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 5.2569e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 8.7615e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 8.3039e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.3840e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 7.2827e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.2138e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 4.4031e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 7.3385e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:DataFrame with 7 columns and 240 rows:
+     Idx       Energy         Rate    totalTime      RateErr      Dataset         yMin         yMax
+  dtype:        float        float     constant        float       string        float        float
+       0            0        2.679         3318       0.6697         FADC        2.009        3.348
+       1          0.2        1.339         3318       0.4735         FADC       0.8658        1.813
+       2          0.4        5.692         3318       0.9762         FADC        4.716        6.668
+       3          0.6        6.027         3318        1.005         FADC        5.023        7.032
+       4          0.8        5.692         3318       0.9762         FADC        4.716        6.668
+       5            1        5.023         3318        0.917         FADC        4.106         5.94
+       6          1.2        2.344         3318       0.6264         FADC        1.717         2.97
+       7          1.4        2.344         3318       0.6264         FADC        1.717         2.97
+       8          1.6        1.842         3318       0.5553         FADC        1.286        2.397
+       9          1.8        2.511         3318       0.6484         FADC        1.863         3.16
+      10            2        1.005         3318       0.4101         FADC       0.5944        1.415
+      11          2.2       0.8371         3318       0.3744         FADC       0.4627        1.211
+      12          2.4       0.3348         3318       0.2368         FADC      0.09807       0.5716
+      13          2.6        1.172         3318       0.4429         FADC        0.729        1.615
+      14          2.8       0.8371         3318       0.3744         FADC       0.4627        1.211
+      15            3        4.185         3318       0.8371         FADC        3.348        5.023
+      16          3.2        3.348         3318       0.7487         FADC          2.6        4.097
+      17          3.4        2.679         3318       0.6697         FADC        2.009        3.348
+      18          3.6        2.176         3318       0.6036         FADC        1.573         2.78
+      19          3.8        1.674         3318       0.5294         FADC        1.145        2.204
+
+[INFO]:INFO: storing plot in /home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc_septem.pdf
+[WARNING]: Printing total background time currently only supported for single datasets.
+shellCmd: command -v xelatex
+shell 8008> /home/basti/texlive/2022/bin/x86_64-linux/xelatex
+shellCmd: xelatex -output-directory /home/basti/phd/Figs/background /home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc_septem.tex
+shell 8009> This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex)
+shell 8009>  restricted \write18 enabled.
+shell 8009> entering extended mode
+shell 8009> (/home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc_septem.tex
+shell 8009> LaTeX2e <2022-11-01> patch level 1
+shell 8009> L3 programming layer <2022-12-17>
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cls
+shell 8009> Document Class: standalone 2022/10/10 v1.3b Class to compile TeX sub-files stan
+shell 8009> dalone
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/tools/shellesc.sty)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/iftex/ifluatex.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/iftex/iftex.sty))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/xkeyval/keyval.tex))))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cfg)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/article.cls
+shell 8009> Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/size10.clo))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.t
+shell 8009> ex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-common-l
+shell 8009> ists.tex))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.de
+shell 8009> f)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/pgf.revision.tex)))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/graphicx.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/graphics.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/trig.sty)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics-def/xetex.def)))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.te
+shell 8009> x
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+shell 8009> 
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.
+shell 8009> code.tex))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-xetex.d
+shell 8009> ef
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-dvipdfm
+shell 8009> x.def
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-
+shell 8009> pdf.def))))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath
+shell 8009> .code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol
+shell 8009> .code.tex)) (/home/basti/texlive/2022/texmf-dist/tex/latex/xcolor/xcolor.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.te
+shell 8009> x (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+shell 8009> 
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.te
+shell 8009> x)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code
+shell 8009> .tex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basi
+shell 8009> c.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trig
+shell 8009> onometric.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rand
+shell 8009> om.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.comp
+shell 8009> arison.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base
+shell 8009> .code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.roun
+shell 8009> d.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc
+shell 8009> .code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.inte
+shell 8009> gerarithmetics.code.tex)))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+shell 8009> )) (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.c
+shell 8009> ode.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathcons
+shell 8009> truct.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusag
+shell 8009> e.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.c
+shell 8009> ode.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphics
+shell 8009> tate.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransfor
+shell 8009> mations.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.co
+shell 8009> de.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.
+shell 8009> code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproc
+shell 8009> essing.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.c
+shell 8009> ode.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.co
+shell 8009> de.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.co
+shell 8009> de.tex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal
+shell 8009> .code.tex))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.c
+shell 8009> ode.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspar
+shell 8009> ency.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns
+shell 8009> .code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.code
+shell 8009> .tex)))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.co
+shell 8009> de.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code
+shell 8009> .tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-versio
+shell 8009> n-0-65.sty)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-versio
+shell 8009> n-1-18.sty))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+shell 8009> )) (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.co
+shell 8009> de.tex
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/libraries/pgflibraryplotha
+shell 8009> ndlers.code.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.co
+shell 8009> de.tex)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librari
+shell 8009> es/tikzlibrarytopaths.code.tex))))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/inputenc.sty
+shell 8009> 
+shell 8009> Package inputenc Warning: inputenc package ignored with utf8 based engines.
+shell 8009> 
+shell 8009> ) (/home/basti/texlive/2022/texmf-dist/tex/latex/geometry/geometry.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/iftex/ifvtex.sty))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/l3kernel/expl3.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/l3backend/l3backend-xetex.def))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math-xetex.
+shell 8009> sty (/home/basti/texlive/2022/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+shell 8009> )
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty
+shell 8009> ) (/home/basti/texlive/2022/texmf-dist/tex/latex/fontspec/fontspec.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/fontenc.sty)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/fix-cm.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/ts1enc.def))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsmath.sty
+shell 8009> For additional information on amsmath, use the `?' option.
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amstext.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsgen.sty))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsopn.sty))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math-table.
+shell 8009> tex))) (/home/basti/texlive/2022/texmf-dist/tex/latex/siunitx/siunitx.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/translations/translations.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/infwarerr/infwarerr.sty)
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)))
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/tools/array.sty))
+shell 8009> (/home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc_septem.aux)
+shell 8009> *geometry* driver: auto-detecting
+shell 8009> *geometry* detected driver: xetex
+shell 8009> 
+shell 8009> (/home/basti/texlive/2022/texmf-dist/tex/latex/translations/translations-basic-
+shell 8009> dictionary-english.trsl) [1]
+shell 8009> (/home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc_septem.aux)
+shell 8009>  )
+shell 8009> Output written on /home/basti/phd/Figs/background/background_rate_crGold_scinti
+shell 8009> _fadc_septem.pdf (1 page).
+shell 8009> Transcript written on /home/basti/phd/Figs/background/background_rate_crGold_sc
+shell 8009> inti_fadc_septem.log.
+:end:
+
 *** 'Line veto' 
 
 There is one more further optional step, dubbed the 'line veto', which
@@ -17300,6 +18017,364 @@ somewhere in the middle.
 #+NAME: fig:background:fraction_passing_line_veto_ecc_cut
 [[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf]]
 
+**** Generate plot for background rate with all vetoes          :noexport:
+
+Let's generate the plot:
+
+#+begin_src sh :results drawer
+plotBackgroundRate \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crGold.h5 \
+ ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crGold.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run2_crGold_scinti.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run2_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run2_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99_septem_vetoPercentile_0.99.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99_septem_vetoPercentile_0.99.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run2_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99_septem_vetoPercentile_0.99_line_vetoPercentile_0.99.h5 \
+ ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99_septem_vetoPercentile_0.99_line_vetoPercentile_0.99.h5 \
+ --names "No vetoes" --names "No vetoes" \
+ --names "Scinti" --names "Scinti" \
+ --names "FADC" --names "FADC" \
+ --names "Septem" --names "Septem" \
+ --names "Line" --names "Line" \
+ --centerChip 3 \
+ --title "Background rate from CAST data, incl. scinti, FADC, septem, line veto" \
+ --showNumClusters \
+ --showTotalTime \
+ --topMargin 1.5 \
+ --energyDset energyFromCharge \
+ --outfile background_rate_crGold_scinti_fadc_septem_line.pdf \
+ --outpath ~/phd/Figs/background/ \
+ --useTeX \
+ --quiet
+#+end_src
+
+#+RESULTS:
+:results:
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 1.7495e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 1.4579e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Line
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 9.8944e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 8.2453e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 2.3355e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 1.9462e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 2.1413e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 1.7844e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 1.1602e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 9.6684e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 4.9556e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 2.4778e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Line
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 1.3059e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 6.5293e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 6.1610e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 3.0805e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 5.9935e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 2.9968e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 2.1095e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 1.0547e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 8.4546e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 1.8788e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Line
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 4.0348e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 8.9661e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 1.1669e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 2.5931e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 1.0798e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 2.3997e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 5.0058e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 1.1124e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 7.2324e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 2.8930e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Line
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 2.0090e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 8.0360e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 8.9066e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 3.5626e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 8.6722e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 3.4689e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 3.2814e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 1.3126e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 1.6742e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 4.1854e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Line
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 1.2389e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 3.0972e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 2.6285e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 6.5711e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 2.3606e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 5.9015e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 1.4063e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 3.5158e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 1.2188e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 1.5235e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Line
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 5.8596e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 7.3245e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 1.6591e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 2.0739e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 1.5419e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 1.9274e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 7.4668e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 9.3335e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: FADC
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 5.2569e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 8.7615e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Line
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 4.0682e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 6.7804e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: No vetoes
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 8.3039e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.3840e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Scinti
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 7.2827e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.2138e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: Septem
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 4.4031e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 7.3385e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:DataFrame with 7 columns and 300 rows:
+     Idx       Energy         Rate    totalTime      RateErr      Dataset         yMin         yMax
+  dtype:        float        float     constant        float       string        float        float
+       0            0        2.679         3318       0.6697         FADC        2.009        3.348
+       1          0.2        1.339         3318       0.4735         FADC       0.8658        1.813
+       2          0.4        5.692         3318       0.9762         FADC        4.716        6.668
+       3          0.6        6.027         3318        1.005         FADC        5.023        7.032
+       4          0.8        5.692         3318       0.9762         FADC        4.716        6.668
+       5            1        5.023         3318        0.917         FADC        4.106         5.94
+       6          1.2        2.344         3318       0.6264         FADC        1.717         2.97
+       7          1.4        2.344         3318       0.6264         FADC        1.717         2.97
+       8          1.6        1.842         3318       0.5553         FADC        1.286        2.397
+       9          1.8        2.511         3318       0.6484         FADC        1.863         3.16
+      10            2        1.005         3318       0.4101         FADC       0.5944        1.415
+      11          2.2       0.8371         3318       0.3744         FADC       0.4627        1.211
+      12          2.4       0.3348         3318       0.2368         FADC      0.09807       0.5716
+      13          2.6        1.172         3318       0.4429         FADC        0.729        1.615
+      14          2.8       0.8371         3318       0.3744         FADC       0.4627        1.211
+      15            3        4.185         3318       0.8371         FADC        3.348        5.023
+      16          3.2        3.348         3318       0.7487         FADC          2.6        4.097
+      17          3.4        2.679         3318       0.6697         FADC        2.009        3.348
+      18          3.6        2.176         3318       0.6036         FADC        1.573         2.78
+      19          3.8        1.674         3318       0.5294         FADC        1.145        2.204
+
+[INFO]:INFO: storing plot in /home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc_septem_line.pdf
+[WARNING]: Printing total background time currently only supported for single datasets.
+shellCmd: command -v xelatex
+shell 5658> /home/basti/texlive/2022/bin/x86_64-linux/xelatex
+shellCmd: xelatex -output-directory /home/basti/phd/Figs/background /home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc_septem_line.tex
+shell 5659> This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex)
+shell 5659>  restricted \write18 enabled.
+shell 5659> entering extended mode
+shell 5659> 
+shell 5659> (/home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc_septem_line
+shell 5659> .tex
+shell 5659> LaTeX2e <2022-11-01> patch level 1
+shell 5659> L3 programming layer <2022-12-17>
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cls
+shell 5659> Document Class: standalone 2022/10/10 v1.3b Class to compile TeX sub-files stan
+shell 5659> dalone
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/tools/shellesc.sty)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/iftex/ifluatex.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/iftex/iftex.sty))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/xkeyval/keyval.tex))))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/standalone/standalone.cfg)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/article.cls
+shell 5659> Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/size10.clo))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.t
+shell 5659> ex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-common-l
+shell 5659> ists.tex))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.de
+shell 5659> f)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/pgf.revision.tex)))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/graphicx.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/graphics.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/trig.sty)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics-def/xetex.def)))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.te
+shell 5659> x
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+shell 5659> 
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.
+shell 5659> code.tex))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-xetex.d
+shell 5659> ef
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-dvipdfm
+shell 5659> x.def
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-
+shell 5659> pdf.def))))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath
+shell 5659> .code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol
+shell 5659> .code.tex)) (/home/basti/texlive/2022/texmf-dist/tex/latex/xcolor/xcolor.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.te
+shell 5659> x (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+shell 5659> 
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.te
+shell 5659> x)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code
+shell 5659> .tex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basi
+shell 5659> c.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trig
+shell 5659> onometric.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rand
+shell 5659> om.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.comp
+shell 5659> arison.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base
+shell 5659> .code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.roun
+shell 5659> d.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc
+shell 5659> .code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.inte
+shell 5659> gerarithmetics.code.tex)))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+shell 5659> )) (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.c
+shell 5659> ode.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathcons
+shell 5659> truct.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusag
+shell 5659> e.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.c
+shell 5659> ode.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphics
+shell 5659> tate.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransfor
+shell 5659> mations.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.co
+shell 5659> de.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.
+shell 5659> code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproc
+shell 5659> essing.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.c
+shell 5659> ode.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.co
+shell 5659> de.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.co
+shell 5659> de.tex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal
+shell 5659> .code.tex))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.c
+shell 5659> ode.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspar
+shell 5659> ency.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns
+shell 5659> .code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.code
+shell 5659> .tex)))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.co
+shell 5659> de.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code
+shell 5659> .tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-versio
+shell 5659> n-0-65.sty)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-versio
+shell 5659> n-1-18.sty))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+shell 5659> )) (/home/basti/texlive/2022/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.co
+shell 5659> de.tex
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/libraries/pgflibraryplotha
+shell 5659> ndlers.code.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.co
+shell 5659> de.tex)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librari
+shell 5659> es/tikzlibrarytopaths.code.tex))))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/inputenc.sty
+shell 5659> 
+shell 5659> Package inputenc Warning: inputenc package ignored with utf8 based engines.
+shell 5659> 
+shell 5659> ) (/home/basti/texlive/2022/texmf-dist/tex/latex/geometry/geometry.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/iftex/ifvtex.sty))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/l3kernel/expl3.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/l3backend/l3backend-xetex.def))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math-xetex.
+shell 5659> sty (/home/basti/texlive/2022/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+shell 5659> )
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty
+shell 5659> ) (/home/basti/texlive/2022/texmf-dist/tex/latex/fontspec/fontspec.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/fontenc.sty)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/fix-cm.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/base/ts1enc.def))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsmath.sty
+shell 5659> For additional information on amsmath, use the `?' option.
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amstext.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsgen.sty))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/amsmath/amsopn.sty))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/unicode-math/unicode-math-table.
+shell 5659> tex))) (/home/basti/texlive/2022/texmf-dist/tex/latex/siunitx/siunitx.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/translations/translations.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/infwarerr/infwarerr.sty)
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)))
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/tools/array.sty))
+shell 5659> No file background_rate_crGold_scinti_fadc_septem_line.aux.
+shell 5659> *geometry* driver: auto-detecting
+shell 5659> *geometry* detected driver: xetex
+shell 5659> 
+shell 5659> (/home/basti/texlive/2022/texmf-dist/tex/latex/translations/translations-basic-
+shell 5659> dictionary-english.trsl) [1]
+shell 5659> (/home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc_septem_line
+shell 5659> .aux) )
+shell 5659> Output written on /home/basti/phd/Figs/background/background_rate_crGold_scinti
+shell 5659> _fadc_septem_line.pdf (1 page).
+shell 5659> Transcript written on /home/basti/phd/Figs/background/background_rate_crGold_sc
+shell 5659> inti_fadc_septem_line.log.
+:end:
 
 *** Hough transformation as a cluster finding helper             :noexport:
 
