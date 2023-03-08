@@ -16898,17 +16898,33 @@ ratio of the transverse and longitudinal diffusion, $σ_T / σ_L \approx
 \SI{22.8}{mm.μs⁻¹} = \SI{105}{ns}$.
 
 Fig. [[fig:background:fadc_rise_time]] shows the measured rise time for
-the \cefe calibration data compared to the background
-data. Satisfyingly, the peak of the calibration rise time is indeed
-pretty close to $\SI{100}{clock;cycles}$. At the same time we see that
-the background data has a much longer tail towards higher clock cycle
-counts, as one expects. What this implies is that we can perform a cut
-on the rise time and be certain we do not remove any real X-rays
-beyond a certain point (at least up to a certain probability).
+the \cefe calibration data compared to the background data. The peak
+of the calibration rise time is at about $\SI{55}{ns}$. While this is
+almost a factor of 2 smaller than the theoretical values mentioned
+before, this is expected as those first of all are an upper bound and
+secondly the "rise time" here is not the full time due to our
+definition starting from $\SI{10}{\%}$ below the baseline and stopping
+$\SI{2.5}{\%}$ before the peak, shortening our time
+(ref. sec. [[#sec:fadc:definition_baseline_rise_fall_time]]). At the same
+time we see that the background data has a much longer tail towards
+higher clock cycle counts, as one expects. This implies that we can
+perform a cut on the rise time and utilize it as an additional
+veto. The \cefe data allows us to define a cut based on a known and
+desired signal efficiency. This is done by identifying a desired
+percentile on both ends of the distribution of a cleaned X-ray
+dataset. Different percentiles (and associated efficiencies) will be
+tested for their impact on the expected axion limit. It is important
+to note that the cut values need to be determined for each of the used
+FADC amplifier settings separately. This is done automatically based
+on the known runs corresponding to each setting.
 
-#+CAPTION:
+#+CAPTION: KDE of the rise time of the FADC signals in the \cefe and background data
+#+CAPTION: of the CAST Run-3 dataset. The X-ray data is a single peak with a mean of
+#+CAPTION: about $\SI{55}{ns}$ while the background distribution is extremely wide,
+#+CAPTION: motivating a veto based on this data.
 #+NAME: fig:background:fadc_rise_time
 [[~/phd/Figs/FADC/fadc_riseTime_kde_signal_vs_background_run3.pdf]]
+- [ ] *OLD PLOT*
 
 For the signal decay time we do a simpler cut, with less of a physical
 motivation. As the decay time is highly dependent on the resistance
@@ -16917,14 +16933,59 @@ chain, we simply introduce a conservative cut in such a range as to
 avoid cutting away any range that contains X-ray data. Any background
 removed is just a bonus.
 
-- [ ] *INSERT FADC RISE TIME EXAMPLE*
+Finally, the FADC is only used as a veto if the individual spectrum is
+not considered noisy. This is determined by 4 local dominant peaks
+based on a peak finding algorithm and in addition a general skewnees
+of the total signal larger than \num{-0.4}. The skewness is an
+empirical cutoff as good FADC signals typically lie at larger negative
+skewness values (due to them having a signal towards negative
+values). See appendix [[#sec:appendix:background:fadc]] for a scatter plot of
+FADC rise times and skewness values. A very low percentage of false
+positives (good signals appearing 'noisy') is accepted for the
+certainty of not falsely rejecting noisy FADC events.
 
-- [ ] *GET THE CORRECT NUMBERS FROM SIMULATION*
-  -> In particular provide a few more words about how it compares to
-  the detected lengths of the calibration clusters, which drops above
-  6 significantly. Once final number easier to write this.
-- [ ] *INSERT APPENDIX WITH LENGTH PLOTS*
+Applying the FADC veto with a target quantile of 1 from both the lower
+and upper end ($1^{\text{st}}$ and $99^{\text{th}}$ percentiles; thus
+a $\SI{98}{\%}$ signal efficiency) in addition to the scintillator
+veto presented in the previous section results in a background rate as
+seen in fig. [[fig:background:background_rate_fadc_veto]]. The achieved
+background rate of the methods already leads to a background rate of
+$\SI{8.8e-6}{keV⁻¹.cm⁻².s⁻¹}$ in the energy range
+$\SIrange{2}{8}{keV}$. And between $\SIrange{4}{8}{keV}$ even
+$\SI{4.2e-6}{keV⁻¹.cm⁻².s⁻¹}$. The veto brings improvements across the
+whole energy range, in which the FADC triggers. Interestingly, in some
+cases even below that range. The events removed from the second bin
+are events with a spark on the upper right GridPix, which induced an
+X-ray like low energy cluster on the central chip and triggered the
+FADC. In the range at around $\SI{8}{keV}$ likely candidates for
+removed events are cases of orthogonal muons that did not trigger the
+SiPM.  
+- [ ] *MENTION SOMETHING ABOUT 3 KEV COPPER OR ORTHOGONAL MUONS?*
 
+#+CAPTION: Comparison of pure $\ln\mathcal{L}$ cuts, additional scintillator veto and
+#+CAPTION: finally also FADC veto at an efficiency of $\SI{98}{\%}$. In the range
+#+CAPTION: $\SIrange{2}{8}{keV}$ a background rate of $\SI{8.8e-6}{keV⁻¹.cm⁻².s⁻¹}$ is
+#+CAPTION: achieved and between $\SIrange{4}{8}{keV}$ even $\SI{4.2e-6}{keV⁻¹.cm⁻².s⁻¹}$.
+#+NAME: fig:background:background_rate_fadc_veto
+[[~/phd/Figs/background/background_rate_crGold_scinti_fadc.pdf]]
+
+Generally, appendix [[#sec:appendix:background:fadc]] contains more figures of
+the FADC data (rise time, fall time, ...), how the different FADC
+settings affect these, what the run-to-run variation looks like and more.
+
+
+
+
+
+
+- [ ] *THIS STUFF HAS ALREADY BEEN MENTIONED IN CONTEXT OF
+  SCINTILLATORS!*
+  -> Rewrite it! However, the scinti part does not explain it as well
+  and leaves out some pieces (transverse distribution along Z)
+  -> But explanation better in [[#sec:detector:scintillators]].
+  -> Most of this below does not belong here. It belongs into the
+  motivation, which was mentioned before. _Some_ of the stuff may be
+  useful in an interpretation of the application of the FADC veto.
 
 While the FADC serves as a very useful trigger to read out events,
 decrease the likelihood of multiple independent clusters on the center
