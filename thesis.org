@@ -17618,11 +17618,11 @@ again from the beginning, but this time as an event covering *all 7*
 chips. This allows the cluster finding algorithm to detect clusters
 beyond the center chip boundaries. After finding all clusters, the
 normal cluster reconstruction to compute all properties is done
-again. Finally, for each cluster in the event again the likelihood
-value is computed and compared with the likelihood cut. If now all
-clusters whose center is on the central chip are considered
-background-like, the event is vetoed (because the initial signal-like
-cluster turned out to be part of a larger cluster).
+again. Finally, for each cluster in the event the likelihood value is
+computed and compared with the likelihood cut. If now all clusters
+whose center is on the central chip are considered background-like,
+the event is vetoed, because the initial signal-like cluster turned
+out to be part of a larger cluster. 
 
 There is a slight complication here. The layout of the septemboard
 includes spacing, which is required to mount the chips. This spacing,
@@ -17655,6 +17655,7 @@ It is a good example, as it shows a cluster that is still relatively
 close to the center, and yet still 'connects' to another chip.
 
 - [ ] *POSSIBLY REPLACE THIS EVENT, CERTAINLY REPLACE PLOT*
+  -> Show an event that uses real septem layout!
 #+begin_center
 #+CAPTION: An example event showing all 7 GridPix of the CAST GridPix1 detector.
 #+CAPTION: The outlines are the boundaries of each chip (without the real spacing between
@@ -17673,16 +17674,24 @@ close to the center, and yet still 'connects' to another chip.
 The background rate with the septem veto is shown in
 fig. [[fig:background_rate_septem_veto]], where we see that most of the
 improvement is in the lower energy range $< \SI{2}{keV}$. This is the
-most important region for the solar axion flux for the axion-electron coupling.
+most important region for the solar axion flux for the axion-electron
+coupling. Looking at the mean background rate in intervals of
+interest, between $\SIrange{2}{8}{keV}$ it is
+\SI{7.3385e-06}{keV⁻¹.cm⁻².s⁻¹} and $\SIrange{4}{8}{keV} =
+\SI{3.5158e-06}{keV⁻¹.cm⁻².s⁻¹}$. And even in the full range down to
+$\SI{0}{keV}$ the mean is in the $10⁻⁶$ range. 
 
 #+begin_center
 #+CAPTION: Background rate achieved based on the 'septem veto' (in addition to the
-#+CAPTION: scintillator cut) for the full 2017/18 dataset within the center
+#+CAPTION: scintillator cut & FADC veto) for the full 2017/18 dataset within the center
 #+CAPTION: $\SI[parse-numbers=false]{5 \times 5}{mm²}$. Significant improvement in the
 #+CAPTION: $< \SI{2}{keV}$ range, which is most important for axion-electron coupling solar
 #+CAPTION: flux.
-#+NAME: fig:background_rate_septem_veto
-[[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_scinti_veto_septem_veto.pdf]]
+#+CAPTION: The background rate between $\SIrange{2}{8}{keV}$ is \SI{7.3385e-06}{keV⁻¹.cm⁻².s⁻¹} and
+#+CAPTION: $\SIrange{4}{8}{keV} = \SI{3.5158e-06}{keV⁻¹.cm⁻².s⁻¹}$. And even in the full range
+#+CAPTION: down to $\SI{0}{keV}$ the mean is in the $10⁻⁶$ range.
+#+NAME: fig:background:background_rate_septem_veto
+[[~/phd/Figs/background/background_rate_crGold_scinti_fadc_septem.pdf]]
 #+end_center
 
 [fn:spacing_impact_rms] In principle this has a small impact on the
@@ -18065,12 +18074,48 @@ the septem veto is seen in fig. [[fig:background:background_clusters_septem_line
 #+CAPTION: $\sim\num{9600}$.
 #+CAPTION: *TODO THIS INCLUDES THE LINE VETO. COMPARISON SHOULD BE SHOWN LATER!*
 #+NAME: fig:background:background_clusters_septem_line_veto
-[[~/org/Figs/statusAndProgress/IAXO_TDR/background_clusters_2017_2018_septemveto_lineveto.pdf]]
+[[~/phd/Figs/backgroundClusters/background_cluster_centers_all_vetoes.pdf]]
 #+end_center
 
-In total this is a reduction of a factor of 4 over the whole chip. But
-even in the center most region (a square of the center \SI{25}{mm²})
-sees an improvement, especially at low energies.
+In total all vetoes together have achieved a background reduction of a
+factor of about 10 over the regular $\ln\mathcal{L}$ method. But also
+the center most region (a square of the center \SI{25}{mm²}) sees
+an improvement, especially at low
+energies. Fig. [[fig:background:background_suppression_all_vetoes]]
+highlights the massive improvement over the pure $\ln\mathcal{L}$
+method when compared to
+fig. \ref{fig:background:background_suppression_tiles_no_vetoes_2017_18}. In
+the corners the improvements reach up to a factor of 30 (top left),
+but even in the center improvements of about a factor of 2 are achieved.
+
+- [ ] *SHOULD THIS BE SIDE BY SIDE WITH OTHER PLOT?*
+#+CAPTION: Local background suppression using all vetoes in the 2017/18 CAST
+#+CAPTION: data. Compared to fig. \ref{fig:background:background_suppression_tiles_no_vetoes_2017_18} massive
+#+CAPTION: improvements, up to a factor of 30 are visible. Even the center region
+#+CAPTION: improves by a factor of 2.
+#+NAME: fig:background:background_suppression_all_vetoes
+[[~/phd/Figs/backgroundClusters/background_suppression_tile_map_all_vetoes.pdf]]
+
+The achieved background rate goes well into the $10⁻⁶$ range with this
+veto over the whole energy range, as the influence is largest at low
+energies. The rate comes out to $\SI{7.3245e-06}{keV⁻¹.cm⁻².s⁻¹}$ over
+the whole range up to $\SI{8}{keV}$ with
+$\SI{6.7804e-06}{keV⁻¹.cm⁻².s⁻¹}$ starting from $\SI{2}{keV}$ and
+$\SI{3.0972e-06}{keV⁻¹.cm⁻².s⁻¹}$ if starting from
+$\SI{4}{keV}$. Fig. [[fig:background:background_rate_line_veto]] shows the
+background rate.
+
+#+CAPTION: Background rate of all CAST 2017/18 data in the center
+#+CAPTION: $\SI[parse-numbers=false]{5 \times 5}{mm²}$ using all vetoes including the
+#+CAPTION: line veto. Improvements are seen especially at low energies. The mean
+#+CAPTION: background rate in the full range below $\SI{8}{keV}$ is
+#+CAPTION: $\SI{7.3245e-06}{keV⁻¹.cm⁻².s⁻¹}$.
+#+NAME: fig:background:background_rate_line_veto
+[[~/phd/Figs/background/background_rate_crGold_scinti_fadc_septem_line.pdf]]
+
+
+
+
 
 Fig. [[fig:background:fraction_passing_line_veto_ecc_cut]] shows the
 behavior of the line veto efficiency for real data and fake
