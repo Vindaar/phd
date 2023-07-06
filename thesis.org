@@ -20061,7 +20061,6 @@ LINE_VETO_KIND=lvRegularNoHLC \
   -> Then compare the real application with the fake bootstrap
   application and see if there is a sweet spot in terms of S/N.
 
-
 Let's calculate the fraction in all cases:
 #+begin_src nim :results drawer
 import strutils
@@ -20143,7 +20142,7 @@ for f in walkFiles(path / "septem_veto_before_after*.txt"):
   echo "\tFraction of events left = ", frac
   df.add toDf({"Type" : typ, "ε_cut" : eccCut, "FractionPass" : frac})
 
-df.writeCsv("/tmp/test_csv_fractions.csv")  
+df.writeCsv("/home/basti/org/resources/septem_line_random_coincidences_ecc_cut.csv", precision = 8)  
 ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
   geom_point() +
   ggtitle("Fraction of events passing line veto based on ε cutoff") +
