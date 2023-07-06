@@ -17766,6 +17766,37 @@ itself into the gas.
   -> What happens if we allow application of only FADC as veto? What
   kind of background rate can we achieve then?
 
+
+**** About FADC rise time from theory and reality [/]           :noexport:
+
+The theoretical numbers of about 100 ns do not really match very well
+with our experimental numbers anymore after the recent
+changes. However, this is mainly due to three aspects:
+1. The offsets from the baseline and to the peak shorten the rise time
+   by at least (10 + 2.5) %, so our peak at ~55ns -> 61.875
+   ns.
+2. Realistically it is also though not taking into account that
+   the bottom of the signal is likely still part of the actual
+   signal. Once the trailing electrons of the cloud traverse through
+   the grid, the bulk has already been deposited on the pixels and the
+   discharge of the grid is underway. It's a convolution of the still
+   incoming electrons and their induction and the discharge of the
+   previous.
+3. Our calculations use a rather random $3 σ$ size of the clusters
+   (compared to the RMS). This is of course an extremely rough
+   estimate for the cluster size, which mainly will be correct in the
+   upper outliers.
+
+All three aspects combined likely very well explain the difference. It
+would be interesting to add to our simulation of the ~rmsTransverse~
+distributions an additional step of trying to simulate the ionization
+& discharge convolution to see what the actual physical signals might
+look like! For that it might be enough to assume that each electron
+once it passes through a grid hole "instantaneously" is amplified by
+the gas gain leading to a fixed amount of induction. Would be
+interesting.
+- [ ] Do this!
+
 **** Generate plot for background rate including FADC           :noexport:
 
 Let's generate the plot:
