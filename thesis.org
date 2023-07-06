@@ -3174,6 +3174,37 @@ data cleaning!*
   looking at the FADC events, but the idea being to define
   conservative cuts on FADC using theory)
 
+- [ ] Explain better distinction between diffusion coefficient and its
+  standard deviation!
+  -> Normal distribution describes position!
+  See also:
+  [[file:~/org/Papers/randomwalkBerg_diffusion.pdf]]
+  <x²> = 2 D t    ( 1 dimension )
+  <x²> = 4 D t    ( 2 dimensions )
+  <x²> = 6 D t    ( 3 dimensions )
+  Also look into Sauli book again (p. 82 eq. (4.5) and eq. (4.6)).
+  Also: 
+  [[file:~/org/Papers/Hilke-Riegler2020_Chapter_GaseousDetectors.pdf]]
+  page 15 sec. 4.2.2.2
+  The latter mentions on page 15 that there is a distinction between:
+  D = diffusion coefficient
+  for which
+  σ = √(2 D t) (1 dim)
+  is valid
+  and
+  D* = diffusion constant
+  for which:
+  σ = D* √(z)
+  is valid!
+
+  From PyBoltz source code in ~Boltz.pyx~
+  #+begin_src python
+            self.TransverseDiffusion1 = sqrt(2.0 * self.TransverseDiffusion / self.VelocityZ) * 10000.0
+  #+end_src
+  which proves the distinction in the paper:
+  √(2 D t) = D* √x
+  ⇔ D* = √(2 D t) / √x = √(2 D t / x) = √(2 D / v) (with x = v t)
+
 Describe diffusion based on gas. Needed to get expected photon size
 based on conversion at specific height.
 
