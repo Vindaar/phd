@@ -16067,8 +16067,6 @@ cd $TPA/Analysis
                                   --multiprocessing \
                                   --dryRun 
 #+end_src
-
-
 #+RESULTS:
 :results:
 Command: (fname: "/home/basti/CastData/data/DataRuns2017_Reco.h5", year: 2017, region: crGold, vetoes: {fkNoVeto})
@@ -16191,7 +16189,7 @@ From the logL output files created by
 ~createAllLikelihoodCombinations~, let's now create the 'classical'
 background rate in the gold region without any vetoes:
 
-#+begin_src sh
+#+begin_src sh :results drawer
 plotBackgroundRate \
  ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crGold.h5 \
  ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crGold.h5 \
@@ -16270,7 +16268,7 @@ chip!
 ~plots/background_suppression_tile_map.pdf~ which is in
 [[file:Figs/backgroundClusters/background_suppression_tiles_no_vetoes.pdf]].
 
-*** Verification of software efficiency using calibration data [/]
+*** Verification of software efficiency using calibration data [/] 
 
 - [ ] *SHOW OUR VERIFICATION USING 55FE DATA*
   -> Check and if not possibly do:
@@ -17422,12 +17420,12 @@ $\ce{Ar}/\ce{iC4H10}$ mixture used with a $\SI{500}{V.cm⁻¹}$ drift
 field in the Septemboard detector at CAST, the relevant parameters
 are [fn:gas_properties_pyboltz]
 - drift velocity $v = \SI{2.28}{cm.μs⁻¹}$
-- transverse diffusion $σ_T = \SI{670}{μm.cm^{1/2}}$
-- longitudinal diffusion $σ_L = \SI{270}{μm.cm^{1/2}}$ 
+- transverse diffusion $σ_T = \SI{670}{μm.cm^{-1/2}}$
+- longitudinal diffusion $σ_L = \SI{270}{μm.cm^{-1/2}}$ 
 As the detector has a height of $\SI{3}{cm}$ we expect a typical X-ray
 interacting close to the cathode to form a cluster of
-$\sqrt{\SI{3}{cm}}·\SI{670}{μm.cm^{1/2}} \approx \SI{1160.5}{μm}$
-transverse extent and $\sqrt{\SI{3}{cm}}·\SI{270}{μm.cm^{1/2}} \approx
+$\sqrt{\SI{3}{cm}}·\SI{670}{μm.cm^{-1/2}} \approx \SI{1160.5}{μm}$
+transverse extent and $\sqrt{\SI{3}{cm}}·\SI{270}{μm.cm^{-1/2}} \approx
 \SI{467.5}{μm}$ in longitudinal size, where this corresponds to a $1
 σ$ environment. To get a measure for the cluster size a rough estimate
 for an upper limit is a $3 σ$ distance away from the center in each
@@ -20800,7 +20798,7 @@ Clarify what a "bin" refers to and what "channels" are.
 #+end_comment
 
 \[
-P_{\text{Pois}}(k; λ) = \frac{λ^k e^{-λ}}{k!}
+P_{\text{Pois}}(k; λ) = \frac{λ^k e^{-λ}}{k!} 
 \]
 for each bin an expected number of counts $λ$ (the mean) then means a probability given $P$
 for a "measured" number of counts $k$. Combining multiple "channels"
@@ -20815,8 +20813,8 @@ Applying this to the previously mentioned likelihood ratio $Q$ gives
 us:
 
 \[
-Q = \frac{\prod_i P_{i, \text{Pois}}(n_i; s_i + b_i)}{\prod_i P_{i, \text{Pois}}(n_i; b_i)} =
-  \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)} }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i}}
+Q = \frac{\prod_i P_{i, \text{Pois}}(n_i; s_i + b_i)}{\prod_iP_{i,\text{Pois}}(n_i; b_i)} =
+ \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)} }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i}}
 \]
 
 where $n_i$ is simply the number of measured candidates within the
@@ -20869,7 +20867,7 @@ the normalization of $s_i$ and $b_i$ are the same. The absolute
 normalization (e.g. if it's $\si{keV⁻¹}$ or absolute counts etc.) plays no
 role as that will be a constant multiplier. That constant can always
 be neglected in the total likelihood (a constant only moves the logL
-curve up / down, but does not change its maximum!).
+curve up / down, but does not change the location of its maximum!).
 
 Coming back to the "channels" / the binning: if we choose our bins
 such that they are bins in time, so small that each bin either
