@@ -20678,6 +20678,61 @@ would be $ε_\text{total} = 0.8 · 0.6868 = 0.5494$, so about 55%.
 
 *** Veto setups of interest [/]
 
+
+As a reference the random coincidence rates of:
+- pure septem veto = 0.7841029411764704
+- pure line veto   = 0.8601764705882353
+- septem + line veto = 0.732514705882353
+
+Let's compute the total efficiencies of all the setups we look at.
+
+
+|      limit | name                                                                                                                                                                                                                                                                                                                                |
+|------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 8.9258e-23 |                                                                                                          |
+| 8.8516e-23 | _scinti                                                                                                  |
+| 8.5385e-23 | _scinti_vetoPercentile_0.95_fadc_vetoPercentile_0.95                                                     |
+| 7.2889e-23 | _scinti_vetoPercentile_0.95_fadc_vetoPercentile_0.95_line_vetoPercentile_0.95                            |
+|  7.538e-23 | _scinti_vetoPercentile_0.95_fadc_vetoPercentile_0.95_septem_vetoPercentile_0.95                          |
+| 7.2365e-23 | _scinti_vetoPercentile_0.95_fadc_vetoPercentile_0.95_septem_vetoPercentile_0.95_line_vetoPercentile_0.95 |
+| 8.6007e-23 | _scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99                                                     |
+| 7.3555e-23 | _scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99_line_vetoPercentile_0.99                            |
+| 7.5671e-23 | _scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99_septem_vetoPercentile_0.99                          |
+| 7.3249e-23 | _scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99_septem_vetoPercentile_0.99_line_vetoPercentile_0.99 |
+| 8.4108e-23 | _scinti_vetoPercentile_0.9_fadc_vetoPercentile_0.9                                                       |
+| 7.2315e-23 | _scinti_vetoPercentile_0.9_fadc_vetoPercentile_0.9_line_vetoPercentile_0.9                               |
+| 7.4109e-23 | _scinti_vetoPercentile_0.9_fadc_vetoPercentile_0.9_septem_vetoPercentile_0.9                             |
+| 7.1508e-23 | _scinti_vetoPercentile_0.9_fadc_vetoPercentile_0.9_septem_vetoPercentile_0.9_line_vetoPercentile_0.9     |
+
+
+
+| $ε_{\ln\mathcal{L}, \text{eff}}$ | Scinti | FADC | $ε_{\text{FADC, eff}}$ | Septem | Line | Efficiency | Expected limit (nmc=1000) |
+|----------------------------------+--------+------+------------------------+--------+------+------------+---------------------------|
+|                              0.8 | x      | x    |                      - | x      | x    |        0.8 |                8.9258e-23 |
+|                              0.8 | o      | x    |                      - | x      | x    |        0.8 |                8.8516e-23 |
+|----------------------------------+--------+------+------------------------+--------+------+------------+---------------------------|
+|                              0.8 | o      | o    |                   0.98 | x      | x    |      0.784 |                8.6007e-23 |
+|                              0.8 | o      | o    |                   0.90 | x      | x    |       0.72 |                8.5385e-23 |
+|                              0.8 | o      | o    |                   0.80 | x      | x    |       0.64 |                8.4108e-23 |
+|----------------------------------+--------+------+------------------------+--------+------+------------+---------------------------|
+|                              0.8 | o      | o    |                   0.98 | o      | x    |       0.61 |                7.5671e-23 |
+|                              0.8 | o      | o    |                   0.90 | o      | x    |       0.56 |                 7.538e-23 |
+|                              0.8 | o      | o    |                   0.80 | o      | x    |       0.50 |                7.4109e-23 |
+|----------------------------------+--------+------+------------------------+--------+------+------------+---------------------------|
+|                              0.8 | o      | o    |                   0.98 | x      | o    |       0.67 |                7.3555e-23 |
+|                              0.8 | o      | o    |                   0.90 | x      | o    |       0.62 |                7.2889e-23 |
+|                              0.8 | o      | o    |                   0.80 | x      | o    |       0.55 |                7.2315e-23 |
+|----------------------------------+--------+------+------------------------+--------+------+------------+---------------------------|
+|                              0.8 | o      | o    |                   0.98 | o      | o    |       0.57 |                7.3249e-23 |
+|                              0.8 | o      | o    |                   0.90 | o      | o    |       0.52 |                7.2365e-23 |
+|                              0.8 | o      | o    |                   0.80 | o      | o    |       0.47 |                7.1508e-23 |
+
+- [ ] *ADD THE VERSIONS WE NOW LOOK AT*
+  - [ ] without FADC
+  - [ ] different lnL cut (70% & 90%)
+
+- [ ] Maybe introduce a couple of versions with lower lnL software efficiency?
+
 - [ ] Introduce all setups we care about for the limit calculation,
   final decision will be done based on which yields the best
   _expected_ limit.
