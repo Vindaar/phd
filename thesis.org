@@ -16410,6 +16410,53 @@ chip!
 - [ ] *AFAIR WE STILL COMPUTE LOGL CUT VALUE BASED ON BINNED
   HISTOGRAM. CHANGE THAT TO UNBINNED DATA*  
   
+
+** Artificial neural networks as cluster classification [/]
+
+*THIS WILL STILL BE A DECENTLY LARGE CHAPTER*
+
+- super short introduction to ANNs and MLPs in particular
+- including math of an MLP, effectively just simple matrix math
+- introduced backpropagation, very simply, mention SGD
+- show the MLP layout we use, refer to appendix / extended version for
+  study of different activation functions, layouts etc    
+- Highlight that one of the main points was to use a network that
+  remains relatively small
+
+- describe training input data!
+  - background is fine
+  - X-ray training data: simulated events!
+
+*** Generation of simulated X-rays as MLP training input
+
+- extraction of the diffusion from real data using Cramer von-Mises
+- simulated based on diffusion physics
+- gas gain
+
+*** Determination of MLP cut value
+
+- generate simulated events for the diffusion & gas gain of a given run
+- get cut value from the simulated events
+
+*** Verification of software efficiency using calibration data
+
+- cross check with the real calibration run corresponding to the data
+- For each calibration run generate simulated events to get the cut
+  value (previous section), then apply that to the calibration
+  data. The resulting efficiency is the 'real' efficiency
+- the mean of all these efficiencies goes into the limit calculation
+  as the real software efficiency
+- the standard deviation of all of them are the systematic
+  contribution to the signal efficiency $σ_s$.      
+
+** Additional detector features as vetoes
+
+- [ ] *ADD INTRODUCTION TO SECTION ABOUT VETOES*
+  -> Make sure to properly get a 'split' from the likelihood cut
+  method here.
+  Better to have a chapter / section on the different methods to
+  suppress background. So use it.
+
 *** Scintillators as vetoes
 :PROPERTIES:
 :CUSTOM_ID: sec:background:scinti_veto
@@ -20826,7 +20873,10 @@ the background rate.
 [[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_scinti_veto_septem_veto_line_veto.pdf]]
 #+end_center
 
-*** Neural network based classification
+*** Neural network based classification [/]
+
+- [ ] *THIS IS FINALLY BECOMING A PROPER SECTION!*
+  -> See further above after likelihood cut method
 
 The likelihood cut based method presented in section
 [[#sec:likelihood_method]] works well, but does not use the full potential
