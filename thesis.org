@@ -94,6 +94,8 @@
 #+LATEX_HEADER: \newcommand{\ccsini}{$\mathrm{Si}₃\mathrm{N}₄$}
 # \def\si3n4{$\mathrm{Si}₃\mathrm{N}₄$}
 #+LATEX_HEADER: \newcommand{\cefe}{$\ce{^{55}Fe}$~}
+#+LATEX_HEADER: \newcommand{\vektor}[1]{\ensuremath{\begin{pmatrix}#1\end{pmatrix}}}
+#+LATEX_HEADER: \newcommand{\mtrix}[1]{\ensuremath{\begin{pmatrix}#1\end{pmatrix}}}
 
 #+LATEX_HEADER: \usepackage[backend=biber]{biblatex}
 #+LATEX_HEADER: \addbibresource{references.bib}
@@ -3262,6 +3264,7 @@ Random walk + a force acting on particles.
 
 - [X] *COMPUTE USING PYBOLTZ: https://github.com/UTA-REST/PyBoltz*
   -> DONE
+
 
 *** Drift velocity
 
@@ -16455,6 +16458,9 @@ chip!
   
 
 ** Artificial neural networks as cluster classification [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:background:mlp
+:END:
 
 *THIS WILL STILL BE A DECENTLY LARGE CHAPTER*
 
@@ -16470,14 +16476,333 @@ chip!
   - background is fine
   - X-ray training data: simulated events!
 
-*** Generation of simulated X-rays as MLP training input
 
-- extraction of the diffusion from real data using Cramer von-Mises
+- [ ] *THIS IS FINALLY BECOMING A PROPER SECTION!*
+  -> See further above after likelihood cut method
+
+- [ ] *CITE REFERENCE FOR MLP*
+- [ ] *CITE REFERENCE FOR SGD*
+- [ ] *CITE REFERENCE FOR BACKPROPAGATION, AUTOGRAD*?
+
+The likelihood cut based method presented in section
+[[#sec:likelihood_method]] works well, but does not use the full potential
+of the data. It mainly uses length / eccentricity related properties,
+which are hand picked and ignores the possible separation power of all
+other properties.
+
+Multiple different ways to use all separation power exist. One
+promising approach is the usage of artificial neural networks (ANN). A
+multi-layer perceptron (MLP; (*reference something?*) ) is a simple
+supervised ANN model, which consists of an input and output layer plus
+one or more fully connected hidden layers. By training such a network
+on the already computed geometric properties of the clusters,
+computational requirements remain relatively moderate.
+
+As each neuron on a given layer in an MLP is fully connected to all
+neurons on the previous layer, the output of neuron $k$ on layer $i$
+is described by
+
+#+NAME: eq:mlp:neuron_output
+\begin{equation}
+y_{k,i} = φ \left( \sum_{j = 0}^m w_{kj} y_{j,i-1} \right)
+\end{equation}
+
+where $w_{kj}$ is the weight between neuron $k$ on layer $i$ and
+neuron $j$ of $m$ neurons on layer $i-1$. $φ$ is a (typically
+non-linear) activation function which is applied to saturate a
+neuron's output.
+
+If $y_{j,i-1}$ is considered a vector for all $j$, $w_{kj}$ can be
+considered a weight matrix and eq. [[eq:mlp:neuron_output]] is simply a
+matrix product. Each layer is computed iteratively starting from the
+input layer towards the output layer.
+
+Given that an MLP is a supervised learning algorithm, the desired
+target output for a given input during training is known. A loss
+function is defined to evaluate the accuracy of the network. Many
+different loss functions are used in practice, but in many cases the
+mean squared error (MSE; also known as L2 norm) is used as a loss
+
+\[
+l(\mathbf{y}, \mathbf{\hat{y}}) = \frac{1}{N} \sum_{i = 1}^N \left( y_i - \hat{y}_i \right)²
+\]
+
+where $\mathbf{y}$ is a vector $∈ \mathbb{R}^N$ of the network
+outputs and $\mathbf{\hat{y}}$ the target outputs. The sum runs over
+all $N$ output neurons. [fn:loss_of_minibatch]
+
+In order to train a neural network, the initially random weights must
+be modified. This is done by computing the gradients of the loss
+(given an input) with respect to all the weights of the network,
+$\frac{∂ l(\mathbf{y})}{∂ w_{ij}}$. Effectively the chain rule is used to express
+these partial derivatives using the intermediate steps of the
+calculation. This leads to an iterative equation for the weights
+further up the network (towards the input
+layer). Each weight is updated according to
+
+\[
+w^{n+1}_{ij} = w^n_{ij} - η \frac{∂ l(\mathbf{y})}{∂ w^n_{ij}}.
+\]
+
+where $η$ is the learning rate. This approach to updating the weights
+during training is referred to as
+backpropagation. [fn:reverse_mode_autograd]
+
+[fn:loss_of_minibatch] For performance reasons to utilize the
+parallel nature of GPUs, training and inference of NNs is done in
+'mini-batches'. As still only a single loss value is needed for
+training, the loss is computed as the mean of all losses for each
+mini-batch element.
+
+[fn:reverse_mode_autograd] The gradients in a neural network are
+usually computed using 'automatic differentiation' (or 'autograd',
+'autodiff'). There are two forms of automatic differentiation: forward
+mode and reverse mode. These differ by the practical evaluation order
+of the chain rule. Forward mode computes the chain rule from
+left-to-right (input to output), while reverse mode computes it from
+right-to-left (output to input). Computationally these differ in their
+complexity in terms of the required number of evaluations given N
+inputs and M outputs. Forward mode computes all M output derivatives
+for a single input, whereas reverse mode computes all input
+derivatives for a single output. Thus, forward mode is efficient for
+cases with few inputs and many outputs, while the opposite is true for
+reverse mode. Neural networks are classical cases of many inputs to
+few outputs (scalar loss function!). As such reverse mode autograd is
+the standard way to compute the gradients during NN training. In the
+context it is effectively synonymous with 'backpropagation' (due to
+its output-to-input evaluation of the chain rule).
+
+*** MLP for CAST data
+:PROPERTIES:
+:CUSTOM_ID: sec:background:mlp_for_cast
+:END:
+
+The simplest approach to training using a neural network for data
+classification of CAST like data is an MLP that uses the pre-computed
+geometric properties for each cluster as an input.
+
+The choice remains between a single or two output neurons. The more
+classical approach is treating signal (X-rays) and background events
+as two different classes that the classifier learns to predict. We use
+the latter approach. By our convention the target outputs for signal
+and background events are
+
+\begin{align*}
+\mathbf{\hat{y}}_{\text{signal}} &= \vektor{ 1 \\ 0 } \\
+\mathbf{\hat{y}}_{\text{background}} &= \vektor{ 0 \\ 1 }
+\end{align*}
+
+where the first entry of $\mathbf{\hat{y}}$ corresponds to output
+neuron 1 and the second to output neuron 2.
+
+For the network to generalize to all real CAST data, the training
+dataset must be representative of the wide variety of the real
+data. For background like clusters it can be sourced from the
+extensive non-tracking dataset recorded at CAST. For the signal like
+X-ray data it is more problematic. The only source of X-rays with
+enough statistics are the $\cefe$ datasets from CAST, but these only
+describe X-rays of two energies. The CAST detector lab data from the
+X-ray tube are both limited in statistics as well as suffering from
+systematic differences to the CAST data due to different gas gains.
+
+We will now describe how we generate X-ray clusters for the training
+by simulating them from a target energy, a transverse diffusion and a
+desired gas gain.
+
+*** Generation of simulated X-rays as MLP training input
+:PROPERTIES:
+:CUSTOM_ID: sec:background:mlp:event_generation
+:END:
+
 - simulated based on diffusion physics
 - gas gain
 
+The ...
+
+1. (optional) sample from different fluorescence lines for an element
+   given their relative intensities to define a target energy $E$ 
+2. sample from the exponential distribution of the absorption length
+   for the target photon energy to get the conversion point of the
+   X-ray in the gas (Note: we only sample X-rays that convert, those
+   that would traverse the whole chamber without conversion are ignored)
+3. sample a target charge to achieve for the cluster, based on target energy by sampling from a
+   normal distribution with a mean roughly matching detector energy resolution (target energy
+   inverted to a charge)
+4. sample center position of the cluster within a uniform radius of
+   $\SI{4.5}{mm}$ around the chip center.
+5. begin the sampling of each electron in the cluster
+6. sample a charge in number of electrons (after amplification) for
+   the electron based on a Pòlya distribution of input gas gain (and
+   matching normalization & $θ$ constant).  Reject the electron if not
+   crossing activation threshold (based on real data).
+7. sample a radial distance from the cluster center based on gas
+   diffusion constant and *INSERT DIFFUSION LAW* and the remaining
+   drift distance to the readout plane.
+8. sample a random angle, uniform in $(0, 2π]$
+9. convert radius and angle to an $(x, y)$ position of the electron,
+   add to the cluster.
+10. based on a linear approximation activate between 0 to 4
+    neighboring pixels with a slightly reduced gas gain. We never
+    activate any neighbors at a charge of $\SI{1000}{e⁻}$ and always
+    activate at least one at $\SI{10000}{e⁻}$. Number of activated
+    pixels depends on uniform random number being below one of 4
+    different thresholds:
+    \[
+    N_{\text{neighbor}} = \text{rand}(0, 1) · N < \text{threshold}
+    \]
+    where the threshold is determined by the linear function described
+    by the mentioned condition and $\text{rand}(0, 1)$ is a uniform random
+    number in $(0, 1)$.
+11. continue sampling electrons until the total charge adds up to the
+    target charge. We stop at the value, which is closer to the target
+    (before or after adding a final pixel that crosses the target
+    charge) to avoid biasing us towards values always larger than the
+    target.
+12. The final cluster is reconstructed just like any other real
+    cluster, using the same calibration functions as the real chip
+    (depending on which dataset it should correspond to).    
+
+Note: neighboring pixels are added to achieve matching eccentricity
+distributions between real data and simulated. Activating neighboring
+pixels increases the local pixel density randomly, which effectively
+increases the weight of some pixels, leading to a slight increase of
+eccentricity of a cluster. The approach of activating up to 4 neighbor
+pixels and giving them slightly lower charges stems from empirically
+matching the simulated data to real data. From a physical perspective
+the most likely cause of neighboring pixels is due to UV photons that
+are emitted in the amplification region and travel towards the grid
+and produce a new electron, which starts an avalanche from there. From
+that point of view neighboring pixels should see the full gas
+amplification and neighbors other than the direct { up, down, left,
+right } neighbors can be activated (depending on an exponential
+distribution due to possible absorption of the UV photons in the gas).
+- [ ] *CITE MARKUS MSC THESIS*
+
+
+
+*** Overview of the best performing MLP
+
+As a reference an MLP was trained (implementation [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Tools/NN_playground/train_ingrid.nim][here]]) on a mix of
+X-ray reference data (as signal-like training data) and a subset of
+the CAST background data. The implementation was done using [[https://github.com/scinim/flambeau][Flambeu]], a
+wrapper for [[https://pytorch.org/][libtorch]], using the following parameters:
+
+- Input neurons: 14 (12 geometric, 2 non-geometric)
+- Hidden layers: 2
+- Neurons on hidden layer: 300
+- Output neurons: 2
+- Activation function: $\tanh$ or $\text{ReLU}$ (Rectified linear unit) (*ref?*)
+- Gradient algorithm: Stochastic Gradient Descent (SGD) (*ref?*)
+- Learning rate: 0.005
+- Momentum: 0.2
+- Batch size: 8192
+
+The 13 input neurons were fed with all geometric properties that do
+not scale directly with the energy (no number of active pixels or
+direct energy) or position on the chip (as the training data is skewed
+towards the center).
+
+This is considered a "reference" implementation, as it is essentially
+the simplest ANN layout possible. As a comparison to the likelihood
+method the receiver operating characteristic (ROC) curves (*REFERENCE
+SOMETHING*) for the different
+X-ray reference datasets is used. The signal and background data used
+for each case (likelihood and MLP) is the test dataset used to test
+the MLP performance after training. Fig. [[fig:roc_curves_logl_mlp]] shows
+these ROC curves with the line style indicating the method and the
+color corresponding to the different targets and thus different
+fluorescence lines. The improvement in background rejection at a fixed signal efficiency
+exceeds $\SI{10}{\percent}$ at multiple energies.
+
+The usage of such neural networks is plainly a replacement for the
+likelihood cut method used to detect the initial cluster candidates
+and during classification of the septem/line veto. It does not replace
+any of the vetoes, as these include information outside the center
+chip, which is not available for the neural network (training and
+validation becomes much more complicated if all chips were to be used,
+due to the random coincidence problem mentioned in a previous
+section).
+
+- [ ] CNN as an alternative idea, add footnote and show github link to
+  our work, say this has been looked into already during MSc thesis
+
+#+begin_center
+#+CAPTION: ROC curves for the comparison of the likelihood cut method (solid lines) to the
+#+CAPTION: MLP predictions (dashed lines), colored by the different targets used to generate the
+#+CAPTION: reference datasets. The background data used for each target corresponds to background
+#+CAPTION: clusters in an energy range around the fluorescence line.
+#+CAPTION: The MLP visibly outperforms the likelihood cut method in all energies. At the same
+#+CAPTION: signal efficiency (x axis) a significantly higher background rejection is achieved.
+#+NAME: fig:roc_curves_logl_mlp
+[[~/org/Figs/statusAndProgress/neuralNetworks/roc_curve_mlp_vs_likelihood_split_by_target_1000_epochs_no_energy_hits.pdf]]
+#+end_center
+
+*** Training call for best performing MLP                        :noexport:
+
+The following is the training call that produced the MLP with the best
+performance (the one used for all plots and limit calculations):
+
+Reference: ~journal.org~ entry on <2023-05-10 Wed 14:24>.
+
+#+begin_src sh
+./train_ingrid \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --back ~/CastData/data/DataRuns2017_Reco.h5 \
+    --back ~/CastData/data/DataRuns2018_Reco.h5 \
+    --modelOutpath ~/org/resources/nn_devel_mixing/10_05_23_sgd_gauss_diffusion_tanh300_mse_loss/mlp_tanh300_mse.pt \
+    --plotPath ~/Sync/10_05_23_sgd_tanh300_mse/ \
+    --datasets eccentricity \
+    --datasets skewnessLongitudinal \
+    --datasets skewnessTransverse \
+    --datasets kurtosisLongitudinal \
+    --datasets kurtosisTransverse \
+    --datasets length \
+    --datasets width \
+    --datasets rmsLongitudinal \
+    --datasets rmsTransverse \
+    --datasets lengthDivRmsTrans \
+    --datasets rotationAngle \
+    --datasets fractionInTransverseRms \
+    --datasets totalCharge \
+    --datasets σT \
+    --numHidden 300 \
+    --numHidden 300 \
+    --activation tanh \
+    --outputActivation sigmoid \
+    --lossFunction MSE \
+    --optimizer SGD \
+    --learningRate 7e-4 \
+    --simulatedData \
+    --backgroundRegion crAll \
+    --nFake 250_000
+#+end_src
+
+
+*** Combination of NN w/ vetoes                                  :noexport: 
+
+- [ ] *I THINK THIS CAN BE DELETED*
+
+[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/NN_playground/predict_event.nim]]
+
+#+begin_src sh
+./predict_event ~/CastData/ExternCode/TimepixAnalysis/resources/LikelihoodFiles/lhood_2017_crGold_septemveto_lineveto_dbscan.h5 \
+                ~/CastData/ExternCode/TimepixAnalysis/resources/LikelihoodFiles/lhood_2018_crGold_septemveto_lineveto_dbscan.h5 \
+  --lhood --cutVal 3.2 --totalTime 3400
+#+end_src
+
+Within 0 - 8 keV:
+6.413398692810459e-6 keV⁻¹•cm⁻²•s⁻¹
+Within 0 - 2.8 & 4.0 - 8.0 keV:
+4.133025759323338e-6 keV⁻¹•cm⁻²•s⁻¹
+
+yields
+
+[[~/org/Figs/statusAndProgress/neuralNetworks/background_rate_after_logl_septemveto_lineveto_and_mlp.pdf]]
+
 *** Determination of MLP cut value
 
+- extraction of the diffusion from real data using Cramer von-Mises
 - generate simulated events for the diffusion & gas gain of a given run
 - get cut value from the simulated events
 
@@ -16492,7 +16817,9 @@ chip!
 - the standard deviation of all of them are the systematic
   contribution to the signal efficiency $σ_s$.      
 
+
 ** Additional detector features as vetoes
+
 
 - [ ] *ADD INTRODUCTION TO SECTION ABOUT VETOES*
   -> Make sure to properly get a 'split' from the likelihood cut
@@ -20915,100 +21242,6 @@ the background rate.
 #+NAME: fig:background_rate_all_vetoes
 [[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_scinti_veto_septem_veto_line_veto.pdf]]
 #+end_center
-
-*** Neural network based classification [/]
-
-- [ ] *THIS IS FINALLY BECOMING A PROPER SECTION!*
-  -> See further above after likelihood cut method
-
-The likelihood cut based method presented in section
-[[#sec:likelihood_method]] works well, but does not use the full potential
-of the data. It mainly uses length / eccentricity related properties,
-which are hand picked and ignores the possible separation power of all
-other properties.
-
-Multiple different ways to use all separation power exist. One
-promising approach is the usage of artificial neural networks (ANN). A
-multi-layer perceptron (MLP; (*reference something?*) ) is a simple ANN model, which consists of an
-input and output layer plus N fully connected hidden layers. By
-training such a network on the already computed geometric properties
-of the clusters, computational requirements remain relatively
-moderate.
-
-As a reference an MLP was trained (implementation [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Tools/NN_playground/train_ingrid.nim][here]]) on a mix of
-X-ray reference data (as signal-like training data) and a subset of
-the CAST background data. The implementation was done using [[https://github.com/scinim/flambeau][Flambeu]], a
-wrapper for [[https://pytorch.org/][libtorch]], using the following parameters:
-
-- Input neurons: 12
-- Hidden layers: 1
-- Neurons on hidden layer: 500
-- Output neurons: 2
-- Activation function: =ReLU= (Rectified linear unit) (*ref?*)
-- Gradient algorithm: Stochastic Gradient Descent (SGD) (*ref?*)
-- Learning rate: 0.005
-- Momentum: 0.2
-- Batch size: 100 
-
-The 12 input neurons were fed with all geometric properties that do
-not scale directly with the energy (no number of active pixels or
-direct energy) or position on the chip (as the training data is skewed
-towards the center).
-
-This is considered a "reference" implementation, as it is essentially
-the simplest ANN layout possible. As a comparison to the likelihood
-method the receiver operating characteristic (ROC) curves (*REFERENCE
-SOMETHING*) for the different
-X-ray reference datasets is used. The signal and background data used
-for each case (likelihood and MLP) is the test dataset used to test
-the MLP performance after training. Fig. [[fig:roc_curves_logl_mlp]] shows
-these ROC curves with the line style indicating the method and the
-color corresponding to the different targets and thus different
-fluorescence lines. The improvement in background rejection at a fixed signal efficiency
-exceeds $\SI{10}{\percent}$ at multiple energies.
-
-The usage of such neural networks is plainly a replacement for the
-likelihood cut method used to detect the initial cluster candidates
-and during classification of the septem/line veto. It does not replace
-any of the vetoes, as these include information outside the center
-chip, which is not available for the neural network (training and
-validation becomes much more complicated if all chips were to be used,
-due to the random coincidence problem mentioned in a previous
-section).
-
-- [ ] CNN as an alternative idea, add footnote and show github link to
-  our work, say this has been looked into already during MSc thesis
-
-#+begin_center
-#+CAPTION: ROC curves for the comparison of the likelihood cut method (solid lines) to the
-#+CAPTION: MLP predictions (dashed lines), colored by the different targets used to generate the
-#+CAPTION: reference datasets. The background data used for each target corresponds to background
-#+CAPTION: clusters in an energy range around the fluorescence line.
-#+CAPTION: The MLP visibly outperforms the likelihood cut method in all energies. At the same
-#+CAPTION: signal efficiency (x axis) a significantly higher background rejection is achieved.
-#+NAME: fig:roc_curves_logl_mlp
-[[~/org/Figs/statusAndProgress/neuralNetworks/roc_curve_mlp_vs_likelihood_split_by_target_1000_epochs_no_energy_hits.pdf]]
-#+end_center
-
-**** Combination of NN w/ vetoes
-
-[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/NN_playground/predict_event.nim]]
-
-#+begin_src sh
-./predict_event ~/CastData/ExternCode/TimepixAnalysis/resources/LikelihoodFiles/lhood_2017_crGold_septemveto_lineveto_dbscan.h5 \
-                ~/CastData/ExternCode/TimepixAnalysis/resources/LikelihoodFiles/lhood_2018_crGold_septemveto_lineveto_dbscan.h5 \
-  --lhood --cutVal 3.2 --totalTime 3400
-#+end_src
-
-Within 0 - 8 keV:
-6.413398692810459e-6 keV⁻¹•cm⁻²•s⁻¹
-Within 0 - 2.8 & 4.0 - 8.0 keV:
-4.133025759323338e-6 keV⁻¹•cm⁻²•s⁻¹
-
-yields
-
-[[~/org/Figs/statusAndProgress/neuralNetworks/background_rate_after_logl_septemveto_lineveto_and_mlp.pdf]]
-
 
 
 *** Example using GridPix3 data
