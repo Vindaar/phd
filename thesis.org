@@ -3162,15 +3162,55 @@ For a point like source of multiple electrons, after diffusion of some
 distance a 2 dimensional gaussian distribution will be expected.
 
 Transverse diffusion depends, as one expects from a 2D random walk,
-via the square root of the drift distance.
+via the square root of the drift distance. 
 
 In general for precise numbers, numerical simulations using a tool
 like Magboltz must be performed or measurements taken.
 
-*EXPLAIN WHERE COMES FROM, COMES DOWN TO $D_t$ AND PARAMETER FROM MAGBOLTZ* 
+The mean squared distance $σ_t$ from a starting point after a certain amount
+of time $t$ is given by
+
 \[
-σ_t = D_t · \sqrt{x}
+σ_t = \sqrt{ 2 N D t }
 \]
+
+for a random walk in $N$ dimensions, where $D$ is a diffusion
+coefficient specifying the movement in distance squared per time. By
+relating the time to the drift velocity $v$ along an axis and
+introducing the diffusion constant $D_t$
+
+\[
+D_t = \sqrt{ \frac{2 N D}{v} }
+\]
+
+we can further express $σ_t$ as
+
+#+NAME: eq:gas_physics:diffusion_after_drift
+\begin{equation}
+σ_t = D_t · \sqrt{x},
+\end{equation}
+
+which is often practically useful to estimate the expected diffusion
+after a certain drift length.
+
+Note that the terminology of "diffusion constant", "diffusion
+coefficient" and similar is often used ambiguously as to whether they
+refer to $D$ or $D_t$. Nor is the considered dimensionality $N$ always
+clearly indicated. Keeping $N = 1$ and handling multiple dimensions as
+independent random walks is a practical approach to take (as long as
+it is valid in the application). [fn:diffusion_and_simulation]
+
+*EXPLAIN WHERE COMES FROM, COMES DOWN TO $D_t$ AND PARAMETER FROM MAGBOLTZ* 
+
+[fn:diffusion_and_simulation] Later in chapter
+[[#sec:background:mlp:event_generation]] we will discuss Monte Carlo event
+generation, which use the diffusion coefficient as an input to
+generate clusters after drift. Distance $x$ and $y$ are each sampled
+individually according to eq. [[eq:gas_physics:diffusion_after_drift]] and
+combined to a radial distance from the cluster center.
+
+
+**** Additional thoughts on diffusion                           :noexport:
 
 *this is important as it relates to the 1.5 σ_transverse cut we do for
 data cleaning!*
