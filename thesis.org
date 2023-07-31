@@ -16679,6 +16679,103 @@ right } neighbors can be activated (depending on an exponential
 distribution due to possible absorption of the UV photons in the gas).
 - [ ] *CITE MARKUS MSC THESIS*
 
+**** Generate some example and comparison plots
+
+- [ ] Comparison of the different properties as a ridgeline plot?
+  -> similar to plots in appendix
+  [[#sec:appendix:fit_by_run:gas_gain_var_cluster_prop]]
+  like
+  [[~/phd/Figs/CDL/C-EPIC-0.6kV_ridgeline_kde_by_run.pdf]]
+
+Let's generate plots comparing the properties used by the MLP of
+generated events with those of different runs. The idea is to generate
+fake data based on the gas properties of each run, i.e. gas gain, gas
+diffusion and the target energy of the X-ray fluorescence line we want
+(i.e. the Kα line for $\ce{Mn}$ in case of the \cefe source or each
+target in the X-ray tube data).
+
+We'll generate a ridgeline plot of all these properties normalized to
+$x/\text{max}(\{x\})$ where $\{x\}$ is the set of all values in the
+run to get values between 0 and 1 for all properties such that they
+can be compared in a single plot. Each ridge will use a KDE based
+density to best highlight any differences in the underlying
+distribution.
+
+We will first use a tool to generate HDF5 files of simulated events
+following a real run. For one run, e.g. 241 CAST calibration, we do
+this by:
+#+begin_src sh
+fake_event_generator \
+    like \
+    -p /mnt/1TB/CAST/2018_2/CalibrationRuns2018_Reco.h5 \
+    --run 241 \
+    --outpath /tmp/test_fakegen_run241.h5 \
+    --outRun 241 \
+    --tfKind Mn-Cr-12kV \
+    --nmc 50000
+#+end_src
+where we specify we want X-rays like the 55Fe source (via ~tfKind~)
+and want to simulate 50k X-rays.
+
+Then we can compare the properties using ~plotDatasetGgplot~, which
+can be found here [[file:~/CastData/ExternCode/TimepixAnalysis/Plotting/plotDsetGgplot/plotDatasetGgplot.nim]]:
+#+begin_src sh
+plotDatasetGgplot \
+    -f /mnt/1TB/CAST/2018_2/CalibrationRuns2018_Reco.h5 \
+    -f /t/test_fakegen_run241.h5 \
+    --run 241
+#+end_src
+
+Let's automate this quickly for all \cefe calibration runs.
+
+#+begin_src nim :tangle /tmp/generate_all_fake_data_plots.nim
+import shell, strutils, sequtils
+import nimhdf5
+import ingrid / [ingrid_types, tos_helpers]
+
+const filePath = "/mnt/1TB/CAST/$#/CalibrationRuns$#_Reco.h5"
+const genData = """
+fake_event_generator \
+    like \
+    -p $file \
+    --run $run \
+    --outpath /home/basti/org/resources/fake_events_for_runs.h5 \
+    --outRun $run \
+    --tfKind Mn-Cr-12kV \
+    --nmc 50000
+"""
+const plotData = """
+plotDatasetGgplot \
+    -f $file \
+    -f /home/basti/org/resources/fake_events_for_runs.h5 \
+    --names 55Fe --names Simulation \
+    --run $run \
+    --plotPath /home/basti/phd/Figs/fakeEventSimulation/runComparisons/ \
+    --prefix ingrid_properties_run_$run \
+    --suffix "Run $run"
+"""
+
+const years = ["2017", "2018_2"]
+const yearFile = ["2017", "2018"]
+for (year, fYear) in zip(years, yearFile):
+  #if year == "2017": continue ## skip for now, already done
+  let file = filePath % [year, fYear]
+  var runs = newSeq[int]()
+  withH5(file, "r"):
+    let fileInfo = getFileInfo(h5f)
+    runs = fileInfo.runs
+  for run in runs:
+    echo "Working on run: ", run
+    let genCmd = genData % ["file", file, "run", $run]
+    shell:
+      ($genCmd)
+    let plotCmd = plotData % ["file", file, "run", $run, "run", $run, "run", $run]
+    shell:
+      ($plotCmd)
+#+end_src
+
+which yields all the plots in:
+[[file:Figs/fakeEventSimulation/runComparisons/]]
 
 
 *** Overview of the best performing MLP
