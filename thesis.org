@@ -17020,7 +17020,7 @@ agreement is good. Plots for all runs like this can be found in
 #+NAME: fig:background:mlp:ridgeline_simulated_vs_real_run241
 [[~/phd/Figs/fakeEventSimulation/runComparisons/ingrid_properties_run_241_ridgeline_kde_by_run.pdf]]
 
-*** Overview of the best performing MLP
+*** Overview of the best performing MLP [/]
 
 As a reference an MLP was trained (implementation [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Tools/NN_playground/train_ingrid.nim][here]]) on a mix of
 X-ray reference data (as signal-like training data) and a subset of
@@ -17033,11 +17033,17 @@ wrapper for [[https://pytorch.org/][libtorch]], using the following parameters:
 - Output neurons: 2
 - Activation function: $\tanh$ or $\text{ReLU}$ (Rectified linear unit) (*ref?*)
 - Gradient algorithm: Stochastic Gradient Descent (SGD) (*ref?*)
-- Learning rate: 0.005
+- Learning rate: \num{7e-4}
 - Momentum: 0.2
 - Batch size: 8192
+- Training data: \num{250000} simulated X-rays and \num{250000} real
+  background events *NOTE: NOT EXACTLY, NO?*, same number for
+  validation
+- Training epochs: \num{500000}  
 
-The 13 input neurons were fed with all geometric properties that do
+- [ ] *Verify NUMBER OF USED INPUTS*
+
+The 14 input neurons were fed with all geometric properties that do
 not scale directly with the energy (no number of active pixels or
 direct energy) or position on the chip (as the training data is skewed
 towards the center).
@@ -17066,6 +17072,47 @@ section).
 - [ ] CNN as an alternative idea, add footnote and show github link to
   our work, say this has been looked into already during MSc thesis
 
+
+During the training process of $\num{500 000}$ epochs every
+$\num{5000}$ epochs the accuracy and loss are evaluated based on the
+test sample and a model checkpoint is stored. The evolution of the
+loss function for this network are shown in
+fig. \ref{fig:background:mlp:training_loss}. As desired the loss
+decreases during the training, but spikes somewhere between $\num{485
+000}$ and $\num{490 000}$ epochs. It does recover, but does not reach
+the minima found earlier. The accuracy also decreases slightly, but
+not to the extent potentially expected based on the loss. Regardless,
+the checkpoint after \num{485 000} epochs is used as the final MLP
+model. Fig. \ref{fig:background:mlp:validation_output} shows the
+output of neuron 0 (neuron 1 is a mirror image) for the test sample,
+with signal like data towards 1 and background like data
+towards 0. The separation is almost perfect, but small contributions
+of the opposite type can be seen near the extrema. This is expected
+due to the presence of real X-rays in the background dataset and
+extreme statistical outliers in the X-ray dataset.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/neuralNetworks/10_05_23_sgd_tanh300_mse/loss.pdf}
+    \caption{Training loss}
+    \label{fig:background:mlp:training_loss}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/neuralNetworks/10_05_23_sgd_tanh300_mse/validation_output.pdf}
+    \caption{Charge spectrum}
+    \label{fig:background:mlp:validation_output}
+  \end{subfigure}%
+  \label{fig:background:mlp:training_plots}
+  \caption{\subref{fig:background:mlp:training_loss} Loss over the training progress, evaluated every \num{5000}
+  epochs. A small spike in loss is seen after checkpoint \num{485000}, which is not fully recovered from. 
+  \subref{fig:background:mlp:validation_output} Output of the validation data sample for neuron 0.
+  Almost perfect signal and background separation.}
+\end{figure}
+
+
 #+begin_center
 #+CAPTION: ROC curves for the comparison of the likelihood cut method (solid lines) to the
 #+CAPTION: MLP predictions (dashed lines), colored by the different targets used to generate the
@@ -17073,6 +17120,7 @@ section).
 #+CAPTION: clusters in an energy range around the fluorescence line.
 #+CAPTION: The MLP visibly outperforms the likelihood cut method in all energies. At the same
 #+CAPTION: signal efficiency (x axis) a significantly higher background rejection is achieved.
+#+CAPTION: *REDO THIS PLOT!!!!!!!!!!!!!!!!!!!!!!!!!!*
 #+NAME: fig:roc_curves_logl_mlp
 [[~/org/Figs/statusAndProgress/neuralNetworks/roc_curve_mlp_vs_likelihood_split_by_target_1000_epochs_no_energy_hits.pdf]]
 #+end_center
@@ -17117,6 +17165,27 @@ Reference: ~journal.org~ entry on <2023-05-10 Wed 14:24>.
     --backgroundRegion crAll \
     --nFake 250_000
 #+end_src
+
+*NOTE*: The command up there was still run with the default Nim RNG
+seed for the ~shuffle~ procedure which reorders the background and
+simulated data into training and validation samples!
+
+**** Plots of the loss, accuracy and output                     :noexport:
+
+The plots generated during the training call are also found in
+
+[[file:Figs/neuralNetworks/10_05_23_sgd_tanh300_mse/]]
+
+which are a direct copy of the initial plots generated from the call
+above.
+
+- [ ] We will likely want slightly nicer versions of these plots of
+  course!
+  The H5 file
+  [[~/org/resources/nn_devel_mixing/10_05_23_sgd_gauss_diffusion_tanh300_mse_loss/mlp_desc_v2.h5]]
+  contains all the required losses etc for the plots!
+  The model file we use is:
+  [[~/org/resources/nn_devel_mixing/10_05_23_sgd_gauss_diffusion_tanh300_mse_loss/mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.pt]]
 
 
 *** Combination of NN w/ vetoes                                  :noexport: 
