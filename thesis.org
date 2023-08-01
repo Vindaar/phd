@@ -15490,9 +15490,10 @@ To finally classify events as signal or background using the
 likelihood distribution, one sets a desired "software efficiency"
 $ε_{\text{eff}}$, which is defined as:
 
-\[
-ε_{\text{eff}} = \frac{∫_0^{L} \mathcal{L}(ε, f, l) \, \mathrm{d}L'}{∫_0^{∞}\mathcal{L}(ε, f, l) \, \mathrm{d} L'}
-\]
+#+NAME: eq:background:lnL:cut_condition
+\begin{equation}
+ε_{\text{eff}} = \frac{∫_0^{\mathcal{L'}} \mathcal{L}(ε, f, l) \, \mathrm{d}L}{∫_0^{∞}\mathcal{L}(ε, f, l) \, \mathrm{d} L}
+\end{equation}
 
 where $\mathcal{L}'$ denotes a specific $\mathcal{L}$ value, which
 yields the desired $ε_{\text{eff}}$. In practical terms one computes
@@ -15839,7 +15840,8 @@ With the software efficiency defined, the $-\ln\mathcal{L}$ of each
 cluster is simply computed using the linear interpolation of the log
 likelihood distribution determined based on the cluster energy. A
 cluster is considered a signal if its $L$ is smaller than the $L$
-computed for the desired $ε_{\text{eff}}$ at the energy of the cluster.
+computed for the desired $ε_{\text{eff}}$ at the energy of the
+cluster.
 
 Using this approach for the single GridPix data taken at CAST in
 2014/15, a background rate shown in
@@ -16799,6 +16801,9 @@ which yields all the plots in:
 
 
 *** Determination of gas diffusion
+:PROPERTIES:
+:CUSTOM_ID: sec:background:mlp:determine_gas_diffusion
+:END:
 
 To generate X-ray events with similar physical properties as those
 seen in a particular data taking run, we need the three inputs
@@ -16900,6 +16905,10 @@ deviation, which is a useful property to protect against outliers.
 
 The iterative optimization process is effectively gradient descent,
 
+- [ ] *REWRITE. WE ACTUALLY RETURN $σ_T$ AND NOT $D_T$!*
+- [ ] *GENERALLY CLARIFY BETTER DISTINCTION BETWEEN PARAMETER $σ_T$
+  AND OUR 'transverse RMS' NUMBER*  
+
 \[
 D_{T,i+1} = D_{T,i} - η \frac{∂ f(D_T)}{∂ D_T}
 \]
@@ -16908,6 +16917,28 @@ where $f(D_T)$ is the Monte Carlo algorithm, which computes the test
 statistics for a given $D_T$ and $η$ is the step size (a 'learning
 rate'). The derivative is computed using finite
 differences. [fn:derivatives_optimization]
+
+Fig. [[fig:background:mlp:gas_diffusion_values]] shows the values of the
+transverse gas diffusion coefficient $σ_T$ as they have been determined for all
+runs. The color scale is the value of the Cramér-von-Mises test
+criterion and indicates a measure of the uncertainty of the obtained
+parameter. We can see that for the CDL datasets (runs above 305) the
+uncertainty is larger. This is because reproducing the $σ_T$
+distribution for these datasets is more problematic than for the CAST
+\cefe datasets (due to more data impurity caused by X-ray backgrounds
+of energies other than the target fluorescence line). Generally we can
+see variation in the range from about
+$\SIrange{620}{660}{μm.cm^{-1/2}}$ for the CAST data and larger
+variation for the CDL data. The theoretical value we expect is about
+$\SI{670}{μm.cm^{-1/2}}$, motivating the empirical deduction.
+
+#+CAPTION: Transverse gas diffusion coefficient $σ_T$ as determined empirical based on an
+#+CAPTION: iterative method attempting to reproduce the transverse RMS using simulated X-ray events
+#+CAPTION: using the Cramér-von-Mises test criterion and gradient descent. All runs above run 305
+#+CAPTION: are CDL calibration runs. The color scale is the CvM test score.
+#+NAME: fig:background:mlp:gas_diffusion_values
+#+ATTR_LATEX: :width 0.7\textwidth
+[[~/phd/Figs/σT_per_run.pdf]]
 
 Because this iterative calculation is not computationally cheap, the
 resulting $D_T$ parameters for each run are cached in an HDF5 file.
