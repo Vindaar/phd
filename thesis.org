@@ -17214,24 +17214,138 @@ yields
 :CUSTOM_ID: sec:background:mlp:mlp_cut_value
 :END:
 
-- extraction of the diffusion from real data using Cramer von-Mises
-- generate simulated events for the diffusion & gas gain of a given run
-- get cut value from the simulated events
+Based on the output distributions of the MLP,
+fig. \ref{fig:background:mlp:validation_output}, it can be used to act
+as a cluster discriminator in the same way as for the $\ln\mathcal{L}$
+method, following eq. [[eq:background:lnL:cut_condition]]. In practice
+again the empirical distribution function of the signal-like output
+data is computed and the quantile of the target software efficiency
+$ε_{\text{eff}}$ is determined. Similarly to the likelihood cut method
+this is done for \num{8} different energy ranges corresponding to the
+CDL fluorescence lines. However, no interpolation is performed because
+only the single output distribution is known. [fn:interpolation]
+
+Due to the significant differences in gas gain between the CDL dataset
+and the CAST \cefe calibration data, we do not use a single cut value
+for each energy for all CAST data taking runs. Instead we use the
+X-ray cluster simulation machinery to provide run specific X-ray
+clusters from which to deduce cut values.
+
+For each run we wish to apply the MLP to, we start by computing the
+mean gas gain based on all gas gain intervals. Then we determine the
+gas diffusion coefficient as explained in
+sec. [[#sec:background:mlp:determine_gas_diffusion]]. With two of the
+three required parameters for X-ray generation in hand, we then
+simulate X-rays following each X-ray fluorescence line measured in the
+CDL dataset, yielding 8 different simulated datasets for each
+run. Based on these we compute one cut value on the MLP output
+each. The so deduced cut value is applied as the MLP cut to that run
+in the valid energy range.
+
+The same approach is used for calibration runs as well as for
+background runs.
+
+[fn:interpolation] One could of course interpolate on the cut values
+itself, but that is less well motivated and harder to
+cross-check. Predicting a cut value from two known, neighboring
+energies would likely not work very well. 
 
 *** Verification of software efficiency using calibration data
 
-- cross check with the real calibration run corresponding to the data
-- For each calibration run generate simulated events to get the cut
-  value (previous section), then apply that to the calibration
-  data. The resulting efficiency is the 'real' efficiency
-- the mean of all these efficiencies goes into the limit calculation
-  as the real software efficiency
-- the standard deviation of all of them are the systematic
-  contribution to the signal efficiency $σ_s$.      
+As the simulated X-ray clusters certainly differ from real X-rays,
+verification of the software efficiency using calibration data is
+required. For all \cefe calibration runs as well as all CDL data we
+produce cut values as explained in the previous section. Then we apply
+these to those same runs and compute the effective efficiency as
 
+\[
+ε_{\text{effective}} = \frac{N_{\text{cut}}}{N_{\text{total}}}
+\]
+
+where $N_{\text{cut}}$ is the clusters remaining after applying the
+MLP cut and $N_{\text{total}}$ is the total number of clusters after
+application of the standard cleaning cuts applied for the \cefe
+spectrum fit and the CDL fluorescence line fits.
+
+The resulting efficiency is the effective efficiency the MLP
+produces. A close match with the target software efficiency implies
+the simulated X-ray data matches the real data well and the network
+learned to identify X-rays based on physical properties (and not due
+to overtraining). In the limit calculation later the mean of all these
+effective efficiencies is used in place of the target software
+efficiency as a realistic estimator for the signal efficiency.
+
+Fig. [[fig:background:mlp:effective_efficiencies]] shows the effective
+efficiencies obtained for all \cefe calibration and CDL runs using the
+MLP checkpoint introduced earlier. The target efficiency in the plot
+was $\SI{95}{\%}$ with an achieved mean effective efficiency of about
+$\SI{91}{\%}$. Variation is significantly larger in the CDL runs (runs
+above number 305), but fortunately towards actual larger
+efficiencies. This is good because it implies using the mean of all
+efficiencies - resulting in a smaller value - is conservative. The
+marker symbol represents the energy of the target fluorescence
+line. Note that the \cefe calibration escape peak near $\SI{3}{keV}$
+is a separate data point ~"3.0"~ compared to the Silver fluorescence
+line given as ~"2.98"~. That is because the two are fundamentally
+different things. The escape event is a $\SI{5.9}{keV}$ photopeak
+X-ray entering the detector, which ends up 'losing' about
+$\SI{3}{keV}$ due to excitation of an Argon fluorescence $Kα$
+X-ray. This means the absorption length is that of a $\SI{5.9}{keV}$
+photon, whereas the Silver fluorescence line corresponds to a real
+$\SI{2.98}{keV}$ photon and thus corresponding absorption length. As
+such the geometric properties on average are different.
+
+The standard deviation of all these effective efficiencies is one of
+the systematics later used for the limit calculation.
+
+#+CAPTION: Effective efficiencies obtained using the MLP for a target $ε = \SI{95}{\%}$
+#+CAPTION: software efficiency. Runs above run 305 are CDL calibration runs. Different
+#+CAPTION: symbols represent different target fluorescence lines. The \cefe escape peak
+#+CAPTION: is indicated at $\SI{3}{keV}$ in contrast to the $\SI{2.98}{keV}$ Silver
+#+CAPTION: line, due to different physical properties.
+#+NAME: fig:background:mlp:effective_efficiencies
+#+ATTR_LATEX: :width 0.7\textwidth
+[[~/phd/Figs/neuralNetworks/effective_efficiency_at_0.95_mlp_mse_300tanh.pdf]]
+
+**** Generate effective efficiency plot                         :noexport:
+
+Before we can compute the effective efficiencies we need the cache
+table. In principle we have it already for the data and calibration
+runs, but we want a plot of all runs as well:
+#+begin_src sh
+./determineDiffusion \
+    ~/CastData/data/DataRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/DataRuns2018_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    ~/CastData/data/CDL_2019/CDL_2019_Reco.h5
+#+end_src
+
+This currently produces the plot =~/Sync/σT_per_run.pdf=, which we
+copied here:
+[[~/phd/Figs/σT_per_run.pdf]]
+
+
+Now we compute the effective efficiencies:
+#+begin_src sh
+./effective_eff_55fe \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --model ~/org/resources/nn_devel_mixing/10_05_23_sgd_gauss_diffusion_tanh300_mse_loss/mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.pt \
+    --ε 0.95 \
+    --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
+    --evaluateFit \
+    --plotDatasets \
+    --plotPath ~/Sync/10_05_23_sgd_tanh300_mse/effective_efficiencies
+  #+end_src
+
+  
+*** Background rate using MLP  
+
+- [ ] plot of background rate. Show 80% software efficiency and 91%.
+  Compare to lnL 80%
 
 ** Additional detector features as vetoes
-
 
 - [ ] *ADD INTRODUCTION TO SECTION ABOUT VETOES*
   -> Make sure to properly get a 'split' from the likelihood cut
@@ -21654,6 +21768,8 @@ the background rate.
 #+NAME: fig:background_rate_all_vetoes
 [[~/org/Figs/statusAndProgress/IAXO_TDR/background_rate_2017_2018_scinti_veto_septem_veto_line_veto.pdf]]
 #+end_center
+
+- [ ] *INCLUDE MLP*
 
 
 *** Example using GridPix3 data
