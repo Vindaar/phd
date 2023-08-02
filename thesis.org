@@ -17251,6 +17251,9 @@ cross-check. Predicting a cut value from two known, neighboring
 energies would likely not work very well. 
 
 *** Verification of software efficiency using calibration data
+:PROPERTIES:
+:CUSTOM_ID: sec:background:mlp:effective_efficiency
+:END:
 
 As the simulated X-ray clusters certainly differ from real X-rays,
 verification of the software efficiency using calibration data is
@@ -17325,7 +17328,6 @@ This currently produces the plot =~/Sync/σT_per_run.pdf=, which we
 copied here:
 [[~/phd/Figs/σT_per_run.pdf]]
 
-
 Now we compute the effective efficiencies:
 #+begin_src sh
 ./effective_eff_55fe \
@@ -17339,13 +17341,174 @@ Now we compute the effective efficiencies:
     --plotPath ~/Sync/10_05_23_sgd_tanh300_mse/effective_efficiencies
   #+end_src
 
-  
-*** Background rate using MLP  
+*** Background rate using MLP 
 
-- [ ] plot of background rate. Show 80% software efficiency and 91%.
-  Compare to lnL 80%
+Applying the MLP cut as explained leads to background rates as
+presented in fig. [[fig:background:mlp:background_rate]], where the MLP is
+compared to the $\ln\mathcal{L}$ cut both at the same software
+efficiency $ε = \SI{80}{\%}$ as well as at a significantly higher
+efficiency of $ε = \SI{91}{\%}$. Note the efficiencies are effective
+efficiencies as explained in
+sec. [[#sec:background:mlp:effective_efficiency]].
+
+The background suppression is significantly improved in particular at
+lower energies, implying other cluster properties provide better
+separation at those than the three inputs used for the likelihood
+cut. The mean background rates between $\SIrange{0.2}{8}{keV}$ for
+each of these are:
+
+\begin{align*}
+b_{\ln\mathcal{L} @ \SI{80}{\%}} &= \SI{2.03e-05}{keV^{-1}.cm^{-2}.s^{-1}} \\
+b_{\text{MLP} @ \SI{80}{\%}} &= \SI{1.15e-05}{keV^{-1}.cm^{-2}.s^{-1}} \\
+b_{\text{MLP} @ \SI{91}{\%}} &= \SI{1.62e-05}{keV^{-1}.cm^{-2}.s^{-1}}
+\end{align*}
+
+#+CAPTION: Comparison of the background rate in the center region of the MLP at different
+#+CAPTION: efficiencies and the standard $\ln\mathcal{L}$. The MLP improves most at
+#+CAPTION: low energies and achieves comparable or better rates at higher efficiencies.
+#+CAPTION: *FIX PLOT LINE*
+#+NAME: fig:background:mlp:background_rate
+#+ATTR_LATEX: :width 0.7\textwidth
+[[~/phd/Figs/background/background_rate_gold_mlp_0.95_0.8_lnL.pdf]]
+
+**** Generate background rate plot for MLP [/]                  :noexport:
+
+Let's generate the background rate plot for the MLP.
+
+We'll want to show 80% effective (so 85%) as direct comparison to LnL,
+91% effective (so 95%) as reference because we use it later and
+compare both to the 80% LnL.
+
+#+begin_src sh :results drawer
+plotBackgroundRate \
+    /home/basti/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R2_crGold_sEff_0.85_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.h5 \
+    /home/basti/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R3_crGold_sEff_0.85_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.h5 \
+    /home/basti/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R2_crGold_sEff_0.95_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.h5 \
+    /home/basti/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R3_crGold_sEff_0.95_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.h5 \
+    ~/org/resources/lhood_limits_automation_correct_duration/likelihood_cdl2018_Run2_crGold.h5 \
+    ~/org/resources/lhood_limits_automation_correct_duration/likelihood_cdl2018_Run3_crGold.h5 \
+    --centerChip 3 \
+    --names "MLP@0.8" --names "MLP@0.8" \
+    --names "MLP@0.91" --names "MLP@0.91" \
+    --names "LnL@0.8" --names "LnL@0.8" \
+    --title "Background rate in center 5·5 mm², MLP at different ε" \
+    --showNumClusters \
+    --region crGold \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --energyMin 0.2 \
+    --outfile background_rate_gold_mlp_0.95_0.8_lnL.pdf \
+    --outpath ~/phd/Figs/background/ \
+    --quiet
+#+end_src
+
+#+RESULTS:
+:results:
+[INFO]:Dataset: LnL@0.8
+[INFO]:	 Integrated background rate in range: 0.2 .. 12.0: 2.2566e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.2 .. 12.0: 1.9124e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.8
+[INFO]:	 Integrated background rate in range: 0.2 .. 12.0: 1.5408e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.2 .. 12.0: 1.3057e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.91
+[INFO]:	 Integrated background rate in range: 0.2 .. 12.0: 2.0473e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.2 .. 12.0: 1.7350e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: LnL@0.8
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 6.2088e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 3.1044e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.8
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 1.9348e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 9.6738e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.91
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 2.7614e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 1.3807e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: LnL@0.8
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 1.1626e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 2.5836e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.8
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 6.2968e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 1.3993e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.91
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 8.5482e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 1.8996e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: LnL@0.8
+[INFO]:	 Integrated background rate in range: 0.2 .. 2.5: 8.2667e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.2 .. 2.5: 3.5942e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.8
+[INFO]:	 Integrated background rate in range: 0.2 .. 2.5: 3.1132e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.2 .. 2.5: 1.3536e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.91
+[INFO]:	 Integrated background rate in range: 0.2 .. 2.5: 4.8017e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.2 .. 2.5: 2.0877e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: LnL@0.8
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 2.6383e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 6.5958e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.8
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 1.8292e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 4.5731e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.91
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 2.5680e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 6.4199e-06 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: LnL@0.8
+[INFO]:	 Integrated background rate in range: 0.2 .. 8.0: 1.5848e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.2 .. 8.0: 2.0317e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.8
+[INFO]:	 Integrated background rate in range: 0.2 .. 8.0: 9.0055e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.2 .. 8.0: 1.1545e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.91
+[INFO]:	 Integrated background rate in range: 0.2 .. 8.0: 1.2664e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.2 .. 8.0: 1.6236e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: LnL@0.8
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 8.1788e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.3631e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.8
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 6.1913e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.0319e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: MLP@0.91
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 8.1612e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.3602e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:DataFrame with 7 columns and 303 rows:
+     Idx       Energy         Rate    totalTime      RateErr      Dataset         yMin         yMax
+  dtype:        float        float     constant        float       string        float        float
+       0            0            0         3159            0      LnL@0.8            0            0
+       1          0.2        2.287         3159       0.6342      LnL@0.8        1.652        2.921
+       2          0.4         5.98         3159        1.026      LnL@0.8        4.955        7.006
+       3          0.6        6.332         3159        1.055      LnL@0.8        5.277        7.387
+       4          0.8         5.98         3159        1.026      LnL@0.8        4.955        7.006
+       5            1         5.98         3159        1.026      LnL@0.8        4.955        7.006
+       6          1.2        3.166         3159       0.7462      LnL@0.8         2.42        3.912
+       7          1.4         2.99         3159       0.7252      LnL@0.8        2.265        3.715
+       8          1.6        2.814         3159       0.7036      LnL@0.8        2.111        3.518
+       9          1.8        3.166         3159       0.7462      LnL@0.8         2.42        3.912
+      10            2        1.583         3159       0.5277      LnL@0.8        1.055        2.111
+      11          2.2        1.759         3159       0.5562      LnL@0.8        1.203        2.315
+      12          2.4       0.8794         3159       0.3933      LnL@0.8       0.4861        1.273
+      13          2.6        1.583         3159       0.5277      LnL@0.8        1.055        2.111
+      14          2.8        2.287         3159       0.6342      LnL@0.8        1.652        2.921
+      15            3        5.101         3159       0.9472      LnL@0.8        4.154        6.048
+      16          3.2        5.277         3159       0.9634      LnL@0.8        4.313         6.24
+      17          3.4        4.221         3159       0.8617      LnL@0.8         3.36        5.083
+      18          3.6        3.342         3159       0.7667      LnL@0.8        2.575        4.109
+      19          3.8        2.111         3159       0.6093      LnL@0.8        1.501         2.72
+
+[INFO]:INFO: storing plot in /home/basti/phd/Figs/background/background_rate_gold_mlp_0.95_0.8_lnL.pdf
+[WARNING]: Printing total background time currently only supported for single datasets.
+:end:
 
 ** Additional detector features as vetoes
+:PROPERTIES:
+:CUSTOM_ID: sec:background:additional_vetoes
+:END:
+
+Next we will cover how the additional detector features can be used as
+vetoes to suppress even more background. We start by looking at the
+scintillators in sec. [[#sec:background:scinti_veto]]. Then we consider
+the FADC as a veto based on time evolution of the events in
+sec. [[#sec:background:fadc_veto]]. Finally, we consider the outer GridPix
+ring as further geometric vetoes in sec. [[#sec:background:septem_veto]]
+and sec. [[#sec:background:line_veto]] in the form of the 'septem veto'
+and the 'line veto'.
 
 - [ ] *ADD INTRODUCTION TO SECTION ABOUT VETOES*
   -> Make sure to properly get a 'split' from the likelihood cut
@@ -19964,6 +20127,9 @@ shell 8009> inti_fadc_septem.log.
 :end:
 
 *** 'Line veto' 
+:PROPERTIES:
+:CUSTOM_ID: sec:background:line_veto
+:END:
 
 There is one more further optional step, dubbed the 'line veto', which
 checks whether there are clusters whose long axis "points at" the
