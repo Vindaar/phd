@@ -23416,17 +23416,20 @@ calculation and the CAST data taking with the Septemboard detector.
   example the final candidates wouldn't show up here. But ok, it's
   *only* the candidates that actually changes.
 
-
-*** Solar axion flux [0/3]
+*** Solar axion flux - $f(g, E_i)$ [0/3]
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:ingredients:solar_axion_flux
+:END:
 
 The solar axion flux for the model to be studied must be known both as
 a function of energy $E$ and also as a differential flux as a function
 of the solar radius to produce the expected axion image via raytracing
-(see sec. [[#sec:raytracing]]).
+(see sec. [[#sec:raytracing]]). 
 
-This means in principle we require knowledge about the production as
-shown in the heatmap of fig. [[fig:limit:axion_production_heatmap]]. (Move
-this to theory?)
+-> This is only for the axion *IMAGE*:
+This means we require knowledge about the production as shown in the
+heatmap of fig. [[fig:limit:axion_production_heatmap]]. (Move this to
+theory?)
 
 - [ ] generate heatmap of production as function of energy and solar
   radius
@@ -23436,6 +23439,68 @@ this to theory?)
   allows us later to have a section "axion-photon" or "chameleon"
   where we just present the inputs "see sec. blub, here's the
   production heatmap" kind of deal
+
+The solar axion flux is based on the calculations by J. Redondo
+\cite{Redondo_2013}. An implementation following it is found in
+*RAYTRACING_CODE*. [fn:axion_flux_raytracing] The code includes the
+calculation of the Primakoff production as well as the ABC
+processes. For the latter the Opacity Project (OPAC) *CITE ME* are
+used, following \cite{Redondo_2013}.
+
+As the input to the limit calculation for the signal $s_i$ the solar
+axion flux $f(g, E_i)$ is needed as a differential flux. For a
+specific set of coupling constants, $g_{ae} = \num{1e-13}$ and $g_{aγ}
+= \SI{1e-12}{GeV⁻¹}$, the flux is shown in
+fig. [[fig:limit:ingredients:flux]]. The data in the plot is computed
+using a Sun ⇔ Earth distance of $d_{S⇔E} = \SI{0.989}{AU}$ due to the
+times of the year in which solar trackings were taken at
+CAST. Fig. [[fig:limit:ingredients:distance_sun_earth]] shows the distance
+between Sun and Earth during the entire data taking period, with the
+solar trackings marked in purple. The data for the distance is
+obtained using the JPL Horizons API.
+
+- [ ] *JPL HORIZONS API CITATION*
+  -> I started the citation in ~references.org~, but it's not finished
+  yet!!!!! There's probably an official citation that one should use
+  for it!
+
+- [X] *Should we show the Earth⇔Sun distance here or in data summary
+  of CAST data taking?*
+  -> For now here. Might be moved at some point.
+
+- [ ] *ADD REFERENCE TO AXIONELECTRONLIMIT*.
+  -> *Rename the repository!* Has nothing to do with a *LIMIT*
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/differential_flux_sun_earth_distance/differential_solar_axion_fluxg_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.pdf}
+    \caption{Solar axion flux}
+    \label{fig:limit:ingredients:solar_axion_flux}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/systematics/sun_earth_distance_cast_solar_tracking.pdf}
+    \caption{Distance Sun-Earth}
+    \label{fig:limit:ingredients:distance_sun_earth}
+  \end{subfigure}%
+  \label{fig:limit:ingredients:flux_distance}
+  \caption{\subref{fig:limit:ingredients:solar_axion_flux} Differential solar axion flux assuming a
+  distance to the Sun of $\SI{0.989}{AU}$ based on \subref{fig:limit:ingredients:distance_sun_earth}}.
+\end{figure}
+
+[fn:axion_flux_raytracing] The code was mainly developed by Johanna
+von Oy under my supervision. I only contributed minor feature additions
+and refactoring, as well as performance related modifications.
+
+**** Generate solar axion flux plot and distance Sun-Earth      :noexport:
+
+Differential flux:
+-> ~readOpacityFiles~
+
+Distance Sun Earth:
+-> ~horizonsAPI~ plus code in ~journal.org~
 
 *** Conversion probability
 
