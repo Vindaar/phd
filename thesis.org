@@ -790,6 +790,9 @@ with our understanding.
 Two main types of models emerged.
 
 ** Implications for axion interactions
+:PROPERTIES:
+:CUSTOM_ID: sec:theory:axion_interactions
+:END:
 
 Axions are apparently not interacting a whole lot, otherwise we'd know
 about them already. Very weak interaction
@@ -803,6 +806,139 @@ Write down effective Lagrangian.
 
 *COHERENCE CONDITION*
 *VACUMM VS GAS*
+
+- [ ] Explain origin of the conversion probability by starting with
+  modified Maxwell equations and then solving the Klein-Gordon
+  equation. The resulting mixing of $A_{\parallel}$ and $a$ leads to it.
+
+The general axion-photon conversion probability in the potential
+presence of a buffer gas inside the magnet, is given by:
+
+#+NAME: eq:theory:full_conversion_prob
+\begin{equation}
+P_{a\rightarrow\gamma} = \left(\frac{g_{a\gamma} B}{2}\right)^2 \frac{1}{q^2 + \Gamma^2 / 4} \left[ 1 + e^{-\Gamma L} - 2e^{-\frac{\Gamma L}{2}} \cos(qL)\right],
+\end{equation}
+
+where $\Gamma$ is the inverse absorption length for photons (or
+attenuation length), $B$ the transverse magnetic field, $L$ the length
+of the magnetic field and $q$ the axion-photon momentum transfer given by:
+
+\[
+q = \left|\frac{m_{\gamma}^2 - m_a^2}{2E_a}\right|
+\]
+
+In the case of vacuum, the attenuation length $Γ$ and effective photon
+mass $m_γ$ are zero. The conversion probability simplifies to:
+
+\begin{align}
+P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B}{2}\right)^2 \frac{1}{q^2} \left[ 1 + 1 - 2 \cos(qL) \right] \\
+P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B L}{2} \right)^2 \left(\frac{\sin\left(\frac{qL}{2}\right)}{ \left( \frac{qL}{2} \right)}\right)^2
+\end{align}
+
+If further the coherence condition $qL < π$ is such that $qL \ll π$,
+the $\sin(x)/x$ term approaches 1 and the relevant conversion
+probability is finally:
+
+#+NAME: eq:theory:conversion_prob
+\begin{equation}
+P_{a\rightarrow\gamma, \text{vacuum}} = \left(\frac{g_{a\gamma} B L}{2} \right)^2 
+\end{equation}
+
+This is the case for long magnets and/or low axion masses. In the
+context of this thesis generally assume it to be the case. The point
+at which this condition does not strictly hold anymore is the axion
+mass at which helioscope experiments start to lose
+sensitivity. Filling the magnet with a buffer gas to induce an
+effective photon mass and thus minimizing $q$ leads to improvements
+and has been done at CAST with $\ce{He4}$ and $\ce{He3}$ fillings. 
+
+Note that the above conversion probability is given in natural
+units. Arguments ($B, L$) need either be converted to natural units as
+well or the missing factors need to be added.
+
+The same equation in SI units is given by:
+\[
+P_{aγ} = ε_0 \hbar c^3 \left( \frac{g_{aγ} B L}{2} \right)^2.
+\]
+
+Looking closely at the units of this expression, the equation as it is
+written uses natural units. This requires either conversion of the
+equation into SI units by adding the "missing" constants or converting
+the SI units into natural units. As the result is a unit less number,
+the latter approach is simpler.
+
+*** Deriving the missing constants in the conversion probability :optional:
+
+The conversion probability is given in natural units. In order to plug
+in SI units directly without the need for a conversion to natural
+units for the magnetic field and length, we need to reconstruct the
+missing constants.
+
+The relevant constants in natural units are:
+
+\begin{align*}
+ε_0 &= \SI{8.8541878128e-12}{A.s.V^{-1}.m^{-1}} \\
+c &= \SI{299792458}{m.s^{-1}} \\
+\hbar &= \frac{\SI{6.62607015e-34}{J.s}}{2π} 
+\end{align*}
+
+which are each set to 1.
+
+If we plug in the definition of a volt we get for $ε_0$ units of:
+
+\[
+\left[ ε_0 \right] = \frac{\si{A^2.s^4}}{\si{kg.m^3}}
+\]
+
+The conversion probability naively in natural units has units of:
+
+\[
+\left[ P_{aγ, \text{natural}} \right] = \frac{\si{T^2.m^2}}{J^2} = \frac{1}{\si{A^2.m^2}}
+\]
+
+where we use the fact that $g_{aγ}$ has units of $\si{GeV^{-1}}$ which
+is equivalent to _units_ of $\si{J^{-1}}$ (care has to be taken with
+the rest of the conversion factors of course!) and Tesla in SI units:
+
+\[
+\left[ B \right] = \si{T} = \frac{\si{kg}}{\si{s^2.A}}
+\]
+
+From the appearance of $\si{A^2}$ in the units of $P_{aγ,
+\text{natural}}$ we know a factor of $ε_0$ is missing. This leaves the
+question of the correct powers of $\hbar$ and $c$, which come out to:
+
+\begin{align*}
+\left[ ε_0 \hbar c^3 \right] &= \frac{\si{A^2.s^4}}{\si{kg.m^3}} \frac{\si{kg.m^2}}{\si{s}}  \frac{\si{m^3}}{\si{s^3}} \\
+  &= \si{A^2.m^2}.
+\end{align*}
+
+So the correct expression in SI units is:
+
+\[
+P_{aγ} = ε_0 \hbar c^3 \left( \frac{g_{aγ} B L}{2} \right)^2
+\]
+
+where now only $g_{aγ}$ needs to be expressed in units of
+$\si{J^{-1}}$ for a correct result using tesla and meter.
+
+
+*** Full simplification of conversion probability in vacuum      :noexport:
+
+The full simplification for the vacuum case from the buffer gas
+conversion probability is as follows:
+
+\begin{align*}
+P_{a\rightarrow\gamma} &= \left(\frac{g_{a\gamma} B}{2}\right)^2 \frac{1}{q^2 + \Gamma^2 / 4} \left[ 1 + e^{-\Gamma L} - 2e^{-\frac{\Gamma L}{2}} \cos(qL)\right] \\
+\text{for vacuum } Γ &= 0, m_γ = 0 \text{ and thus} \\
+P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B}{2}\right)^2 \frac{1}{q^2} \left[ 1 + 1 - 2 \cos(qL) \right] \\
+P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B}{2}\right)^2 \frac{2}{q^2} \left[ 1 - \cos(qL) \right] \\
+P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B}{2}\right)^2 \frac{2}{q^2} \left[ 2 \sin^2\left(\frac{qL}{2}\right) \right] \\
+P_{a\rightarrow\gamma, \text{vacuum}} &= \left(g_{a\gamma} B\right)^2 \frac{1}{q^2} \sin^2\left(\frac{qL}{2}\right) \\
+P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B L}{2} \right)^2 \left(\frac{\sin\left(\frac{qL}{2}\right)}{ \left( \frac{qL}{2} \right)}\right)^2 \\
+P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B L}{2} \right)^2 \left(\frac{\sin\left(\delta\right)}{\delta}\right)^2 \\
+\end{align*}
+
 
 ** Solar axion flux
 
