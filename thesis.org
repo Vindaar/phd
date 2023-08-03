@@ -23506,11 +23506,32 @@ Distance Sun Earth:
 
 The conversion probability of the arriving axions is simply a constant
 factor, depending on $g_{aγ}$, see section
-[[#sec:theory:axion_conversion]] for the derivation from the general
+[[#sec:theory:axion_interactions]] for the derivation from the general
 formula.
 
 The simplified expression for coherent conversion in a constant
-magnetic field \footnote{Note that in a perfect analysis one would
+magnetic field [fn:inhomogeneous_fields] is
+
+\[
+P(g_{aγ}, B, L) = \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2
+\]
+where the relevant numbers for the CAST magnet are:
+- $B = \SI{8.8}{T} ↦ B_{\text{natural}} = \SI{1719.1}{eV^2}$
+- $L = \SI{9.26}{m} ↦ L_{\text{natural}} = \SI{4.69272e7}{eV^{-1}}$.
+
+The magnetic field is taken from the CAST slow control log files and
+matches the values used in the paper of CAST CAPP
+\cite{CAPP_nature} (in contrast to some older papers which assumed $\SI{9}{T}$).
+
+Assuming a fixed axion-photon coupling of $g_{aγ} =
+\SI{1e-12}{GeV^{-1}}$ the conversion probability comes out to:
+\begin{align*}
+P(g_{aγ}, B, L) &= \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2 \\
+               &= \left(\frac{\SI{1e-12}{GeV^{-1}} \cdot \SI{1719.1}{eV^2} \cdot \SI{4.693e7}{eV^{-1}}}{2}\right)^2 \\
+               &= \num{1.627e-21}
+\end{align*}
+
+[fn:inhomogeneous_fields] Note that in a perfect analysis one would
 compute the conversion in a realistic magnetic field, as the field
 strength is not perfectly homogeneous. That would require a very
 precise field map of the magnet. In addition the calculations for
@@ -23521,22 +23542,23 @@ magnet, where each path sees different, varying field strengths. Due
 to the small size of the LHC dipole prototype magnet and general
 stringent requirements for homogeneity this is not done for this
 analysis. However, likely for future (Baby)IAXO analyses this will be
-necessary.} is
+necessary.
 
-\[
-P(g_{aγ}, B, L) = \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2
-\]
-where the relevant numbers for the CAST magnet are:
-- $B = \SI{9}{T}$
-- $L = \SI{9.26}{m}$
-and in the basic axion-electron analysis a fixed axion-photon coupling
-of $g_{aγ} = \SI{1e-12}{\per\giga\electronvolt}$.
+**** TODO for this section [/]                                  :noexport:
 
-Looking closely at the units of this expression, the equation as it is
-written uses natural units. This requires either conversion of the
-equation into SI units by adding the "missing" constants or converting
-the SI units into natural units. As the result is a unit less number,
-the latter approach is simpler.
+- [ ] *FIX CITATION OF CAST CAPP PAPER*
+
+- [X] *Introduce the full expression*
+  -> In theory
+- [X] *Show that it simplifies to sinc(x) case in vacuum*
+  -> In theory
+- [X] *Simplify for small masses sin(x) -> x*
+  -> In theory
+- [X] *Show probability in SI units!*
+  -> In theory
+- [ ] *MENTION 8.8 T from CAPP & CAST SLOW CONTROL LOGS*
+
+**** Computing conversion factors and comparing natural to SI eq. :noexport:
 
 The conversion factors from Tesla and meter to natural units are as follows:
 #+begin_src nim :results raw
@@ -23557,25 +23579,43 @@ As such, the resulting conversion probability ends up as:
 
 #+begin_src nim :results raw
 import unchained, math
-echo "9 T    = ", 9.T.toNaturalUnit()
+echo "8.8 T  = ", 8.8.T.toNaturalUnit()
 echo "9.26 m = ", 9.26.m.toNaturalUnit()
-echo "P      = ", pow( 1e-12.GeV⁻¹ * 9.T.toNaturalUnit() * 9.26.m.toNaturalUnit() / 2.0, 2.0)
+echo "P      = ", pow( 1e-12.GeV⁻¹ * 8.8.T.toNaturalUnit() * 9.26.m.toNaturalUnit() / 2.0, 2.0)
 #+end_src
 
 #+RESULTS:
-9 T    = 1758.18 ElectronVolt²
-9.26 m = 4.69272e+07 ElectronVolt⁻¹
-P      = 1.701818225891982e-21
+8.8 T  = 1719.1 eV²
+9.26 m = 4.69272e+07 eV⁻¹
+P      = 1.627022264358953e-21
 
-\begin{align}
+\begin{align*}
 P(g_{aγ}, B, L) &= \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2 \\
-               &= \left(\frac{\SI{1e-12}{\per GeV} \cdot \SI{1758.18}{eV^2} \cdot \SI{4.693e7}{eV}}{2}\right)^2 \\
-               &= \num{1.702e-21}
-\end{align}
+               &= \left(\frac{\SI{1e-12}{\per GeV} \cdot \SI{1719.1}{eV^2} \cdot \SI{4.693e7}{eV}}{2}\right)^2 \\
+               &= \num{1.627e-21}
+\end{align*}
 
 Note that this is of the same (inverse) order of magnitude as the flux
 of solar axions ($\sim10^{21}$ in some sensible unit of time), meaning
 the experiment expects $\mathcal{O}(1)$ counts, which is sensible.
+
+#+begin_src nim
+import unchained, math
+echo "8.8 T  = ", 8.8.T.toNaturalUnit()
+echo "9.26 m = ", 9.26.m.toNaturalUnit()
+echo "P(natural) = ", pow( 1e-12.GeV⁻¹ * 8.8.T.toNaturalUnit() * 9.26.m.toNaturalUnit() / 2.0, 2.0)
+echo "P(SI)      = ", ε0 * (hp / (2*π)) * (c^3) * (1e-12.GeV⁻¹ * 8.8.T * 9.26.m / 2.0)^2
+#+end_src
+
+#+RESULTS:
+|        8.8 | T | =                     | 1719.1 eV²       |
+|       9.26 | m | =                     | 4.69272e+07 eV⁻¹ |
+| P(natural) | = | 1.627022264358953e-21 |                  |
+|      P(SI) | = | 1.62702e-21 UnitLess  |                  |
+
+As we can see, both approaches yield the same numbers, meaning the
+additional conversion factors are correct.
+
 
 *** TODO Telescope efficiency [/]
 
