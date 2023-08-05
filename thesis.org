@@ -25844,29 +25844,47 @@ the background rejection algorithm has been applied for the data taken
 during the solar tracking. For the computation of the expected limit
 the set of candidates is drawn from the background rate distribution
 via sampling from a Poisson distribution with the mean of the
-background rate. As our background model is not an interpolation
-instead of a binned model with Poisson distributed bins, we create a
-grid of $(x, y, E) = (10, 10, 20)$ cells which we scale such that they
-contain the expected number of candidates from each cell after the
-solar tracking duration, $b_{ijk}$. Then we can walk over the entire
-grid and sample from a Poisson distribution for each grid cell with
-mean $λ_{ijk} = b_{ijk}$. For all sampled candidates $κ_{ijk}$ in each
-grid cell, we then compute a random position and energy from uniform
-distributions along each dimension.
+background rate. As our background model is an interpolation instead
+of a binned model with Poisson distributed bins, we create a grid of
+$(x, y, E) = (10, 10, 20)$ cells from the interpolation, which we
+scale such that they contain the expected number of candidates from
+each cell after the solar tracking duration, $b_{ijk}$. Then we can
+walk over the entire grid and sample from a Poisson distribution for
+each grid cell with mean $λ_{ijk} = b_{ijk}$. For all sampled
+candidates $κ_{ijk}$ in each grid cell, we then compute a random
+position and energy from uniform distributions along each dimension.
+
+A slice of the grid cells centered at $\SI{2.75}{keV}$ is shown in
+fig. \ref{fig:limit:expected_counts}, with the color indicating how
+many candidates are expected in each cell after the solar tracking duration.
 
 A set of toy candidates generated in this manner is shown in
-fig. [[fig:limit:toy_candidates]]. Each point represents one toy candidate
-at its cluster center position. The color scale represents the energy
-of each cluster in \si{keV}.
+fig. \ref{fig:limit:toy_candidate_set}. Each point represents one toy
+candidate at its cluster center position. The color scale represents
+the energy of each cluster in \si{keV}.
 
-#+ATTR_LATEX: :width 0.8\textwidth
-#+CAPTION: A set of toy candidates drawn from the background rate using a Poisson distribution
-#+CAPTION: with mean of the background rate at different positions and energies. Each point is
-#+CAPTION: the center of a cluster with the color scale showing the energy of that cluster.
-#+CAPTIOn: *TODO:* REPLACE THE PLOT!
-#+NAME: fig:limit:toy_candidates
-[[~/org/Figs/statusAndProgress/limitCalculation/problematic_candidates_syst_uncert_limit.pdf]]
-
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/candidate_sampling_grid_index_5.pdf}
+    \caption{Grid of expected counts}
+    \label{fig:limit:expected_counts}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/example_candidates_1.pdf}
+    \caption{Toy candidate set}
+    \label{fig:limit:toy_candidate_set}
+  \end{subfigure}%
+  \label{fig:limit:toy_candidates}
+  \caption{\subref{fig:limit:expected_counts} Expected counts in $(10, 10, 20)$ cells, centered around
+  $\SI{2.75}{keV}$ obtained from background interpolation and normalized back to counts in solar tracking within
+  the volume of the grid cell. 
+  \subref{fig:limit:toy_candidate_set} A set of toy candidates drawn from cells of expected counts using a Poisson distribution
+  with mean based on each grid cell. Each point is the center of a cluster with the color scale showing the energy of that cluster.
+  }
+\end{figure}
 
 *** Systematics
 
