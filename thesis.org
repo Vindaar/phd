@@ -25153,6 +25153,679 @@ proc normalizeValue*(x, radius: float, energyRange: keV, backgroundTime: Hour): 
   result = x / factor
 #+end_src
 
+
+**** Error propagation of background interpolation              :noexport:
+:PROPERTIES:
+:CUSTOM_ID: sec:background_interpolation_uncertainty
+:END:
+
+For obvious reasons the background interpolation suffers from
+statistical uncertainties. Ideally, we compute the resulting error
+from the statistical uncertainty for the points by propagating the
+errors through the whole computation. That is from the nearest
+neighbor lookup, through the sum of the weighted distance calculation
+and then the normalization.
+
+We'll use [[https://github.com/SciNim/Measuremancer]].
+
+#+begin_src nim :tangle /tmp/background_interpolation_error_propagation.nim
+import datamancer, measuremancer, unchained, seqmath
+#+end_src
+Start by importing some data taken from running the main
+program. These are the distances at some energy at pixel (127, 127) to
+the nearest neighbors.
+#+begin_src nim :tangle /tmp/background_interpolation_error_propagation.nim
+when isMainModule:
+  const data = """
+dists
+32.14
+31.89
+29.41
+29.12
+27.86
+21.38
+16.16
+16.03
+"""
+#+end_src
+Parse and look at it:
+#+begin_src nim :tangle /tmp/background_interpolation_error_propagation.nim
+when isMainModule:
+  var df = parseCsvString(data)
+  echo df
+#+end_src
+#+RESULTS:
+| Dataframe |  with | 1 | columns | and | 8 | rows: |
+|       Idx | dists |   |         |     |   |       |
+|    dtype: | float |   |         |     |   |       |
+|         0 | 32.14 |   |         |     |   |       |
+|         1 | 31.89 |   |         |     |   |       |
+|         2 | 29.41 |   |         |     |   |       |
+|         3 | 29.12 |   |         |     |   |       |
+|         4 | 27.86 |   |         |     |   |       |
+|         5 | 21.38 |   |         |     |   |       |
+|         6 | 16.16 |   |         |     |   |       |
+|         7 | 16.03 |   |         |     |   |       |
+|           |       |   |         |     |   |       |
+
+Now import the required transformations of the code, straight from the limit code
+(we will remove all unnecessary bits). First get the radius and sigma
+that we used here:
+#+begin_src nim :tangle /tmp/background_interpolation_error_propagation.nim
+when isMainModule:
+  let Radius = 33.3
+  let Sigma = Radius / 3.0
+  let EnergyRange = 0.3.keV
+#+end_src
+and now the functions:
+#+begin_src nim :tangle /tmp/background_interpolation_error_propagation.nim
+template compValue(tup: untyped, byCount = false): untyped =
+  if byCount:
+    tup.size.float
+  else:
+    # weigh by distance using gaussian of radius being 3 sigma
+    let dists = tup # `NOTE:` not a tuple here anymore
+    var val = 0.0
+    for d in items(dists):
+      val += smath.gauss(d, mean = 0.0, sigma = Sigma)
+    val
+
+defUnit(cm²)    
+proc normalizeValue*[T](x: T, radius, σ: float, energyRange: keV, byCount = false): auto =
+  let pixelSizeRatio = 65536 / (1.4 * 1.4).cm²
+  var area: float
+  if byCount:
+    # case for regular circle with weights 1
+    area = π * radius * radius # area in pixel
+  else:
+    area = -2*Pi*(σ*σ * exp(-1/2 * radius*radius / (σ*σ)) - (σ*σ))
+    
+  let energyRange = energyRange * 2.0 #radius / 6.0 / 256.0 * 12.0 * 2.0 # fraction of full 12 keV range
+                                                # we look at (factor 2 for radius)
+  let backgroundTime = 3300.h.to(Second)
+  let factor = area / pixelSizeRatio * # area in cm²
+    energyRange *
+    backgroundTime
+  result = x / factor
+#+end_src
+=compValue= computes the weighted (or unweighted) distance measure and
+=normalizeValue= computes the correct normalization based on the
+radius. The associated area is obtained using the integration shown in
+the previous section (using sagemath).
+
+Let's check if we can run the computation and see what we get
+#+begin_src nim :tangle /tmp/background_interpolation_error_propagation.nim
+when isMainModule:
+  let dists = df["dists", float]
+  echo "Weighted value : ", compValue(dists)
+  echo "Normalized value : ", compValue(dists).normalizeValue(Radius, Sigma, EnergyRange)
+#+end_src
+#+RESULTS:
+:RESULTS:
+| Weighted value   |                         0.9915005015651535 |
+| Normalized value | 6.07539968974599e-06 CentiMeter⁻²•Second⁻¹ |
+:END:
+
+values that seem reasonable.
+
+To compute the associated errors, we need to promote the functions we
+use above to work with =Measurement[T]= objects. =normalizeValue= we
+can just make generic (DONE). For =compValue= we still need a Gaussian
+implementation (note: we don't have errors associated with $μ$ and $σ$
+for now. We might add that.).
+
+The logic for the error calculation / getting an uncertainty from the
+set of clusters in the search radius is somewhat subtle.
+
+Consider the unweighted case: If we have $N$ clusters, we associate an
+uncertainty to these number of clusters to $ΔN = √N$. Why is that?
+Because:
+\[
+N = Σ_i (1 ± 1) =: f
+\]
+leads to precisely that result using linear error propagation! Each
+value has an uncertainty of $√1$. Computing the uncertainty of a
+single value just yields $√((∂(N)/∂N)² ΔN²) = ΔN$. Doing the same of
+the *sum* of elements, just means 
+\[
+ΔN =  √( Σ_i (∂f/∂N_i)²(ΔN_i)² ) = √( Σ_i 1² ) = √N
+\]
+precisely what we expect.
+
+We can then just treat the gaussian in the same way, namely:
+\[
+f = Σ_i (1 ± 1) * \text{gauss}(\vec{x} - \vec{x_i}, μ = 0, σ)
+\]
+and transform it the same way. This has the effect that points that
+are further away contribute less than those closer!
+
+This is implemented here (thanks to =Measuremancer=, damn):
+#+begin_src nim :tangle /tmp/background_interpolation_error_propagation.nim
+proc gauss*[T](x: T, μ, σ: float): T =
+  let
+    arg = (x - μ) / σ
+    res = exp(-0.5 * arg * arg)
+  result = res
+
+proc compMeasureValue*[T](tup: Tensor[T], σ: float, byCount: bool = false): auto =
+  if byCount:
+    let dists = tup # only a tuple in real interp code
+    let num = tup.size.float
+    var val = 0.0 ± 0.0
+    for d in items(dists):
+      val = val + (1.0 ± 1.0) * 1.0 # last * 1.0 represents the weight that is one !this holds!
+    doAssert val == (num ± sqrt(num)) # sanity check that our math works out
+    val
+  else:
+    # weigh by distance using gaussian of radius being 3 sigma
+    let dists = tup # `NOTE:` not a tuple here anymore
+    var val = 0.0 ± 0.0
+    for d in items(dists):
+      let gv = (1.0 ± 1.0) * gauss(d, μ = 0.0, σ = σ) # equivalent to unweighted but with gaussian weights
+      val = val + gv
+    val
+#+end_src
+
+Time to take our data and plug it into the two procedures:
+#+begin_src nim :tangle /tmp/background_interpolation_error_propagation.nim
+when isMainModule:
+  let dists = df["dists", float]
+  echo "Weighted values (byCount) : ", compMeasureValue(dists, σ = Sigma, byCount = true)
+  echo "Normalized value (byCount) : ", compMeasureValue(dists, σ = Sigma, byCount = true)
+    .normalizeValue(Radius, Sigma, EnergyRange, byCount = true)
+  echo "Weighted values (gauss) : ", compMeasureValue(dists, σ = Sigma, byCount = false)
+  echo "Normalized value (gauss) : ", compMeasureValue(dists, σ = Sigma, byCount = false)
+    .normalizeValue(Radius, Sigma, EnergyRange)
+#+end_src
+#+RESULTS:
+:RESULTS:
+Weighted values (byCount) : 8.00 ± 2.83
+Normalized value (byCount) : 1.08e-05 ± 3.81e-06 CentiMeter⁻²•Second⁻¹
+Weighted values (gauss) : 0.992 ± 0.523
+Normalized value (gauss) : 6.08e-06 ± 3.20e-06 CentiMeter⁻²•Second⁻¹
+:END:
+
+The result mostly makes sense: Namely, in the case of the gaussian, we
+essentially have "less" statistics, because we weigh the events
+further away less. The result is a larger error on the weighted case
+with less statistics.
+
+*Note:* In this particular case the computed background rate is
+significantly lower (but almost within 1σ!) than in the non weighted
+case. This is expected and also essentially proving the correctness of
+the uncertainty. The distances of the points in the input data is
+simply quite far away for all values.
+
+***** Random sampling to simulate background uncertainty
+
+We'll do a simple Monte Carlo experiment to assess the uncertainties
+from a statistical point of view and compare with the results obtained
+in the section above.
+
+First do the sampling of backgrounds part:
+#+begin_src nim :tangle /tmp/background_uncertainty_mc.nim
+import std / [random, math, strformat, strutils]
+
+const outDir = "/home/basti/org/Figs/statusAndProgress/background_interpolation/uncertainty"
+
+import ./sampling_helpers
+proc sampleBackgroundClusters(rng: var Rand, num: int,
+                              sampleFn: (proc(x: float): float)
+                             ): seq[tuple[x, y: int]] =
+  ## Samples a number `num` of background clusters distributed over the whole chip.
+  result = newSeq[tuple[x, y: int]](num)
+  # sample in `y` from function
+  let ySamples = sampleFrom(sampleFn, 0.0, 255.0, num)
+  for i in 0 ..< num:
+    result[i] = (x: rng.rand(255),
+                 y: ySamples[i].round.int)
+
+import ggplotnim, sequtils
+proc plotClusters(s: seq[tuple[x, y: int]], suffix: string) =
+  let df = toDf({"x" : s.mapIt(it.x), "y" : s.mapIt(it.y)})
+  let outname = &"{outDir}/clusters{suffix}.pdf"
+  ggplot(df, aes("x", "y")) + geom_point(size = some(1.0)) +
+    ggtitle(&"Sampling bias: {suffix}. Num clusters: {s.len}") +
+    ggsave(outname)
+
+import unchained
+defUnit(keV⁻¹•cm⁻²•s⁻¹)
+proc computeNumClusters(backgroundRate: keV⁻¹•cm⁻²•s⁻¹, energyRange: keV): float =
+  ## computes the number of clusters we need to simulate a certain background level
+  let goldArea = 5.mm * 5.mm
+  let area = 1.4.cm * 1.4.cm
+  let time = 3300.h
+  # let clusters = 10000 # about 10000 clusters in total chip background
+  result = backgroundRate * area * time.to(Second) * energyRange
+
+import arraymancer, measuremancer
+import ./background_interpolation_error_propagation
+
+
+import numericalnim
+proc compClusters(fn: (proc(x: float): float), numClusters: int): float =
+  proc hFn(x: float, ctx: NumContext[float, float]): float =
+    (numClusters / (256.0 * fn(127.0))) * fn(x)
+  result = simpson(hfn, 0.0, 256.0)
+  doAssert almostEqual(hFn(127.0, newNumContext[float, float]()), numClusters / 256.0)
+
+proc computeToy(rng: var Rand, numClusters: int, radius, σ: float, energyRange: keV,
+                sampleFn: (proc(x: float): float),
+                correctNumClusters = false,
+                verbose = false, suffix = ""): tuple[m: Measurement[keV⁻¹•cm⁻²•s⁻¹],
+                                                     num: int] =
+  var numClusters = numClusters
+  if correctNumClusters:
+    numClusters = compClusters(sampleFn, numClusters).round.int
+  let clusters = rng.sampleBackgroundClusters(numClusters.int, sampleFn)
+  if verbose:
+    plotClusters(clusters, suffix)
+
+  # generate a kd tree based on the data
+
+  let tTree = stack([clusters.mapIt(it.x.float).toTensor,
+                     clusters.mapIt(it.y.float).toTensor], axis = 1)
+  let kd = kdTree(tTree, leafSize = 16, balancedTree = true)
+  let tup = kd.queryBallPoint([127.float, 127.float].toTensor, radius)
+
+  let m = compMeasureValue(tup[0], σ = radius / 3.0, byCount = false)
+      .normalizeValue(radius, σ, energyRange)
+  let num = tup[0].len
+  if verbose:
+    echo "Normalized value (gauss) : ", m, " based on ", num, " clusters in radius"
+  result = (m: m, num: num)
+
+let radius = 33.3
+let σ = radius / 3.0      
+let energyRange = 0.3.keV
+let num = computeNumClusters(5e-6.keV⁻¹•cm⁻²•s⁻¹, energyRange * 2.0).round.int
+
+var rng = initRand(1337)
+import sugar
+# first look at / generate some clusters to see sampling works
+discard rng.computeToy(num, radius, σ, energyRange, sampleFn = (x => 1.0), verbose = true, suffix = "_constant_gold_region_rate")
+# should be the same number of clusters!
+discard rng.computeToy(num, radius, σ, energyRange, sampleFn = (x => 1.0),
+                       correctNumClusters = true,
+                       verbose = true, suffix = "_constant_gold_region_rate_corrected")
+# now again with more statistics
+discard rng.computeToy(100 * num, radius, σ, energyRange, sampleFn = (x => 1.0), verbose = true, suffix = "_constant")
+# should be the same number of clusters!
+discard rng.computeToy(100 * num, radius, σ, energyRange, sampleFn = (x => 1.0),
+                       correctNumClusters = true,
+                       verbose = true, suffix = "_constant_corrected")
+# linear
+discard rng.computeToy(100 * num, radius, σ, energyRange, sampleFn = (x => x), verbose = true, suffix = "_linear")
+# should be the same number of clusters!
+discard rng.computeToy(100 * num, radius, σ, energyRange, sampleFn = (x => x),
+                       correctNumClusters = true,
+                       verbose = true, suffix = "_linear_corrected")
+# square
+discard rng.computeToy(100 * num, radius, σ, energyRange, sampleFn = (x => x*x), verbose = true, suffix = "_square")
+# number of clusters should differ!
+discard rng.computeToy(100 * num, radius, σ, energyRange, sampleFn = (x => x*x),
+                       correctNumClusters = true,
+                       verbose = true, suffix = "_square_corrected")
+# exp
+discard rng.computeToy(100 * num, radius, σ, energyRange, sampleFn = (x => exp(x/64.0)), verbose = true, suffix = "_exp64")
+# number of clusters should differ!
+discard rng.computeToy(100 * num, radius, σ, energyRange, sampleFn = (x => exp(x/64.0)),
+                       correctNumClusters = true,
+                       verbose = true, suffix = "_exp64_corrected") 
+
+proc performToys(nmc: int,
+                 numClusters: int,
+                 sampleFn: (proc(x: float): float),
+                 suffix: string,
+                 correctNumClusters = true): DataFrame =
+  var numClusters = numClusters
+  if correctNumClusters:
+    echo "Old number of clusters: ", numClusters
+    numClusters = compClusters(sampleFn, numClusters).round.int
+    echo "Corrected number of clusters: ", numClusters
+  var data = newSeq[Measurement[keV⁻¹•cm⁻²•s⁻¹]](nmc)
+  var clustersInRadius = newSeq[int](nmc)
+  for i in 0 ..< nmc:
+    if i mod 500 == 0:
+      echo "Iteration: ", i
+    let (m, numInRadius) = rng.computeToy(numClusters, radius, σ, energyRange, sampleFn = sampleFn)
+    data[i] = m
+    clustersInRadius[i] = numInRadius
+
+  let df = toDf({ "values" : data.mapIt(it.value.float),
+                      "errors" : data.mapIt(it.error.float),
+                      "numInRadius" : clustersInRadius })
+  ggplot(df, aes("values")) + geom_histogram(bins = 500) +
+    ggsave(&"{outDir}/background_uncertainty_mc_{suffix}.pdf")
+  ggplot(df, aes("errors")) + geom_histogram(bins = 500) +
+    ggsave(&"{outDir}/background_uncertainty_mc_errors_{suffix}.pdf")
+  if numClusters < 500:
+    ggplot(df, aes("numInRadius")) + geom_bar() +
+      ggsave(&"{outDir}/background_uncertainty_mc_numInRadius_{suffix}.pdf")
+  else:
+    ggplot(df, aes("numInRadius")) + geom_histogram(bins = clustersInRadius.max) +
+      ggsave(&"{outDir}/background_uncertainty_mc_numInRadius_{suffix}.pdf")
+    
+  let dfG = df.gather(["values", "errors"], key = "Type", value = "Value")
+  ggplot(dfG, aes("Value", fill = "Type")) +
+    geom_histogram(bins = 500, position = "identity", hdKind = hdOutline, alpha = some(0.5)) +
+    ggtitle("Sampling bias: {suffix}. NMC = {nmc}, numClusters = {int}") +
+    ggsave(&"{outDir}/background_uncertainty_mc_combined_{suffix}.pdf")
+    
+  result = dfG
+  result["sampling"] = suffix
+
+proc performAllToys(nmc, numClusters: int, suffix = "", correctNumClusters = true) =
+  var df = newDataFrame()
+  df.add performToys(nmc, numClusters, (x => 1.0), "constant", correctNumClusters)
+  df.add performToys(nmc, numClusters, (x => x), "linear", correctNumClusters)
+  df.add performToys(nmc, numClusters, (x => x*x), "square", correctNumClusters)
+  df.add performToys(nmc, numClusters, (x => exp(x/64.0)), "exp_x_div_64", correctNumClusters)
+  #df = if numClusters < 100: df.filter(f{`Value` < 2e-5}) else: df
+  let suffixClean = suffix.strip(chars = {'_'})
+  let pltVals = ggplot(df, aes("Value", fill = "sampling")) +
+    facet_wrap("Type") + 
+    geom_histogram(bins = 500, position = "identity", hdKind = hdOutline, alpha = some(0.5)) +
+    prefer_rows() +
+    ggtitle(&"Comp diff. sampling biases, {suffixClean}. NMC = {nmc}, numClusters = {numClusters}")
+    #ggsave(&"{outDir}/background_uncertainty_mc_all_samplers{suffix}.pdf", height = 600, width = 800)
+
+  # stacked version of number in radius
+  let width = if numClusters < 100: 800.0 else: 1000.0
+  # stacked version
+  ggplot(df.filter(f{`Type` == "values"}), aes("numInRadius", fill = "sampling")) +
+    geom_bar(position = "stack") + 
+    scale_x_discrete() +
+    xlab("# cluster in radius") +
+    ggtitle(&"# clusters in interp radius, {suffixClean}. NMC = {nmc}, numClusters = {numClusters}") +
+    ggsave(&"{outDir}/background_uncertainty_mc_all_samplers_numInRadius_stacked{suffix}.pdf", height = 600, width = width)
+  # ridgeline version
+  ggplot(df.filter(f{`Type` == "values"}), aes("numInRadius", fill = "sampling")) +
+    ggridges("sampling", overlap = 1.3) + 
+    geom_bar(position = "identity") + 
+    scale_x_discrete() +
+    xlab("# cluster in radius") +
+    ggtitle(&"# clusters in interp radius, {suffixClean}. NMC = {nmc}, numClusters = {numClusters}") +
+    ggsave(&"{outDir}/background_uncertainty_mc_all_samplers_numInRadius_ridges{suffix}.pdf", height = 600, width = width)
+    
+  var pltNum: GgPlot
+  # non stacked bar/histogram with alpha
+  if numClusters < 100:
+    pltNum = ggplot(df.filter(f{`Type` == "values"}), aes("numInRadius", fill = "sampling")) +
+      geom_bar(position = "identity", alpha = some(0.5)) +
+      scale_x_discrete() + 
+      ggtitle(&"# clusters in interp radius, {suffixClean}. NMC = {nmc}, numClusters = {numClusters}")
+  else:
+    let binEdges = toSeq(0 .. df["numInRadius", int].max + 1).mapIt(it.float - 0.5)
+    pltNum = ggplot(df.filter(f{`Type` == "values"}), aes("numInRadius", fill = "sampling")) +
+      geom_histogram(breaks = binEdges, hdKind = hdOutline, position = "identity", alpha = some(0.5)) +
+      ggtitle(&"# clusters in interp radius, {suffixClean}. NMC = {nmc}, numClusters = {numClusters}")# +
+  ggmulti([pltVals, pltNum], fname = &"{outDir}/background_uncertainty_mc_all_samplers{suffix}.pdf",
+          widths = @[800], heights = @[600, 300])
+
+# first regular MC  
+const nmc = 100_000
+performAllToys(nmc, num, suffix = "_uncorrected", correctNumClusters = false)
+# and now the artificial increased toy example
+performAllToys(nmc div 10, 10 * num, "_uncorrected_artificial_statistics", correctNumClusters = false)
+## and now with cluster correction
+performAllToys(nmc, num, suffix = "_corrected", correctNumClusters = true)
+# and now the artificial increased toy example
+performAllToys(nmc div 10, 10 * num, "_corrected_artificial_statistics", correctNumClusters = true)
+#+end_src
+
+#+begin_src nim :tangle /tmp/sampling_helpers.nim
+import random, seqmath, sequtils, algorithm
+
+proc cdf[T](data: T): T =
+  result = data.cumSum()
+  result.applyIt(it / result[^1])
+
+proc sampleFromCdf[T](data, cdf: seq[T]): T =
+  # sample an index based on this CDF
+  let idx = cdf.lowerBound(rand(1.0))
+  result = data[idx]
+
+proc sampleFrom*[T](data: seq[T],
+                   start, stop: T,
+                   numSamples: int): seq[T] =
+  # get the normalized (to 1) CDF for this radius
+  let points = linspace(start, stop, data.len)
+  let cdfD = cdf(data)
+  result = newSeq[T](numSamples)
+  for i in 0 ..< numSamples:
+    # sample an index based on this CDF
+    let idx = cdfD.lowerBound(rand(1.0))
+    result[i] = points[idx]
+
+proc sampleFrom*[T](fn: (proc(x: T): T), start, stop: T,
+                   numSamples: int,
+                   numInterp = 10_000): seq[T] =
+  # get the normalized (to 1) CDF for this radius
+  let points = linspace(start, stop, numInterp)
+  let data = points.mapIt(fn(it))
+  let cdfD = cdf(data)
+  result = newSeq[T](numSamples)
+  for i in 0 ..< numSamples:
+    # sample an index based on this CDF
+    let idx = cdfD.lowerBound(rand(1.0))
+    result[i] = points[idx]
+#+end_src
+
+So, from these Monte Carlo toy experiments, we can gleam quite some
+insight.
+
+We have implemented unbiased clusters as well as biased clusters.
+
+First one example for the four different cluster samplers, with the
+condition each time that the *number of total clusters* is the same as
+in the constant background rate case:
+#+begin_center
+#+CAPTION: Example of an unbiased cluster sampling. Sampled 100 times (for better
+#+CAPTION: visibility of the distribution) as many
+#+CAPTION: clusters as predicted for our background data taking.
+#+NAME: unbiased_sampled_background_clusters_uncorrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/clusters_constant.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Example of a linearly biased cluster sampling. Sampled 100 times (for better
+#+CAPTION: visibility of the distribution) as many
+#+CAPTION: clusters as predicted for our background data taking.
+#+NAME: linear_sampled_background_clusters_uncorrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/clusters_linear.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Example of a squarely biased cluster sampling. Sampled 100 times (for better
+#+CAPTION: visibility of the distribution) as many
+#+CAPTION: clusters as predicted for our background data taking.
+#+NAME: square_sampled_background_clusters_uncorrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/clusters_square.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Example of a $\exp(x/64)$ biased cluster sampling. Sampled 100 times (for better
+#+CAPTION: visibility of the distribution) as many
+#+CAPTION: clusters as predicted for our background data taking.
+#+NAME: exp64_sampled_background_clusters_uncorrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/clusters_exp64.pdf]]
+#+end_center
+
+With these in place, we performed two sets of Monte Carlo experiments
+to compute the value & uncertainty of the center point =(127, 127)=
+using the gaussian weighted nearest neighbor interpolation from the
+previous section.
+
+This is done for all four different samplers and the obtained values
+and their errors (propagated via =Measuremancer=) plotted as a
+histogram
+
+Once for the number of expected clusters (based on the gold region
+background rate), fig. [[background_uncertainty_mc_all_samplers]] and once
+for a lower statistics, but much 10 times higher number of clusters,
+fig. [[background_uncertainty_mc_all_samplers_artificial_statistics]]
+
+#+begin_center
+#+CAPTION: Comparison of four different samplers (unbiased + 3 biased), showing the
+#+CAPTION: result of \num{100000} MC toy experiments based on the expected number of
+#+CAPTION: clusters if the same background rate of the gold region covered the whole chip.
+#+CAPTION: Below a bar chart of the number of clusters found inside the radius.
+#+CAPTION: The number of clusters corresponds to about =5e-6 keV⁻¹•cm⁻²•s⁻¹= over the
+#+CAPTION: whole chip.
+#+NAME: background_uncertainty_mc_all_samplers_uncorrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/background_uncertainty_mc_all_samplers_uncorrected.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Comparison of four different samplers (unbiased + 3 biased), showing the
+#+CAPTION: result of \num{10000} MC toy experiments based on the 10 times the expected number of
+#+CAPTION: clusters if the same background rate of the gold region covered the whole chip.
+#+CAPTION: Below a histogram of the number of clusters found inside the radius.
+#+CAPTION: The number of clusters corresponds to about =5e-5 keV⁻¹•cm⁻²•s⁻¹= over the
+#+CAPTION: whole chip.
+#+NAME: background_uncertainty_mc_all_samplers_uncorrected_artificial_statistics
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/background_uncertainty_mc_all_samplers_uncorrected_artificial_statistics.pdf]]
+#+end_center
+
+First of all there is some visible structure in the low statistics
+figure (fig. [[background_uncertainty_mc_all_samplers_uncorrected]]). The
+meaning of it, is not entirely clear to me. Initially, we thought it
+might be an integer effect of 0, 1, 2, ... clusters within the radius
+and the additional slope being from the distance these clusters are
+away from the center. Further away, less weight, less background
+rate. But looking at the number of clusters in the radius (lowest plot
+in the figure), this explanation alone does not really seem to explain it.
+
+For the high statistics case, we can see that the mean of the
+distribution shifts lower and lower, the more extreme the bias is.
+This is likely, because the bias causes a larger and larger number of
+clusters to land near the top corner of the chip, meaning that there
+are less and less clusters found within the point of interpolation.
+Comparing the number of clusters in radius figure for this case shows
+that indeed, the square and exponential bias case show a peak at lower
+energies.
+
+Therefore, I also computed a correction function to compute a biased
+distribution that matches the background rate exactly at the center of
+the chip, but therefore allows for a larger number of sampled clusters
+in total.
+
+We know that (projecting onto the y axis alone), there are:
+
+\[
+∫_0^{256} f(x) dx = N
+\]
+
+where $N$ is the total number of clusters we draw and $f(x)$ the
+function we use to sample. For the constant case, this means that we
+have a rate of $N / 256$ clusters per pixel along the y axis
+(i.e. per row).
+
+So in order to correct for this and compute the new required number of
+clusters in total that gives us the same rate of $N / 256$ in the
+center, we can:
+
+\[
+∫_0^{256} \frac{N}{256 · f(127)} f(x) dx = N'
+\]
+
+where the point $f(127)$ is simply the value of the "background rate"
+the function we currently use produces as is in the center of the
+chip.
+
+Given our definition of the functions (essentially as primitive
+~f(x)= x~, ~f(x) = x * x~, etc. we expect the linear function to match
+the required background rate of the constant case exactly in the
+middle, i.e. at 127. And this is indeed the case (as can be seen in
+the new linear plot below, fig. [[linear_sampled_background_clusters_corrected]]).
+
+This correction has been implemented. The equivalent figures to the
+cluster distributions from further above are:
+
+#+begin_center
+#+CAPTION: Example of an unbiased cluster sampling with the applied correction. 
+#+CAPTION: Sampled 100 times (for better visibility of the distribution) as many
+#+CAPTION: clusters as predicted for our background data taking.
+#+CAPTION: As expected the number of clusters is still the same number as above.
+#+NAME: unbiased_sampled_background_clusters_corrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/clusters_constant_corrected.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Example of a linearly biased cluster sampling with the applied correction.
+#+CAPTION: Sampled 100 times (for better
+#+CAPTION: visibility of the distribution) as many
+#+CAPTION: clusters as predicted for our background data taking.
+#+NAME: linear_sampled_background_clusters_corrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/clusters_linear_corrected.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Example of a squarely biased cluster sampling with the applied correction. Sampled 100 times (for better
+#+CAPTION: visibility of the distribution) as many
+#+CAPTION: clusters as predicted for our background data taking.
+#+CAPTION: The correction means that the total number of clusters is now almost 2500 more than
+#+CAPTION: in the uncorrected case.
+#+NAME: square_sampled_background_clusters_corrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/clusters_square_corrected.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Example of a $\exp(x/64)$ biased cluster sampling with the applied correction. Sampled 100 times (for better
+#+CAPTION: visibility of the distribution) as many
+#+CAPTION: clusters as predicted for our background data taking.
+#+CAPTION: The correction means that the total number of clusters is now almost double the
+#+CAPTION: amount in the uncorrected case.
+#+NAME: exp64_sampled_background_clusters_corrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/clusters_exp64_corrected.pdf]]
+#+end_center
+
+The correction works nicely. It is visible that in the center the
+density seems to be the same as in the constant case.
+
+From here we can again look at the same plots as above, i.e. the
+corrected monte carlo plots:
+
+
+#+begin_center
+#+CAPTION: Comparison of four different samplers (unbiased + 3 biased), showing the
+#+CAPTION: result of \num{100000} MC toy experiments based on the expected number of
+#+CAPTION: clusters such that the background is biased and produces the same background
+#+CAPTION: rate as in the gold region in the constant case.
+#+CAPTION: Below a bar chart of the number of clusters found inside the radius.
+#+CAPTION: The number of clusters corresponds to about =5e-6 keV⁻¹•cm⁻²•s⁻¹= over the
+#+CAPTION: whole chip.
+#+NAME: background_uncertainty_mc_all_samplers_corrected
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/background_uncertainty_mc_all_samplers_corrected.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Comparison of four different samplers (unbiased + 3 biased), showing the
+#+CAPTION: result of \num{10000} MC toy experiments based on the 10 times the expected number of
+#+CAPTION: clusters such that the background is biased and produces the same background
+#+CAPTION: rate as in the gold region in the constant case.
+#+CAPTION: Below a histogram of the number of clusters found inside the radius.
+#+CAPTION: The number of clusters corresponds to about =5e-5 keV⁻¹•cm⁻²•s⁻¹= over the
+#+CAPTION: whole chip.
+#+NAME: background_uncertainty_mc_all_samplers_uncorrected_artificial_statistics
+[[~/org/Figs/statusAndProgress/background_interpolation/uncertainty/background_uncertainty_mc_all_samplers_corrected_artificial_statistics.pdf]]
+#+end_center
+
+It can be nicely seen that the mean of the value is now again at the
+same place for all samplers! This is reassuring, because it implies
+that any systematic uncertainty due to such a bias in our real data is
+*probably* negligible, as the effects will never be as strong as
+simulated here.
+
+Secondly, we can nicely see that the computed uncertainty for a single
+element seems to follow nicely the actual width of the distribution.
+
+In particular this is visible in the artificial high statistics case,
+where the mean value of the error is comparable to the width of the
+=value= histogram.
+
+
 **** Sampling of background interpolation
 
 Take interpolation. For sampling purposes we need to sample from
