@@ -24587,18 +24587,19 @@ remaining after background rejection, see
 fig. [[fig:limit:background_clusters]] where each point is a cluster
 center with the color indicating its energy (similar to the candidates
 plot further up).
-
+- [ ] *CLUSTER PLOT HERE AGAIN?*
 
 For the background we construct a background interpolation based on
 all clusters found in the background dataset. This is done by defining
-$b_i$ as a function of candidate position and energy using
+$b_i$ as a function of candidate position $x_i, y_i$ and energy $E_i$ using
 
 \[
 b_i(x_i, y_i, E_i) = \frac{I(x_i, y_i, E_i)}{W(x_i, y_i, E_i)}
 \]
 
 where $I$ is an intensity defined over clusters within a range $R$ and
-a normalization weight $W$. The intensity is given by
+a normalization weight $W$. From here on we will drop the candidate
+suffix $i$. The intensity is given by
 
 \[
 I(x, y, E) = \sum_{b ∈ \{ \mathcal{D}(\vec{x}_b, \vec{x}) \leq R \}}\mathcal{M}(\vec{x}_b, E_b)
@@ -24617,19 +24618,40 @@ $\mathcal{D}$ to our metric:
   \end{cases}
 \end{equation*}
 
-Finally, the normalization weight is the 'volume' of our measure
+with $\vec{x} = \vektor{x \\ y}$.  Note first of all that this
+effectively describes a cylinder. Any point inside $| \vec{x}_1 -
+\vec{x}_2 | \leq R$ simply yields a euclidean distance, as long as
+their energy is smaller than $R$. Secondly, this requires rescaling
+the energy as a common number $R$, but in practice the implementation
+of this custom metric simply compares energies directly, with the
+'height' in energy of the cylinder expressed as $ΔE$.
+
+The commonly used value for the radius $R$ in the x-y plane are
+$R = \SI{40}{pixel}$ and in energy $ΔE = ± \SI{0.3}{keV}$. The
+standard deviation of the normal distribution for the weighting in the
+measure $σ$ is set to $\frac{R}{3}$.  The basic idea of the measure is
+simply to provide the highest weight to those clusters close to the
+point we evaluate and approach 0 at the edge of $R$ to avoid
+discontinuities in the resulting interpolation.
+
+Finally, the normalization weight $W$ is required to convert the sum
+of $I$ into a background rate. It is the 'volume' of our measure
 within the boundaries set by our metric $\mathcal{D}$:
 
 \begin{align*}
-W(x', y', E') &= ∫_{\mathcal{D}(\vec{x'}, \vec{x}) \leq R} ∫_{E' - E_c}^{E' + E_c} \mathcal{M}(x', y') \, \mathrm{d}x\, \mathrm{d}y\, \mathrm{d} E \\
-  &= ∫_{E' - E_c}^{E' + E_c} ∫_0^R ∫_0^{2π} r \exp\left[ -\frac{1}{2} \frac{\mathcal{D}² }{σ²} \right] \, \mathrm{d}r\, \mathrm{d}φ\, \mathrm{d} E \\
-  &= ∫_{E' - E_c}^{E' + E_c} -2 π \left( σ²  \exp\left[ -\frac{1}{2} \frac{R²}{σ^2} \right] - σ² \right) \, \mathrm{d} E \\
-  &= -4 π E_c \left( σ² \exp\left[ -\frac{1}{2} \frac{R²}{σ^2} \right] - σ² \right), \\
+W(x', y', E') &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_{\mathcal{D}(\vec{x'}, \vec{x}) \leq R} \mathcal{M}(x', y') \, \mathrm{d}x\, \mathrm{d}y\, \mathrm{d} E \\
+  &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_{\mathcal{D}(\vec{x'}, \vec{x}) \leq R} \exp\left[ -\frac{1}{2} \mathcal{D}² / σ² \right] \, \mathrm{d}x \, \mathrm{d}y \, \mathrm{d} E \\
+  &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_0^R ∫_0^{2π} r \exp\left[ -\frac{1}{2} \frac{\mathcal{D}² }{σ²} \right] \, \mathrm{d}r\, \mathrm{d}φ\, \mathrm{d} E \\
+  &= t_B ∫_{E' - E_c}^{E' + E_c} -2 π \left( σ²  \exp\left[ -\frac{1}{2} \frac{R²}{σ^2} \right] - σ² \right) \, \mathrm{d} E \\
+  &= -4 π t_B E_c \left( σ² \exp\left[ -\frac{1}{2} \frac{R²}{σ^2} \right] - σ² \right), \\
 \end{align*}
 
 where we made use of the fact that within the region of interest
 $\mathcal{D}'$ is effectively just a radius $r$ around the point we
-evaluate.
+evaluate. $t_B$ is the total active background data taking time. If
+our measure was $\mathcal{M} = 1$ -- meaning we would count the
+clusters in $\mathcal{D}(\vec{x}, \vec{x}') \leq R$ -- the
+normalization $W$ would simply be the volume of the cylinder.
 
 - [X] *SHOW RESULT OF INTEGRAL, INCLUDE SAGEMATH CALC*
   - [ ] *VERIFY IT IS ACTUALLY CORRECT LIKE THIS RIGHT NOW, i.e. the
@@ -24644,15 +24666,15 @@ chip by the missing area.
 
 Keep in mind the area of a [[https://en.wikipedia.org/wiki/Circular_segment][circle segment]]:
 \[
-A = r² / 2 * (ϑ - sin(ϑ))
+A = r² / 2 · (ϑ - \sin(ϑ))
 \]
 where $r$ is the radius of the circle and ϑ the angle that cuts off
 the circle.
 
-However, in the general case we need to know the area of a circle that
-is cut off from 2 sides. By subtracting the corresponding areas of
-circle segments for each of the lines that cut something off, we
-remove too much. So we need to add back:
+In the general case we need to know the area of a circle that is cut
+off from 2 sides. By subtracting the corresponding areas of circle
+segments for each of the lines that cut something off, we remove too
+much. So we need to add back:
 - another circle segment, of the angle between the two angles given by
   the twice counted area
 - the area of the triangle with the two sides given by $R - r'$ in
@@ -24676,7 +24698,7 @@ where:
 - $D$: the area of the circle segment given by the angles between the
   two cutoff lines touching the circle edge:
   \[
-  D = r² / 2 * (α - sin(α))
+  D = r² / 2 · (α - \sin(α))
   \]
   where $α$ is:
   \[
@@ -24689,30 +24711,70 @@ where:
   \]
   denoted as $ϑ'$ here.
 
-Fig. [[fig:background_interpolation]] shows an example of the background
-interpolation centered at $\SI{3}{keV}, with original background
-clusters used as a basis for the interpolation as crosses.
-- [ ] *INSERT CROSSES FOR CLUSTERS IN THE ENERGY RANGE!*
+Fig. \ref{fig:limit:background_interpolation} shows an example of the background
+interpolation centered at $\SI{3}{keV}$, with all clusters within a
+radius of $\num{40}$ pixels and in an energy range from
+$\SIrange{2.7}{3.3}{keV}$. Fig. \ref{fig:limit:interpolation_clusters}
+shows the initial step of the interpolation, with all colored points
+inside the circle being clusters that are contained in $\mathcal{D}
+\leq R$. Their color represents the weight based on the measure
+$\mathcal{M}$. After normalization and calculation for each point on
+the chip, we get the interpolation shown in
+fig. \ref{fig:limit:background_interpolation_example}.
 
-#+CAPTION: Example of the background interpolation at \SI{3}{keV} computed over the entire
-#+CAPTION: chip. Clusters within $\SIrange{2.70}{3.3}{keV}$ are included in the interpolation.
-#+CAPTION: A smooth, correctly normalized interpolation is obtained.
-#+NAME: fig:background_interpolation
-#+ATTR_LATEX: :width 0.7\textwidth
-[[~/org/Figs/statusAndProgress/limitSanityChecks/normalized_interpolation_at_3.0keV_ymax_5e-05.pdf]]
+Implementation wise, as the lookup of the closest neighbors in general
+is an $N²$ operation for $N$ clusters, all clusters are stored in a
+$k$-d tree, for fast querying of clusters close to the point to be evaluated.
 
+- [ ] *REFERNECE k-d TREE*
 
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/interpolation_clusters_E_3.0_keV_x_110_y_80.pdf}
+    \caption{Intensity at a point}
+    \label{fig:limit:interpolation_clusters}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/normalized_interpolation_at_3.0keV_ymax_5e-05.pdf}
+    \caption{Interpolation}
+    \label{fig:limit:background_interpolation_example}
+  \end{subfigure}%
+  \label{fig:limit:background_interpolation}
+  \caption{\subref{fig:limit:interpolation_clusters} Calculation of intensity $I$ at the center of the red circle.
+  Black crosses indicate \underline{all} background clusters. The red circle indicates cutoff $R$ in the x-y plane. Only
+  clusters with colored dots inside the circle are within $\SIrange{2.70}{3.3}{keV}$. Their color is the weight based
+  on the gaussian metric $\mathcal{D}$. 
+  \subref{fig:limit:background_interpolation_example} Example of the resulting background interpolation at $\SI{3}{keV}$ computed
+  over the entire chip. A smooth, correctly normalized interpolation is obtained.
+  }
+\end{figure}
 
+**** Notes about this section [2/9]                             :noexport:
 Figures:
-1. background clusters
-2. (optional) plot showing "selection" of clusters based on
+1. [X] background clusters
+   -> They are part of the background rate section
+   -> Partially in plot below.
+   Note though that we don't have the exact set of clusters that are
+   used in e.g. the 95% case etc.
+2. [X] (optional) plot showing "selection" of clusters based on
    =queryBallPoint=? I.e. show all clusters in grey, radius & then in
-   color those that are in the radius?
-3. background "interpolation" based purely on query ball point of raw
-   data, at a slice of energy.
+   color those that are in the radius? -> Done
+3. [-] background "interpolation" based purely on query ball point of raw
+   data, at a slice of energy. -> not important enough
 4. in a facet with 3 show same after normalization?
-5. show effect of area cutoff correction. Also results in a "final"
+5. [-] show effect of area cutoff correction. Also results in a "final"
    background rate interpolated.
+   -> Also not that relevant.
+6. [X] interpolation at one slice
+
+
+- [ ] About edge correction:
+  - [ ] Maybe make a quick schematic of Inkscape showing the different
+  areas A, B, C, D, E, F?
+  - [ ] Maybe take most of the description out of the regular thesis?
 
 
 Highlight:
@@ -24726,15 +24788,25 @@ One of the fundamental points about making this whole procedure generic.
   into account in distance aside from whether inside. So gaussian
   weighting only in x/y.
   
-- [ ] use number & distance to these points to compute a weighted
+- [X] use number & distance to these points to compute a weighted
   number of elements in desired "radius"
-- [ ] potentially rescale number based on area cut off due to edges of
+  -> Explained
+- [ ] Explain that energy is rescaled according to a the "radius" of
+  the metric
+- [X] potentially rescale number based on area cut off due to edges of
   the chip. how does this work.
-- [ ] renormalize from an effective "number" of clusters to a rate. . how does rescaling work.
+  -> Just need to rephrase it.
+- [X] renormalize from an effective "number" of clusters to a
+  rate. . how does rescaling work.
+  -> Done
 
 - [ ] explain how the integration works etc, copy from sections
   [[sec:correct_inter_cutoff]] and [[sec:limit:gaussian_weight_normalization]]
   in status.
+  -> Both sections copied now below.
+
+- [X] *INSERT CROSSES FOR CLUSTERS IN THE ENERGY RANGE!*
+  -> Done as a separate plot!
 
 - [ ] *TODO*: check the integration of the gaussian weight again. Is
   that really correct??!! Ahh, it might be correct. What we try to do
