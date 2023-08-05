@@ -25888,16 +25888,100 @@ the energy of each cluster in \si{keV}.
 
 *** Systematics
 
-Talk about the systematics. The different systematics used, the table
-of systematics.
+As explained previously in sec. *SECTION INTRODUCING NUISANCE
+PARAMETERS* we introduce 4 different nuisance parameters to handle
+systematics. These are split by those impacting the signal, the
+background and each position axis independently.
 
+Tab. [[tab:limit:systematic_uncertainties]] shows the different systematic
+uncertainties we consider, whether they affect signal, background or
+the position, their value and finally potential biases due to some
+imperfect knowledge. Note that the listed software efficiency is an
+upper bound. The explicit value depends on the parameter setup for
+which we compute a limit, as each setup with differing software
+efficiency can have differing uncertainties. Further note that the
+accuracy given is purely the result of our estimation on the signal or
+background of the underlying systematic assuming some uncertainty. It
+does not strictly speaking reflect our knowledge of it to that extent.
 
+All individual systematic uncertainties are combined in the form of a
+euclidean distance
+
+\[
+\bar{σ} = \sqrt{\sum_i σ_i²}
+\]
+
+for each type of systematic ($s$, $b$). The combined uncertainties
+come out to
+
+\begin{align*}
+σ_s &\leq \SI{3.38}{\percent} \text{ (assuming } σ_{\text{software}} = \SI{2}{\%} \text{)} \\
+σ_b &= \SI{0.28}{\percent} \\
+σ_{xy} &= \SI{5}{\percent} \text{ (fixed, uncertainty numbers are bounds)}
+\end{align*}
+
+where again the final $σ_s$ depends on the specific setup and the
+given value is for a case of $σ_{\text{software}} = \SI{2}{\%}$, which
+is a bound larger than the observed uncertainties. The position
+uncertainty is fixed by hand to $\SI{5}{\%}$ due to lack of knowledge
+about parameters that could be used to calculate a specific value. The
+numbers in the table represent bounds about the maximum deviation possible.
+
+#+CAPTION: Overview of the different systematics that are considered as well as possible
+#+CAPTION: biases due to our understanding.
+#+NAME: tab:limit:systematic_uncertainties
+#+ATTR_LATEX: :booktabs t
+| Uncertainty                               | s or b?  | rel. σ [%] | bias?                                  | note                                                         |
+|-------------------------------------------+----------+------------+----------------------------------------+--------------------------------------------------------------|
+| Earth <-> Sun distance                    | s        |     0.7732 | none                                   |                                                              |
+| Window thickness (± 10nm)                 | s        |     0.5807 | none                                   |                                                              |
+| Solar models                              | s        |      $< 1$ | none                                   | unclear from plot, need to look at code                      |
+| Magnet length (- 1cm)                     | s        |     0.2159 | likely 9.26m                           |                                                              |
+| Magnet bore diameter (± 0.5mm)            | s        |    2.32558 | have measurements indicating 42.x - 43 |                                                              |
+| Window rotation (30° ± 0.5°)              | s        |    0.18521 | none                                   | rotation seems to be same in both data takings               |
+| Nuisance parameter integration routine    |          |            |                                        | For performance reasons less precise integrations.           |
+| Software efficiency                       | s        |       $<2$ | none                                   | Eff. ε_photo < 2, but ε_escape > 3% (less reliable). Choose!  |
+|-------------------------------------------+----------+------------+----------------------------------------+--------------------------------------------------------------|
+| Gas gain time binning                     | b        |    0.26918 | to 0                                   | Computed background clusters for different gas gain binnings |
+| Reference dist interp (CDL morphing)      | b        |     0.0844 | none                                   |                                                              |
+| Gas gain variation                        | ?        |            |                                        | Partially encoded / fixed w/ gas gain time binning.          |
+| Random coincidences in septem/line veto   |          |            |                                        |                                                              |
+| Background interpolation (params & shape) | b        |          ? | none                                   | From error prop. But unclear interpretation. Statistical.    |
+| Energy calibration                        |          |            |                                        |                                                              |
+|-------------------------------------------+----------+------------+----------------------------------------+--------------------------------------------------------------|
+| Alignment (signal, related mounting)      | s (pos.) |     0.5 mm | none                                   | From X-ray finger & laser alignment                          |
+| Detector mounting precision (±0.25mm)     | s (pos.) |    0.25 mm |                                        | M6 screws in 6.5mm holes. Results in misalignment, above.    |
+| Gas gain vs charge calib fit              |          |          ? | none                                   |                                                              |
+
+- [ ] Missing systematics:
+  - Effective area uncertainty of telescope (Bias to positive!)
+  - See ~statusAndProgress~ section about it!
+
+# | reference                                          |
+# |----------------------------------------------------|
+# | [[#sec:uncertain:distance_earth_sun]]                  |
+# | [[#sec:uncertain:window_thickness]]                    |
+# | [[~/org/Figs/lennert_seb_comparison_solar_models.png]] |
+# | [[#sec:magnet_length_bore_uncertainty]]                |
+# | [[#sec:magnet_length_bore_uncertainty]]                |
+# | [[#sec:window_rotation_uncertainty]]                   |
+# |                                                    |
+# | [[#sec:uncertain:software_efficiency]]                 |
+# |----------------------------------------------------|
+# | [[#sec:uncertain:gas_gain_binning]]                    |
+# | [[#sec:uncertain:cdl_morphing]]                        |
+# |                                                    |
+# | [[#sec:uncertain:random_coincidences]]                 |
+# | [[#sec:uncertain:background_interpolation]]            |
+# | [[#sec:uncertain:energy_calibration]]                  |
+# |----------------------------------------------------|
+# | [[#sec:window_rotation_uncertainty]]                   |
 
 **** Derivation of the systematics                              :noexport:
 
 Copy over from =[status]=. 
 
-**** TODO Update numbers for systematics relating to software efficiency
+**** TODO Update numbers for systematics relating to software efficiency :noexport:
 
 There was the bug mentioned in ~StatusAndProgress~ section
 [[#sec:uncertain:software_efficiency]] about the code there using wrong
