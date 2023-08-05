@@ -32,8 +32,8 @@ proc plotIdx(df: DataFrame, fadcData: Tensor[float], idx: int) =
   ggplot(df, aes("x", "data")) +
     geom_line() +
     geom_point(color = color(0.1, 0.1, 0.1, 0.1)) +
-    geom_line(aes = aes("x", "baseline"),
-              color = "blue") +
+    geom_line(data = df.head(2), aes = aes("x", "baseline"),
+                     color = "blue") +
     geom_line(data = df.head(2), aes = aes("xminX", "xminY"),
                      color = "red") +
     geom_line(data = df.head(2), aes = aes("riseStart", "xminY"),

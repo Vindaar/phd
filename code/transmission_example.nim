@@ -32,4 +32,4 @@ ggplot(df, aes("Energy [keV]", "Trans", color = "Compound")) +
   ggtitle("Transmission examples of $# $# and $# Argon" % [dS, si, dA]) +
   ggsave("/home/basti/phd/Figs/theory/transmission_example.pdf",
          #width = 800, height = 600,
-         useTex = true, standalone = true) 
+         useTex = true, standalone = true)
