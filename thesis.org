@@ -24587,6 +24587,121 @@ fig. [[fig:limit:background_clusters]] where each point is a cluster
 center with the color indicating its energy (similar to the candidates
 plot further up).
 
+
+For the background we construct a background interpolation based on
+all clusters found in the background dataset. This is done by defining
+$b_i$ as a function of candidate position and energy using
+
+\[
+b_i(x_i, y_i, E_i) = \frac{I(x_i, y_i, E_i)}{W(x_i, y_i, E_i)}
+\]
+
+where $I$ is an intensity defined over clusters within a range $R$ and
+a normalization weight $W$. The intensity is given by
+
+\[
+I(x, y, E) = \sum_{b ∈ \{ \mathcal{D}(\vec{x}_b, \vec{x}) \leq R \}}\mathcal{M}(\vec{x}_b, E_b)
+  = \sum_{b ∈ \{ \mathcal{D}(\vec{x}_b, \vec{x}) \leq R \} } \exp \left[ -\frac{1}{2} \mathcal{D}² / σ² \right] \text{ for clarity w/o arguments},
+\]
+
+where we introduce $\mathcal{M}$ to refer to the measure we use and
+$\mathcal{D}$ to our metric:
+
+\begin{equation*}
+\mathcal{D}( (\vec{x}_1, E_1), (\vec{x}_2, E_2)) =
+  \begin{cases}
+    (\vec{x}_1 - \vec{x}_2)² \text{ if } |E_1 - E_2| \leq R \\
+    ∞ \text{ if } (\vec{x}_1 - \vec{x}_2)² > R² \\
+    ∞ \text{ if } |E_1 - E_2| > R
+  \end{cases}
+\end{equation*}
+
+Finally, the normalization weight is the 'volume' of our measure
+within the boundaries set by our metric $\mathcal{D}$:
+
+\begin{align*}
+W(x', y', E') &= ∫_{\mathcal{D}(\vec{x'}, \vec{x}) \leq R} ∫_{E' - E_c}^{E' + E_c} \mathcal{M}(x', y') \, \mathrm{d}x\, \mathrm{d}y\, \mathrm{d} E \\
+  &= ∫_{E' - E_c}^{E' + E_c} ∫_0^R ∫_0^{2π} r \exp\left[ -\frac{1}{2} \frac{\mathcal{D}² }{σ²} \right] \, \mathrm{d}r\, \mathrm{d}φ\, \mathrm{d} E \\
+  &= ∫_{E' - E_c}^{E' + E_c} -2 π \left( σ²  \exp\left[ -\frac{1}{2} \frac{R²}{σ^2} \right] - σ² \right) \, \mathrm{d} E \\
+  &= -4 π E_c \left( σ² \exp\left[ -\frac{1}{2} \frac{R²}{σ^2} \right] - σ² \right), \\
+\end{align*}
+
+where we made use of the fact that within the region of interest
+$\mathcal{D}'$ is effectively just a radius $r$ around the point we
+evaluate.
+
+- [X] *SHOW RESULT OF INTEGRAL, INCLUDE SAGEMATH CALC*
+  - [ ] *VERIFY IT IS ACTUALLY CORRECT LIKE THIS RIGHT NOW, i.e. the
+    math notation*
+
+This yields a smooth and continuous interpolation of the background
+over the entire chip. However, towards the edges of the chip it
+underestimates the background rate, because once part of the cylinder
+is not contained within the chip, fewer clusters contribute. For that
+reason we correct for the chip edges by upscaling the value within the
+chip by the missing area.
+
+Keep in mind the area of a [[https://en.wikipedia.org/wiki/Circular_segment][circle segment]]:
+\[
+A = r² / 2 * (ϑ - sin(ϑ))
+\]
+where $r$ is the radius of the circle and ϑ the angle that cuts off
+the circle.
+
+However, in the general case we need to know the area of a circle that
+is cut off from 2 sides. By subtracting the corresponding areas of
+circle segments for each of the lines that cut something off, we
+remove too much. So we need to add back:
+- another circle segment, of the angle between the two angles given by
+  the twice counted area
+- the area of the triangle with the two sides given by $R - r'$ in
+  length, where $r'$ is the distance that is cut off from the circle.
+
+In combination the area remaining for a circle cut off from two
+(orthogonal, fortunately) lines is:
+
+\[
+E = F - A - B + C + D
+\]
+where:
+- $F$: the total area of the circle
+- $A$: the area of the first circle segment
+- $B$: the area of the second circle segment
+- $C$: the area of the triangle built by the two line cutoffs:
+  \[
+  C = \frac{r' r''}{2} 
+  \]
+  with $r'$ as defined above for cutoff A and $r''$ for cutoff B.
+- $D$: the area of the circle segment given by the angles between the
+  two cutoff lines touching the circle edge:
+  \[
+  D = r² / 2 * (α - sin(α))
+  \]
+  where $α$ is:
+  \[
+  α = π/2 - ϑ_1 - ϑ_2
+  \]
+  where $ϑ_{1,2}$ are the related to the angles $ϑ$ needed to compute
+  each circle segment, by:
+  \[
+  ϑ' = (π - ϑ) / 2
+  \]
+  denoted as $ϑ'$ here.
+
+Fig. [[fig:background_interpolation]] shows an example of the background
+interpolation centered at $\SI{3}{keV}, with original background
+clusters used as a basis for the interpolation as crosses.
+- [ ] *INSERT CROSSES FOR CLUSTERS IN THE ENERGY RANGE!*
+
+#+CAPTION: Example of the background interpolation at \SI{3}{keV} computed over the entire
+#+CAPTION: chip. Clusters within $\SIrange{2.70}{3.3}{keV}$ are included in the interpolation.
+#+CAPTION: A smooth, correctly normalized interpolation is obtained.
+#+NAME: fig:background_interpolation
+#+ATTR_LATEX: :width 0.7\textwidth
+[[~/org/Figs/statusAndProgress/limitSanityChecks/normalized_interpolation_at_3.0keV_ymax_5e-05.pdf]]
+
+
+
 Figures:
 1. background clusters
 2. (optional) plot showing "selection" of clusters based on
