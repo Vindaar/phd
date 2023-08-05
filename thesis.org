@@ -24741,6 +24741,332 @@ One of the fundamental points about making this whole procedure generic.
   the radius, but rather to get the "equivalent area" of the weighted
   data!
 
+**** STARTED Homogeneous background for energies > 2 keV [/]    :noexport:
+:PROPERTIES:
+:CUSTOM_ID: sec:correct_inter_cutoff
+:END:
+
+
+- [ ] finish the final explanation part!!
+- [ ] Remove nowadays understood aspects of below! 
+
+
+The issue with energies larger than 2 keV and performing the
+interpolation of all events larger than 2 in a reasonably large
+radius, has one specific problem.
+
+The plot in fig. [[fig:background_interpolation_larger_2keV]] shows what
+the interpolation for > 2 keV looks like for a radius of 80 pixels.
+
+It is very evident that the background *appears* higher in the center
+area than in the edges / corners of the chip.
+
+The reason for this is pretty obvious once one thinks about it
+deeper. Namely, an event with a significant energy that went through
+decent amounts of diffusion, cannot have its cluster center (given
+that it's X-ray like here) actually close to the edge / corner of the
+detector. On average its center will be half the diffusion radius
+*away* from the edges. If we then interpolate based on the cluster
+center information, we end up at a typical boundary problem, i.e. they
+are underrepresented.
+
+#+begin_center
+#+CAPTION: Background interpolation for 2017/18 X-ray like data for all clusters above \SI{2}{keV}
+#+CAPTION: using a radius of 80 pixels. It is evident that the background in the center appears higher
+#+CAPTION: than at the edges, despite expecting either the opposite or constant background. Reason is
+#+CAPTION: cutoff at edges, so no contributions can come from outside + diffusion causing cluster 
+#+CAPTION: centers to always be a distance away from the edges.
+#+NAME: fig:background_interpolation_larger_2keV
+[[~/org/Figs/statusAndProgress/background_interpolation/background_interp_larger_2keV_radius_80.pdf]]
+#+end_center
+
+Now, what is a good solution for this problem?
+
+In principle we can just say "background is constant over the chip at
+this energy above 2 keV" and neglect the whole interpolation here,
+i.e. set it constant.
+
+If we wish to keep an interpolation around, we will have to modify the
+data that we use to create the actual 2D interpolator.
+
+Of course the same issue is present in the < 2 keV dataset to an
+extent. The question there is: does it matter? Essentially, the
+statement about having *less* background there is factually true. But
+only to the extent of diffusion putting the centers away from the
+edges, *not* from just picking up nothing from the area within the
+search radius that lies outside the chip (where thus no data can be
+found).
+
+Ideally, we correct for this by scaling all points that contain data
+outside the chip by the fraction of area that is within the radius
+divided by the total area. That way we pretend that there is an
+'equal' amount of background found in this area in the full radius
+around the point.
+
+How?
+
+Trigonometry for that isn't fully trivial, but also not super hard.
+
+Keep in mind the area of a [[https://en.wikipedia.org/wiki/Circular_segment][circle segment]]:
+\[
+A = r² / 2 * (ϑ - sin(ϑ))
+\]
+where $r$ is the radius of the circle and ϑ the angle that cuts off
+the circle.
+
+However, in the general case we need to know the area of a circle that
+is cut off from 2 sides. By subtracting the corresponding areas of
+circle segments for each of the lines that cut something off, we
+remove too much. So we need to add back:
+- another circle segment, of the angle between the two angles given by
+  the twice counted area
+- the area of the triangle with the two sides given by $R - r'$ in
+  length, where $r'$ is the distance that is cut off from the circle.
+
+In combination the area remaining for a circle cut off from two
+(orthogonal, fortunately) lines is:
+
+\[
+E = F - A - B + C + D
+\]
+where:
+- $F$: the total area of the circle
+- $A$: the area of the first circle segment
+- $B$: the area of the second circle segment
+- $C$: the area of the triangle built by the two line cutoffs:
+  \[
+  C = \frac{r' r''}{2} 
+  \]
+  with $r'$ as defined above for cutoff A and $r''$ for cutoff B.
+- $D$: the area of the circle segment given by the angles between the
+  two cutoff lines touching the circle edge:
+  \[
+  D = r² / 2 * (α - sin(α))
+  \]
+  where $α$ is:
+  \[
+  α = π/2 - ϑ_1 - ϑ_2
+  \]
+  where $ϑ_{1,2}$ are the related to the angles $ϑ$ needed to compute
+  each circle segment, by:
+  \[
+  ϑ' = (π - ϑ) / 2
+  \]
+  denoted as $ϑ'$ here.
+
+Implemented this as a prototype in:
+[[file:~/org/Misc/circle_segments.nim]]
+*UPDATE*: <2023-03-01 Wed 18:02> which now also lives in TPA in the
+~NimUtil/helpers~ directory!
+
+Next step: incorporate this into the interpolation to re-weight the
+interpolation near the corners.
+
+**** Normalization of gaussian weighted k-d tree background interpolation :noexport:
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:gaussian_weight_normalization
+:END:
+
+
+The background interpolation described above includes multiple steps
+required to finalize it.
+
+As mentioned, we start by building a k-d tree on the data using a
+custom metric:
+
+#+begin_src nim
+proc distance(metric: typedesc[CustomMetric], v, w: Tensor[float]): float =
+  doAssert v.squeeze.rank == 1
+  doAssert w.squeeze.rank == 1
+  let xyDist = pow(abs(v[0] - w[0]), 2.0) + pow(abs(v[1] - w[1]), 2.0)
+  let zDist = pow(abs(v[2] - w[2]), 2.0)
+  if zDist <= Radius * Radius:
+    result = xyDist
+  else:
+    result = zDist
+  #if xyDist > zDist:
+  #  result = xyDist
+  #elif xyDist < zDist and zDist <= Radius:
+  #  result = xyDist
+  #else:
+  #  result = zDist
+#+end_src
+or in pure math:
+
+Let $R$ be a cutoff value.
+\begin{equation}
+\mathcal{D}( (\vec{x}_1, E_1), (\vec{x}_2, E_2)) =
+  \begin{cases}
+    (\vec{x}_1 - \vec{x}_2)² \text{ if } |E_1 - E_2| \leq R \\
+    |E_1 - E_2|
+  \end{cases}
+\end{equation}
+where we make sure to scale the energies such that a value for the
+radius in Euclidean space of the x / y geometry covers the same range
+as it does in energy.
+
+This creates essentially a cylinder. In words it means we use the
+distance in x and y as the actual distance, unless the distance in
+energy is larger than the allowed cutoff, in which case we return it.
+
+This simply assures that:
+- if two clusters are close in energy, but further in Euclidean
+  distance than the allowed cutoff, they will be removed later
+- if two clusters are too far away in energy they will be removed,
+  despite possibly being close in x/y
+- otherwise the distance in energy is *irrelevant*.
+
+The next step is to compute the actual background value associated with each $(x,
+y, E)$ point.
+
+In the most naive approach (as presented in the first few plots in the
+section above), we can associate to each point the number of clusters
+found within a certain radius (including or excluding the energy
+dimension).
+
+For obvious reasons treating each point independent of the distance
+as a single count (pure nearest neighbor) is problematic, as the
+distance matters of course.
+Thus, our choice is a weighted nearest neighbor. Indeed, we weigh the
+distance by normal distribution centered around the location at which
+we want to compute the background.
+
+So, in code our total weight for an individual point is:
+#+begin_src nim
+template compValue(tup: untyped, byCount = false, energyConst = false): untyped =
+  if byCount:
+    tup.idx.size.float # for the pure nearest neighbor case
+  else:
+    # weigh by distance using gaussian of radius being 3 sigma
+    let dists = tup[0]
+    var val = 0.0
+    for d in items(dists):
+      # default, gaussian an energy
+      val += smath.gauss(d, mean = 0.0, sigma = radius / 3.0)
+    val
+#+end_src
+where =tup= contains the distances to all neighbors found within the
+desired radius.
+
+In math this means we first modify our distance measure $\mathcal{D}$
+from above to:
+\begin{equation}
+\mathcal{D'}( (\vec{x}_1, E_1), (\vec{x}_2, E_2)) =
+  \begin{cases}
+    (\vec{x}_1 - \vec{x}_2)² \text{ if } |E_1 - E_2| \leq R \\
+    0 \text{ if } (\vec{x}_1 - \vec{x}_2)² > R² \\
+    0 \text{ if } |E_1 - E_2| > R
+  \end{cases}
+\end{equation}
+to incorporate the nearest neighbor properties of dropping everything
+outside of the radius either in x/y or in (scaled) energy.
+
+\begin{align*}
+I(\vec{x}_e, E_e) &= Σ_i \exp \left[ -\frac{1}{2} \left( \mathcal{D'}((\vec{x}_e, E_e), (\vec{x}_i, E_i)) \right)² / σ² \right] \\
+I(\vec{x}_e, E_e) &= Σ_i \exp \left[ -\frac{1}{2} \mathcal{D'}² / σ² \right] \text{ for clarity w/o arguments}\\
+I(\vec{x}_e, E_e) &= Σ_i \mathcal{M}(\vec{x}_i, E_i) \\
+\text{where we introduce }&\mathcal{M}\text{ to refer to the measure we use.}
+\end{align*}
+where =i= runs over all clusters ($\mathcal{D'}$ takes care of only
+allowing points in the radius to contribute) and the subscript =e= stands
+for the evaluation point. $σ$ is the sigma of the (non-normalized!)
+Gaussian distribution for the weights, which is set to $σ =
+\frac{R}{3}$.
+
+This gives us a valid interpolated value for each possible value of
+position and energy pairs. However, these are still not normalized,
+nor corrected for the cutoff of the radius once it's not fully "on"
+the chip anymore. The normalization is done via the area of circle
+segments, as described in the previous section
+[[#sec:correct_inter_cutoff]].
+
+The normalization will be described next.
+For the case of unweighted points (taking every cluster in the
+'cylinder'), it would simply be done by dividing by the:
+- background data taking time
+- energy range of interest
+- *volume of the cylinder*
+
+But for a weighted distance measure $\mathcal{D'}$, we need to perform the
+integration over the measure (which we do implicitly for the
+non-weighted case by taking the area! Each point simply contributes
+with 1, resulting in the area of the circle).
+
+The necessary integration over the energy can be reduced to simply
+dividing by the energy range (the 'cylinder height' part if one will),
+as everything is constant in the energy direction, i.e. no weighting
+in that axis.
+
+Let's look at what happens in the trivial case for an understanding of
+what we are actually doing when normalizing by area of a non-weighted thing.
+
+The measure in the unweighted case is thus:
+\[
+\mathcal{M}(x, y) = 1
+\]
+
+Now, we need to integrate this measure over the region of interest
+around a point (i.e from a point x over the full radius that  we
+consider):
+
+\begin{align*}
+W &= \int_{x² + y² < R²} \mathcal{M}(x', y')\, \mathrm{d}x \mathrm{d}y \\
+ &= \int_{x² + y² < R²} 1\, \mathrm{d}x \mathrm{d}y \\
+ &= \int_0^R \int_0^{2 π} r\, \mathrm{d}r \mathrm{d}φ \\
+ &= \int_0^{2 π} \frac{1}{2} R² \, \mathrm{d}φ \\
+ &= 2 π\frac{1}{2} R² \\
+ &= π R²
+\end{align*}
+where the additional $r$ after transformation from cartesian
+coordinates to polar coordinates is from the Jacobi determinant (ref:
+https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant#Example_2:_polar-Cartesian_transformation
+as a reminder). For this reason it is important that we start our
+assumption in cartesian coordinates, as otherwise we miss out that
+crucial factor!
+Unexpectedly, the result is simply the area of a circle with radius
+$R$, as we intuitively assumed to be for a trivial measure.
+
+For our actual measure we use:
+\[
+\mathcal{M}(\vec{x}_i, E_i) = \exp \left[ - \frac{1}{2} \mathcal{D'}²((\vec{x}_e, E_e), (\vec{x}_i, E_i)) / σ² \right]
+\]
+the procedure follows in the exact same fashion (we leave out the
+arguments to $\mathcal{D}$ in the further part:
+\begin{align*}
+W &= \int_{x² + y² < R²} \mathcal{M}(x', y')\, \mathrm{d}x \mathrm{d}y \\
+ &= \int_{x² + y² < R²} \exp \left[ - \frac{1}{2} \mathcal{D'}² / σ² \right] \, \mathrm{d}x \mathrm{d}y \\
+ &= \int_0^R \int_0^{2 π} r \exp \left[ - \frac{1}{2} \mathcal{D'}² / σ² \right]\, \mathrm{d}r \mathrm{d}φ 
+\end{align*}
+which can be integrated using standard procedures or just using
+SageMath, ...:
+
+#+begin_src sage :eval no-export
+sage: r = var('r') # for radial variable we integrate over
+sage: σ = var('σ') # for constant sigma
+sage: φ = var('φ') # for angle variable we integrate over
+sage: R = var('R') # for the radius to which we integrate
+sage: assume(R > 0) # required for sensible integration
+sage: f = exp(-r ** 2 / (sqrt(2) * σ) ** 2) * r 
+sage: result = integrate(integrate(f, r, 0, R), φ, 0, 2 * pi)
+sage: result
+-2*pi*(σ^2*e^(-1/2*R^2/σ^2) - σ^2)
+sage: result(R = 100, σ = 33.33333).n()
+6903.76027055093
+#+end_src
+
+The final normalization in code:
+#+begin_src nim
+proc normalizeValue*(x, radius: float, energyRange: keV, backgroundTime: Hour): keV⁻¹•cm⁻²•s⁻¹ =
+  let pixelSizeRatio = 65536 / (1.4 * 1.4).cm²
+  let σ = Sigma
+  ## This comes for integration with `sagemath` over the gaussian weighting. See the notes.
+  let area = -2*π*(σ*σ * exp(-1/2 * radius*radius / (σ*σ)) - (σ*σ))
+  let energyRange = energyRange * 2.0 # we look at (factor 2 for radius)
+  let factor = area / pixelSizeRatio * # area in cm²
+    energyRange *
+    backgroundTime.to(Second)
+  result = x / factor
+#+end_src
 
 **** Sampling of background interpolation
 
