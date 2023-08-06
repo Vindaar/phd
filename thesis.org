@@ -22300,6 +22300,9 @@ build evaluate the integrand efficiently only in those regions of the
 parameter space where the integrand contributes to the integral.
 
 ** Limit method - introduction
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:method_introduction
+:END:
 
 - Context and terminology :: An experiment tries to detect a new
   phenomenon of the kind where you expect very little signal compared
@@ -22351,62 +22354,67 @@ parameter space where the integrand contributes to the integral.
 
 # - [ ] Why do we use the likelihood ratio that we use?
 
-- Implementation :: The likelihood function as described in the 
-  previous section is not helpful to compute a limit for the usage
-  with different datasets as described before. For that case we want
-  to have some kind of a "test statistic" that relates the sensitive
-  dataset with its seen candidates to the background dataset. For
-  practical purposes we prefer to define such a statistic which is
-  monotonically increasing in the number of candidates (see T. Junk's
-  1999 paper for details or read
-  sec. [[#sec:math_behind_cls_plus_b]]). There are different choices
-  possible, but the one we use is:
-  \[
-  Q(s, b) = \prod_i \frac{P_{\text{pois}}(c_i; s_i + b_i)}{P_{\text{pois}}(c_i; b_i)}
-  \]
-  so the ratio of the signal plus background over the pure background
-  hypothesis. The number $c_i$ is the real number of measured
-  *candidates*. So the numerator gives the probability to measure $c_i$
-  counts in each channel $i$ given the signal plus background
-  hypothesis. On the other hand the denominator measures the probability
-  to measure $c_i$ counts in each channel $i$ assuming only the
-  background hypothesis.
-  
-  #+begin_center
-  For each channel $i$ the ratio of probabilities itself is not strictly
-  speaking a probability density function, because the integral
-  
-  \[
-  \int_{-∞}^{∞}Q\, \mathrm{d}x = N \neq 1
-  \]
-  
-  where $N$ can be interpreted as a hypothetical number of total number
-  of counts measured in the experiment. A PDF requires this integral to
-  be 1.
-  
-  As a result the full construct $Q$ of the product of these ratios is
-  technically not a likelihood function either. It is usually referred
-  to as an "extended likelihood function".
-  
-  For all practical purposes though we will continue to treat is as a
-  likelihood function and call it $L$ as usual.
-  #+end_center
-  
-  Note the important fact that $Q$ really is only a function of our
-  signal hypothesis $s$ and our background model $b$. Each experimental
-  outcome *has its own* $Q$. This is precisely why the likelihood
-  function describes everything about an experimental outcome (at least
-  if the signal and background models are reasonably understood) and
-  thus different experiments can be combined by combining them in
-  "likelihood space" (multiplying their $Q$ or adding $\ln Q$ values)
-  to get a combined likelihood to compute a limit for.
+** Limit method - likelihood function
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:method_likelihood
+:END:
 
-- Deriving a practical version of $Q$ :: 
-  The version of $Q$ presented above is still quite impractical to use
+The likelihood function as described in the 
+previous section is not helpful to compute a limit for the usage
+with different datasets as described before. For that case we want
+to have some kind of a "test statistic" that relates the sensitive
+dataset with its seen candidates to the background dataset. For
+practical purposes we prefer to define such a statistic which is
+monotonically increasing in the number of candidates (see T. Junk's
+1999 paper for details or read
+sec. [[#sec:math_behind_cls_plus_b]]). There are different choices
+possible, but the one we use is:
+\[
+\mathcal{L}(s, b) = \prod_i \frac{P_{\text{pois}}(c_i; s_i + b_i)}{P_{\text{pois}}(c_i; b_i)}
+\]
+so the ratio of the signal plus background over the pure background
+hypothesis. The number $c_i$ is the real number of measured
+*candidates*. So the numerator gives the probability to measure $c_i$
+counts in each channel $i$ given the signal plus background
+hypothesis. On the other hand the denominator measures the probability
+to measure $c_i$ counts in each channel $i$ assuming only the
+background hypothesis.
+  
+#+begin_center
+For each channel $i$ the ratio of probabilities itself is not strictly
+speaking a probability density function, because the integral
+
+\[
+\int_{-∞}^{∞}Q\, \mathrm{d}x = N \neq 1
+\]
+
+where $N$ can be interpreted as a hypothetical number of total number
+of counts measured in the experiment. A PDF requires this integral to
+be 1.
+
+As a result the full construct $\mathcal{L}$ of the product of these ratios is
+technically not a likelihood function either. It is usually referred
+to as an "extended likelihood function".
+
+For all practical purposes though we will continue to treat is as a
+likelihood function and call it $L$ as usual.
+#+end_center
+
+Note the important fact that $\mathcal{L}$ really is only a function of our
+signal hypothesis $s$ and our background model $b$. Each experimental
+outcome *has its own* $\mathcal{L}$. This is precisely why the likelihood
+function describes everything about an experimental outcome (at least
+if the signal and background models are reasonably understood) and
+thus different experiments can be combined by combining them in
+"likelihood space" (multiplying their $\mathcal{L}$ or adding $\ln \mathcal{L}$ values)
+to get a combined likelihood to compute a limit for.
+
+- Deriving a practical version of $\mathcal{L}$ :: 
+  The version of $\mathcal{L}$ presented above is still quite impractical to use
   and the ratio of exponentials of the Poisson distributions can be
   simplified significantly:
   \begin{align*}
-    Q &= \prod_i \frac{P(c_i, s_i + b_i)}{P(c_i, b_i)} =
+    \mathcal{L} &= \prod_i \frac{P(c_i, s_i + b_i)}{P(c_i, b_i)} =
         \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)} }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i}} \\
       &= \prod_i \frac{e^{-s_i} (s_i + b_i)^{c_i}}{b_i^{c_i}} =
         e^{-s_\text{tot}} \prod_i \frac{(s_i + b_i)^{c_i}}{b_i^{c_i}} \\
@@ -22425,391 +22433,404 @@ parameter space where the integrand contributes to the integral.
   create channels in _time_ such that each "time bin" is so short as
   to either have 0 entries (most channels) or 1 entry. This means we
   have a large number of channels, but because of our definition of
-  $Q$ this does not matter. All channels with 0 candidates do not
-  contribute to $Q$ (they are $(1 + \frac{s_i}{b_i})^0 = 1$). As a
-  result our expression of $Q$ simplifies further to:
+  $\mathcal{L}$ this does not matter. All channels with 0 candidates do not
+  contribute to $\mathcal{L}$ (they are $(1 + \frac{s_i}{b_i})^0 = 1$). As a
+  result our expression of $\mathcal{L}$ simplifies further to:
 
   \[
-  Q = e^{-s_\text{tot}} \prod_i \left(1 + \frac{s_i}{b_i}\right)
+  \mathcal{L} = e^{-s_\text{tot}} \prod_i \left(1 + \frac{s_i}{b_i}\right)
   \]
 
   where $i$ is now all channels where a candidate is contained ($c_i =
   1$).
+
+** Limit method - computing $\mathcal{L}$
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:method_computing_L
+:END:
   
-- How to explicitly compute $Q$ ::
-  Our simplified version of $Q$ using very short time bins now allows
-  to explicitly compute the likelihood for a set of parameters. Let's
-  now look at each of the constituents $s_{\text{tot}}$, $s_i$ and
-  $b_i$ and discuss how they are computed. We will focus on the
-  explicit case of an X-ray detector behind a telescope at CAST.
+Our simplified version of $\mathcal{L}$ using very short time bins now allows
+to explicitly compute the likelihood for a set of parameters. Let's
+now look at each of the constituents $s_{\text{tot}}$, $s_i$ and
+$b_i$ and discuss how they are computed. We will focus on the
+explicit case of an X-ray detector behind a telescope at CAST.
 
-  Here it is important to note that the signal hypothesis depends on
-  the coupling constant we wish to compute a limit for, we will just
-  call it $g$ in the remainder (it may be $g_{aγ}$ or $g_{ae}$ or any
-  other coupling constant). And this is the actual parameter of $Q$,
-  but more on that in the next section on how a limit is actually
-  computed later.
+Here it is important to note that the signal hypothesis depends on
+the coupling constant we wish to compute a limit for, we will just
+call it $g$ in the remainder (it may be $g_{aγ}$ or $g_{ae}$ or any
+other coupling constant). And this is the actual parameter of $\mathcal{L}$,
+but more on that in the next section on how a limit is actually
+computed later.
 
-  First of all the signal contribution in each channel $s_i$. It is
-  effectively a number of counts that one would expect within the time
-  window of the channel $i$. While this seems tricky given that we
-  have not explicitly defined such a window we can:
-  - either assume our time interval to be infinitesimally small and
-    give a _signal rate_ (i.e. per second)
-  - or make use of the neat property that our expression only contains
-    *the ratio* of $s_i$ and $b_i$. What this means is that we can
-    choose our units ourselves, _as long as we use the same units for
-    $s_i$ as for $b_i$_!
-  We will use the second case and scale each candidate's signal and
-  background contribution to the total tracking time (signal sensitive
-  dataset length).
-  Each parameter with a subscript $i$ is the corresponding value that
-  the candidate has we are currently looking at (e.g. $E_i$ is the energy
-  of the recorded candidate $i$ used to compute the expected signal).
-  #+NAME: eq:limit_method_signal_si
-  \begin{equation}
-  s_i(g) = f(g, E_i) · A · t · P_{a \rightarrow γ}(g_{aγ}) · ε(E_i) · r(x_i, y_i)
-  \end{equation}
-  where:
-  - $f(g, E_i)$ is the axion flux at energy $E_i$ in units of
-    $\si{keV^{-1}.cm^{-2}.s^{-1}}$ as a function of $g$.
-  - $A$ is the area of the magnet bore in $\si{cm²}$
-  - $t$ is the tracking time in $\si{s}$
-  - $P_{a \rightarrow γ}$ is the conversion probability of the axion
-    converting into a photon computed via
-    \[
-    P_{a \rightarrow γ}(g_{aγ}) = \left( \frac{g_{aγ} B L}{2} \right)²
-    \]
-    written in *natural units* (meaning if we wish to use the equation
-    as written here we need to convert $B = \SI{9}{T}$ and $L =
-    \SI{9.26}{m}$ into values expressed in powers of electronvolt
-    $\si{eV}$). 
-  - $ε(E_i)$ is the combined detection efficiency, i.e. the
-    combination of X-ray telescope effective area, the transparency of
-    the detector window and the absorption probability of an X-ray in
-    the gas.
-  - $r(x_i, y_i)$ is the expected amount of flux from the solar axion
-    flux after it is focused by the X-ray telescope in the readout
-    plane of the detector at the candidate's position $(x_i, y_i)$
-    (this requires a raytracing model). It should be expressed as a
-    fractional value in units of $\si{cm^{-2}}$.
-  As a result the units of $s_i$ are then given in
-  $\si{keV^{-1}.cm^{-2}}$ with the tracking time integrated out.
-  If one computes a limit for $g_{aγ}$ then $f$ and $P$ both depend on
-  the coupling of interest. In case of e.g. an axion-electron coupling
-  limit $g_{ae}$ the conversion probability can be treated as constant
-  (with a fixed $g_{aγ}$).
-
-  Secondly the background hypothesis $b_i$ for each channel. Its
-  value depends on whether we assume a constant background model, an
-  energy dependent one or even an energy plus position dependent
-  model. In either case the main point is to evaluate that background
-  model at the (potentially) position $(x_i, y_i)$ of the candidate and
-  energy $E_i$ of the candidate. The value should then be scaled to
-  the same units of as $s_i$, namely
-  $\si{keV^{-1}.cm^{-2}}$. Depending on how the model is defined this
-  might just be a multiplication by the total tracking time in seconds.
-
-  The final piece is the total signal $s_{\text{tot}}$, corresponding
-  to the total number of counts expected from our signal hypothesis
-  for the given dataset. This is nothing else as the integration of
-  $s_i$ over the entire energy range and detection area. However,
-  because $s_i$ implies the signal for candidate $i$, we write $s(E,
-  x, y)$  to mean the equivalent signal as if we had a candidate at
-  $(E, x, y)$
+First of all the signal contribution in each channel $s_i$. It is
+effectively a number of counts that one would expect within the time
+window of the channel $i$. While this seems tricky given that we
+have not explicitly defined such a window we can:
+- either assume our time interval to be infinitesimally small and
+  give a _signal rate_ (i.e. per second)
+- or make use of the neat property that our expression only contains
+  *the ratio* of $s_i$ and $b_i$. What this means is that we can
+  choose our units ourselves, _as long as we use the same units for
+  $s_i$ as for $b_i$_!
+We will use the second case and scale each candidate's signal and
+background contribution to the total tracking time (signal sensitive
+dataset length).
+Each parameter with a subscript $i$ is the corresponding value that
+the candidate has we are currently looking at (e.g. $E_i$ is the energy
+of the recorded candidate $i$ used to compute the expected signal).
+#+NAME: eq:limit_method_signal_si
+\begin{equation}
+s_i(g) = f(g, E_i) · A · t · P_{a \rightarrow γ}(g_{aγ}) · ε(E_i) · r(x_i, y_i)
+\end{equation}
+where:
+- $f(g, E_i)$ is the axion flux at energy $E_i$ in units of
+  $\si{keV^{-1}.cm^{-2}.s^{-1}}$ as a function of $g$.
+- $A$ is the area of the magnet bore in $\si{cm²}$
+- $t$ is the tracking time in $\si{s}$
+- $P_{a \rightarrow γ}$ is the conversion probability of the axion
+  converting into a photon computed via
   \[
-  s_{\text{tot}} = ∫_0^{E_{\text{max}}} ∫_A s(E, x, y) \mathrm{d}E \mathrm{d}x \mathrm{d}y
+  P_{a \rightarrow γ}(g_{aγ}) = \left( \frac{g_{aγ} B L}{2} \right)²
   \]
-  where $A$ simply implies integrating the full area in which $(x, y)$
-  is defined (the axion flux is bounded within a region much smaller
-  than the active detection area and hence all contributions outside
-  are 0).
+  written in *natural units* (meaning if we wish to use the equation
+  as written here we need to convert $B = \SI{9}{T}$ and $L =
+  \SI{9.26}{m}$ into values expressed in powers of electronvolt
+  $\si{eV}$). 
+- $ε(E_i)$ is the combined detection efficiency, i.e. the
+  combination of X-ray telescope effective area, the transparency of
+  the detector window and the absorption probability of an X-ray in
+  the gas.
+- $r(x_i, y_i)$ is the expected amount of flux from the solar axion
+  flux after it is focused by the X-ray telescope in the readout
+  plane of the detector at the candidate's position $(x_i, y_i)$
+  (this requires a raytracing model). It should be expressed as a
+  fractional value in units of $\si{cm^{-2}}$.
+As a result the units of $s_i$ are then given in
+$\si{keV^{-1}.cm^{-2}}$ with the tracking time integrated out.
+If one computes a limit for $g_{aγ}$ then $f$ and $P$ both depend on
+the coupling of interest. In case of e.g. an axion-electron coupling
+limit $g_{ae}$ the conversion probability can be treated as constant
+(with a fixed $g_{aγ}$).
+
+Secondly the background hypothesis $b_i$ for each channel. Its
+value depends on whether we assume a constant background model, an
+energy dependent one or even an energy plus position dependent
+model. In either case the main point is to evaluate that background
+model at the (potentially) position $(x_i, y_i)$ of the candidate and
+energy $E_i$ of the candidate. The value should then be scaled to
+the same units of as $s_i$, namely
+$\si{keV^{-1}.cm^{-2}}$. Depending on how the model is defined this
+might just be a multiplication by the total tracking time in seconds.
+
+The final piece is the total signal $s_{\text{tot}}$, corresponding
+to the total number of counts expected from our signal hypothesis
+for the given dataset. This is nothing else as the integration of
+$s_i$ over the entire energy range and detection area. However,
+because $s_i$ implies the signal for candidate $i$, we write $s(E,
+x, y)$  to mean the equivalent signal as if we had a candidate at
+$(E, x, y)$
+\[
+s_{\text{tot}} = ∫_0^{E_{\text{max}}} ∫_A s(E, x, y) \mathrm{d}E \mathrm{d}x \mathrm{d}y
+\]
+where $A$ simply implies integrating the full area in which $(x, y)$
+is defined (the axion flux is bounded within a region much smaller
+than the active detection area and hence all contributions outside
+are 0).
+
+** Limit method - computing a limit
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:method_computing_a_limit
+:END:
   
-- Computing a limit from $Q$ ::
+With the above we are now able to evaluate $\mathcal{L}$ for a set of
+candidates ${c_i(E_i, x_i, y_i)}$. As mentioned before it is
+important to realize that $\mathcal{L}$ is a function of the coupling constant
+$g$, $\mathcal{L}(g)$ with all other parameters effectively constant in the
+context of "one experiment".
 
-  With the above we are now able to evaluate $Q$ for a set of
-  candidates ${c_i(E_i, x_i, y_i)}$. As mentioned before it is
-  important to realize that $Q$ is a function of the coupling constant
-  $g$, $Q(g)$ with all other parameters effectively constant in the
-  context of "one experiment".
+With this in mind the "limit" is defined as the 95-th percentile of
+$\mathcal{L}(g)$ *within the physical region of $g$* (the region $g < 0$ is
+explicitly ignored, as a coupling constant cannot be negative! This
+can be "rigorously" justified in Bayesian statistics by saying the
+prior $π(g)$ is 0 for $g < 0$.).
 
-  With this in mind the "limit" is defined as the 95-th percentile of
-  $Q(g)$ *within the physical region of $g$* (the region $g < 0$ is
-  explicitly ignored, as a coupling constant cannot be negative! This
-  can be "rigorously" justified in Bayesian statistics by saying the
-  prior $π(g)$ is 0 for $g < 0$.).
+So we can define it implicitly as:
+#+NAME: eq:limit_method:limit_def
+\begin{equation}
+0.95 = \frac{∫_0^{g'} \mathcal{L}(g) \mathrm{d}g}{∫_0^∞ \mathcal{L}(g) \mathrm{d}g}
+\end{equation}
 
-  So we can define it implicitly as:
-  #+NAME: eq:limit_method:limit_def
-  \begin{equation}
-  0.95 = \frac{∫_0^{g'} Q(g) \mathrm{d}g}{∫_0^∞ Q(g) \mathrm{d}g}
-  \end{equation}
-  
-  In practice the integral cannot be evaluated until
-  infinity. Fortunately, our choice of $Q$ in the first place means
-  that the function converges to $0$ quickly for large values of
-  $g$. Therefore, we only need to compute values to a "large enough"
-  value of $g$ to get the shape of $Q(g)$. From there we can use any
-  numerical approach (via an empirical CDF for example) to determine
-  the coupling constant $g'$ that corresponds to the 95-th percentile
-  of $Q(g)$.
+In practice the integral cannot be evaluated until
+infinity. Fortunately, our choice of $\mathcal{L}$ in the first place means
+that the function converges to $0$ quickly for large values of
+$g$. Therefore, we only need to compute values to a "large enough"
+value of $g$ to get the shape of $\mathcal{L}(g)$. From there we can use any
+numerical approach (via an empirical CDF for example) to determine
+the coupling constant $g'$ that corresponds to the 95-th percentile
+of $\mathcal{L}(g)$.
 
-  In an intuitive sense the limit means the following:
-  $\SI{95}{\percent}$ of all coupling constants that reproduce the
-  data we measured - given our signal and background hypotheses - are
-  smaller than $g'$.
+In an intuitive sense the limit means the following:
+$\SI{95}{\percent}$ of all coupling constants that reproduce the
+data we measured - given our signal and background hypotheses - are
+smaller than $g'$.
 
-  Fig. [[fig:limit_method:example_limit_95th_perc]] shows the likelihood
-  as a function of $g_{ae}²$. The blue area is the lower \SI{95}{\%} of the
-  parameter space and the red area is everything below. Therefore, the
-  limit in this particular set of toy candidates is at the
-  intersection of the two colors.
+Fig. [[fig:limit_method:example_limit_95th_perc]] shows the likelihood
+as a function of $g_{ae}²$. The blue area is the lower \SI{95}{\%} of the
+parameter space and the red area is everything below. Therefore, the
+limit in this particular set of toy candidates is at the
+intersection of the two colors.
 
-  #+CAPTION: Example likelihood as a function of $g_{ae}²$ for a set of toy candidates.
-  #+CAPTION: Blue is the lower 95-th percentile of the integral over the likelihood
-  #+CAPTION: function and red the upper 5-th. The limit is at the intersection.
-  #+NAME: fig:limit_method:example_limit_95th_perc
-  [[~/org/Figs/statusAndProgress/limitCalculation/mcmc_histo_example_limit_determination.pdf]]
+#+CAPTION: Example likelihood as a function of $g_{ae}²$ for a set of toy candidates.
+#+CAPTION: Blue is the lower 95-th percentile of the integral over the likelihood
+#+CAPTION: function and red the upper 5-th. The limit is at the intersection.
+#+NAME: fig:limit_method:example_limit_95th_perc
+[[~/org/Figs/statusAndProgress/limitCalculation/mcmc_histo_example_limit_determination.pdf]]
 
-- Drawing toy candidates and computing an expected limit ::
+** Limit method - toy candidate sets and expected limits
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:method_expected_limit
+:END:
 
-  Assuming a constant background over some chip area with only an
-  energy dependence, the background hypothesis can be used to draw toy
-  candidates that can be used in place for the real candidates to
-  compute limits.
+Assuming a constant background over some chip area with only an
+energy dependence, the background hypothesis can be used to draw toy
+candidates that can be used in place for the real candidates to
+compute limits.
 
-  In this situation the background hypothesis can be modeled as
-  follows:
+In this situation the background hypothesis can be modeled as
+follows:
 
-  \[
-  B = \{ P_{\text{Pois}}(k; λ = b_i) \: | \: \text{for all energy bins } E_i \},
-  \]
+\[
+B = \{ P_{\text{Pois}}(k; λ = b_i) \: | \: \text{for all energy bins } E_i \},
+\]
 
-  that is the background is the set of all energy bins $E_i$, where
-  each bin content is described by a Poisson distribution with a mean
-  and expectation value of $λ = b_i$ counts.
+that is the background is the set of all energy bins $E_i$, where
+each bin content is described by a Poisson distribution with a mean
+and expectation value of $λ = b_i$ counts.
 
-  To compute a set of toy candidates then, we simply iterate over all
-  energy bins and draw a number from each Poisson distribution. This
-  is the number of candidates in that bin for the toy. Given that we
-  assumed a constant background over the chip area, we finally need to
-  draw the $(x_i, y_i)$ positions for each toy candidate from a
-  uniform distribution.
+To compute a set of toy candidates then, we simply iterate over all
+energy bins and draw a number from each Poisson distribution. This
+is the number of candidates in that bin for the toy. Given that we
+assumed a constant background over the chip area, we finally need to
+draw the $(x_i, y_i)$ positions for each toy candidate from a
+uniform distribution.
 
-  These sets of toy candidates can be used to compute an "expected
-  limit". The term expected limit is usually understood to mean the
-  median of sets of representative toy candidates. If $L_{t_i}$ is
-  the limit of the toy candidate set $t_i$, the expected limit
-  $\langle L \rangle$ is
-  defined as
+These sets of toy candidates can be used to compute an "expected
+limit". The term expected limit is usually understood to mean the
+median of sets of representative toy candidates. If $L_{t_i}$ is
+the limit of the toy candidate set $t_i$, the expected limit
+$\langle L \rangle$ is
+defined as
 
-  \[
-  \langle L \rangle = \mathrm{median}( \{ L_{t_i} \} )
-  \]
+\[
+\langle L \rangle = \mathrm{median}( \{ L_{t_i} \} )
+\]
 
-  If the number of toy candidate sets is large enough the expected
-  limit should prove accurate. The real limit will then be below or
-  above with $\SI{50}{\%}$ chance each.
+If the number of toy candidate sets is large enough the expected
+limit should prove accurate. The real limit will then be below or
+above with $\SI{50}{\%}$ chance each.
 
-- Including systematics ::
-  
-  The aforementioned likelihood ratio assumes perfect knowledge of the
-  inputs for the signal and background hypotheses. In practice neither
-  of these is known perfectly though. Each input typically has
-  associated a small systematic uncertainty (e.g. the width of the
-  detector window is only known up to N nanometers, the pressure in
-  the chamber only up to M milli bar, magnet length only up to A
-  centimeter etc.). These all affect the "real" numbers one should
-  actually calculate with. So how does one treat these uncertainties?
+** Limit method - extending $\mathcal{L}$ for systematics
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:method_systematics
+:END:
 
-  The basic starting point is realizing that the values we use are our
-  "best guess" of the real value. _Usually_ it is a reasonable
-  approximation that the real value will likely be within some
-  standard deviation around that best guess, following a normal
-  distribution. Further, it is a good idea to identify all systematic
-  uncertainties and classify them by which aspect of $s_i$ or $b_i$
-  they affect (amount of signal or background or the position { in
-  some other type of likelihood function possibly other } ). Another
-  reasonable assumption is to combine different uncertainties of the
-  same type by the square root of their squared sum, i.e. computing
-  the euclidean radius N dimensions (for N uncertainties of the same
-  type).
+The aforementioned likelihood ratio assumes perfect knowledge of the
+inputs for the signal and background hypotheses. In practice neither
+of these is known perfectly though. Each input typically has
+associated a small systematic uncertainty (e.g. the width of the
+detector window is only known up to N nanometers, the pressure in
+the chamber only up to M milli bar, magnet length only up to A
+centimeter etc.). These all affect the "real" numbers one should
+actually calculate with. So how does one treat these uncertainties?
 
-  For example assuming we had these systematics (expressed as
-  relative numbers from the best guess):
-  - signal uncertainties:
-    - magnet length: \SI{0.2}{\%}
-    - magnet bore diameter: \SI{2.3}{\%}
-    - window thickness: \SI{0.6}{\%}
-  - position uncertainty (of where the axion image is projected):
-    - detector alignment: \SI{5}{\%}
-  - background uncertainty:
-    - A: \SI{0.5}{\%} (whatever it may be, all real ones of mine are
-      very specific)
+The basic starting point is realizing that the values we use are our
+"best guess" of the real value. _Usually_ it is a reasonable
+approximation that the real value will likely be within some
+standard deviation around that best guess, following a normal
+distribution. Further, it is a good idea to identify all systematic
+uncertainties and classify them by which aspect of $s_i$ or $b_i$
+they affect (amount of signal or background or the position { in
+some other type of likelihood function possibly other } ). Another
+reasonable assumption is to combine different uncertainties of the
+same type by the square root of their squared sum, i.e. computing
+the euclidean radius N dimensions (for N uncertainties of the same
+type).
 
-  From here we compute 3 combined systematics:
-  - $σ_s = \sqrt{ 0.2² + 2.3² + 0.6²} = \SI{2.38}{\%}$
-  - $σ_p = \SI{5}{\%}$
-  - $σ_b = \SI{0.5}{\%}$
+For example assuming we had these systematics (expressed as
+relative numbers from the best guess):
+- signal uncertainties:
+  - magnet length: \SI{0.2}{\%}
+  - magnet bore diameter: \SI{2.3}{\%}
+  - window thickness: \SI{0.6}{\%}
+- position uncertainty (of where the axion image is projected):
+  - detector alignment: \SI{5}{\%}
+- background uncertainty:
+  - A: \SI{0.5}{\%} (whatever it may be, all real ones of mine are
+    very specific)
 
-  The previous explanation and assumptions already tells us everything
-  about how to encode these uncertainties into the limit
-  calculation. For a value corresponding to our "best guess" we want
-  to recover the likelihood function $Q$ from before. The further we
-  get away from our "best guess" the more the likelihood function
-  should be "penalized", i.e. the actual likelihood of that parameter
-  given our data should be *lower*. We will see in a minute what is
-  meant by "being at the 'best guess'" or "away from it".
+From here we compute 3 combined systematics:
+- $σ_s = \sqrt{ 0.2² + 2.3² + 0.6²} = \SI{2.38}{\%}$
+- $σ_p = \SI{5}{\%}$
+- $σ_b = \SI{0.5}{\%}$
 
-  We encode this by multiplying the initial likelihood $Q$ with
-  additional normal distributions, one for each uncertainty (4 in
-  total in our case, signal, background, and two position
-  uncertainties). Each adds an additional parameter, a "nuisance parameter".
-  
-  To illustrate the details, let's look at the case of adding a single
-  nuisance parameter. In particular we'll look at the nuisance
-  parameter for the signal as it requires more care.
+The previous explanation and assumptions already tells us everything
+about how to encode these uncertainties into the limit
+calculation. For a value corresponding to our "best guess" we want
+to recover the likelihood function $\mathcal{L}$ from before. The further we
+get away from our "best guess" the more the likelihood function
+should be "penalized", i.e. the actual likelihood of that parameter
+given our data should be *lower*. We will see in a minute what is
+meant by "being at the 'best guess'" or "away from it".
 
-  The idea is to express our uncertainty of a parameter - in this case
-  the signal - by introducing an additional parameter $s_i'$. In
-  contrast to $s_i$ it describes a possible _other_ value of $s_i$ due
-  to our systematic uncertainty. For simplicity we rewrite our
-  likelihood $Q$ as $Q'(s_i, s_i', b_i)$:
+We encode this by multiplying the initial likelihood $\mathcal{L}$ with
+additional normal distributions, one for each uncertainty (4 in
+total in our case, signal, background, and two position
+uncertainties). Each adds an additional parameter, a "nuisance parameter".
 
-  \[
-  Q' = e^{-s'_\text{tot}} \prod_i (1 + \frac{s_i'}{b_i}) · \exp\left[-\frac{1}{2} \left(\frac{s_i' - s_i}{σ_s'}\right)² \right]
-  \]
+To illustrate the details, let's look at the case of adding a single
+nuisance parameter. In particular we'll look at the nuisance
+parameter for the signal as it requires more care.
 
-  where $s_i'$ takes the place of the $s_i$. The added gaussian then
-  provides a penalty for any deviation from $s_i$. The standard
-  deviation of the gaussian $σ_s'$ is the actual systematic
-  uncertainty on our parameter $s_i$ in units of $s_i$ (so not in
-  percent as we showed examples further up, but as an effective number
-  of counts { or whatever unit $s_i$ is expressed in } ).
+The idea is to express our uncertainty of a parameter - in this case
+the signal - by introducing an additional parameter $s_i'$. In
+contrast to $s_i$ it describes a possible _other_ value of $s_i$ due
+to our systematic uncertainty. For simplicity we rewrite our
+likelihood $\mathcal{L}$ as $\mathcal{L}'(s_i, s_i', b_i)$:
 
-  This form of adding a secondary parameter $s_i'$ of the same units
-  as $s_i$ is not the most practical, but maybe provides the best
-  explanation as to how the name 'penalty term' arises for the added
-  gaussian. If $s_i = s_i'$ then the exponential term is $1$ meaning
-  the likelihood remains unchanged. For any other value the
-  exponential is $< 1$ _decreasing_ the likelihood $Q'$.
+\[
+\mathcal{L}' = e^{-s'_\text{tot}} \prod_i (1 + \frac{s_i'}{b_i}) · \exp\left[-\frac{1}{2} \left(\frac{s_i' - s_i}{σ_s'}\right)² \right]
+\]
 
-  By a change of variables we can replace the "unitful" parameter
-  $s_i'$ by a unitless number $ϑ_s$. We would like the exponential to
-  be $\exp(-ϑ_s²/(2 σ_s²))$ to only express deviation from our
-  best guess $s_i$. $ϑ_s = 0$ means no deviation and $|ϑ_s| = 1$
-  implies $s_i = -s_i'$. Note that the standard deviation of this is
-  now $σ_s$ and *not* $σ_s'$ as seen in the expression above. This
-  $σ_s$ corresponds to our systematic uncertainty on the signal as a
-  percentage.
+where $s_i'$ takes the place of the $s_i$. The added gaussian then
+provides a penalty for any deviation from $s_i$. The standard
+deviation of the gaussian $σ_s'$ is the actual systematic
+uncertainty on our parameter $s_i$ in units of $s_i$ (so not in
+percent as we showed examples further up, but as an effective number
+of counts { or whatever unit $s_i$ is expressed in } ).
 
-  To arrive at this expression:
+This form of adding a secondary parameter $s_i'$ of the same units
+as $s_i$ is not the most practical, but maybe provides the best
+explanation as to how the name 'penalty term' arises for the added
+gaussian. If $s_i = s_i'$ then the exponential term is $1$ meaning
+the likelihood remains unchanged. For any other value the
+exponential is $< 1$ _decreasing_ the likelihood $\mathcal{L}'$.
 
-  \begin{align*}
-  \frac{s_i' - s_i}{σ_s'} &= \frac{ϑ_s}{σ_s} \\
-  \Rightarrow s_i' &= \frac{σ_s'}{σ_s} ϑ_s + s_i \\
-  \text{with } s_i &= \frac{σ_s'}{σ_s} \\
-  s_i' &= s_i + s_i ϑ_s \\
-  \Rightarrow s_i' &= s_i (1 + ϑ_s) \\
-  \end{align*}
+By a change of variables we can replace the "unitful" parameter
+$s_i'$ by a unitless number $ϑ_s$. We would like the exponential to
+be $\exp(-ϑ_s²/(2 σ_s²))$ to only express deviation from our
+best guess $s_i$. $ϑ_s = 0$ means no deviation and $|ϑ_s| = 1$
+implies $s_i = -s_i'$. Note that the standard deviation of this is
+now $σ_s$ and *not* $σ_s'$ as seen in the expression above. This
+$σ_s$ corresponds to our systematic uncertainty on the signal as a
+percentage.
 
-  where we made use of the fact that the two standard deviations are
-  related by the signal $s_i$ (which can be seen by defining $ϑ_s$ as
-  the normalized difference $ϑ_s = \frac{s'_i - s_i}{s_i}$).
-  
-  This results in the following final (single nuisance parameter)
-  likelihood $Q'$:
-  
-  \[
-  Q' = e^{-s'_\text{tot}} \prod_i (1 + \frac{s_i'}{b_i}) · \exp\left[-\frac{1}{2} \left(\frac{ϑ_s}{σ_s}\right)² \right]
-  \]
+To arrive at this expression:
 
-  where $s_i' = s_i (1 + ϑ_s)$ and similarly $s_{\text{tot}}' =
-  s_{\text{tot}} ( 1 + ϑ_s )$ (the latter just follows because $1 +
-  ϑ_s$ is a constant under the different channels $i$, see the
-  appendix below).
+\begin{align*}
+\frac{s_i' - s_i}{σ_s'} &= \frac{ϑ_s}{σ_s} \\
+\Rightarrow s_i' &= \frac{σ_s'}{σ_s} ϑ_s + s_i \\
+\text{with } s_i &= \frac{σ_s'}{σ_s} \\
+s_i' &= s_i + s_i ϑ_s \\
+\Rightarrow s_i' &= s_i (1 + ϑ_s) \\
+\end{align*}
 
-  The same approach is used to encode the background systematic
-  uncertainty. The position uncertainty is generally handled the same,
-  but the $x$ and $y$ coordinates are treated separately.
+where we made use of the fact that the two standard deviations are
+related by the signal $s_i$ (which can be seen by defining $ϑ_s$ as
+the normalized difference $ϑ_s = \frac{s'_i - s_i}{s_i}$).
 
-  As shown in eq. [[eq:limit_method_signal_si]] the signal $s_i$ actually
-  depends on the positions $(x_i, y_i)$ of each candidate via the
-  raytracing image $r$.
+This results in the following final (single nuisance parameter)
+likelihood $\mathcal{L}'$:
 
-  With this we can introduce the nuisance parameters by replacing $r$
-  by an $r'$ such that \[ r' ↦ r(x_i - x'_i, y_i - y'_i) \] which
-  effectively moves the center position by $(x'_i, y'_i)$. In addition
-  we need to add penalty terms for each of these introduced
-  parameters:
-  
-  \[
-  \mathcal{L}' = \exp[-s] \cdot \prod_i \left(1 + \frac{s'_i}{b_i}\right) \cdot
-    \exp\left[-\left(\frac{x_i - x'_i}{\sqrt{2}σ} \right)² \right] \cdot \exp\left[-\left(\frac{x_i - x'_i}{\sqrt{2}σ} \right)² \right]
-  \]
-  
-  where $s'_i$ is now the modification from above using $r'$ instead
-  of $r$. Now we perform the same substitution as we do for $θ_b$ and
-  $θ_s$  to arrive at:
-  
-  \[
-  \mathcal{L}' = \exp[-s] \cdot \prod_i \left(1 + \frac{s'_i}{b_i}\right) \cdot
-    \exp\left[-\left(\frac{θ_x}{\sqrt{2}σ_x} \right)² \right] \cdot \exp\left[-\left(\frac{θ_y}{\sqrt{2}σ_y} \right)² \right]
-  \]
-  
-  The substitution for $r'$ means the following for the parameters:
-  \[
-  r' = r\left(x (1 + θ_x), y (1 + θ_y)\right)
-  \]
-  where essentially a deviation of $|θ| = 1$ means we move the spot
-  to the edge of the chip.
+\[
+\mathcal{L}' = e^{-s'_\text{tot}} \prod_i (1 + \frac{s_i'}{b_i}) · \exp\left[-\frac{1}{2} \left(\frac{ϑ_s}{σ_s}\right)² \right]
+\]
 
-  Putting all these four nuisance parameters together we have
+where $s_i' = s_i (1 + ϑ_s)$ and similarly $s_{\text{tot}}' =
+s_{\text{tot}} ( 1 + ϑ_s )$ (the latter just follows because $1 +
+ϑ_s$ is a constant under the different channels $i$, see the
+appendix below).
 
-  #+NAME: eq:limit_method:likelihood_function_def
-  \begin{align}
-  Q' &= \left(\prod_i \frac{P_{\text{pois}}(n_i; s_i + b_i)}{P_{\text{pois}}(n_i; b_i)}\right) \cdot \mathcal{N}(θ_s, σ_s)
-  \cdot \mathcal{N}(θ_b, σ_b) \cdot \mathcal{N}(θ_x, σ_x) \cdot \mathcal{N}(θ_y, σ_y) \\
-  Q'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y) &= e^{s'_\text{tot}} \prod_i (1 + \frac{s_i''}{b_i'}) ·
-    \exp\left[-\frac{1}{2} \left(\frac{ϑ_s}{σ_s}\right)² 
-      -\frac{1}{2} \left(\frac{ϑ_b}{σ_b}\right)² 
-      -\frac{1}{2} \left(\frac{ϑ_x}{σ_x}\right)² 
-      -\frac{1}{2} \left(\frac{ϑ_y}{σ_y}\right)² \right]
-  \end{align}
+The same approach is used to encode the background systematic
+uncertainty. The position uncertainty is generally handled the same,
+but the $x$ and $y$ coordinates are treated separately.
 
-  where here the doubly primed $s_i''$ refers to modification for the
-  signal nuisance parameter _as well as_ for the position uncertainty
-  via $r'$.
+As shown in eq. [[eq:limit_method_signal_si]] the signal $s_i$ actually
+depends on the positions $(x_i, y_i)$ of each candidate via the
+raytracing image $r$.
 
-- Computing a limit with nuisance parameters ::
+With this we can introduce the nuisance parameters by replacing $r$
+by an $r'$ such that \[ r' ↦ r(x_i - x'_i, y_i - y'_i) \] which
+effectively moves the center position by $(x'_i, y'_i)$. In addition
+we need to add penalty terms for each of these introduced
+parameters:
 
-  The likelihood function we started with $Q$ was only a function of
-  the coupling constant $g$ we want to compute a limit for. With the
-  inclusion of the four nuisance parameters however, $Q'$ is now a
-  function of 5 parameters, $Q'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y)$. Following our
-  definition of a limit via a fixed percentile of the integral over
-  the coupling constant, eq. [[eq:limit_method:limit_def]], leads to
-  problem for $Q'$. If anything one could define a contour describing
-  the 95-th percentile of the "integral volume", but this would lead
-  to infinitely many values of $g$ that describe said contour.
+\[
+\mathcal{L}' = \exp[-s] \cdot \prod_i \left(1 + \frac{s'_i}{b_i}\right) \cdot
+  \exp\left[-\left(\frac{x_i - x'_i}{\sqrt{2}σ} \right)² \right] \cdot \exp\left[-\left(\frac{x_i - x'_i}{\sqrt{2}σ} \right)² \right]
+\]
 
-  As a result to still define a sane limit value, the concept of the
-  [[https://en.wikipedia.org/wiki/Marginal_likelihood][marginal likelihood]] function $Q'_M$ is introduced. The idea is to
-  integrate out the nuisance parameters
+where $s'_i$ is now the modification from above using $r'$ instead
+of $r$. Now we perform the same substitution as we do for $θ_b$ and
+$θ_s$  to arrive at:
 
-  \[
-  Q'_M(g) = \iiiint_{-∞}^∞ Q'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y)\,\mathrm{d}ϑ_s\mathrm{d}ϑ_b\mathrm{d}ϑ_x\mathrm{d}ϑ_y
-  \]
+\[
+\mathcal{L}' = \exp[-s] \cdot \prod_i \left(1 + \frac{s'_i}{b_i}\right) \cdot
+  \exp\left[-\left(\frac{θ_x}{\sqrt{2}σ_x} \right)² \right] \cdot \exp\left[-\left(\frac{θ_y}{\sqrt{2}σ_y} \right)² \right]
+\]
 
-  Depending on the exact definition of $Q'$ in use these integrals
-  may be analytically computable. In many cases however they are not
-  and numerical techniques to evaluate the integral must be utilized.
+The substitution for $r'$ means the following for the parameters:
+\[
+r' = r\left(x (1 + θ_x), y (1 + θ_y)\right)
+\]
+where essentially a deviation of $|θ| = 1$ means we move the spot
+to the edge of the chip.
 
-  Aside from the technical aspects about how to evaluate $Q'_M(g)$ at
-  a specific $g$, the limit calculation continues exactly as for the
-  case without nuisance parameters once $Q'_M(g)$ is defined as such.
+Putting all these four nuisance parameters together we have
 
-- Practical calculation of $Q'_M(g)$ in our case ::
+#+NAME: eq:limit_method:likelihood_function_def
+\begin{align}
+\mathcal{L}' &= \left(\prod_i \frac{P_{\text{pois}}(n_i; s_i + b_i)}{P_{\text{pois}}(n_i; b_i)}\right) \cdot \mathcal{N}(θ_s, σ_s)
+\cdot \mathcal{N}(θ_b, σ_b) \cdot \mathcal{N}(θ_x, σ_x) \cdot \mathcal{N}(θ_y, σ_y) \\
+\mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y) &= e^{s'_\text{tot}} \prod_i (1 + \frac{s_i''}{b_i'}) ·
+  \exp\left[-\frac{1}{2} \left(\frac{ϑ_s}{σ_s}\right)² 
+    -\frac{1}{2} \left(\frac{ϑ_b}{σ_b}\right)² 
+    -\frac{1}{2} \left(\frac{ϑ_x}{σ_x}\right)² 
+    -\frac{1}{2} \left(\frac{ϑ_y}{σ_y}\right)² \right]
+\end{align}
+
+where here the doubly primed $s_i''$ refers to modification for the
+signal nuisance parameter _as well as_ for the position uncertainty
+via $r'$.
+
+** Limit method - evaluating $\mathcal{L}$ with nuisance parameters
+
+The likelihood function we started with $\mathcal{L}$ was only a function of
+the coupling constant $g$ we want to compute a limit for. With the
+inclusion of the four nuisance parameters however, $\mathcal{L}'$ is now a
+function of 5 parameters, $\mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y)$. Following our
+definition of a limit via a fixed percentile of the integral over
+the coupling constant, eq. [[eq:limit_method:limit_def]], leads to
+problem for $\mathcal{L}'$. If anything one could define a contour describing
+the 95-th percentile of the "integral volume", but this would lead
+to infinitely many values of $g$ that describe said contour.
+
+As a result to still define a sane limit value, the concept of the
+_likelihood][marginal likelihood]] function $\mathcal{L}'_M$ is introduced. The idea is to
+integrate out the nuisance parameters
+
+\[
+\mathcal{L}'_M(g) = \iiiint_{-∞}^∞ \mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y)\,\mathrm{d}ϑ_s\mathrm{d}ϑ_b\mathrm{d}ϑ_x\mathrm{d}ϑ_y
+\]
+
+Depending on the exact definition of $\mathcal{L}'$ in use these integrals
+may be analytically computable. In many cases however they are not
+and numerical techniques to evaluate the integral must be utilized.
+
+Aside from the technical aspects about how to evaluate $\mathcal{L}'_M(g)$ at
+a specific $g$, the limit calculation continues exactly as for the
+case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
+
+- Practical calculation of $\mathcal{L}'_M(g)$ in our case ::
 
   In case of our explicit likelihood function
   eq. [[eq:limit_method:likelihood_function_def]] there is already one
@@ -22869,12 +22890,13 @@ parameter space where the integrand contributes to the integral.
   the probabilistic acceptance.
 
   Furthermore, outside of using Metropolis-Hastings we still have to
-  make sure the evaluation of $Q'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y)$ is fast. We
-  will discuss this in the next section about the evaluation of $Q'$.
+  make sure the evaluation of $\mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y)$ is fast. We
+  will discuss this in the next section about the evaluation of $\mathcal{L}'$.
 
   - [ ] Check sagemath calculations for x and y systematics
 
-- Evaluate $Q'$ in our case ::
+** Limit method - practicalities for our real case                :noexport:    
+- Evaluate $\mathcal{L}'$ in our case ::
 
   - [ ] background position dependent
     - [ ] use k-d tree to store background cluster information of (x,
@@ -22928,14 +22950,14 @@ s' &= s (1 + θ_s) \\
 \end{align*}
 so indeed, this is perfectly valid.
 
-** Derivation of short form of Q [/]                              :noexport:
+** Derivation of short form of $\mathcal{L}$ [/]                  :noexport:
 
 - [ ] *WRITE THE NON LOG FORM*
 
 This uses the logarithm form, but the non log form is even easier actually.
 
 \begin{align*}
-\ln \mathcal{Q} &= \ln \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
+\ln \mathcal{\mathcal{L}} &= \ln \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
   &= \sum_i \ln \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
   &= \sum_i \ln \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  - \ln \frac{b_i^{n_i}}{n_i!} e^{-b_i}  \\
   &= \sum_i n_i \ln (s_i + b_i) - \ln n_i! - (s_i + b_i) - (n_i \ln b_i - \ln n_i! -b_i)  \\
@@ -23128,7 +23150,7 @@ Limit at : 6.44645e-11 GeV⁻¹
 
 
 
-** Generic limit calculation method
+** Generic limit calculation method                               :noexport:
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:limit_method
 :END:
@@ -23191,11 +23213,11 @@ likelihood for one experiment:
 \mathcal{L} = \prod_i P_{i, \text{Pois}}(k; λ) = \prod_i \frac{λ_i^{k_i} e^{-λ_i}}{k_i!}
 \]
 
-Applying this to the previously mentioned likelihood ratio $Q$ gives
+Applying this to the previously mentioned likelihood ratio $\mathcal{L}$ gives
 us:
 
 \[
-Q = \frac{\prod_i P_{i, \text{Pois}}(n_i; s_i + b_i)}{\prod_iP_{i,\text{Pois}}(n_i; b_i)} =
+\mathcal{L} = \frac{\prod_i P_{i, \text{Pois}}(n_i; s_i + b_i)}{\prod_iP_{i,\text{Pois}}(n_i; b_i)} =
  \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)} }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i}}
 \]
 
@@ -23228,7 +23250,7 @@ numerically more stable $\ln \mathcal{L}$ expression:
 
 #+NAME: eq:likelihood_1_plus_s_over_b_form
 \begin{align*}
-\ln \mathcal{Q} &= \ln \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
+\ln \mathcal{\mathcal{L}} &= \ln \prod_i \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
   &= \sum_i \ln \frac{ \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  }{ \frac{b_i^{n_i}}{n_i!} e^{-b_i} } \\
   &= \sum_i \ln \frac{(s_i + b_i)^{n_i}}{n_i!} e^{-(s_i + b_i)}  - \ln \frac{b_i^{n_i}}{n_i!} e^{-b_i}  \\
   &= \sum_i n_i \ln (s_i + b_i) - \ln n_i! - (s_i + b_i) - (n_i \ln b_i - \ln n_i! -b_i)  \\
@@ -23439,6 +23461,10 @@ relevant parameters):
 From here we will go through each of these contributions to explain
 how each is obtained and what they look like, specific to our limit
 calculation and the CAST data taking with the Septemboard detector.
+
+  \begin{equation}
+  s_i(g) = f(g, E_i) · A · t · P_{a \rightarrow γ}(g_{aγ}) · ε(E_i) · r(x_i, y_i)
+  \end{equation}
 
 - [ ] Should we here essentially just refer back to the "theory like"
   sections before where each of these ingredients is already
@@ -25888,10 +25914,10 @@ the energy of each cluster in \si{keV}.
 
 *** Systematics
 
-As explained previously in sec. *SECTION INTRODUCING NUISANCE
-PARAMETERS* we introduce 4 different nuisance parameters to handle
-systematics. These are split by those impacting the signal, the
-background and each position axis independently.
+As explained previously in sec. [[#sec:limit:method_systematics]] we
+introduce 4 different nuisance parameters to handle systematics. These
+are split by those impacting the signal, the background and each
+position axis independently.
 
 Tab. [[tab:limit:systematic_uncertainties]] shows the different systematic
 uncertainties we consider, whether they affect signal, background or
@@ -25931,51 +25957,52 @@ numbers in the table represent bounds about the maximum deviation possible.
 #+CAPTION: biases due to our understanding.
 #+NAME: tab:limit:systematic_uncertainties
 #+ATTR_LATEX: :booktabs t
-| Uncertainty                               | s or b?  | rel. σ [%] | bias?                                  | note                                                         |
-|-------------------------------------------+----------+------------+----------------------------------------+--------------------------------------------------------------|
-| Earth <-> Sun distance                    | s        |     0.7732 | none                                   |                                                              |
-| Window thickness (± 10nm)                 | s        |     0.5807 | none                                   |                                                              |
-| Solar models                              | s        |      $< 1$ | none                                   | unclear from plot, need to look at code                      |
-| Magnet length (- 1cm)                     | s        |     0.2159 | likely 9.26m                           |                                                              |
-| Magnet bore diameter (± 0.5mm)            | s        |    2.32558 | have measurements indicating 42.x - 43 |                                                              |
-| Window rotation (30° ± 0.5°)              | s        |    0.18521 | none                                   | rotation seems to be same in both data takings               |
-| Nuisance parameter integration routine    |          |            |                                        | For performance reasons less precise integrations.           |
-| Software efficiency                       | s        |       $<2$ | none                                   | Eff. ε_photo < 2, but ε_escape > 3% (less reliable). Choose!  |
-|-------------------------------------------+----------+------------+----------------------------------------+--------------------------------------------------------------|
-| Gas gain time binning                     | b        |    0.26918 | to 0                                   | Computed background clusters for different gas gain binnings |
-| Reference dist interp (CDL morphing)      | b        |     0.0844 | none                                   |                                                              |
-| Gas gain variation                        | ?        |            |                                        | Partially encoded / fixed w/ gas gain time binning.          |
-| Random coincidences in septem/line veto   |          |            |                                        |                                                              |
-| Background interpolation (params & shape) | b        |          ? | none                                   | From error prop. But unclear interpretation. Statistical.    |
-| Energy calibration                        |          |            |                                        |                                                              |
-|-------------------------------------------+----------+------------+----------------------------------------+--------------------------------------------------------------|
-| Alignment (signal, related mounting)      | s (pos.) |     0.5 mm | none                                   | From X-ray finger & laser alignment                          |
-| Detector mounting precision (±0.25mm)     | s (pos.) |    0.25 mm |                                        | M6 screws in 6.5mm holes. Results in misalignment, above.    |
-| Gas gain vs charge calib fit              |          |          ? | none                                   |                                                              |
+| Uncertainty                               | s or b?  | rel. σ [%] | bias?                           |
+|-------------------------------------------+----------+------------+---------------------------------+
+| Earth <-> Sun distance                    | s        |     0.7732 | none                            |
+| Window thickness (± 10nm)                 | s        |     0.5807 | none                            |
+| Solar models                              | s        |      $< 1$ | none                            |
+| Magnet length (- 1cm)                     | s        |     0.2159 | likely 9.26m                    |
+| Magnet bore diameter (± 0.5mm)            | s        |    2.32558 | measurements indicate 42.x - 43 |
+| Window rotation (30° ± 0.5°)              | s        |    0.18521 | none                            |
+| Nuisance parameter integration routine    |          |            |                                 |
+| Software efficiency                       | s        |       $<2$ | none                            |
+|-------------------------------------------+----------+------------+---------------------------------+
+| Gas gain time binning                     | b        |    0.26918 | to 0                            |
+| Reference dist interp (CDL morphing)      | b        |     0.0844 | none                            |
+| Gas gain variation                        | ?        |            |                                 |
+| Random coincidences in septem/line veto   |          |            |                                 |
+| Background interpolation (params & shape) | b        |          ? | none                            |
+| Energy calibration                        |          |            |                                 |
+|-------------------------------------------+----------+------------+---------------------------------+
+| Alignment (signal, related mounting)      | s (pos.) |     0.5 mm | none                            |
+| Detector mounting precision (±0.25mm)     | s (pos.) |    0.25 mm |                                 |
+| Gas gain vs charge calib fit              |          |          ? | none                            |
 
 - [ ] Missing systematics:
   - Effective area uncertainty of telescope (Bias to positive!)
   - See ~statusAndProgress~ section about it!
 
-# | reference                                          |
-# |----------------------------------------------------|
-# | [[#sec:uncertain:distance_earth_sun]]                  |
-# | [[#sec:uncertain:window_thickness]]                    |
-# | [[~/org/Figs/lennert_seb_comparison_solar_models.png]] |
-# | [[#sec:magnet_length_bore_uncertainty]]                |
-# | [[#sec:magnet_length_bore_uncertainty]]                |
-# | [[#sec:window_rotation_uncertainty]]                   |
-# |                                                    |
-# | [[#sec:uncertain:software_efficiency]]                 |
-# |----------------------------------------------------|
-# | [[#sec:uncertain:gas_gain_binning]]                    |
-# | [[#sec:uncertain:cdl_morphing]]                        |
-# |                                                    |
-# | [[#sec:uncertain:random_coincidences]]                 |
-# | [[#sec:uncertain:background_interpolation]]            |
-# | [[#sec:uncertain:energy_calibration]]                  |
-# |----------------------------------------------------|
-# | [[#sec:window_rotation_uncertainty]]                   |
+# | note                                                         | reference                                          |
+# |--------------------------------------------------------------+----------------------------------------------------|
+# |                                                              | [[#sec:uncertain:distance_earth_sun]]                  |
+# |                                                              | [[#sec:uncertain:window_thickness]]                    |
+# | unclear from plot, need to look at code                      | [[~/org/Figs/lennert_seb_comparison_solar_models.png]] |
+# |                                                              | [[#sec:magnet_length_bore_uncertainty]]                |
+# |                                                              | [[#sec:magnet_length_bore_uncertainty]]                |
+# | rotation seems to be same in both data takings               | [[#sec:window_rotation_uncertainty]]                   |
+# | For performance reasons less precise integrations.           |                                                    |
+# | Eff. ε_photo < 2, but ε_escape > 3% (less reliable). Choose!  | [[#sec:uncertain:software_efficiency]]                 |
+# |--------------------------------------------------------------+----------------------------------------------------|
+# | Computed background clusters for different gas gain binnings | [[#sec:uncertain:gas_gain_binning]]                    |
+# |                                                              | [[#sec:uncertain:cdl_morphing]]                        |
+# | Partially encoded / fixed w/ gas gain time binning.          |                                                    |
+# |                                                              | [[#sec:uncertain:random_coincidences]]                 |
+# | From error prop. But unclear interpretation. Statistical.    | [[#sec:uncertain:background_interpolation]]            |
+# |                                                              | [[#sec:uncertain:energy_calibration]]                  |
+# |--------------------------------------------------------------+----------------------------------------------------|
+# | From X-ray finger & laser alignment                          | [[#sec:window_rotation_uncertainty]]                   |
+# | M6 screws in 6.5mm holes. Results in misalignment, above.    |                                                    |
 
 **** Derivation of the systematics                              :noexport:
 
