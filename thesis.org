@@ -28734,8 +28734,178 @@ but the table does not highlight that fact! 0.8602 corresponds to ε =
 |   0.8 | true   | true  |    0.8 | true   | false |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5018 |      5.6441e-21 |     9.5653e-23 |
 
 
+
+
+
+** Solar tracking candidates
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:candidates
+:END:
+
+Based on the best performing setup we can now look at the solar
+tracking candidates. [fn:data_unblinding] In this setup, based on the
+background model a total of \num{1449} candidates are expected over
+the entire chip. [fn:expected_clusters] Computing the real candidates
+yields a total of \num{1610} clusters over the chip, a somewhat
+meaningful excess. However, this excess is mostly from very low energy
+contributions below \SI{1}{keV} and potentially a sign of additional
+activity from noise related phenomena due to the tracking motor
+activity (which caused the significant FADC noise
+activity). Restricting the clusters to $\SIrange{1}{12}{keV}$ yields
+\num{219} cluster candidates where \num{210} would be expected
+(\num{4145} clusters in background). A figure comparing the rate
+observed for the candidates compared to the background is shown in
+fig. \ref{fig:limit:rate_candidates_background}.
+
+Fig. [[fig:limit:candidates]] shows all solar tracking candidates that are
+observed with the method yielding the best expected limit. Their
+energy is color coded and written above each cluster within the center
+$\SI{85}{pixel}$ radius of the chip center. The axion image is
+underlaid to provide a visual reference of the importance of each
+cluster. Very few candidates of relevant energies are seen within the
+region of interest. Based on the previously mentioned $\ln(1 +
+s_i/b_i) > 0.5$ condition it is in fact 0 candidates in the sensitive
+region. See fig. \ref{fig:limit:candidates_s_b} for an overview of the
+weighting of each candidate in this way.
+
+The candidates that are obtained for other setups of those shown in
+tab. [[tab:limit:expected_limits]], see appendix
+[[sec:appendix:solar_candidates]] and the full version of the thesis for
+even more detail.
+
+#+CAPTION: Overview of all solar tracking candidates given the MLP@\SI{91}{\%} setup
+#+CAPTION: including all vetoes except the septem veto. \num{1610} clusters are observed,
+#+CAPTION: with the majority low energy clusters in the chip corners. The axion image
+#+CAPTION: is underlaid the area and the energy of each cluster is color coded. For all
+#+CAPTION: candidates within a radius of \SI{85}{pixel} of the center the energy is also
+#+CAPTION: written above. We can see by eye that very few candidates of relevant energies
+#+CAPTION: are present in the region of expected signal.
+#+NAME: fig:limit:candidates
+[[~/org/Figs/statusAndProgress/trackingCandidates/background_cluster_centersmlp_0.95_scinti_fadc_line_tracking_candidates_axion_image_with_energy_radius_85.pdf]]
+
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/trackingCandidates/real_candidates_signal_over_background.pdf}
+    \caption{$\ln(1 + s_i/b_i)$}
+    \label{fig:limit:candidates_s_b}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/trackingCandidates/rate_real_candidates_vs_background_rate_crAll_mlp_0.95_scinti_fadc_line.pdf}
+    \caption{Rate candidates vs. background}
+    \label{fig:limit:rate_candidates_background}
+  \end{subfigure}%
+  \label{fig:limit:candidates_s_b_rates}
+  \caption{\subref{fig:limit:candidates_s_b} Weighting of each candidate based on $\ln(1 + s_i/b_i)$.
+  The largest weight given is for the \SI{5.4}{keV} cluster seen in fig. \ref{fig:limit:candidates}
+  near x pixel 100 and tops out at slighlty above $\num{0.2}$. 
+  \subref{fig:limit:rate_candidates_background} Rate of background and candidate clusters over the entire
+  chip as a log plot. Candidate excess mainly below \SI{1}{keV}.
+  }
+\end{figure}
+
+
+[fn:expected_clusters] The background model contains \num{28627}
+clusters in this case. \SI{3156.8}{h} of background data and
+\SI{159.8}{h} of tracking data yields a
+$\num{28627}·\frac{3156.8}{159.8} = 1449.12$ clusters.
+
+[fn:data_unblinding] The actual data unblinding of the candidates
+presented in this section was only done after the analysis of the
+previous sections was fully complete. A presentation with discussion
+took place first inside our own group and later with the relevant
+members of the CAST collaboration to ascertain that our analysis
+appears sound.
+
+*** TODO for this section [/]                                    :noexport:
+
+- [X] Create a time series plot of all tracking candidates to verify
+  that indeed their timestamp indicates that they were part of
+  trackings. Or better yet export the timestamps as text strings to a
+  CSV file?
+  We should verify these things are correct, in particular given thqe
+  mismatch of expected number of candidates and real ones.
+  Or is it due to energy filtering?
+  -> See: [[file:~/org/resources/candidate_cluster_dates.csv]]
+
+- [ ] *CREATE APPENDIX FOR OTHER CANDIDATE PLTOS!!!*  
+
+*** Rate plot comparing background to candidates                 :noexport:
+
+Combined:
+#+begin_src sh
+plotBackgroundRate \
+    /home/basti/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933_vQ_0.99.h5 \
+    /home/basti/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933_vQ_0.99.h5 \
+    /home/basti/Sync/lhood_tracking_scinti_line_mlp_0.95_2017.h5 \
+    /home/basti/Sync/lhood_tracking_scinti_line_mlp_0.95_2018.h5 \
+    --centerChip 3 \
+    --names "Background" --names "Background" --names "Candidates" --names "Candidates" \
+    --title "Rate over whole chip, MLP@91 % + line veto," \
+    --showNumClusters \
+    --region crAll \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --energyMin 0.2 \
+    --outfile rate_real_candidates_vs_background_rate_crAll_mlp_0.95_scinti_fadc_line.pdf \
+    --outpath ~/org/Figs/statusAndProgress/trackingCandidates/ \
+    --logPlot \
+    --hideErrors \
+    --quiet
+#+end_src
+
+[[~/org/Figs/statusAndProgress/trackingCandidates/rate_real_candidates_vs_background_rate_crAll_mlp_0.95_scinti_fadc_line.pdf]]
+
+Below 1 keV the candidates are _always_ in excess. At higher energies
+maybe there is still a slight excess, yes, but it *seems* (may not be
+though) to be more in line with expectation. 
+
+
+*** Perform the data unblinding and produce plots                :noexport:
+
+1. run ~likelihood~ with ~--tracking~
+2. compute ~mcmc_limit_calculation~ based on the files
   
 
+*** Generate plots for real candidates                           :noexport:
+
+Using the files created in the previous section, let's create some plots.
+
+(from ~journal.org~)
+
+#+begin_src sh
+plotBackgroundClusters \
+    /home/basti/Sync/lhood_tracking_scinti_line_mlp_0.95_2017.h5 \
+    /home/basti/Sync/lhood_tracking_scinti_line_mlp_0.95_2018.h5 \
+    --title "MLP@95+FADC+Scinti+Line tracking clusters" \
+    --outpath ~/org/Figs/statusAndProgress/trackingCandidates/ \
+    --suffix "mlp_0.95_scinti_fadc_line_tracking_candidates_axion_image_with_energy_radius_85" \
+    --energyMin 0.2 --energyMax 12.0 \
+    --filterNoisyPixels \
+    --axionImage /home/basti/org/resources/axion_images/axion_image_2018_1487_93_0.989AU.csv \
+    --energyText \
+    --colorBy energy \
+    --energyTextRadius 85.0
+#+end_src
+
+[[~/org/Figs/statusAndProgress/trackingCandidates/background_cluster_centersmlp_0.95_scinti_fadc_line_tracking_candidates_axion_image_with_energy_radius_85.pdf]]
+
+
+*** Number of background clusters expected                       :noexport:
+
+This is part of the ~sanityCheckBackgroundSampling~ procedure in the
+limit code.
+
+Running it on the MLP@95 + line veto files yields:
+#+begin_src sh
+mcmc_limit_calculation sanity --limitKind lkMCMC
+#+end_src
+
+- [ ] *FURTHER INVESTIGATE* the missing time!
 
 ** Axions
 
