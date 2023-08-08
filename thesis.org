@@ -25097,7 +25097,12 @@ fig. \ref{fig:limit:background_interpolation_example}.
 
 Implementation wise, as the lookup of the closest neighbors in general
 is an $N²$ operation for $N$ clusters, all clusters are stored in a
-$k$-d tree, for fast querying of clusters close to the point to be evaluated.
+$k$-d tree, for fast querying of clusters close to the point to be
+evaluated. Furthermore, because the likelihood $\mathcal{L}$ is
+evaluated many times for a given set of candidates to compute a limit,
+we perform caching of the background interpolation values for each
+candidate. That way we only compute the interpolation once for each
+candidate.
 
 - [ ] *REFERNECE k-d TREE*
 
