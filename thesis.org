@@ -23106,6 +23106,9 @@ image, while still only having a small enough penalty.
   theoretical after all.
 
 ** Limit method - evaluating $\mathcal{L}$ with nuisance parameters
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:method_mcmc
+:END:
 
 The likelihood function we started with $\mathcal{L}$ was only a function of
 the coupling constant $g$ we want to compute a limit for. With the
@@ -23168,12 +23171,17 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
   point $p_0$. Next, pick another random point $p_1$ within the vicinity of
   $p_0$. If the function evaluates to a larger value at $p_1$ accept
   it as the new current position. If it is smaller, accept it with a
-  probability of $1 - \frac{f(p_{i-1})}{f(p_i)}$ (i.e. if the new
+  probability of $1 - \frac{f(p_i)}{f(p_{i-1})}$ (i.e. if the new
   value is close to the old one we accept it with a high probability
   and if the new one is much lower accept it rarely). This guarantees 
   to pick values inching closer to the most contributing areas of the
   integral in the integration space, while still allowing to get out
-  of local maxima due to the random acceptance of "worse" positions.
+  of local maxima due to the random acceptance of "worse"
+  positions. However, this also implies that regions of constant
+  $\mathcal{L}$ (regions where the values are close to 0, but also
+  generally 'flat' regions) produce a pure random walk from the
+  algorithm, because $\frac{f(p_{i-1})}{f(p_i)} \approx 1$ in those
+  regions. This needs to be taken into account.
 
   If a new point is accepted and becomes the current position, the
   "chain" of points is extended (hence "Markov Chain"). By creating a
@@ -23194,10 +23202,28 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
 
   Furthermore, outside of using Metropolis-Hastings we still have to
   make sure the evaluation of $\mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y)$ is fast. We
-  will discuss this in the next section about the evaluation of $\mathcal{L}'$.
+  will discuss this in the next section about the evaluation of
+  $\mathcal{L}'$.
+
+  In particular: Metropolis-Hastings (Markov Chain Monte Carlo) to
+    evaluate integration space
+  1. let $\vec{x}$ be a random vector in the integration space and
+    $f(\vec{x})$ the function to evaluate
+  2. pick new point $\vec{x}'$ in vicinity of $\vec{x}$
+  3. sample from random uniform in $[0, 1]$: $u$
+  4. accept $\vec{x}'$ if $u < \frac{f(\vec{x}')}{f(\vec{x})}$, add
+    $\vec{x}'$ to chain and iterate (if $f(\vec{x}') > f(\vec{x})$ every
+     new link accepted!)
+  5. long enough chain samples integration space well
+  6. throw away first N elements as "burn in"
+  7. generate multiple chains to be less dependent on starting position
+  
+  $⇒$ $\mathcal{L}_m$ computed by histogram of sampled $g_{ae}²$ values
 
   - [ ] Check sagemath calculations for x and y systematics
 
+- [ ] *DO NOT HAVE* a section *"about the evaluation of L'"*
+    
 ** Limit method - practicalities for our real case                :noexport:    
 - Evaluate $\mathcal{L}'$ in our case ::
 
