@@ -28907,35 +28907,98 @@ mcmc_limit_calculation sanity --limitKind lkMCMC
 
 - [ ] *FURTHER INVESTIGATE* the missing time!
 
-** Axions
+** Observed limits
+
+With the data fully unblinded and the solar tracking candidates known,
+we can now compute the observed limits.
+
+We will start with the main coupling constant of interest in the
+context of this thesis, the axion-electron coupling $g_{ae}$ in
+sec. [[#sec:limit:observed_axion_electron]].
+
+Afterwards, we will also shortly present the limits achievable by this
+detector, dataset and methodology on the axion-photon coupling
+$g_{aγ}$ as well as the Chameleon coupling constant $β$.
 
 *** Axion-electron coupling
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:observed_axion_electron
+:END:
 
-**** The candidates
+Based on the candidates presented in sec. [[#sec:limit:candidates]] we
+compute an observed limit of
 
-Unblinding the data, the solar tracking candidates left after
-application of the likelihood cut method and vetoes, are shown in
-fig. [[fig:limit:solar_track_candidates]].
+\[
+g_{ae} · g_{aγ} = \SI{6.56e-23}{GeV⁻¹},
+\]
 
-All other inputs for the limit calculation remains the same as
-presented in the previous section sec. [[#sec:limit:limit_method]].
+which is approaching the best possible limit achievable given this
+setup, due to the distribution of candidates and absence of any highly
+significant candidates. The expected limit for this case was
+$\left(g_{ae} · g_{aγ}\right)_{\text{exp}} = \SI{7.56e-23}{GeV⁻¹}$ and the limit
+without any candidates at all $\left(g_{ae} · g_{aγ}\right)_{\text{no
+candidates}} = \SI{5.96e-23}{GeV⁻¹}$.
 
-- [ ] insert plot of solar tracking candidates!
+This is in contrast to the current observed best limit by CAST in 2013
+\cite{Barth_2013}, which achieved
+
+\[
+\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} = \SI{8.1e-23}{GeV⁻¹}.
+\]
+
+Fig. [[fig:limit:observed_axion_electron]] shows the marginal posterior
+likelihood function for the observed solar tracking candidates. The
+limit is at the $95^{\text{th}}$ percentile of the histogram, shown by
+the intersection of the blue and red filling. In addition the yellow
+line shows values based on a numerical integration using Romberg's
+method *CITE ME* at 10 different coupling constants. This is a cross
+validation of the MCMC result. [fn:romberg_integration_performance] 
+
+#+CAPTION: The marginal posterior likelihood function for the solar candidates
+#+CAPTION: with the observed limit at the intersection between the blue and
+#+CAPTION: red filling. Also shown is a line based on a numerical integration of
+#+CAPTION: the 4-fold integral at 10 steps as a cross check of the MCMC.
+#+NAME: fig:limit:observed_axion_electron
+[[~/org/Figs/statusAndProgress/trackingCandidates/mcmc_real_limit_likelihood_g_ae2_with_numerical_int.pdf]] 
+
+[fn:romberg_integration_performance] Note though, while the
+calculation of the observed limit via the MCMC takes about
+$\SI{10}{s}$, the numerical integration using Romberg's method took
+$\sim\SI{1.5}{h}$ for only 10 points. And that is only using a
+integration level of 5 (one often uses 8 for Romberg for
+accuracy). This highlights the need for Monte Carlo methods,
+_especially_ for expected limits.
+
+*** TODOs for this section [/] 
+For limit:  
+- [ ] *likelihood space* of the real candidates as plot
+- [ ] try to fit an exponential to the likelihood and provide
+  that. Should give a better way to combine it maybe?
+- [ ] ?  
+
+- [ ] *CITE ROMBERG*  
+
+- [ ] *PROVIDE AT LEAST A TABLE* of the limits we get for a few other setups!
 
 *** Axion-photon coupling
 
 - [ ] Show differential solar flux
 - [ ] Show axion image for Primakoff origin
 
+- [ ] How is the axion emission modeled for the axion-photon flux?
+  -> Figure out, just need that!
+  
 *** Chameleon coupling
 
-** Compute limit w/ our method (whatever that will finally be)
+- [ ] For chameleon mainly just need to look at how Christoph sampled
+  from the solar radius to compute the axion image in his case. We can
+  then plug that into the raytracer.
 
 ** Comparison to 2013 limit (using their method)
 
-** TODO Chameleons ?
-
 ** Calculate expected limits                                      :noexport:
+
+- [ ] *MOVE THIS* to appropriate section above.
 
 Running the ~runLimits~ code with ~nmc = 100~ took
 
