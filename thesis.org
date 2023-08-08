@@ -21050,7 +21050,231 @@ shell 7660> ssion_tile_map.log.
 
 *** Hough transformation as a cluster finding helper             :noexport:
 
-- [ ] Add our notes about attempts to use hough transformations.
+At some point we considered whether a Hough transformation could be a
+useful tool in the application of the outer GridPix ring as a
+veto. The notes about this are here for completeness, as it showcases
+an interesting idea leading to a dead end. To avoid others investing
+time in it, we include it. Or rather, if you have plenty of experience
+with Hough transformations and know what to make of this, then feel
+free and use it as a starting inspiration!
+
+- [X] Add our notes about attempts to use hough transformations.
+
+**** Hough transformation for cluster finding                    :noexport:
+
+I started a Hough trafo playground in
+[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/houghTrafoPlayground/houghTrafoPlayground.nim]].
+
+Reading up on Hough transformations is a bit confusing, but what we
+are doing for the moment:
+- compute connecting lines between *each* point pair in a septem event
+  (so for N hits, that's N² lines)
+- for each line compute the slope and intersect
+
+From this information we can look at different things:
+1. the plots of all lines. Very messy, but gives an idea if the lines
+   are correct.
+2. a histogram of all found slopes
+3. a histogram of all found intersects
+4. a scatter plot of slopes vs. intersects
+
+The "algorithm" to compute the Hough transformation is pretty dumb at
+the moment:
+#+begin_src nim
+var xs = newSeqOfCap[int](x.len * x.len)
+var ys = newSeqOfCap[int](x.len * x.len)
+var ids = newSeqOfCap[string](x.len * x.len)
+var slopes = newSeqOfCap[float](x.len * x.len)
+var intersects = newSeqOfCap[float](x.len * x.len)
+echo x
+for i in 0 ..< x.len:
+  for j in 0 ..< x.len:
+    if i != j:                   # don't look at same point
+      xs.add x[j]
+      ys.add y[j]
+      xs.add x[i]
+      ys.add y[i]
+      ids.add $i & "/" & $j
+      ids.add $i & "/" & $j
+      if xs[^1] - xs[^2] > 0:    # if same x, slope is inf
+        let slope = (ys[^1] - ys[^2]).float / (xs[^1] - xs[^2]).float
+        slopes.add slope
+        # make sure both points yield same intercept
+        doAssert abs(
+          (y[j].float - slope * x[j].float) - (y[i].float - slope * x[i].float)
+        ) < 1e-4 
+        intersects.add (y[j].float - slope * x[j].float)
+#+end_src
+
+Let's look at a couple of examples:
+
+***** Example 0 =septemEvent_run_272_event_95288.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_272_event_95288.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_272_event_95288.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_272_event_95288.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_272_event_95288.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_272_event_95288.png]]
+#+end_center
+
+***** Example 1 =septemEvent_run_265_event_1662.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_265_event_1662.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_265_event_1662.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_265_event_1662.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_265_event_1662.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_265_event_1662.png]]
+#+end_center
+
+***** Example 2 =septemEvent_run_261_event_809.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_261_event_809.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_261_event_809.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_261_event_809.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_261_event_809.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_261_event_809.png]]
+#+end_center
+
+***** Example 3 =septemEvent_run_291_event_31480.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_291_event_31480.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_291_event_31480.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_291_event_31480.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_291_event_31480.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_291_event_31480.png]]
+#+end_center
+
+***** Example 4 =septemEvent_run_306_event_4340.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_306_event_4340.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_306_event_4340.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_306_event_4340.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_306_event_4340.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_306_event_4340.png]]
+#+end_center
+
+***** Conclusion
+
+The hough transformation produces too much data that is too hard to
+interpret in the context of our goal. It doesn't actually help us a
+lot here, so we'll drop the pursuit of that.
+
+
 
 *** Estimating the random coincidence rate of the septem & line veto [/]
 :PROPERTIES:
