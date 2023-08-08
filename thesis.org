@@ -28436,6 +28436,147 @@ fig. [[fig:limit:mcmc_calc_limit:limit]].
         let (chain, acceptanceRate) = rnd.build_MH_chain(start, @[3.0 * couplingRef, 0.025, 0.025, 0.05, 0.05], 150_000, fn)
 
 #+end_src
+
+** Expected limits of different setups
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:expected_limits
+:END:
+
+One interesting approach to compute the expected limit usually
+employed in binned likelihood approaches is the so called 'Asimov
+dataset'. The idea is to compute the limit based on the dataset, which
+matches exactly the expectation value for each Poisson in each
+bin. This has the tremendous computational advantage of providing an
+expected limit by only computing the limit for a *single* toy
+candidate set. Unfortunately, for an unbinned approach this is less
+straightforward, because there is no explicit mean of expectation
+values anymore. On the other hand, the Asimov dataset calculation does
+not provide information about the possible spread of all limits due to
+the statistical variation possible in toy candidate sets. 
+- [ ] *ASIMOV DATASET* and how we can / cannot use it
+  -> Check note somewhere else here about using c_i = rational number
+  for expected counts based on ~expCount~. Could that work? I think
+  so.
+
+In our case then, we fall back to computing an expected limit based on
+toy candidate sets that we draw from a discretized, grid version of the background
+interpolation, as explained in sec. [[#sec:limit:ingredients:candidates]].
+
+We compute expected limits for different parameters, due to the signal
+efficiency penalties that these imply. In a first rough 'scan' of
+expected limits we compute an expected limit based on \num{1000} toy
+limits for all setups we consider. Then we narrow it down and compute
+\num{15000} toy limits for the best few setups. Finally, we compute
+\num{30000} toys for the best setup we find. The resulting setup is
+the one for which we unblind the solar tracking data. 
+
+
+Tab. [[tab:limit:expected_limits]] shows the different setups with their
+respective expected limits. Also shown is the limit achieved in case
+no candidate is observed as a theoretical lower bound on the
+limit. This 'no candidate' limit scales down with the total
+efficiency, as one would expect. All limits are given as limits on
+$g_{ae}·g_{aγ}$ based on a fixed $g_{aγ} = \SI{1e-12}{GeV⁻¹}$. The
+table does not show all setups that were initially considered. Further
+considerations of other possible parameters were excluded in
+preliminary studies on their effect on the expected limit.
+
+In particular:
+- the scintillator veto is always used. It does not come with an
+  efficiency penalty and therefore there is no reason not to activate
+  it.
+- different FADC veto efficiencies as well as disabling it completely
+  were considered. The current $ε_{\text{FADC}} = 0.98$ efficiency was
+  deemed optimal. Harder cuts do not yield significant improvements.
+- the potential eccentricity cutoff for the line veto, as discussed in
+  sec. [[#sec:background:line_veto:eccentricity_cutoff]] is fully
+  disabled, as the efficiency gains do not outweigh the positive
+  effect on the expected limit in practice.
+
+Further, the table shows a few cases multiple times, with more or less
+statistics (~nmc~ column). The reason is simply that it highlights
+that \num{1000} toy sets is not enough to make a rigorous estimate of
+the expected limit. Compare row 3 with row 5 (MLP at $\SI{84.74}{\%}$
+efficiency with \num{1000} and \num{15000} toys) for an example of a
+better expected limit at low statistics. In the best setup the
+difference was even bigger (yielding an expected limit around
+$\SI{7.46e-23}{GeV⁻¹}$), but it is left out as to not appear as the
+'best case'.
+
+Based on this study, the MLP produces the best expected limit,
+specifically at a software efficiency of $\SI{91.07}{\%}$ using the
+scintillator veto, FADC veto (at $ε_{\text{FADC}} = \SI{98}{\%}$) and
+the line veto, but disregarding the septem veto. The software
+efficiency corresponds to a target software efficiency based on the
+simulated X-ray data of $\SI{95}{\%}$. This is the setup we will
+mainly consider for the data unblinding.
+
+\footnotesize
+#+CAPTION: The FADC veto is always in use at an efficiency of $ε_{\text{FADC}} = 0.98$ and so is the
+#+CAPTION: scintillator veto. These settings were defined in preliminary studies of the expected limits.
+#+CAPTION: Note the efficiencies associated with the septem veto $ε_{\text{septem}} = 0.7841$ and the line veto
+#+CAPTION: $ε_{\text{line}} = 0.8602$ and combined $ε_{\text{septem+line}} = 0.7325$, which are implicitly
+#+CAPTION: included based on the 'Septem' and 'Line' column values into the total efficiency.
+#+NAME: tab:limit:expected_limits
+#+ATTR_LATEX: :booktabs t :environment longtable :align lrllllll
+|       ε | ~nmc~ | Type | Septem | Line  | Total eff. | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] |
+|--------+-------+------+--------+-------+------------+------------------------+-----------------------|
+| 0.9107 | 30000 | MLP  | false  | true  |     0.7677 |             5.9559e-23 |            7.5824e-23 |
+| 0.9718 | 15000 | MLP  | false  | true  |     0.8192 |             5.8374e-23 |            7.6252e-23 |
+| 0.8474 |  1000 | MLP  | false  | true  |     0.7143 |             6.1381e-23 |             7.643e-23 |
+| 0.9718 |  1000 | MLP  | false  | true  |     0.8192 |             5.8374e-23 |            7.6619e-23 |
+| 0.8474 | 15000 | MLP  | false  | true  |     0.7143 |             6.1381e-23 |            7.6698e-23 |
+|    0.9 |  1000 | LnL  | false  | true  |     0.7587 |             6.0434e-23 |            7.7375e-23 |
+| 0.7926 | 15000 | MLP  | false  | true  |     0.6681 |             6.2843e-23 |            7.8222e-23 |
+| 0.7926 |  1000 | MLP  | false  | true  |     0.6681 |             6.2843e-23 |            7.8575e-23 |
+| 0.7398 |  1000 | MLP  | false  | true  |     0.6237 |             6.5704e-23 |             7.941e-23 |
+| 0.7398 | 15000 | MLP  | false  | true  |     0.6237 |             6.5704e-23 |            7.9913e-23 |
+|    0.8 |  1000 | LnL  | false  | true  |     0.6744 |             6.3147e-23 |            8.0226e-23 |
+| 0.9718 |  1000 | MLP  | true   | true  |     0.6976 |             6.2431e-23 |            8.0646e-23 |
+| 0.9107 |  1000 | MLP  | true   | true  |     0.6538 |              6.432e-23 |            8.0878e-23 |
+| 0.9718 |  1000 | MLP  | true   | false |     0.7468 |             5.9835e-23 |            8.1654e-23 |
+| 0.9107 |  1000 | MLP  | true   | false |     0.6998 |             6.2605e-23 |            8.2216e-23 |
+| 0.8474 |  1000 | MLP  | true   | true  |     0.6083 |             6.6739e-23 |            8.2488e-23 |
+|    0.9 |  1000 | LnL  | true   | true  |     0.6461 |             6.4725e-23 |            8.3284e-23 |
+| 0.8474 |  1000 | MLP  | true   | false |     0.6511 |             6.4585e-23 |             8.338e-23 |
+| 0.7926 |  1000 | MLP  | true   | true  |      0.569 |             6.8883e-23 |            8.3784e-23 |
+| 0.7926 |  1000 | MLP  | true   | false |      0.609 |             6.6309e-23 |            8.4116e-23 |
+|    0.8 |  1000 | LnL  | true   | true  |     0.5743 |             6.8431e-23 |            8.5315e-23 |
+|    0.8 |  1000 | LnL  | true   | true  |     0.5743 |              6.875e-23 |            8.5437e-23 |
+| 0.7398 |  1000 | MLP  | true   | true  |     0.5311 |             7.1279e-23 |            8.5511e-23 |
+| 0.7398 |  1000 | MLP  | true   | false |     0.5685 |             6.9024e-23 |            8.6142e-23 |
+|    0.7 |  1000 | LnL  | true   | true  |     0.5025 |             7.2853e-23 |            8.9271e-23 |
+\normalsize
+
+The distribution of all toy limits for this best setup can be seen in
+fig. [[fig:limit:expected_limits:toy_limit_histogram]]. It shows both the
+limit for the case without any candidates (red line) as well as the
+expected limit (blue line). Depending on the number of candidates that
+are inside the signal sensitive region (in regions of the solar axion
+image with significant flux expectation) based on $\ln(1 + s_i/b_i) >
+0.5$, the limits are split into histograms of different colors. Based
+on the location of these histograms and the expected limit, the most
+likely case for the real candidates seems to be 1 or 2 candidates in
+that region. Note that there are some toy limits that are below the
+red line for the case without candidates. This is expected, because
+the calculation of each limit is based on the MCMC evaluation of the
+likelihood. As such it is a statistical random process and the red
+line itself is a single sample. Further, the purple histogram for "0"
+candidates is *not* equivalent to the red line, because the definition
+of the number of signal sensitive candidates is an arbitrary
+cutoff. For the red line literally _no candidates_ at all are
+considered and the limit is based purely on the
+$\exp(-s_{\text{tot}})$ term of the likelihood.
+
+#+CAPTION: Distribution of toy limits resulting in the best expected limit based on $\num{30000}$
+#+CAPTION: toy limits. The expected limit -- the median -- is shown as a blue line. The red line
+#+CAPTION: shows the limit for the case without any candidates. The different colored histograms correspond
+#+CAPTION: to toy sets with a different number of toy candidates in the signal sensitive region, defined
+#+CAPTION: by $\ln(1 + s_i/b_i) > 0.5$. The most likely number of candidates in the sensitive region
+#+CAPTION: seems to be 1 or 2.
+#+NAME: fig:limit:expected_limits:toy_limit_histogram
+#+ATTR_LATEX: :width 0.85\textwidth
+[[~/org/Figs/statusAndProgress/mc_limit_lkMCMC_skInterpBackground_nmc_30000_uncertainty_ukUncertain_σs_0.0328_σb_0.0028_posUncertain_puUncertain_σp_0.0500nmc_30k_pretty.pdf]]
 - [ ] *SHOW DIFFERENT EXPECTED LIMITS*
   We want to have different expected limits given certain assumptions,
   i.e. for the case of only using the lnL cut, using lnL +
