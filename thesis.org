@@ -28248,14 +28248,194 @@ value for a set of parameters ($g_{ae}²$, and the $θ$ values).
 From here either integrate out $θ$ manually, or sample via MCMC. Goes
 straight to next section.  
 
-*** MCMC to sample the distribution [/]
+** MCMC to sample the distribution and compute a limit [0/0]
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:mcmc_calc_limit
+:END:
 
-- [ ] *MENTION* the cutoff we use at background values -0.8 for
+The Metropolis-Hastings algorithm - as mentioned in
+sec. [[#sec:limit:method_mcmc]] - is used to evaluate the integral over
+the nuisance parameters to get the posterior likelihood.
+
+Instead of building a very long MCMC, we opt to construct 3 Markov
+chains with \num{150000} links to avoid a bias introduced by the
+starting parameters. Ideally, one would construct even more chains,
+but a certain number of steps from the starting parameter are usually
+needed to get into the parameter space of large contributions to the
+integral (unless the starting parameters are chosen in a very confined
+region, which itself is problematic in terms of bias).
+
+The MCMC is built based on 5 dimensional vectors $\vec{x}$,
+
+\[
+\vec{x} = \mtrix{g_{ae}² & θ_s & θ_b & θ_x & θ_y}^T
+\]
+
+containing the coupling constant of interest squared as the first
+entry and the four nuisance parameters after. Here we mention the
+axion-electron coupling constant $g_{ae}$ squared, but generally it
+can also be for example $g_{aγ}²$ or $g_{ae}²·g_{aγ}²$, depending on
+the search to be conducted. 
+
+Our initial starting vector $\vec{x_i}$  is randomly sampled by
+
+\[
+\vec{x} = \vektor{
+  \text{rand}([0, 5]) · g_{\text{ref}} \\
+  \text{rand}([-0.4, 0.4]) \\
+  \text{rand}([-0.4, 0.4]) \\
+  \text{rand}([-0.5, 0.5]) \\
+  \text{rand}([-0.5, 0.5]) \\
+  }
+\]
+
+where $\text{rand}$ refers to a uniform random sampler in the given
+interval and $g_{\text{ref}}$ is a reference coupling parameter of
+choice, which also depends on the specific search.
+
+Our default reference coupling constant for $g_{ae}²$ is $g_{ae}² =
+\num{1e-21}$, allowing for a range of parameters in the expected
+parameter space. The nuisance parameters are allowed to vary in a
+large region, given the standard deviations of $σ < 0.05$ for all four
+nuisance parameters. In the updating stage to propose a new vector, we
+use the following:
+
+\[
+\vec{x_{i+1}} = \vec{x_i} +
+  \vektor{
+    \text{rand}( -0.5 · 3 g_{\text{ref}}, 0.5 · 3 g_{\text{ref}} ) \\
+    \text{rand}( -0.5 · 0.025, 0.5 · 0.025 ) \\
+    \text{rand}( -0.5 · 0.025, 0.5 · 0.025 ) \\
+    \text{rand}( -0.5 · 0.05,  0.5 · 0.05 ) \\
+    \text{rand}( -0.5 · 0.05,  0.5 · 0.05 ) \\
+  }
+\]
+
+This combination leads to an acceptance rate of the new proposal
+typically between $\SIrange{20}{25}{\%}$. After all three chains are
+built, the first \num{50000} links each are thrown out as burn-in to
+make sure we only include meaningful parameter space.
+
+The parameter space for each of the 5 elements is restricted based on
+the following
+
+\[
+\vektor{
+  g = [0, ∞] \\
+  θ_s = [-1, 1] \\
+  θ_b = [-0.8, 1] \\
+  θ_x = [-1, 1] \\
+  θ_y = [-1, 1]
+},
+\]
+
+meaning we restrict ourselves to physical coupling constants and give
+loose bounds on the nuisance parameters. In particular for the $θ_b$
+parameter the restriction to values larger than $θ_b > -0.8$ is due to
+the singularity in $\mathcal{L}_M$ at $θ_b = -1$. For all realistic
+values for the systematic uncertainty $σ_b$ the region of $θ_b \ll 1$
+has no physical meaning anyway. But for unit tests and sanity checks
+of the implementation, larger uncertainties are tested for, which
+cause computational issues if this restriction was not in place.
+
+Example Markov chains can be seen in fig. \ref{fig:limit:mcmc_example}
+where we see the different nuisance parameters of the chain and how
+they are distributed. As expected for our comparatively small values
+of $σ$, the chain is centered around 0 for each nuisance
+parameter. And the coupling constant in
+fig. \ref{fig:limit:mcmc_theta_x_y} also shows a clear increase
+towards low values. 
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitCalculation/MCMC/mcmc_lines_long_0_likelihood_chain_burnin_20000_thetas_sb.png}
+    \caption{\includegraphics[width=0.03\textwidth]{/home/basti/org/Figs/panda-face_emoji_bubu.png} $θ_s$ vs. $θ_b$}
+    \label{fig:limit:mcmc_theta_s_b}
+  \end{subfigure}%
+  \begin{subfigure}{0.5\linewidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitCalculation/MCMC/mcmc_lines_long_0_likelihood_chain_burnin_20000.png}
+    \caption{$g²$ vs. $θ_y$}
+    \label{fig:limit:mcmc_theta_x_y}
+  \end{subfigure}%
+  \label{fig:limit:mcmc_example}
+  \caption{\subref{fig:limit:mcmc_theta_s_b} MCMC of the $θ_s$ nuisance parameter against $θ_b$ with the
+  coupling constant as the color scale. \subref{fig:limit:mcmc_theta_x_y} MCMC of the coupling constant
+  against $θ_x$ and $θ_y$ in color. Both show a clear centering to values around 0, with the coupling
+  constant a decrease in population towards larger couplings.
+  }
+\end{figure}
+
+The resulting three Markov chains are finally used to compute the
+marginal posterior likelihood function by computing the histogram of
+all sampled $g$ values. The distribution of the sampled $g$ values is
+that of the marginal posterior likelihood. This then allows to compute
+a limit by computing the empirical distribution function of the
+sampled $g$ values and extracting the value corresponding to the
+$95^{\text{th}}$ percentile. An example for this is shown in
+fig. [[fig:limit:mcmc_calc_limit:limit]].
+
+#+CAPTION: Example likelihood as a function of $g_{ae}²$ for a set of toy candidates with
+#+CAPTION: the limit indicated at the intersection of the blue and red colored areas.
+#+CAPTION: Blue is the lower 95-th percentile of the integral over the likelihood
+#+CAPTION: function and red the upper 5-th.
+#+NAME: fig:limit:mcmc_calc_limit:limit
+[[~/org/Figs/statusAndProgress/limitCalculation/mcmc_histo_example_limit_determination.pdf]]
+
+
+*** TODO TODOs for this section [6/13] :noexport:
+
+- [ ] *NOTE*: 5e-21 is 7e-11 for g_ae. That's lower than the old limit
+  if g_aγ = 1e-12. Should we increase this to be sure we do not bias ourselves?
+
+- [ ] *POSSIBLY* move part about calculation of likelihood and limit
+  to a separate section after?  
+
+
+- [X] *MENTION* the cutoff we use at background values -0.8 for
   example to avoid the singularity! Generally mention it in the
   discussion of the 4-fold posterior integral.
 
-*** Expected limit, MC toy sampling
+- [ ] *REFERENCE PAPER* about multiple chains for bias reduction!
+  -> Did not find it quickly. Will have to search.
+- [X] Explanation of the MCMC method *OR* reference to previous
+  explanation
+- [X] Mention restrictions of MCMC parameter space
+- [X] Explicit number of chains, burn in and # of samples
+- [X] ACCEPTANCE RATE
+- [X] STEP SIZE  
 
+  
+- [ ] Example of MCMC plots
+- [ ] Example of likelihood space by histogram of sampled g_ae²
+- [ ] Mention some of the other performance optimizations we make?
+  - [X] Caching of some values? -> Mentioned in background
+    interpolation section.
+  - [ ] What else do we do? No other caches. Things like custom code
+    paths for distances are irrelevant.
+
+- [ ] *WHERE do we mention numerical integration slowness*?
+- [ ] WHERE do we mention sanity checks?
+
+*** Relevant code for init & number of chains of MCMC :noexport:
+
+#+begin_src nim
+  const g_ae²Ref = 1e-21 * 1e-12^2 ## This is the reference we want to keep constant!
+  # ...
+      const nChains = 3
+      ## Burn in of 50,000 was deemed fine even for extreme walks in L = 0 space
+      const BurnIn = 50_000
+      var totalChain = newSeq[seq[float]]()
+      for i in 0 ..< nChains:
+        let start = @[rnd.rand(0.0 .. 5.0) * couplingRef, #1e-21, # g_ae²
+                      rnd.rand(-0.4 .. 0.4), rnd.rand(-0.4 .. 0.4), # θs, θb
+                      rnd.rand(-0.5 .. 0.5), rnd.rand(-0.5 .. 0.5)] # θx, θy
+        echo "\t\tInitial chain state: ", start
+        let (chain, acceptanceRate) = rnd.build_MH_chain(start, @[3.0 * couplingRef, 0.025, 0.025, 0.05, 0.05], 150_000, fn)
+
+#+end_src
 - [ ] *SHOW DIFFERENT EXPECTED LIMITS*
   We want to have different expected limits given certain assumptions,
   i.e. for the case of only using the lnL cut, using lnL +
