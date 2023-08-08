@@ -20415,6 +20415,13 @@ background rate.
 
 
 
+**** Possible eccentricity cutoff [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:background:line_veto:eccentricity_cutoff
+:END:
+
+- [ ] *DISCUSS THE ECCENTRICITY CUTOFF IN LITTLE MORE DETAIL, SHOW THE
+  EFFICIENCIES AS DESCRIBED IN SUBSECTION BELOW SOMEWHERE!*
 
 
 Fig. [[fig:background:fraction_passing_line_veto_ecc_cut]] shows the
@@ -22053,7 +22060,7 @@ LINE_VETO_KIND=lvRegular \
 cluster is of interest to the line veto. We accidentally always deemed
 it interesting, if the original cluster was on its own... Fixed now.
 
-**** On the line veto without septem veto
+*** On the line veto without septem veto
 
 When dealing with the line veto without the septem veto there are
 multiple questions that come up of course.
@@ -22308,6 +22315,10 @@ Let's compute the total efficiencies of all the setups we look at.
   range) and their efficiencies!
 
 *** Final background rate using all vetoes [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:background:all_vetoes_combined
+:END:
+
 
 - [ ] *ADD MLP in addition!*
 
@@ -22824,6 +22835,9 @@ intersection of the two colors.
 #+CAPTION: function and red the upper 5-th. The limit is at the intersection.
 #+NAME: fig:limit_method:example_limit_95th_perc
 [[~/org/Figs/statusAndProgress/limitCalculation/mcmc_histo_example_limit_determination.pdf]]
+
+- [ ] *REPLACE THIS PLOT* by an analytical likelihood function!
+  -> Use the binned example limit code to produce it.
 
 ** Limit method - toy candidate sets and expected limits
 :PROPERTIES:
@@ -23724,10 +23738,14 @@ where the 0.95 is, due to normalization, simply the requirement of a
 With this out of the way I implemented this into the limit calculation
 code as the =lkBayesScan= limit.
 
-** Extending the method for systematic uncertainties
+** Likelihood ingredients in detail [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:limit_method
 :END:
+
+- [ ] *All The text here below is irrelevant now*
+  -> Must become an introduction of sort for the ingredients.
+- [ ] *RENAME THE CUSTOM ID OF THIS SECTION*  
 
 The limit calculation method is based on the approach presented in
 \cite{cast_nature}, with modifications to better suit the GridPix
@@ -26192,7 +26210,10 @@ from that as mean. Sample an (x, y, E) "position" in that cube.
 10x10x20 ? cells used. Plot of the cells, normalized to counts.
 
 
-*** Candidates
+*** Candidates [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:ingredients:candidates
+:END:
 
 Finally, the candidates are the X-ray like clusters remaining after
 the background rejection algorithm has been applied for the data taken
@@ -26241,7 +26262,12 @@ the energy of each cluster in \si{keV}.
   }
 \end{figure}
 
-*** Systematics
+- [ ] *MOVE THE SAMPLING PART* to the section about expected limits?
+
+** Systematics
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:systematics
+:END:
 
 As explained previously in sec. [[#sec:limit:method_systematics]] we
 introduce 4 different nuisance parameters to handle systematics. These
@@ -26333,11 +26359,11 @@ numbers in the table represent bounds about the maximum deviation possible.
 # | From X-ray finger & laser alignment                          | [[#sec:window_rotation_uncertainty]]                   |
 # | M6 screws in 6.5mm holes. Results in misalignment, above.    |                                                    |
 
-**** Derivation of the systematics                              :noexport:
+*** Derivation of the systematics                               :noexport:
 
 Copy over from =[status]=. 
 
-**** TODO Update numbers for systematics relating to software efficiency :noexport:
+*** TODO Update numbers for systematics relating to software efficiency :noexport:
 
 There was the bug mentioned in ~StatusAndProgress~ section
 [[#sec:uncertain:software_efficiency]] about the code there using wrong
@@ -26348,7 +26374,7 @@ energies & DFs.
 See the latest update there too.
 
 
-**** Computing the combined uncertainties                       :noexport:
+*** Computing the combined uncertainties                        :noexport:
 :PROPERTIES:
 :CUSTOM_ID: sec:systematics:combined_uncertainties
 :END:
@@ -26386,7 +26412,7 @@ already the software efficiency, which we don't actually include
 anymore here, but in ~mcmc_limit~).
 Without the software efficiency we're down to 2.7%!
 
-***** Old results
+**** Old results
 
 These were the numbers that still used the Perihelion/Aphelion based
 distances for the systematic of Sun ⇔ Earth distance.
@@ -26404,7 +26430,7 @@ which comes out from assuming 2% uncertainty for the software
 efficiency instead of the ~1.727~ that now show up in the code!
 
 
-**** Signal [0/3] :noexport:
+*** Signal [0/3]                                                :noexport:
 - [ ] *signal position* (i.e. the spot of the raytracing result)
   - to be implemented as a nuisance parameter (actually 2) in the
     limit calculation code. 
@@ -26423,7 +26449,7 @@ efficiency instead of the ~1.727~ that now show up in the code!
     - [ ] find geometer measurements and see where they place us (good
       for relative from 2017/18 to end of 2018) 
 
-**** Signal rate & efficiency [5/7] :noexport:
+*** Signal rate & efficiency [5/7]                              :noexport:
 - [ ] (solar model)
   - [X] look into the work by Lennert & Sebastian. What does their study
     of different solar models imply for different fluxes?
@@ -26474,7 +26500,7 @@ efficiency instead of the ~1.727~ that now show up in the code!
   - [X] plug can be moved about ±0.43mm away from the center. On
     septemboard variance of plugs is ±0.61mm.
     
-***** Distance Earth ⇔ Sun
+**** Distance Earth ⇔ Sun
 :PROPERTIES:
 :CUSTOM_ID: sec:uncertain:distance_earth_sun
 :END:
@@ -26523,7 +26549,7 @@ echo "Total flux difference: ", f_pe / f_ap
 | Total | flux     | difference: |     1.069209002866338 |                       |                     |             |                    |
 | Total | flux     | difference: |   0.06691241504364387 |                       |                     |             |                    |
 
-****** *UPDATE*: <2023-07-01 Sat 15:50>
+***** *UPDATE*: <2023-07-01 Sat 15:50>
 
 In section [[#sec:journal:01_07_23_sun_earth_dist]] of the ~journal.org~
 we discuss the real distances during the CAST trackings. The numbers
@@ -26589,7 +26615,7 @@ echo "Ratio of 1 AU to 0.989 AU = ", max0989AU / max1AU
 Bang on!
 
 
-***** Variation of window thickness
+**** Variation of window thickness
 :PROPERTIES:
 :CUSTOM_ID: sec:uncertain:window_thickness
 :END:
@@ -26791,7 +26817,7 @@ echo "Averaged difference: ", (abs(1.0 - rate310 / rate300) + abs(1.0 - rate290 
 | Total     |     change: |              1.01168 | UnitLess |     |          |          |
 | Averaged  | difference: | 0.005806760566511471 |          |     |          |          |
 
-***** Magnet length & bore diameter
+**** Magnet length & bore diameter
 :PROPERTIES:
 :CUSTOM_ID: sec:magnet_length_bore_uncertainty
 :END:
@@ -26877,7 +26903,7 @@ echo "Relative change = ", (abs(1.0 - areaL / areaD) + abs(1.0 - areaS / areaD))
 | Relative | change |  = | 0.02325581395348841 |      |    |   |          |          |
 
 
-***** Window rotation & alignment precision [2/2]
+**** Window rotation & alignment precision [2/2]
 :PROPERTIES:
 :CUSTOM_ID: sec:window_rotation_uncertainty
 :END:
@@ -27089,7 +27115,7 @@ see fig. [[fig:cast_laser_alignment_target]].
 #+NAME: fig:cast_laser_alignment_target
 [[~/org/Figs/statusAndProgress/CAST_detector_laser_alignment_target.jpg]]
 
-****** TODO Question about signal & window
+***** TODO Question about signal & window
 
 One thing we currently do not take into account is that when varying
 the signal position using the nuisance parameters, we move the window
@@ -27104,7 +27130,7 @@ only.
 
 So if the main peak was exactly on the strongback, we'd barely see anything!
 
-***** Integration routines for nuisance parameters
+**** Integration routines for nuisance parameters
 
 For performance reasons we cannot integrate out the nuisance
 parameters using the most sophisticated algorithms. Maybe in the end
@@ -27114,7 +27140,7 @@ gauss and then with our chosen method and compare the result on the
 limit? Could just be a "total" uncertainty on the limit w/o changing
 any parameters. 
 
-**** Detector behavior [0/1] :noexport:
+*** Detector behavior [0/1]                                     :noexport:
 
 - [ ] drift in # hits in ⁵⁵Fe. "Adaptive gas gain" tries to minimize this,
   maybe variation of mean energy over time after application a measure for uncertainty?
@@ -27124,7 +27150,7 @@ any parameters.
 
 - [ ] veto random coincidences
 
-***** Random coincidences
+**** Random coincidences
 :PROPERTIES:
 :CUSTOM_ID: sec:uncertain:random_coincidences
 :END:
@@ -27143,7 +27169,7 @@ Leads to effective reduction in live data taking time (increased dead
 time). 
 
 
-**** Background [0/2] :noexport:
+*** Background [0/2]                                            :noexport:
 - [ ] background interpolation
   - we already did: study of statistical uncertainty (both MC as well
     as via error propagation) 
@@ -27158,7 +27184,7 @@ time).
   - [ ] think about random coincidences, derive some formula similar
     to lab course to compute chance
 
-***** Background interpolation [0/1]
+**** Background interpolation [0/1]
 :PROPERTIES:
 :CUSTOM_ID: sec:uncertain:background_interpolation
 :END:
@@ -27204,7 +27230,7 @@ The systematics come into play, due to the:
 - [ ] use existing code to compute a systematic based on the kind of
   background model. Impact of background hypothesis? 
 
-**** Energy calibration, likelihood method [0/1] :noexport:
+*** Energy calibration, likelihood method [0/1]                 :noexport:
 - [ ] the energy calibration as a whole has many uncertainties (due to
   detector variation, etc.)
   - gas gain time binning:
@@ -27215,7 +27241,7 @@ The systematics come into play, due to the:
   - [ ] compute energy of 55Fe peaks after energy
     calibration. Variation gives indication for systematic influence.
 
-***** Gas gain time binning
+**** Gas gain time binning
 :PROPERTIES:
 :CUSTOM_ID: sec:uncertain:gas_gain_binning
 :END:
@@ -27419,7 +27445,7 @@ data. *However* that is much less important, as we assume constant
 gain over the CDL runs anyway more or less / want to pick the most
 precise description of our data!
 
-***** Interpolation of reference distributions (CDL morphing) [/]
+**** Interpolation of reference distributions (CDL morphing) [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:uncertain:cdl_morphing
 :END:
@@ -27454,14 +27480,14 @@ So we really have a miniscule difference there.
 - [ ] also compute the background rate achieved using no CDL morphing
   vs using it. 
 
-***** Energy calibration [/]
+**** Energy calibration [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:uncertain:energy_calibration
 :END:
 
 - [ ] compute peaks of 55Fe energy. What is variation?
 
-***** Software efficiency systematic [/]
+**** Software efficiency systematic [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:uncertain:software_efficiency
 :END:
@@ -28155,7 +28181,7 @@ generate a set and look at the effective efficiency of fake data.
 - [ ] Choose the final uncertainty for this variable that we want to use.
 
   
-****** (While generating fake data) Events with large energy, but few pixels
+***** (While generating fake data) Events with large energy, but few pixels
 :PROPERTIES:
 :CUSTOM_ID: sec:large_events_few_pixels_tot
 :END:
@@ -28200,7 +28226,9 @@ what this gives us.
 
 
 
-*** Putting it all together
+** Putting it all together :noexport:
+
+- [ ] I don't think this is necessary now?
 
 First: show the basic algorithm in pseudo code to compute a likelihood
 value for a set of parameters ($g_{ae}²$, and the $θ$ values).
