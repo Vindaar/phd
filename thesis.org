@@ -28615,6 +28615,125 @@ can be found in the extended version after this section.
   all, our only source of statistical uncertainties (in terms of the
   candidates that we actually observe!)
 
+*** Example of the candidates in sensitive region                :noexport:
+
+- [ ] Show a plot with a few more words about the candidates in
+  sensitive region from a plot.
+
+*** Expected limits with ~nmc = 1000~  :noexport:
+
+This is our baseline analysis. It is already fixed to using the FADC
+veto always and disabling the eccentricity cutoff of the line veto.
+
+This is copy pasted directly from ~statusAndProgress~ section:
+
+[[sec:limit:expected_limits_different_setups_test]]
+
+See ~journal.org~ for more details around the calculation around this time!
+#+begin_src sh
+./generateExpectedLimitsTable \
+    --path ~/org/resources/lhood_lnL_04_07_23/limits/ \
+    --prefix mc_limit_lkMCMC_skInterpBackground_nmc_1000 \
+    --path ~/org/resources/lhood_MLP_06_07_23/limits/ \
+    --prefix mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty
+#+end_src
+#+RESULTS:
+
+*** Expected limits with more statistics :noexport:
+
+Again, straight from the ~statusAndProgress~ section about it.
+
+
+For the best case:
+#+begin_src sh
+./generateExpectedLimitsTable --path ~/org/resources/lhood_MLP_06_07_23/limits/ --prefix mc_limit_lkMCMC_skInterpBackground_nmc_30000_
+#+end_src
+|      ε | Type | Scinti | FADC | ε_FADC | Septem | Line | eccLineCut | ε_Septem | ε_Line | ε_SeptemLine | Total eff. | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] | Exp. limit variance [GeV⁻¹] | Exp. limit σ [GeV⁻¹] |
+|--------+------+--------+------+--------+--------+------+------------+----------+--------+--------------+------------+-------------------------+------------------------+-----------------------------+----------------------|
+| 0.9107 | MLP  | true   | true |   0.98 | false  | true |          1 |   0.7841 | 0.8602 |       0.7325 |     0.7677 |              5.9559e-23 |             7.5824e-23 |                  6.0632e-51 |           7.7866e-26 |
+
+
+For the next worse cases:
+#+begin_src sh
+./generateExpectedLimitsTable \
+    --path ~/org/resources/lhood_MLP_06_07_23/limits/ \
+    --prefix mc_limit_lkMCMC_skInterpBackground_nmc_15000_
+#+end_src
+|      ε | Type | Scinti | FADC | ε_FADC | Septem | Line | eccLineCut | ε_Septem | ε_Line | ε_SeptemLine | Total eff. | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] | Exp. limit variance [GeV⁻¹] | Exp. limit σ [GeV⁻¹] |
+|--------+------+--------+------+--------+--------+------+------------+----------+--------+--------------+------------+-------------------------+------------------------+-----------------------------+----------------------|
+| 0.9718 | MLP  | true   | true |   0.98 | false  | true |          1 |   0.7841 | 0.8602 |       0.7325 |     0.8192 |              5.8374e-23 |             7.6252e-23 |                  1.6405e-50 |           1.2808e-25 |
+| 0.8474 | MLP  | true   | true |   0.98 | false  | true |          1 |   0.7841 | 0.8602 |       0.7325 |     0.7143 |              6.1381e-23 |             7.6698e-23 |                  1.4081e-50 |           1.1866e-25 |
+| 0.7926 | MLP  | true   | true |   0.98 | false  | true |          1 |   0.7841 | 0.8602 |       0.7325 |     0.6681 |              6.2843e-23 |             7.8222e-23 |                  1.3589e-50 |           1.1657e-25 |
+| 0.7398 | MLP  | true   | true |   0.98 | false  | true |          1 |   0.7841 | 0.8602 |       0.7325 |     0.6237 |              6.5704e-23 |             7.9913e-23 |                  1.6073e-50 |           1.2678e-25 |
+
+
+
+*** Older expected limit table with different FADC percentiles and eccentricity line cutoffs :noexport:
+
+This is copy pasted directly from ~statusAndProgress~ section:
+
+[[sec:limit:expected_limits_different_setups_test]]
+
+Ideally we want to rerun this! Different ε line cutoff vetoes and FADC vetoes!
+
+
+
+<2023-03-20 Mon 12:44>
+Expected limits from
+[[file:~/org/resources/lhood_limits_automation_with_nn_support/]]
+which should be more or less correct now (but they lack the
+eccentricity line veto cut value, so it's 0 in all columns!
+
+#+begin_src sh
+cd $TPA/Tools/generateExpectedLimitsTable
+./generateExpectedLimitsTable --path ~/org/resources/lhood_limits_automation_with_nn_support/limits
+#+end_src
+
+*NOTE*: These have different rows for different ε line veto cutoffs,
+but the table does not highlight that fact! 0.8602 corresponds to ε =
+1.0, i.e. disable the cutoff.
+
+
+| ε_lnL | Scinti | FADC  | ε_FADC | Septem | Line  | eccLineCut | ε_Septem | ε_Line | ε_SeptemLine | Total eff. | Limit no signal | Expected Limit |
+|-------+--------+-------+--------+--------+-------+------------+----------+--------+--------------+------------+-----------------+----------------|
+|   0.9 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.7587 |      3.7853e-21 |     7.9443e-23 |
+|   0.9 | true   | false |   0.98 | false  | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.7742 |      3.6886e-21 |     8.0335e-23 |
+|   0.9 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8794 |       0.7415 |     0.7757 |      3.6079e-21 |     8.1694e-23 |
+|   0.8 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.6744 |      4.0556e-21 |     8.1916e-23 |
+|   0.8 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.6744 |      4.0556e-21 |     8.1916e-23 |
+|   0.9 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8946 |       0.7482 |     0.7891 |      3.5829e-21 |     8.3198e-23 |
+|   0.8 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8794 |       0.7415 |     0.6895 |      3.9764e-21 |     8.3545e-23 |
+|   0.8 | true   | true  |    0.9 | false  | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.6193 |      4.4551e-21 |     8.4936e-23 |
+|   0.9 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.9076 |        0.754 |     0.8005 |      3.6208e-21 |     8.5169e-23 |
+|   0.8 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8946 |       0.7482 |     0.7014 |      3.9491e-21 |     8.6022e-23 |
+|   0.8 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.9076 |        0.754 |     0.7115 |      3.9686e-21 |     8.6462e-23 |
+|   0.9 | true   | false |   0.98 | true   | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.6593 |      4.2012e-21 |     8.6684e-23 |
+|   0.7 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5901 |      4.7365e-21 |       8.67e-23 |
+|   0.9 | true   | true  |   0.98 | true   | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.6461 |      4.3995e-21 |     8.6766e-23 |
+|   0.7 | true   | false |   0.98 | false  | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.6021 |      4.7491e-21 |     8.7482e-23 |
+|   0.8 | true   | true  |   0.98 | true   | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5743 |      4.9249e-21 |     8.7699e-23 |
+|   0.8 | true   | true  |   0.98 | false  | false |          0 |   0.7841 | 0.8602 |       0.7325 |      0.784 |      3.6101e-21 |     8.8059e-23 |
+|   0.8 | true   | true  |    0.8 | false  | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5505 |      5.1433e-21 |      8.855e-23 |
+|   0.7 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8794 |       0.7415 |     0.6033 |      4.4939e-21 |     8.8649e-23 |
+|   0.8 | true   | true  |   0.98 | true   | false |          0 |   0.7841 | 0.8602 |       0.7325 |     0.6147 |      4.5808e-21 |     8.8894e-23 |
+|   0.9 | true   | false |   0.98 | true   | false |          0 |   0.7841 | 0.8602 |       0.7325 |     0.7057 |      3.9383e-21 |     8.9504e-23 |
+|   0.7 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.8946 |       0.7482 |     0.6137 |      4.5694e-21 |     8.9715e-23 |
+|   0.8 | true   | true  |    0.9 | true   | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5274 |      5.3406e-21 |     8.9906e-23 |
+|   0.9 | true   | true  |    0.9 | true   | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5933 |       4.854e-21 |          9e-23 |
+|   0.8 | false  | false |   0.98 | false  | false |          0 |   0.7841 | 0.8602 |       0.7325 |        0.8 |      3.5128e-21 |     9.0456e-23 |
+|   0.8 | true   | false |   0.98 | false  | false |          0 |   0.7841 | 0.8602 |       0.7325 |        0.8 |      3.5573e-21 |     9.0594e-23 |
+|   0.7 | true   | true  |   0.98 | false  | true  |          0 |   0.7841 | 0.9076 |        0.754 |     0.6226 |      4.5968e-21 |     9.0843e-23 |
+|   0.7 | true   | true  |   0.98 | true   | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5025 |       5.627e-21 |     9.1029e-23 |
+|   0.8 | true   | true  |    0.9 | false  | false |          0 |   0.7841 | 0.8602 |       0.7325 |       0.72 |      3.8694e-21 |     9.1117e-23 |
+|   0.8 | true   | true  |    0.9 | true   | false |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5646 |       4.909e-21 |     9.2119e-23 |
+|   0.7 | true   | false |   0.98 | true   | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5128 |      5.5669e-21 |     9.3016e-23 |
+|   0.7 | true   | false |   0.98 | true   | false |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5489 |      5.3018e-21 |     9.3255e-23 |
+|   0.7 | true   | true  |    0.9 | true   | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.4615 |      6.1471e-21 |     9.4509e-23 |
+|   0.8 | true   | true  |    0.8 | false  | false |          0 |   0.7841 | 0.8602 |       0.7325 |       0.64 |      4.5472e-21 |     9.5113e-23 |
+|   0.8 | true   | true  |    0.8 | true   | true  |          0 |   0.7841 | 0.8602 |       0.7325 |     0.4688 |      5.8579e-21 |     9.5468e-23 |
+|   0.8 | true   | true  |    0.8 | true   | false |          0 |   0.7841 | 0.8602 |       0.7325 |     0.5018 |      5.6441e-21 |     9.5653e-23 |
+
+
   
 
 
