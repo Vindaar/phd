@@ -27056,16 +27056,17 @@ I copied the X-ray finger runs from tpc19 over to
 the run 189, as it's the run done with the detector installed as in
 2017/18 data taking.
 
-#+begin_src sh :results drawer
+#+begin_src sh :results none
 cd /dev/shm # store here for fast access & temporary
 cp ~/CastData/data/XrayFingerRuns/XrayFingerRun2018.tar.gz .
 tar xzf XrayFingerRun2018.tar.gz
-raw_data_manipulation Run_189_180420-09-53 --runType xray --out xray_raw_run189.h5
-reconstruction xray_raw_run189.h5 --out xray_reco_run189.h5 # make sure `config.toml` for reconstruction uses `default` clustering!
-plotData --h5file fe55/reco_2021-04-23_10-37-26.h5 --runType=rtBackground -b bGgPlot --h5Compare ~/CastData/data/2018/reco_186.h5 --ingrid --config plotData.toml
+raw_data_manipulation -p Run_189_180420-09-53 --runType xray --out xray_raw_run189.h5
+reconstruction -i xray_raw_run189.h5 --out xray_reco_run189.h5 # make sure `config.toml` for reconstruction uses `default` clustering!
+reconstruction -i xray_reco_run189.h5 --only_charge
+reconstruction -i xray_reco_run189.h5 --only_gas_gain
+reconstruction -i xray_reco_run189.h5 --only_energy_from_e
+plotData --h5file xray_reco_run189.h5 --runType=rtCalibration -b bGgPlot --ingrid --occupancy --config plotData.toml
 #+end_src
-
-#+RESULTS:
 
 which gives us the following plot:
 
@@ -27073,6 +27074,9 @@ which gives us the following plot:
 #+CAPTION: Shows the same rotation as the calibration runs here.
 #+NAME: fig:occupancy_cluster_xray_finger_run_189
 [[~/org/Figs/statusAndProgress/systematics/occupancy_clusters_run189_chip3_ckQuantile_95.0_region_crAll_eccentricity_1.0_1.3_applyAll_true.pdf]]
+
+With many more plots here:
+[[file:~/org/Figs/statusAndProgress/xrayFingerRun/run189/]]
 
 
 Using =TimepixAnalysis/Tools/printXyDataset= we can now compute the
