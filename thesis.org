@@ -2458,6 +2458,9 @@ ggplot(df, aes("Energy [keV]", "Trans", color = "Compound")) +
 #+RESULTS:
 
 *** X-ray reflectivity & scattering [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:theory:xray_reflectivity
+:END:
 
 The same atomic scattering factors $f₁$ and $f₂$ introduced in section
 [[#sec:theory:xray_matter_gas]] for the attenuation can also be used to
@@ -2771,10 +2774,10 @@ func argonLabel(): string = "fig:theory:muon_argon_3cm_bethe_loss"
 
 ## TODO: add in the most probable value calc!  
 func argonCaption(): string = 
-  result = r"Mean energy loss via Bethe-Bloch (red) equation of muons in \SI{3}{\cm} of argon at " &
+  result = r"Mean energy loss via Bethe-Bloch (purple) equation of muons in \SI{3}{\cm} of argon at " &
     r"conditions in use in GridPix detector at CAST. \SI{1050}{mbar} of chamber pressure at room " &
     r"temperature. Note that the mean is skewed by events that transfer a large amount of energy, " &
-    r"but are very rare! As such care must be taken interpreting the numbers. Blue shows the most " &
+    r"but are very rare! As such care must be taken interpreting the numbers. Green shows the most " &
     r"probable energy loss, based on the peak of the Landau-Vavilov distribution underlying the " &
     r"Bethe-Bloch mean value." &
     interactiveVega(argonLabel())
@@ -29646,6 +29649,8 @@ line shows values based on a numerical integration using Romberg's
 method *CITE ME* at 10 different coupling constants. This is a cross
 validation of the MCMC result. [fn:romberg_integration_performance] 
 
+- [ ] *REPLACE THIS FIG BY VERSION WITH g_ae·g_aγ!!!*
+- [ ] *ALSO PRODUCE A χ² PLOT OF THE SPACE!*  
 #+CAPTION: The marginal posterior likelihood function for the solar candidates
 #+CAPTION: with the observed limit at the intersection between the blue and
 #+CAPTION: red filling. Also shown is a line based on a numerical integration of
@@ -33334,11 +33339,31 @@ basic introduction to raytracing (just the ray equation and the like)
 and then present the LLNL telescope setup and a couple of plots
 showing e.g. that fraction of shells hit matches the expectation from
 thesis (i.e. the opening area).
+*UPDATE 3*: <2023-09-08 Fri 13:42>
+Given that we have finally after all implemented the interactive
+raytracer, we should write a short raytracing introduction
+(i.e. camera + rays into scene + ray equation + object intersections +
+Whitted algorithm + Path tracing algorithm + solving the light
+... equation)
+
+
+
+- [ ] Whitted raytracing algorithm!
+- [ ] Reference modern real time raytracing features & support on GPUs
+- [ ] Mention the Path Tracing algorithm
 
 
 *Signal hypothesis - raytracing from Sun to detector*
 
 (It can be a reasonably long section, I think that's fair)
+
+An interactive raytracer for the applications of solar axion fluxes, which allows to investigate the
+scene (geometry of objects) in 'visible light' as well as serve as an
+X-ray raytracer is in development.
++For time reasons that development is somewhat on hold unfortunately.+
++https://github.com/Vindaar/rayTracingInOneWeekend/tree/interactiveRayTracer+
+https://github.com/Vindaar/TrAXer
+-> Done.
 
 
 Ray tracing through the detector. Put this before limit calculation stuff?
@@ -33372,11 +33397,6 @@ rendering' \cite{pharr2016physically}.
 - [ ] *NUMBERS FOR FLUX FRACTION ENCOUNTERED WHERE*
 
 
-[fn:raytracing_interactive] An interactive raytracer for the
-applications of solar axion fluxes, which allows to investigate the
-scene (geometry of objects) in 'visible light' as well as serve as an
-X-ray raytracer is in development. For time reasons that development
-is somewhat on hold unfortunately. https://github.com/Vindaar/rayTracingInOneWeekend/tree/interactiveRayTracer
 
 ** Related to explicit axion image [/]
 
