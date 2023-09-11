@@ -1017,30 +1017,209 @@ remainder of the thesis.
   models only including axion photon couplings at tree level.
   
 
-** Implications for axion interactions
+** Implications for axion interactions [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:theory:axion_interactions
 :END:
 
-Axions are apparently not interacting a whole lot, otherwise we'd know
-about them already. Very weak interaction
+Starting with the Lagrangian in
+eq. [[eq:theory:axion:general_axion_couplings]] and extending it by the
+Lagrangian for a free photon
 
-Main interaction arises due to anomalies in standard model that allow
-for a Fermion loop diagram. That allows for coupling to
-gluons. Effective photon coupling is the result, equivalent to
-Primakoff effect for pions (also an effective coupling!).
+\[
+\mathcal{L} = \mathcal{L}_{a,\text{eff}} + \mathcal{L}_γ =
+  \mathcal{L}_{a,\text{eff}} - \frac{1}{4} F_{μν} F^{μν} 
+\]
 
-Write down effective Lagrangian.
+and noting that
 
-*COHERENCE CONDITION*
-*VACUMM VS GAS*
+\[
+\mathcal{L}_{aγγ} = \frac{1}{4}g_{aγγ} \tilde{F}^{μν} F_{μν} a =
+-g_{aγγ} a \vec{E}·\vec{B}, 
+\]
 
-- [ ] Explain origin of the conversion probability by starting with
-  modified Maxwell equations and then solving the Klein-Gordon
-  equation. The resulting mixing of $A_{\parallel}$ and $a$ leads to it.
+we can apply the Euler Lagrange equations to both the axion $a$ and
+photon $A_ν$ to derive a modified Klein-Gorden equation for the axion,
 
-The general axion-photon conversion probability in the potential
-presence of a buffer gas inside the magnet, is given by:
+\[
+\left(\Box + m_a²\right) a = \frac{1}{4}g_{aγγ} F_{μν} \tilde{F}^{μν},
+\]
+
+which has a photon source term. Similarly, for the photon equation of
+motion we derive the homogeneous Maxwell equations with an axion
+source term,
+
+\[
+∂_μ F^{μν} = g_{aγγ} (∂_μ a) \tilde{F}^{μν}.
+\]
+
+Without going into too much detail, let's shortly sketch how one
+derives the axion-photon conversion probability from here.
+
+By choosing a suitable gauge and specifying directions of electric
+and magnetic fields in a suitable coordinate system, we can then
+derive the mixing between photon and axion states. For example if the
+propagation of particles is along the $z$ axis and we fix the two
+degrees of freedom of $A_ν$ by the Lorenz gauge ($∂_μ A^μ = 0$) and
+Coulomb gauge ($\vec{\nabla}·\vec{A} = 0$) we can derive a single
+equation of motion for the axion and $A_ν$ field by starting with a
+plane wave approach. We obtain
+
+\[
+\left[ (ω² + ∂²_z) \mathbf{1} - \mathbf{M} \right] 
+\vektor{A_{\perp}(z) \\ A_{\parallel}(z) \\ 0} = 0,
+\]
+
+with the parallel and orthogonal polarization of the photon
+$A_{\parallel}$ and $A_{\perp}$, respectively and matrix $\mathbf{M}$:
+
+\[
+\mathbf{M} = \mtrix{
+  m²_γ & 0    & 0 \\
+  0    & m²_γ & -ω g_{aγγ} B_T \\
+  0    & -ω g_{aγγ} B_T & m²_a \\
+  }
+  \text{ where } m²_γ = ω²_p.
+\]
+
+Here effects of QED vacuum polarization and other polarization effects
+are ignored. The mass $m_γ$ refers to an effective photon mass that
+can appear in media, $ω$ is the frequency and $B_T$ the transverse
+magnetic field. The constant magnetic field $B_T$ appears, because we
+assume for our purpose the magnetic field is constant along $z$, the
+propagation direction of the photon and electric fields.
+
+By recognizing that the orthogonal component $A_{\perp}$ is decoupled
+from the other two, the problem reduces to a 2 dimensional
+equation. Note that a side effect of this decoupling is that photons
+produced from an incoming axion in a magnetic field are always
+linearly polarized in the direction of the external magnetic field!
+Further, this equation can be linearized in the ultra relativistic
+limit $m_γ² \ll ω²$ to
+
+\[
+\left[ \left( ω + i∂_z \right) \mathbf{1} - \frac{\mathbf{M}}{2ω} \right] \vektor{ A_{\parallel}(z) \\ a(z) } = 0.
+\]
+
+As the mass matrix $\mathbf{M}$ is non diagonal, the fields
+$A_{\parallel}$ and $a$ are interaction eigenstates and not
+propagation eigenstates. If we wish to compute the axion to photon
+conversion probability, we need the propagation eigenstates
+however. Transforming from one to the other is done by a regular
+rotation matrix $\mathbf{R}$, which diagonalizes $\mathbf{M}/2ω$. In the
+basis of the propagation eigenstates the fields $A'_{\parallel}$ and
+$a'$ are then decoupled and can be easily solved by a plane wave
+solution. The fields we can _measure_ in an experiment are those of
+the interaction eigenstates of course. [fn:eigenstates]
+
+The interaction eigenstates after a distance $z$ can therefore be
+expressed by
+
+\[
+\vektor{ A_{\parallel}(z) \\ a(z) } = \mathbf{R}^{-1}
+\mathbf{M_{\text{diag}}} \mathbf{R} \vektor{ A_{\parallel}(0) \\ a(0) },
+\]
+
+where $\mathbf{M_{\text{diag}}}$ is the diagonalized mass matrix,
+
+\[
+\mtrix{ e^{-i λ_+ z} & 0 \\ 0 & e^{-λ_- z} },
+\]
+
+where $λ_{+, -}$ are its eigenvalues and coefficients in the
+exponential of the plane wave solutions of the propagation eigenstate
+fields $A'_{\parallel}$ and $a'$ given by
+
+\[
+λ_{+,-} = \pm \frac{1}{4ω} \sqrt{ \left(ω²_P - m²_a\right)² + \left(2 ω g_{aγγ} B_T\right)²}.
+\]
+
+Then finally, one can compute the conversion probability by starting
+from initial conditions where no electromagnetic field is present,
+$A_{\parallel}(0) = 0, a(0) = 1$. Computing the resulting
+$A_{\parallel}(z)$ with these conditions yields the expression which
+needs to be squared for the probability to measure a photon at
+distance $z$ when starting purely from axions in an external,
+transverse magnetic field $B_T$
+
+\[
+P_{a↦γ}(z) = |{A_{\parallel}(z)}|² = \left( \frac{g_{aγγ} B_T z}{2} \right)² \left(\frac{\sin(\frac{q z}{2})}{\frac{q z}{2}}\right)²,
+\]
+
+with $q = \frac{m²_γ - m²_a}{2ω}$ and we dropped additional terms $∝
+g_{aγ} B_T$ as arguments to $\sinc$, because they are extremely small
+compared to $q z$ for reasonable axion masses, magnetic fields and
+coupling constants. 
+
+If further the coherence condition $qL < π$ is such that $qL \ll π$,
+the $\sin(x)/x$ term approaches 1 and the relevant conversion
+probability is finally:
+
+#+NAME: eq:theory:conversion_prob
+\begin{equation}
+P_{a↦γ, \text{vacuum}} = \left(\frac{g_{aγ} B L}{2} \right)^2 
+\end{equation}
+
+This is the case for long magnets and/or low axion masses. In the
+context of this thesis generally assume it to be the case. The point
+at which this condition does not strictly hold anymore is the axion
+mass at which helioscope experiments start to lose
+sensitivity.
+
+Note that the above conversion probability is given in natural
+units. Arguments ($B, L$) need either be converted to natural units as
+well or the missing factors need to be added. The same equation in SI
+units is given by:
+
+\[
+P_{a↦γ} = ε_0 \hbar c^3 \left( \frac{g_{aγ} B L}{2} \right)^2.
+\]
+
+A detailed derivation for the above can be found in
+\cite{masaki2017photon}. [fn:biljana_kreso_doc] An initial derivation
+for the first axion helioscope prototype is found in
+\cite{vanBibber1989} based on \cite{raffelt1988mixing}. Sikivie gives
+expected rates in his groundbreaking papers about axion experiments,
+\cite{PhysRevLett.51.1415,PhysRevD.32.2988} but is extremely short on
+details. Another source in the form of \cite{raffelt1996stars} in
+which G. Raffelt covers a very large number of topics relevant to axion
+searches.
+
+- [ ] *FIND OUT IF WE CAN LINK AXION DOCUMENT OF BILJANA & KRESO!*
+
+[fn:biljana_kreso_doc] There is a more detailed derivation written by
+Biljana Lakić and Krešimir Jakovčić available internally in the IAXO
+collaboration. If you don't have access to it, reach out!
+
+[fn:eigenstates] For all practical purposes the terms interaction
+eigenstates and propagation eigenstates (the latter often also called
+mass eigenstates) are a convenient tool to work with. A field $X$ in
+the interaction eigenstate corresponds to the field we can actually
+measure in an experiment. However, if fields interact, say with
+another field $Y$, then along their space and time evolution they may
+mix. Therefore, it is useful (and convenient) to introduce a
+propagation eigenstate $X'$ in which that new field (which is
+different from the physical field $X$!) propagates without any
+interaction. The nature of the field interactions have been absorbed
+into the time and space evolution of the field itself - it is a
+superposition of the $X$ and $Y$ interaction eigenstates. In the
+simplest case a field $X'$ in the propagation state may just be oscillating
+between $X$ and $Y$, for example.
+  
+*** Effects of a buffer gas [/]
+
+As seen in the conversion probability above, there is a term for an
+effective photon mass $m_γ$ as part of $q$. And indeed, $q$ becomes
+zero if $m_γ = m_a$, which means the suppressing effect of the $\sinc$
+term disappears. This is something that can be used to increase the
+conversion probability inside of a magnet, by filling it with a buffer
+gas (for example helium), as introduced in
+\cite{raffelt1988mixing,vanBibber1989}. However, one also needs to
+account for the attenuation effect of the gas on the produced
+X-rays. As such the derivation above needs to include this as part of
+the evolution of the field $\vec{A}$ [fn:refractive_index]. By doing this and following the rest of the
+derivation, the conversion probability in the presence of a buffer gas
+comes out to:
 
 #+NAME: eq:theory:full_conversion_prob
 \begin{equation}
@@ -1055,47 +1234,122 @@ of the magnetic field and $q$ the axion-photon momentum transfer given by:
 q = \left|\frac{m_{\gamma}^2 - m_a^2}{2E_a}\right|
 \]
 
-In the case of vacuum, the attenuation length $Γ$ and effective photon
-mass $m_γ$ are zero. The conversion probability simplifies to:
+
+One can easily see that this reduces to the vacuum case we discussed
+before, where the attenuation length $Γ$ and effective photon
+mass $m_γ$ are zero.
+
+Filling the magnet with a buffer gas to induce an effective photon
+mass and thus minimizing $q$ has been done at CAST with $\ce{He4}$ and
+$\ce{He3}$ fillings, as we will mention in chapter
+[[#sec:helioscopes:cast]].
+
+Note: for a potential buffer gas run in BabyIAXO I did some
+calculations about the required gas pressure steps and the effect of
+different possible filling configurations. These are not really
+relevant for this thesis, but can be found in *WHERE*.
+
+- [ ] *VAN BIBBER \cite{vanBibber1989} IS SOURCE OF CONVERSION WITH
+  ATTENUATION*
+  -> Based on \cite{raffelt1988mixing} !
+
+- [ ] *INSERT ~axionMass.org~ CALCULATIONS SOMEWHERE*
+- [ ] *INSERT OUR DOCUMENT ABOUT AXION MASS BUFFER GAS HERE*
+  -> maybe in the end it might be a good idea to mention the buffer
+  gas in the actual thesis in a short paragraph with a couple of words
+  on how it works, but mention that this is not immediately relevant.
+  Then we can link to the appendix of the extended version. Due to the
+  length of this part it makes more sense to have it in the appendix
+  than here where it does affect the flow otherwise.
+
+[fn:refractive_index] This can be done easily by treating the buffer
+gas as a refractive medium with complex refractive index $n_γ = 1 -
+m²_γ / (2ω²) - iΓ/2ω$, which then produces attenuation via the $Γ$
+attenuation term. This is useful to know as it relates to the X-ray
+properties as discussed later in sec. [[#sec:sec:theory:xray_matter_gas]]
+and sec. [[#sec:theory:xray_reflectivity]]. 
+
+**** Simplification                                             :noexport: 
+The conversion probability simplifies to:
 
 \begin{align}
 P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B}{2}\right)^2 \frac{1}{q^2} \left[ 1 + 1 - 2 \cos(qL) \right] \\
 P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B L}{2} \right)^2 \left(\frac{\sin\left(\frac{qL}{2}\right)}{ \left( \frac{qL}{2} \right)}\right)^2
 \end{align}
 
-If further the coherence condition $qL < π$ is such that $qL \ll π$,
-the $\sin(x)/x$ term approaches 1 and the relevant conversion
-probability is finally:
+*** TODOs for the section                                        :noexport:
 
-#+NAME: eq:theory:conversion_prob
-\begin{equation}
-P_{a\rightarrow\gamma, \text{vacuum}} = \left(\frac{g_{a\gamma} B L}{2} \right)^2 
-\end{equation}
+- [X] *Mention* that A field is decoupled from background field B
 
-This is the case for long magnets and/or low axion masses. In the
-context of this thesis generally assume it to be the case. The point
-at which this condition does not strictly hold anymore is the axion
-mass at which helioscope experiments start to lose
-sensitivity. Filling the magnet with a buffer gas to induce an
-effective photon mass and thus minimizing $q$ leads to improvements
-and has been done at CAST with $\ce{He4}$ and $\ce{He3}$ fillings. 
+- [X] Interaction eigenstates vs propagation eigenstates
+- [X] Compute result for propagation eigenstates easily, because
+  matrix becomes diagonal
+- [X] In laboratory we measure interaction eigenstates, so the result
+  of the propagation eigenstates must be rotated back
+- [X] calculate transition amplitude from axion to photon by simply
+  taking $A_{\parallel}²$ of rotated interaction eigenstate. As it has
+  axion coupled into it, gives result if we start with initial
+  conditions A|| = 0, a = 1.
+- [X] How to compute version with gas attenuation of photons? Start
+  not with plane wave solution of photon, but plane wave + decay? I
+  suppose.
+- [X] Explain origin of the conversion probability by starting with
+  modified Maxwell equations and then solving the Klein-Gordon
+  equation. The resulting mixing of $A_{\parallel}$ and $a$ leads to
+  it.
 
-Note that the above conversion probability is given in natural
-units. Arguments ($B, L$) need either be converted to natural units as
-well or the missing factors need to be added.
+*** Dropping an additional $Δ$ term                              :noexport:
 
-The same equation in SI units is given by:
+Notation:
+
 \[
-P_{aγ} = ε_0 \hbar c^3 \left( \frac{g_{aγ} B L}{2} \right)^2.
+q = \frac{m²_γ - m²_a}{2ω}
 \]
 
-Looking closely at the units of this expression, the equation as it is
-written uses natural units. This requires either conversion of the
-equation into SI units by adding the "missing" constants or converting
-the SI units into natural units. As the result is a unit less number,
-the latter approach is simpler.
+and
 
-*** Deriving the missing constants in the conversion probability :optional:
+\[
+Δ = \frac{-g_{aγγ} B_T}{2}
+\]
+
+In principle the conversion probability contains
+
+\[
+\sinc²(\frac{πz}{L_{\text{osc}}})
+\]
+
+with the osciallation length
+
+\[
+L_{\text{osc}} = \frac{π}{\sqrt{ \left( \frac{q}{2} \right)² + Δ² }
+\]
+
+I assume we can safely drop the term $Δ²$, as it is likely orders of
+magnitude smaller than the first term. Let's check that:
+
+#+begin_src nim
+import unchained
+
+defUnit(GeV⁻¹)
+proc q(m_a: meV, ω: keV): keV =
+  result = (m_a*m_a / (2 * ω)).to(keV)
+
+proc Δ(g_aγ: GeV⁻¹, B: Tesla): keV =
+  result = (-g_aγ * B.toNaturalUnit() / 2.0).to(keV)
+
+echo "q² = ", q(1.meV, 3.keV)^2
+echo "Δ² = ", Δ(1e-12.GeV⁻¹, 9.T)^2
+#+end_src
+
+#+RESULTS:
+| q² | = | 2.77778e-26 keV² |
+| Δ² | = | 7.72795e-43 keV² |
+
+Yeah, as expected that's the reason. 
+
+*** Deriving the missing constants in the conversion probability [/] :optional:
+
+- [ ] *Move this into an appendix?*
 
 The conversion probability is given in natural units. In order to plug
 in SI units directly without the need for a conversion to natural
@@ -1166,6 +1420,97 @@ P_{a\rightarrow\gamma, \text{vacuum}} &= \left(g_{a\gamma} B\right)^2 \frac{1}{q
 P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B L}{2} \right)^2 \left(\frac{\sin\left(\frac{qL}{2}\right)}{ \left( \frac{qL}{2} \right)}\right)^2 \\
 P_{a\rightarrow\gamma, \text{vacuum}} &= \left(\frac{g_{a\gamma} B L}{2} \right)^2 \left(\frac{\sin\left(\delta\right)}{\delta}\right)^2 \\
 \end{align*}
+
+*** Details on the polarization of axion induced photons         :noexport:
+
+These notes refer to the notes by Bijlana and Kreso
+[[file:~/org/Papers/Axion-photon_conversion_report_biljana.pdf]]
+
+*UPDATE*: <2023-09-08 Fri 20:14> I just noticed the following sentence
+in Biljana's notes:
+#+begin_quote
+The Faraday rotation term $∆_R$ , which depends on the energy and the
+longitudinal component of the external magnetic field, couples the
+photon polarization states A⊥ and Ak . While Faraday rotation is
+important when analyzing polarized sources of photons, it plays no
+role in the problem at hand.
+#+end_quote
+which refers to off diagonal elements $Δ_R$, which were dropped in
+their calculation! While we don't consider polarized *sources*, do we
+still need to consider this?
+
+
+See eq. (3.4) (reproduced here)
+
+\[
+a(z, t) = a(z) e^{-i ω t} \:\: , \:\: \vec{A}(z, t) =
+\vektor{A_{\perp}(z) \\ A_{\parallel}(z) \\ 0} e^{-iωt}
+\]
+
+for the definition of the axion and photon in the
+context. The equation of motion is eq. (3.8)
+
+\[
+\left[ (ω² + ∂²_z) \mathbf{1} - \mathbf{M} \right] =
+\vektor{A_{\perp}(z) \\ A_{\parallel}(z) \\ 0} = 0
+\]
+
+and with the definition of eq. (3.14)
+
+\[
+\mathbf{M} = \mtrix{
+  m²_γ & 0    & 0 \\
+  0    & m²_γ & -ω g_{aγγ} B_T \\
+  0    & -ω g_{aγγ} B_T & m²_a \\
+  }
+  \text{ where } m²_γ = ω²_p
+\]
+
+we can (as mentioned in the text) see that indeed the orthogonal
+$\vec{A}$ component is independent of the axion field (the first row
+of $\mathbf{M}$ only has an entry in the first column, i.e. the
+product only yields an equation for $A_{\perp}$ alone without the
+axion field.
+
+Due to the difference between the interaction ($A_{\parallel}, a$) and
+propagation eigenstates ($A'_{\parallel}, a'$) (connected via a
+rotation matrix) the initial separate eigenstates $A_{\parallel}$ and
+$a$ end up mixing in the propagation eigenstates (see page
+9). Eq. 3.34
+
+\[
+i∂_z \vektor{A'_{\parallel}(z) \\ a'(z)} = \mathbf{H_D} \vektor{A'_{\parallel}(z) \\ a'(z)}
+\]
+
+is then the equation of motion for the propagation eigenstates. The
+solutions are then eq. 3.38
+
+\begin{align*}
+A_{\parallel}(z) &= A_{\parallel}(0) \left( \cos² θ e^{-iλ_+z} + \sin² θ e^{-iλ_-z}\right) +
+  a(0) \frac{\sin 2θ}{2} \left( e^{-iλ_+z} - e^{-iλ_-z}\right) \\
+a(z) &= A_{\parallel}(0) \frac{\sin 2θ}{2} \left( e^{-iλ_+z} - e^{-iλ_-z}\right) +
+  a(0) \left( \sin² θ e^{-iλ_+z} + \cos² θ e^{-iλ_-z}\right) \\
+\end{align*}
+
+which - with our assumption in our experiment
+
+\[
+A_{\parallel}(0) = 0 \text{ and } a(0) = 1
+\]
+
+i.e. we start with purely axions and no photons before the magnet -
+can then be simplified to 3.39 and 3.40
+
+\begin{align*}
+A_{\parallel}(z) &= a(0) \frac{\sin 2θ}{2} \left( e^{-iλ_+z} - e^{-iλ_-z}\right) \\
+a(z) &= \sin² θ e^{-iλ_+z} + \cos² θ e^{-iλ_-z} \\
+\end{align*}
+
+What this implies is that the photon contribution after mixing that
+can end up as a detected physical photon is only of $A_{\parallel}$
+type, which (again if my rusty understanding is not failing me)
+implies that the produced photons all have the same polarization, the
+one parallel to the constant $\vec{B}$ field (compare with fig. 1).
 
 
 ** Solar axion flux
