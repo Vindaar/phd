@@ -2089,6 +2089,169 @@ For a derivation of this, consider section about ray tracing. Custom
 computation of A done by Johanna in code developed by her & me in
 *LINK*.
 
+*** Generate figures for Primakoff and axion flux from ~readOpacityFile~ output :noexport:
+
+- Use logic we use in ~TrAXer~ to compute differential fluxes as a
+  function of radii.
+- Do it for each type of flux independently
+- Compute a smooth version of the *radial distribution* comparing
+  axion-electron to Primakoff!
+- [X] Black body spectrum
+  -> Produced below in a separate plot!
+- [ ] Radial emission vs energy heatmap!!
+
+First the differential flux by type:
+#+begin_src nim :flags -d:experimentalSDL2 :results drawer
+import ggplotnim
+const fluxPath = "~/org/resources/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15.csv"
+let df = readCsv(fluxPath)
+  .filter(f{string -> bool: `type` notin ["LP Flux", "TP Flux"]})
+  .mutate(f{float: "diffFlux" ~ (if (idx("type", string) == "Primakoff Flux"): `diffFlux` * 100 else: `diffFlux`)})
+  .mutate(f{string: "type" ~ (if (`type` == "Primakoff Flux"): "Primakoff·100" else: `type`)})
+ggplot(df, aes("Energy","diffFlux", color = "type")) +
+  geom_line() +
+  xlab(r"Energy [$\si{keV}$]") + ylab(r"Flux [$\si{keV^{-1}.m^{-2}.yr^{-1}}$]") +
+  ggtitle("Differential axion flux arriving on Earth by type") + 
+  # ggshow(800, 480)
+  ggsave("~/phd/Figs/axions/differential_solar_axion_flux_by_type.pdf", useTeX = true, standalone = true, width = 800, height = 480)
+#+end_src
+
+#+RESULTS:
+| LOADING:  | libcairo.so                                                                     |                                                                             |                             |                                                                       |                          |          |          |          |            |                               |      |
+| LOADING:  | liblapack.so                                                                    |                                                                             |                             |                                                                       |                          |          |          |          |            |                               |      |
+| shellCmd: | command                                                                         | -v                                                                          | xelatex                     |                                                                       |                          |          |          |          |            |                               |      |
+
+Now the radial distribution of the flux by coupling constant.
+#+begin_src nim :flags -d:danger :results none
+import std / [sequtils, algorithm]
+import ggplotnim, unchained
+import ggplotnim/ggplot_sdl2
+type
+  FluxData* = object
+    fRCdf*: seq[float]
+    diffFluxR*: seq[seq[float]]
+    fluxesDf*: DataFrame
+    radii*: seq[float]
+    energyMin*: float
+    energyMax*: float
+
+const
+  alpha = 1.0 / 137.0
+  g_ae = 1e-13 # Redondo 2013: 0.511e-10
+  gagamma = 1e-12 #the latter for DFSZ  #1e-9 #5e-10 #
+  ganuclei = 1e-15 #1.475e-8 * m_a #KSVZ model #no units  #1e-7
+  m_a = 0.0853 #eV
+  m_e_keV = 510.998 #keV
+  e_charge = sqrt(4.0 * PI * alpha)#1.0
+  kB = 1.380649e-23
+  r_sun = 696_342_000_000.0 # .km.to(mm).float # SOHO mission 2003 & 2006
+  hbar = 6.582119514e-25 # in GeV * s
+  keV2cm = 1.97327e-8 # cm per keV^-1
+  amu = 1.6605e-24 #grams
+  r_sunearth = 150_000_000_000_000.0
+
+const factor = pow(r_sun * 0.1 / (keV2cm), 3.0) /
+               (pow(0.1 * r_sunearth, 2.0) * (1.0e6 * hbar)) /
+               (3.1709791983765E-8 * 1.0e-4) # for units of 1/(keV y m²)
+
+import ggplotnim
+proc getFluxRadiusCDF*(path: string): FluxData =
+  var emRatesDf = readCsv(path)
+  # get all radii and energies from DF so that we don't need to compute them manually (risking to
+  # messing something up!)
+  # sort both just to make sure they really *are* in ascending order
+  let radii = emRatesDf["Radius"]
+    .unique()
+    .toTensor(float)
+    .toSeq1D
+    .sorted(SortOrder.Ascending)
+  let energies = emRatesDf["Energy [keV]"]
+    .unique()
+    .toTensor(float)
+    .toSeq1D
+    .sorted(SortOrder.Ascending)
+  var emRates = newSeq[seq[float]]()
+  ## group the "solar model" DF by the radius & append the emission rates for all energies
+  ## to the `emRates`
+  for tup, subDf in groups(emRatesDf.group_by("Radius")):
+    let radius = tup[0][1].toFloat
+    #doAssert subDf["Energy [keV]", float].toSeq1D.mapIt(it.keV) == energies
+    #doAssert radius == radii[k], "Input DF not sorted correctly!"
+    emRates.add subDf["emRates", float].toSeq1D
+  var
+    fluxRadiusCumSum: seq[float] = newSeq[float](radii.len)
+    diffRadiusSum = 0.0
+
+  template toCdf(x: untyped): untyped =
+    let integral = x[^1]
+    x.mapIt( it / integral )
+
+  var fluxesDf = newDataFrame()
+  var diffFluxR = newSeq[seq[float]](radii.len)
+  var rLast = 0.0
+  for iRad, radius in radii:
+    # emRates is seq of radii of energies
+    let emRate = emRates[iRad]
+    var diffSum = 0.0
+    var diffFlux = newSeq[float](energies.len)
+    for iEnergy, energy in energies:
+      let dFlux = emRate[iEnergy] * (energy.float*energy.float) * radius*radius * (radius - rLast) * factor
+      diffFlux[iEnergy] = dFlux
+      diffSum += dFlux
+    fluxesDf.add toDf({"Energy" : energies.mapIt(it.float), "Flux" : diffFlux, "Radius" : radius})      
+    diffRadiusSum += diffSum
+    fluxRadiusCumSum[iRad] = diffRadiusSum
+    diffFluxR[iRad] = diffFlux
+    rLast = radius
+  result = FluxData(fRCdf: fluxRadiusCumSum.toCdf(),
+                    fluxesDf: fluxesDf,
+                    diffFluxR: diffFluxR,
+                    radii: radii,
+                    energyMin: energies.min,
+                    energyMax: energies.max)
+
+proc fluxToDf(data: FluxData, typ: string): DataFrame =
+  result = toDf({ "Radius" : data.radii,
+                  "fluxPerRadius" : data.diffFluxR.mapIt(it.sum),
+                  "Type" : typ })
+    .mutate(f{"fluxPerRadius" ~ `fluxPerRadius` / col("fluxPerRadius").max})
+proc main =
+  const ksvzPath = "~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionPhoton_0.989AU.csv"
+  const dfszPath = "~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv"
+  let ksvz = getFluxRadiusCdf(ksvzPath)
+  let dfsz = getFluxRadiusCdf(dfszPath)
+  var df = newDataFrame()
+  df.add ksvz.fluxToDf("KSVZ"); df.add dfsz.fluxToDf("DFSZ")
+  ggplot(df, aes("Radius", "fluxPerRadius", color = "Type")) +
+    geom_line() +
+    xlab("Relative solar radius", margin = 1.25) + ylab("Relative emission", margin = 1.75) +
+    ggtitle("Radial emission profile of KSVZ ($g_{aγ}$) and DFSZ ($g_{aγ}, g_{ae}$) axion models", titleFont = font(11.0)) +
+    #ggshow() 
+    ggsave("/home/basti/phd/Figs/axions/solar_axion_radial_emission.pdf", useTeX = true, standalone = true, width = 800, height = 480)
+
+  echo dfsz.fluxesDf
+  let dfFlux = dfsz.fluxesDf
+    .filter(f{`Energy` <= 10.0 and `Radius` <= 0.5})
+  ggplot(dfFlux, aes("Energy", "Radius", fill = "Flux")) +
+    geom_raster() +
+    scale_fill_continuous(scale = (0.0, percentile(dfFlux["Flux", float], 99))) +
+    ggtitle("Flux by energy and fraction of solar radius") +
+    xlab(r"Energy [$\si{keV}$]", margin = 1.25) +
+    ylab(r"Relative solar radius", margin = 1.75) +
+    xlim(0, 10) + ylim(0, 0.5) +
+    ggsave("/home/basti/phd/Figs/axions/flux_by_energy_vs_radius_axion_electron.pdf", useTeX = true, standalone = true)
+    #ggshow() # 640, 480)
+    
+main() 
+#+end_src
+
+Hmm, this looks a bit bizarre. But comparing with
+- [[~/org/Figs/statusAndProgress/axionProduction/sampled_radii_axion_electron.pdf]]
+- [[~/org/Figs/statusAndProgress/axionProduction/sampled_radii_primakoff.pdf]]
+the weird structure of the axion-electron emission is actually visible
+a bit (in the form of sharp drops, in particular near 0.2). The question is really "why", but well. If it was some kind of
+sampling issue, I would assume it comes out of the solar model.
+
 *** Black body radiation in solar core                           :noexport:
 
 Let's compute the black body radiation for the solar core and see if
