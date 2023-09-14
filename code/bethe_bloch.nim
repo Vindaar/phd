@@ -99,10 +99,10 @@ func argonLabel(): string = "fig:theory:muon_argon_3cm_bethe_loss"
 
 ## TODO: add in the most probable value calc!  
 func argonCaption(): string = 
-  result = r"Mean energy loss via Bethe-Bloch (red) equation of muons in \SI{3}{\cm} of argon at " &
+  result = r"Mean energy loss via Bethe-Bloch (purple) equation of muons in \SI{3}{\cm} of argon at " &
     r"conditions in use in GridPix detector at CAST. \SI{1050}{mbar} of chamber pressure at room " &
     r"temperature. Note that the mean is skewed by events that transfer a large amount of energy, " &
-    r"but are very rare! As such care must be taken interpreting the numbers. Blue shows the most " &
+    r"but are very rare! As such care must be taken interpreting the numbers. Green shows the most " &
     r"probable energy loss, based on the peak of the Landau-Vavilov distribution underlying the " &
     r"Bethe-Bloch mean value." &
     interactiveVega(argonLabel())
