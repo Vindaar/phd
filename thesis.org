@@ -629,6 +629,328 @@ is a plus of course. No need to hide them behind a citation for
 example. E.g. when linking to the relevant parts of the code, we can
 just make some piece of text clickable!
 
+The HTML export also requires better handling of subfigures that are
+side by side.
+
+In general we made good progress on the HTML export today thanks to
+GPT4 helping us to auto convert all PDFs to SVGs on export!
+
+- [ ] Extend the HTML PDF->SVG conversion such that any PDF larger
+  than some cutoff will be converted to PNG instead (i.e. for those
+  that freeze brave which are 19MB SVGs)
+
+- [ ] Fix PDF->SVG conversion logic to handle ~file:~ type links!  
+
+*** Multiple file from thesis
+
+For the HTML export we'll likely want to have all sections to be on
+separate pages.
+
+I found the following code here:
+https://stackoverflow.com/a/65428989
+which is slightly modified to kill the correct buffer (thanks GPT)
+#+begin_src emacs-lisp
+(defun my-org-export-each-level-1-headline-to-html (&optional scope)
+  (interactive)
+  (org-map-entries
+   (lambda ()
+     (let* ((title (car (last (org-get-outline-path t))))
+            (dir (file-name-directory buffer-file-name))
+            (filename (concat dir title ".html"))
+            (current-buffer (current-buffer)))
+       (org-narrow-to-subtree)
+       (org-html-export-as-html)
+       (write-file filename)
+       ;; switch to current export buffer and kill it
+       (switch-to-buffer (other-buffer current-buffer 1))
+       (kill-current-buffer)
+       (switch-to-buffer current-buffer)
+       (widen)))
+   "LEVEL=1" scope))
+#+end_src
+
+While this works (aside from having issues with all the figures if we
+just copy this file elsewhere to test), it leaves open the issue about
+links to other sections that thus end up in other documents! How
+should we handle this? By hand by just parsing the HTML and replacing
+all ~[BROKEN LINK: section]~ by an ~href~ ?
+
+GPT4 has the following to say about it:
+
+
+
+and it proposed the following code to automatically perform the
+replacement:
+#+begin_src emacs-lisp
+(defun my-org-export-each-level-1-headline-to-html (&optional scope)
+  (interactive)
+  ;; 1. Build a mapping of CUSTOM_ID to filenames
+  (let ((id-to-filename 
+         (mapcar (lambda (headline)
+                   (let ((custom-id (org-entry-get (point) "CUSTOM_ID")))
+                     (when custom-id
+                       (cons custom-id
+                             (concat (file-name-directory buffer-file-name)
+                                     (car (last (org-get-outline-path t headline)))
+                                     ".html")))))
+                 (org-map-entries
+                  (lambda () (org-heading-components))
+                  "LEVEL=1" scope))))
+    (org-map-entries
+     (lambda ()
+       (let* ((title (car (last (org-get-outline-path t))))
+              (dir (file-name-directory buffer-file-name))
+              (filename (concat dir title ".html"))
+              (current-buffer (current-buffer)))
+         (org-narrow-to-subtree)
+         ;; 2. Replace internal links with corresponding filenames
+         (goto-char (point-min))
+         (while (re-search-forward org-link-bracket-re nil t)
+           (let* ((desc (match-string 4))
+                  (path (match-string 2))
+                  (new-filename (cdr (assoc path id-to-filename))))
+             (when new-filename
+               (replace-match (format "[[%s][%s]]" new-filename (or desc path))))))
+         (org-html-export-as-html)
+         (write-file filename)
+         (switch-to-buffer (other-buffer current-buffer 1))
+         (kill-current-buffer)
+         (switch-to-buffer current-buffer)
+         (widen)))
+     "LEVEL=1" scope)))
+#+end_src
+
+Alternatively it proposed to write a custom Org export backend that
+derives from the HTML backend. That looks pretty elegant actually.
+
+#+begin_src emacs-lisp
+(org-export-define-derived-backend 'custom-html 'html
+  :translate-alist '((link . custom-html-link-transcoder)))
+
+(defun custom-html-link-transcoder (link contents info)
+  "Transcode a LINK from Org to custom HTML."
+  (let ((type (org-element-property :type link))
+        (path (org-element-property :path link))
+        (raw-path (org-element-property :raw-link link)))
+    (cond
+     ;; For CUSTOM_ID links, replace them with corresponding filenames.
+     ((and (string= type "id") 
+           (assoc path (org-export-get-id-to-filename-alist info)))
+      (format "<a href=\"%s.html\">%s</a>"
+              (cdr (assoc path (org-export-get-id-to-filename-alist info)))
+              contents))
+     ;; Default handling for other links
+     (t (org-html-link link contents info)))))
+
+(defun custom-html-export-to-separate-files ()
+  "Export all level 1 headings in the current buffer to separate HTML files."
+  (interactive)
+  ;; Build a mapping of CUSTOM_IDs to filenames based on level 1 headlines.
+  (let* ((base-dir (file-name-directory (buffer-file-name)))
+         (id-to-filename 
+          (mapcar (lambda (headline)
+                    (let ((id (org-element-property :CUSTOM_ID headline)))
+                      (when id
+                        (cons id (concat base-dir
+                                         (org-element-property :raw-value headline)
+                                         ".html")))))
+                  (org-element-map (org-element-parse-buffer) 'headline
+                    (lambda (hl) hl)
+                    nil nil 'headline t))))
+    (org-map-entries
+     (lambda ()
+       (let ((title (nth 4 (org-heading-components))))
+         (org-narrow-to-subtree)
+         (org-export-to-file 'custom-html (concat base-dir title ".html"))
+         (widen)))
+     "LEVEL=1")))
+
+(defun custom-html-export-menu-entry ()
+  "Menu entry for the custom HTML export."
+  (interactive)
+  (org-export--dispatch-ui
+   '((?H "To separate files by level 1 heading" custom-html-export-to-separate-files))
+   "Export with Custom HTML"))
+
+(define-key org-mode-map (kbd "C-c C-e H") 'custom-html-export-menu-entry)
+#+end_src
+*NOTE*: This is currently broken: Adding it to the Org export dispatch
+window doesn't work yet, but more importantly:
+- [ ] The links are not actually working right now. So we'll need to fix it!
+  But it's a good start and gives us the idea on how to handle this!
+- [ ] We must use the CUSTOM_ID as a file name instead of the title of
+  the section! The title is useless, as it contains ~/~ etc that cause
+  trouble producing files!
+- [ ] The produced HTML files do not have a table of content on the
+  left hand side! Anyway we want a table of content for the full
+  thesis on the left! 
+
+
+
+Here is the Org manual about adding a custom backend:
+https://orgmode.org/manual/Adding-Export-Back_002dends.html
+
+See also the syntax for referencing something in a separate file:
+https://www.gnu.org/software/emacs/manual/html_node/org/Search-Options.html
+
+*Example*:
+[[file:~/org/Doc/StatusAndProgress.org::#sec:list_different_uncertainties]]
+
+
+*** Bibliography
+
+We should use ~org-ref~ to use do our citations and cross links in
+this document:
+https://github.com/jkitchin/org-ref
+
+It handles exporting a bibliography to HTML too!
+
+*** Org mode subfigures for LaTeX
+
+I found this here (https://www.mail-archive.com/emacs-orgmode@gnu.org/msg140190.html):
+#+begin_src
+#+name: fig:fig
+#+caption: plots of....
+#+begin_figure
+
+#+name: fig:sfig1
+#+attr_latex: :caption \subcaption{1a}
+#+attr_latex: :options {0.5\textwidth}
+#+begin_subfigure
+#+attr_latex: :width 0.8\linewidth
+[[~/s/test/mip.png]]
+#+end_subfigure
+
+#+name: fig:sfig2
+#+attr_latex: :options {0.5\textwidth}
+#+attr_latex: :caption \subcaption{1b}
+#+begin_subfigure
+#+attr_latex: :width 0.8\linewidth
+[[~/s/test/mip.png]]
+#+end_subfigure
+
+#+end_figure
+#+end_src
+
+Does it work to produce a subfigure? If so, what happens on HTML
+export?
+
+Also relevant:
+https://kitchingroup.cheme.cmu.edu/blog/2016/01/17/Side-by-side-figures-in-org-mode-for-different-export-outputs/
+
+
+And another one which looks very simple:
+
+https://list.orgmode.org/87mty1an66.fsf@posteo.net/#t
+
+#+begin_quote
+Hi,
+
+I have come up with a way to export subfigures to LaTeX (with the subfigure package) by
+defining a new link type. The 'subcaption' of the subfigure would be the description of
+the link. If we want to add parameters such as width, scale, etc., we can put them next
+between the marks '>( ... )'
+
+The code:
+
+#+begin_src emacs-lisp
+  (org-link-set-parameters
+   "subfig"
+   :follow (lambda (file) (find-file file))
+   :face '(:foreground "chocolate" :weight bold :underline t)
+   :display 'full
+   :export (lambda (file desc backend)
+	     (when (eq backend 'latex)
+	       (if (string-match ">(\\(.+\\))" desc)
+		   (concat "\\subfigure[" (replace-regexp-in-string "\s+>(.+)" "" desc) "]"
+			   "{\\includegraphics"
+			   "["
+			   (match-string 1 desc)
+			   "]"
+			   "{"
+			   file
+			   "}}")
+		 (format "\\subfigure[%s]{\\includegraphics{%s}}" desc file)))))
+#+end_src
+
+Example:
+
+#+begin_src org
+  ,#+CAPTION: Lorem impsum dolor
+  ,#+ATTR_LaTeX: :options \centering
+  ,#+begin_figure
+  [[subfig:img1.jpg][Caption of img1 >(width=.3\textwidth)]]
+
+  [[subfig:img2.jpg][Caption of img2 >(width=.3\textwidth)]]
+
+  [[subfig:img3.jpg][Caption of img3 >(width=.6\textwidth)]]
+  ,#+end_figure
+#+end_src
+
+Results:
+
+#+begin_src latex
+  \begin{figure}\centering
+    \subfigure[Caption of img1]{\includegraphics[width=.3\textwidth]{img1.jpg}}
+
+    \subfigure[Caption of img2]{\includegraphics[width=.3\textwidth]{img2.jpg}}
+
+    \subfigure[Caption of img3]{\includegraphics[width=.6\textwidth]{img3.jpg}}
+    \caption{Lorem impsum dolor}
+  \end{figure}
+#+end_src
+
+If we want to export to HTML it would be something more tricky. In this case, the export
+function could be like this (a width parameter would be enclosed between >{ ... }):
+
+#+begin_src emacs-lisp
+  (lambda (file desc backend)
+    (cond
+     ((eq backend 'latex)
+      (if (string-match ">(\\(.+\\))" desc)
+	  (concat "\\subfigure[" (replace-regexp-in-string "\s*>.+" "" desc) "]" "{\\includegraphics" "[" (match-string 1 desc) "]" "{"  file "}}")
+	(format "\\subfigure[%s]{\\includegraphics{%s}}" (replace-regexp-in-string "\s*>.+" "" desc) file)))
+     ((eq backend 'html)
+      (if (string-match "&gt;{\\(.+\\)}" desc)
+	  (concat "<td><img src=\"" file "\" alt=\"" file "\"" " style=\"width:"
+		  (match-string 1 desc)
+		  "\""
+		  "/><br>"
+		  (replace-regexp-in-string "\s*&gt;.+" "" desc)
+		  "</td>")
+	(format "<td><img src=\"%s\" alt=\"%s\"/><br>%s</td>"
+		file file
+		(replace-regexp-in-string "\s*&gt;.+" "" desc))))))
+#+end_src
+
+Example:
+
+#+begin_src org
+  ,#+CAPTION: Lorem impsum dolor
+  ,#+ATTR_LaTeX: :options \centering
+  ,#+begin_figure
+  @@html:<div class="org-center"><table style="margin-left:auto;margin-right:auto;"><tr>@@
+
+  [[subfig:img1.jpg][Caption of img1 >(width=.3\textwidth) >{300px}]]
+
+  [[subfig:img2.jpg][Caption of img2 >(width=.3\textwidth) >{300px}]]
+
+  @@html:</tr></table><p> </p><table style="margin-left:auto;margin-right:auto;"><tr>@@
+
+  [[subfig:img3.jpg][Caption of img3 >(width=.6\textwidth) >{600px}]]
+
+  @@html:</tr></table><br>Lorem ipsum dolor</div>@@
+  ,#+end_figure
+#+end_src
+
+As you can see, it is not the panacea, and you have to apply some direct format...
+
+Happy holidays
+
+Juan Manuel 
+#+end_quote
+
+
 ** TODO In context of determining gas diffusion [0/1]
 
 - [ ] As mentioned in the relevant section, don't forget to clear up
