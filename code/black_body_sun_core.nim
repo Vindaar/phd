@@ -14,15 +14,17 @@ proc xrayEnergyToFreq(E: keV): s⁻¹ =
   ## converts the input energy in keV to a correct frequency
   result = E.to(Joule) / hp
 echo 1.keV.xrayEnergyToFreq
-
+echo "Solar core temperature ", T_Sun, " in keV : ", T_Sun.toNaturalUnit().to(keV)
 echo blackBody(1.μHz.to(Hz), T_sun)
 echo blackBody(1.keV.xrayEnergyToFreq, T_sun)
 
-let energies = linspace(0.01, 16.0, 1000)
+let energies = linspace(0.01, 15.0, 1000)
 let radiance = energies.mapIt(blackBody(it.keV.xrayEnergyToFreq, T_sun).float)
 let df = seqsToDf(energies, radiance)
 ggplot(df, aes("energies", "radiance")) + 
   geom_line() + 
-  ggtitle("Black body radiation @ T = 15 Mio. K") +
-  xlab("Energy [keV]") + ylab("Radiance [J•m⁻²•sr⁻¹]") + 
-  ggsave("/tmp/blackbody_sun.pdf")
+  ggtitle(r"Black body radiation @ $T = \SI{15e6}{K}$") +
+  xlab(r"Energy [ $\si{keV}$ ]", margin = 1.25) +
+  ylab(r"Radiance [ $\si{J.m^{-2}.sr^{-1}$ ]", margin = 1.75) +
+  xlim(0, 15) + 
+  ggsave("/home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf", useTeX = true, standalone = true, width = 800, height = 480)
