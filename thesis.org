@@ -1,17 +1,20 @@
 #+LATEX_CLASS: book-noparts
 #+LATEX_CLASS_OPTIONS: [a4paper]
 #+LATEX_HEADER: \usepackage{shellesc}
-#+LATEX_HEADER: \usepackage{booktabs}
-#+LATEX_HEADER: \usepackage{longtable}
 #+LaTeX_HEADER: \usepackage{pdfpages}
 # #+LaTeX_HEADER: \usepackage{tikz}
+
+# make the margin on the sides smaller
+#+LATEX_HEADER: \usepackage[margin=2.5cm]{geometry}
+
+# Include our default LaTeX setup
+#+SETUPFILE: ~/.emacs.d/default_latex_header.org
 
 # 'externalize' all TikZ plots, i.e. cache them
 # #+LaTeX_HEADER: \usepackage{pgfplots}
 # #+LaTeX_HEADER: \usepgfplotslibrary{external} 
 # #+LaTeX_HEADER: \tikzexternalize[prefix=cache/]
 
-#+LATEX_HEADER: % main document, called main.tex
 #+LATEX_HEADER: \usepackage{tikz}
 #+LATEX_HEADER: \usetikzlibrary{external}
 #+LATEX_HEADER: \tikzexternalize[prefix=cache/] % activate!
@@ -22,16 +25,8 @@
 # for mini table of contents for each chapter
 #+LATEX_HEADER: \usepackage{minitoc}
 
-#+LATEX_HEADER: \usepackage{siunitx}
-#+LATEX_HEADER: \sisetup{mode=text,range-phrase = {\text{~to~}}, range-units=single, print-unity-mantissa=false}
-# single to not print unit in first part of range
-
-# font handling
-
-# font handling
-#+LATEX_HEADER: \usepackage{fontspec,minted}
-#+LATEX_HEADER: \setmonofont{Fira Code} % suports all unicode we care about in code
-
+# Note: Code font is changed in default LaTeX header in emacs (Fira Code)
+# config. This uses `fontspec`
 # NOTE: At this point <2023-09-14 Thu 18:04> compiling using Computer
 # Modern works fine! We don't actually use any fancy unicode in the
 # context of the thesis.
@@ -60,53 +55,7 @@
 #   #+LATEX_HEADER: \setTransitionsForSymbols{\mydefaultfont}{\mymainfont}
 #   #+LATEX_HEADER: \setTransitionsForMathematics{\mydefaultfont}{\mymainfont}
 
-# package that allows inserting unicode characters in math environment
-#+LATEX_HEADER: \usepackage{unicode-math}
-
-#+LATEX_HEADER: \usepackage{amsmath}
-#+LATEX_HEADER: \usepackage{mhchem}
-# use `subcaption` for side-by-side sub figures and adjust the subref
-# style such that it is placed in parenthesis (a)
-# ref: https://tex.stackexchange.com/a/131366
-#+LATEX_HEADER: \usepackage[labelformat=simple]{subcaption}
-#+LATEX_HEADER: \renewcommand\thesubfigure{(\alph{subfigure})}
-
-# make the margin on the sides smaller
-#+LATEX_HEADER: \usepackage[margin=2.5cm]{geometry}
-
-# ##############################
-# change output of code blocks to use monokai
-# ##############################
-#+LaTeX_HEADER: \usemintedstyle{monokai}
-
-#+LATEX_HEADER: \definecolor{monokai_bg}{RGB}{39, 40, 34}
-# #+LATEX_HEADER: \definecolor{monokai_bg}{RGB}{27, 28, 27}
-# #+LATEX_HEADER: \definecolor{monokai_fg}{RGB}{241, 235, 235}
-#+LATEX_HEADER: \definecolor{monokai_0}{RGB}{72,72,62}
-#+LATEX_HEADER: \definecolor{monokai_1}{RGB}{220,37,102}
-#+LATEX_HEADER: \definecolor{monokai_3}{RGB}{212,201,110}
-#+LATEX_HEADER: \definecolor{monokai_4}{RGB}{85,188,206}
-
-# color commands
-#+LATEX_HEADER: \definecolor{monokai_orange}{RGB}{253, 151, 31}
-#+LATEX_HEADER: \newcommand{\orange}{\textcolor{monokai_orange}}
-#+LATEX_HEADER: \newcommand{\green}{\textcolor{green}}
-#+LATEX_HEADER: \newcommand{\red}{\textcolor{red}}
-#+LATEX_HEADER: \DeclareSIUnit\year{yr}
-
-# custom commands for convenience
-#+LATEX_HEADER: \newcommand{\ccsini}{$\mathrm{Si}₃\mathrm{N}₄$}
-# \def\si3n4{$\mathrm{Si}₃\mathrm{N}₄$}
-#+LATEX_HEADER: \newcommand{\cefe}{$\ce{^{55}Fe}$~}
-#+LATEX_HEADER: \newcommand{\vektor}[1]{\ensuremath{\begin{pmatrix}#1\end{pmatrix}}}
-#+LATEX_HEADER: \newcommand{\mtrix}[1]{\ensuremath{\begin{pmatrix}#1\end{pmatrix}}}
-#+LATEX_HEADER: \newcommand{\cp}{$\mathrm{CP}$~}
-#+LATEX_HEADER: \newcommand{\cpt}{$\mathrm{CPT}$~}
-
-# \sinc function
-#+LATEX_HEADER: \DeclareMathOperator{\sinc}{sinc}
-
-
+# Bibliography related:
 #+LATEX_HEADER: \usepackage[backend=biber]{biblatex}
 #+LATEX_HEADER: \addbibresource{references.bib}
 
@@ -153,7 +102,6 @@ Solingen
 \end{titlepage}
 
 #+TOC: headlines 2
-
 
 # Part 0: Introduction
 
