@@ -910,6 +910,137 @@ Happy holidays
 Juan Manuel 
 #+end_quote
 
+**** Our implementation
+
+*UPDATE*: The below is now essentially finished. We've finalized our
+subfigure DSL and it produces the correct code for both backends. With
+some CSS and JS we have also implemented being able to click on
+subfigures in HTML to resize them.
+We use ~org-ref~ to have custom references ~sref~ and ~ssubref~ to
+reference figures / subfigures within the generated code.
+
+
+
+We started an implementation of the former (the DSL) here
+[[file:~/org/Misc/side_by_side_subfigure_elisp_dsl.org]]
+
+Once starting to work on the HTML version I realized that it will
+likely be tricky to get the figure counters working. They are
+hardcoded by the HTML export logic of Org here
+[[file:/usr/share/emacs/29.1/lisp/org/ob-C.el.gz::3417]]
+
+I just learned about CSS counters though:
+
+https://tympanus.net/codrops/2013/05/02/automatic-figure-numbering-with-css-counters/
+
+which might be perfect. Maybe we need to replace the current Org logic
+by something custom for it (i.e. replace the
+~"<span class=\"figure-number\">"~
+by something that uses ~<figure>~).
+
+
+*UPDATE* <2023-09-15 Fri 22:12>: *Ohhhh!* There already *is* support
+for HTML5 ~<figure>~ environments! That should take care of one
+aspect. We can activate it using
+Ref: https://emacs.stackexchange.com/questions/27691/org-mode-export-images-to-html-as-figures-not-img
+#+begin_src emacs-lisp
+(setq org-html-html5-fancy t
+      org-html-doctype "html5")
+#+end_src
+or alternatively set it only for a single file using
+#+begin_src 
+:html-doctype "html5"
+:html-html5-fancy t
+#+end_src
+
+*However*, this still inserts the hard coded ~Figure %d~ into the
+code. So our rebinding the function is still necessary.
+
+For *referencing* our custom IDs, it should be fine to set the
+~org-html-prefer-user-labels~!
+#+begin_src emacs-lisp
+(setq org-html-prefer-user-labels t)
+#+end_src
+which then perfectly leaves the labels we assign!
+
+
+Maybe we can disable the counting for the ~figure-number~ span classes
+though!
+https://emacs.stackexchange.com/a/17625
+#+begin_src css
+.figure-number {
+    display: none;
+}
+#+end_src
+
+And to get our custom counting logic, we use CSS counters:
+#+begin_src css
+/* Initialize the counter */
+body {
+    counter-reset: fig-counter;
+}
+
+figure {
+    /* Increment the counter for every figure */
+    counter-increment: fig-counter;
+}
+
+figcaption::before {
+    /* Display the counter value before each figcaption */
+    content: "Figure " counter(fig-counter) ": ";
+}
+
+#+end_src
+
+Let's try it out by merging it into
+[[file:~/org/Doc/SolarAxionConversionPoint/nimdoc.css]]
+
+*IT WORKS PERFECTLY!!!!!* :partying_face:
+
+Ok, the HTML export now also more or less works! Had some small
+issues, but all good. It is to be noted that we need to emit
+~#+begin_export html~ blocks.
+
+Also we need to be careful about the order in which we add both our
+HTML export hooks! This one and the one that converts the PDFs to SVG!
+
+Also: we probably want a different CSS counter for the subfigures
+internally. That we can generate the correct counters for *within* the
+subcaption and using letters instead. So outer counter + a, b etc.
+
+In particular, the final problem (outside of potentially having
+trouble aligning the figures?) is the conversion of PDFs to SVGs.
+Ahhh! We can just call the conversion and copy function from *this*
+hook!
+-> YUP, that works!
+
+Now all that is left:
+- [ ] Resize the images to the desired size (currently no size given!
+  nor CSS sets size!)
+- [ ] Change the subfigure counter logic and text so that it's better.  
+
+
+
+
+
+Ref: https://orgmode.org/manual/HTML-doctypes.html
+
+*** Inline images
+
+Found this interesting article. He inserts all SVG images directly as
+base64 data into the HTML file! That's pretty neat. It relies on
+~cl-letf~ to rebind the function ~org-html--format-image~ to do that.
+https://niklasfasching.de/posts/org-html-export-inline-images/
+
+
+** TODO TikZ backend / useTeX
+
+When the legend is too large to fit onto the regular plot, TikZ or
+rather latex with extend the figure.
+But the rectangle for the background is then too small!
+
+We should apply the background color of the background rectangle to
+the entire document! That way this cannot happen.
 
 ** TODO In context of determining gas diffusion [0/1]
 
