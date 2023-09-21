@@ -2229,6 +2229,9 @@ on average are closer to $\sim\SI{12e6}{K}$.
 
 - [ ] Mention Sikivie effect?
 
+- [X] Mention axion-nucleon coupling \cite{di2022probing}
+  -> Mentioned in the context of the effective Lagrangian
+
 
 - [X] Axion flux directly follows from couplings. Show the Feynman
   diagrams from Redondo
@@ -2391,33 +2394,38 @@ computation of A done by Johanna in code developed by her & me in
 
 - Use logic we use in ~TrAXer~ to compute differential fluxes as a
   function of radii.
-- Do it for each type of flux independently
-- Compute a smooth version of the *radial distribution* comparing
+- [X] Do it for each type of flux independently
+- [X] Compute a smooth version of the *radial distribution* comparing
   axion-electron to Primakoff!
 - [X] Black body spectrum
   -> Produced below in a separate plot!
-- [ ] Radial emission vs energy heatmap!!
+- [X] Radial emission vs energy heatmap!!
 
 First the differential flux by type:
-#+begin_src nim :flags -d:experimentalSDL2 :results drawer
+#+begin_src nim :results drawer :flags -d:experimentalSDL2 -d:QuietTikZ=true
 import ggplotnim
 const fluxPath = "~/org/resources/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15.csv"
 let df = readCsv(fluxPath)
-  .filter(f{string -> bool: `type` notin ["LP Flux", "TP Flux"]})
+  .filter(f{string -> bool: `type` notin ["LP Flux", "TP Flux", "57Fe Flux"]})
   .mutate(f{float: "diffFlux" ~ (if (idx("type", string) == "Primakoff Flux"): `diffFlux` * 100 else: `diffFlux`)})
   .mutate(f{string: "type" ~ (if (`type` == "Primakoff Flux"): "Primakoff·100" else: `type`)})
 ggplot(df, aes("Energy","diffFlux", color = "type")) +
   geom_line() +
   xlab(r"Energy [$\si{keV}$]") + ylab(r"Flux [$\si{keV^{-1}.m^{-2}.yr^{-1}}$]") +
+  xlim(0, 15) + 
   ggtitle("Differential axion flux arriving on Earth by type") + 
   # ggshow(800, 480)
-  ggsave("~/phd/Figs/axions/differential_solar_axion_flux_by_type.pdf", useTeX = true, standalone = true, width = 800, height = 480)
+  ggsave("~/phd/Figs/axions/differential_solar_axion_flux_by_type.pdf", useTeX = true, standalone = true, width = 600, height = 360)
 #+end_src
 
 #+RESULTS:
-| LOADING:  | libcairo.so                                                                     |                                                                             |                             |                                                                       |                          |          |          |          |            |                               |      |
-| LOADING:  | liblapack.so                                                                    |                                                                             |                             |                                                                       |                          |          |          |          |            |                               |      |
-| shellCmd: | command                                                                         | -v                                                                          | xelatex                     |                                                                       |                          |          |          |          |            |                               |      |
+:results:
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v xelatex
+shellCmd: xelatex -output-directory /home/basti/phd/Figs/axions /home/basti/phd/Figs/axions/differential_solar_axion_flux_by_type.tex
+Generated: /home/basti/phd/Figs/axions/differential_solar_axion_flux_by_type.pdf
+:end:
+
 
 Now the radial distribution of the flux by coupling constant.
 #+begin_src nim :flags -d:danger :results none
@@ -2571,6 +2579,7 @@ constant. Let's see what this looks like for $T =
 
 #+begin_src nim :tangle /home/basti/phd/code/black_body_sun_core.nim :results drawer :flags -d:QuietTikZ=true
 import ggplotnim, unchained, sequtils
+import ggplotnim / ggplot_sdl2
 
 #defUnit(s⁻¹)
 #defUnit(μs⁻¹)
@@ -2596,10 +2605,11 @@ let df = seqsToDf(energies, radiance)
 ggplot(df, aes("energies", "radiance")) + 
   geom_line() + 
   ggtitle(r"Black body radiation @ $T = \SI{15e6}{K}$") +
-  xlab(r"Energy [$\si{keV}$]", margin = 1.25) +
-  ylab(r"Radiance [$\si{J.m^{-2}.sr^{-1}}$]", margin = 1.75) +
-  xlim(0, 15) + 
-  ggsave("/home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf", useTeX = true, standalone = true, width = 800, height = 480)
+  xlab(r"Energy [$\si{keV}$]") +
+  ylab(r"Radiance [$\si{J.m^{-2}.sr^{-1}}$]") +
+  xlim(0, 15) +
+  #ggshow() 
+  ggsave("/home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf", useTeX = true, standalone = true, width = 600, height = 360)
 #+end_src
 
 #+RESULTS:
@@ -2608,9 +2618,6 @@ ggplot(df, aes("energies", "radiance")) +
 Solar core temperature 1.5e+07 K in keV : 1.2926 keV
 inf J•sr⁻¹•m⁻²
 178.526 J•sr⁻¹•m⁻²
-shellCmd: command -v xelatex
-shellCmd: xelatex -output-directory /home/basti/phd/Figs /home/basti/phd/Figs/blackbody_spectrum_solar_core.tex
-Generated: /home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf
 :end:
 
 
