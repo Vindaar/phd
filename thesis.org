@@ -3357,12 +3357,13 @@ ggplot(df, aes("Energy[keV]", "EffectiveArea[cm²]", color = "Telescope")) +
 | AudioDeviceAdded |                                                             |                   |                                 |                                                             |
 | AudioDeviceAdded |                                                             |                   |                                 |                                                             |
 
+*** Best limits set by CAST                                      :optional:
 
 In the many years of data taking and countless detectors taking data
 at the CAST experiment, it has put the most stringent limits on
 different coupling constants over the years.
 
-Specifically, CAST sets the current best limits on the:
+Specifically, CAST sets the current best helioscope limits on the:
 - Axion-photon coupling $g_{aγ}$
 - Axion-electron coupling $g_{ae}$
 - Chameleon-photon coupling $β_γ$
@@ -3385,18 +3386,21 @@ particle. The best current limit on the chameleon-photon coupling
 $β_γ$ is based on a single GridPix based detector with data taken in
 2014 and 2015 by C. Krieger in cite:krieger2018search,krieger_chameleon_jcap, limiting the
 coupling to $β_γ < \num{5.74e10}$, which is the first limit below the
-solar luminosity bound. *CHECK CORRECT TERM*.
+solar luminosity bound.
 
-*Mention the limit method with foreshadowing to statistics chapter
-that we will use the same?*
+**** TODOs about this section [/]                               :noexport:
+- [ ] *Mention the limit method with foreshadowing to statistics chapter
+  that we will use the same?*
+  -> No, I don't think so
 
-*** Subsection about gaseous phase, affecting conversion :noexport:
-
-Extract parts of the axionMass.org file and place it here. Essentially
-the:
-- conversion probability in gas
-- how to compute that
-- one step showing conversion prob outside coherent condition
+- [ ] Subsection about gaseous phase, affecting conversion            
+  Extract parts of the axionMass.org file and place it here. Essentially
+  the:
+  - conversion probability in gas
+  - how to compute that
+  - one step showing conversion prob outside coherent condition
+  -> We've discussed the buffer gas stuff in the axion theory and
+  mentioned our calculations. I think that's enough.
 
 ** International AXion Observatory (IAXO)
 :PROPERTIES:
@@ -3416,23 +3420,135 @@ cite:Armengaud_2014.
 
 The proposed experiment is supposed to have a total magnet length of \SI{25}{m}
 length with \num{8} \SI{60}{cm} bores with an average transverse
-magnetic field of \SI{2.5}{tesla}. With a cryostat and magnet design
+magnetic field of \SI{2.5}{T} [fn:magnetic_field_iaxo]. With a cryostat and magnet design
 specifically built for the experiment, much larger tilting angles of
-the magnet of about $\pm\ang{25}$ are proposed to allow for solar
+the magnet of about $\pm\SI{25}{°}$ are proposed to allow for solar
 tracking for \SI{12}{\hour} per day for a 1:1 data split between
-tracking and background data. \cite{Armengaud_2014}
+tracking and background data. cite:Armengaud_2014
 
-A schematic of the proposed design can be seen in fig. *IAXO FIG*.
+In cite:Irastorza_2011 a 'figure of merit' (FOM) is introduced
+to quantify the improvements possible by IAXO over CAST, defined by
 
-Given the comparatively large budget requirements for such an
-experiment, a compromise was envisioned to prove the required
-technologies. This intermediate experiment called BabyIAXO will be
-discussed in the next section, [[BabyIAXO]].
+\[
+f = f_M f_{\text{DO}} f_T = (B² L² A)_M (\frac{ε_d ε_o}{\sqrt{b a}})_{\text{DO} (\sqrt{ε_t t})_T
+\]
 
-Make use of PRC (?) mainly for data, citation both that and first
-proposal.
+which is split into individual FOMs for the magnet $f_M$ the detector
+and optics $f_{\text{DO}}$ and the total tracking time $f_T$ ($B$:
+magnetic field, $L$: magnet length, $A$: total bore area of all bores,
+$ε_d$: detector efficiency, $ε_o$: X-ray optic efficiency, $b$:
+background in counts per area and time, $a$: area of the X-ray optic
+focal spot, $ε_t$: data taking efficiency, $t$: total solar tracking
+time). The biggest improvements would come from the magnet FOM (MFOM),
+due to the much larger magnet volume. Compared to the CAST MFOM
+$f_{M,\text{CAST}} = \SI{19.3}{T^2.m^4}$ IAXO would achieve a relative
+improvement of $f_{M,\text{CAST}} / f_{M,\text{IAXO}} \approx 300$
+with its $f_{M,\text{IAXO}} = \SI{5654.9}{T^2.m^4}$. As the number of
+expected counts in a helioscope scales with
+$g^4$ [fn:coupling_notation], the figure of merit directly relates
+possible limits of a helioscope in case of a non-detection. The
+aspirational target for IAXO would be a full $f_{\text{CAST}} /
+f_{\text{IAXO}} > \num{10000}$  for a possible improvement on $g$
+bounds by an order of magnitude.
 
-*MAYBE PICTURE OF IAXO LEFT, BABYIAXO RIGHT*
+A schematic of the proposed design can be seen in
+fig. sref:fig:helioscopes:iaxo. Given the comparatively large budget
+requirements for such an experiment, a compromise was envisioned to
+prove the required technologies, in particular the magnet design. This
+intermediate experiment called BabyIAXO will be discussed in the next
+section, [[#sec:helioscopes:baby_iaxo]].
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "IAXO") (label "fig:helioscopes:iaxo")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/IAXO/iaxo_annotated_schematic.png"))
+        (subfigure (linewidth 0.5) (caption "BabyIAXO") (label "fig:helioscopes:baby_iaxo")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/IAXO/babyIAXO_schematic_annotated_ringwald23.png"))
+        (caption
+         (subref "fig:helioscopes:iaxo")
+         "An annotated schematic of a potential IAXO design with 8 magnet bores. Taken from the IAXO CDR "
+         (cite "Armengaud_2014") ". "
+         (subref "fig:helioscopes:baby_iaxo")
+         "An annotated schematic of the current BabyIAXO design, showing the two bores. One bore intended
+          for an XMM-Newton optic of " (SI 7.5 "m") " focal length, and a shorter " (SI 5 "m") " focal
+          length custom optic behind the other bore. Taken from " (cite "ringwald23_axions_hamburg") "."
+         ))
+#+end_src
+
+[fn:magnetic_field_iaxo] Due to the envisioned toroidal magnet design
+and much larger diameter, the magnetic field inside such a bore would
+not be as homogeneous as in the LHC dipole magnets. The peak field
+would be about $\SI{5.4}{T}$. This also means a correct $f_M$
+calculation for IAXO must take into account the actual magnetic field
+map.
+
+[fn:coupling_notation] $g⁴$ is a placeholder for $g⁴_{aγ}$ or
+$g²_{aγ}·g²_{ae}$. The flux scales with this product as explained in
+sec. [[#sec:theory:current_bounds]] due to axion production and reconversion
+happening via $g²$ each.
+
+*** Calculate magnet figure of merit                             :noexport:
+
+For more details on the figure of merit calculation, see sec. 3.1 in
+cite:Irastorza_2011.
+
+For completeness, the figure of merit is:
+
+\[
+f = f_M f_{\text{DO}} f_T = (B² L² A)_M (\frac{ε_d ε_o}{\sqrt{b a}})_{\text{DO} (\sqrt{ε_t t})_T
+\]
+
+The full relationship with the axion-photon coupling is:
+
+\begin{align*}
+  N_γ ∝ N_a · g⁴ &= f · g⁴ \\
+  N_b &= b a ε_t t
+\end{align*}
+
+So 10,000 more "produced" (i.e. not produced) photons due to f'/f =
+10,000 for IAXO over CAST would imply the bounds on $g$ could be
+improved by a factor of 10, one order of magnitude.
+
+Let's calculate the figure of merit for the CAST magnet as well as the
+IAXO / BabyIAXO magnets:
+#+begin_src nim
+import unchained
+
+defUnit(T²•m⁴)
+proc fMagnet(B: Tesla, L: Meter, d: CentiMeter): T²•m⁴ = B^2 * L^2 * (d / 2.0)^2 * π
+let fCAST = fMagnet(8.8.T, 9.26.m, 4.3.cm)
+echo "CAST magnet, single bore f_M = ", fCAST, " at 8.8 T"
+echo "CAST, both bores f_M = ", fCAST * 2
+
+let fIAXO = fMagnet(2.5.T, 20.m, 60.cm)
+echo "IAXO magnet, single bore f_M = ", fIAXO, " at 2.5 T *average* field, 20 m length."
+echo "IAXO, all bores f_M = ", fIAXO * 8
+
+echo "IAXO FOM over CAST: ", fIAXO * 8 / (fCAST * 2)
+#+end_src
+
+#+RESULTS:
+| CAST  | magnet, | single | bore  | f_M            | =            | 9.64304 T²•m⁴ | at | 8.8 | T |           |        |    |   |         |
+| CAST, | both    | bores  | f_M   | =              | 19.2861 T²•m⁴ |              |    |     |   |           |        |    |   |         |
+| IAXO  | magnet, | single | bore  | f_M            | =            | 706.858 T²•m⁴ | at | 2.5 | T | *average* | field, | 20 | m | length. |
+| IAXO, | all     | bores  | f_M   | =              | 5654.87 T²•m⁴ |              |    |     |   |           |        |    |   |         |
+| IAXO  | FOM     | over   | CAST: | 293.21 UnitLess |              |              |    |     |   |           |        |    |   |         |
+
+*** TODOs for this section                                       :noexport:
+
+- Make use of PRC (?) mainly for data, citation both that and first
+  proposal.
+
+- [X] *MAYBE PICTURE OF IAXO LEFT, BABYIAXO RIGHT*
+
+- [ ] *FIGURE OF MERIT*
+  -> Including definition.
+
+- [ ] *EXPECTED LIMIT*
+
+
 
 *** BabyIAXO
 :PROPERTIES:
@@ -3444,21 +3560,40 @@ restricting the setup to 2 bores instead of 8 with a magnet length of
 only \SI{10}{m} to prove the magnet design works, before building a
 larger version of said design.
 
-Since the first conceptual design of IAXO \cite{Armengaud_2014} the
+Since the first conceptual design of IAXO cite:Armengaud_2014 the
 bore diameter for the two bores of BabyIAXO has increased from
-\SI{60}{cm} to \SI{70}{cm}. \cite{abeln2021conceptual}
+\SI{60}{cm} to \SI{70}{cm}. cite:abeln2021conceptual 
 
 The BabyIAXO design was approved by the Deutsches
-Elektronen-Synchrotron (DESY) for construction onsite, possibly
-starting 2022 *CHECK*. As of writing the thesis the final construction
-site is still undecided.
-*WHEN CONSTRUCTION START UNCLEAR, WHAT TO WRITE HERE*
+Elektronen-Synchrotron (DESY) for construction onsite. The project has
+suffered multiple delays most notably due to the magnet
+construction. First COVID19 due to its severe effects on supply chains
+and in 2022 the horrific Russian invasion of Ukraine have caused multi
+year delays. The latter in particular was problematic as the only two
+companies being able to supply the type of superconducting cable
+needed for the magnet are from Russia. The magnet situation is still
+in flow as of writing this thesis.
 
-A schematic of the BabyIAXO design can be seen in fig. *BABYIAXO*.
+For the two bores two different X-ray telescopes are planned to be
+operated. One bore will be used with a flight spare of the XMM-Newton
+X-ray satellite mission with a focal length of $\SI{7.5}{m}$. The
+second bore would receive a custom built X-ray optic based on a hybrid
+design of a NuSTAR-like optic for the inner part - similar to the LLNL
+telescope introduced in sec. [[#sec:helioscopes:llnl_telescope]] (just as
+a full telescope) - and a cold slumped glass design following
+cite:civitani16_cold_hot_slump_glass_optic for the outer part. This
+optic would have a focal length of only $\SI{5}{m}$.
 
-*FIGURE OF MERIT*
+An annotaded schematic of the BabyIAXO design can be seen in
+fig. sref:fig:helioscopes:baby_iaxo. The magnet figure of merit for
+BabyIAXO is aimed at being at least a factor 10 higher than for CAST,
+with cite:abeln2021conceptual listing values between
+$\SI{232}{326}{T².m⁴}$ depending on how it is calculated.
 
-*EXPECTED LIMIT for IAXO / BabyIAXO*
+**** TODOs for this section                                     :noexport:
+
+Any?
+
 
 * Gaseous detectors principles                                       :Theory:
 :PROPERTIES:
