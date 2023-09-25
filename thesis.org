@@ -155,6 +155,20 @@ Bibliography for org-ref:
 #+end_src
 
 
+** Customize exclude tags per backend
+
+#+begin_src emacs-lisp
+(defun my-custom-org-exclude-tags (backend)
+  "Set tags to exclude depending on BACKEND."
+  (cond ((eq backend 'latex)
+         (setq-local org-export-exclude-tags '("noexport" "extended" "html")))
+        ((eq backend 'html)
+         (setq-local org-export-exclude-tags '("noexport" "extended" "latex")))))
+
+(add-hook 'org-export-before-processing-hook 'my-custom-org-exclude-tags)
+#+end_src
+
+
 * Introduction                                                        :Intro:
 :PROPERTIES:
 :CUSTOM_ID: sec:introduction
