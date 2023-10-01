@@ -5,7 +5,7 @@ let Si₃N₄ = compound((Si, 3), (N, 4))
 # instantiate an Argon instance
 let ar = Argon.init()
 # compute the density using ideal gas law at 1 atm
-let ρ_Ar = density(1013.mbar.to(Pascal), 293.K, ar.molarMass)
+let ρ_Ar = density(1013.25.mbar.to(Pascal), 293.15.K, ar.molarMass)
 
 # define energies in which to compute the transmission
 # (we don't start at 0, as at 0 energy the parameters are not well defined)
@@ -29,7 +29,6 @@ let si = r"$\mathrm{Si}₃\mathrm{N}₄$"
 ggplot(df, aes("Energy [keV]", "Trans", color = "Compound")) +
   geom_line() +
   xlab("Energy [keV]") + ylab("Transmission") +
-  ggtitle("Transmission examples of $# $# and $# Argon" % [dS, si, dA]) +
+  ggtitle("Transmission examples of $# $# and $# Argon at NTP" % [dS, si, dA]) +
   ggsave("/home/basti/phd/Figs/theory/transmission_example.pdf",
-         #width = 800, height = 600,
-         useTex = true, standalone = true)
+         useTex = true, standalone = true, width = 600, height = 360)

@@ -1,4 +1,5 @@
 import ggplotnim, unchained, sequtils
+import ggplotnim / ggplot_sdl2
 
 #defUnit(s⁻¹)
 #defUnit(μs⁻¹)
@@ -24,7 +25,8 @@ let df = seqsToDf(energies, radiance)
 ggplot(df, aes("energies", "radiance")) + 
   geom_line() + 
   ggtitle(r"Black body radiation @ $T = \SI{15e6}{K}$") +
-  xlab(r"Energy [ $\si{keV}$ ]", margin = 1.25) +
-  ylab(r"Radiance [ $\si{J.m^{-2}.sr^{-1}$ ]", margin = 1.75) +
-  xlim(0, 15) + 
-  ggsave("/home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf", useTeX = true, standalone = true, width = 800, height = 480)
+  xlab(r"Energy [$\si{keV}$]") +
+  ylab(r"Radiance [$\si{J.m^{-2}.sr^{-1}}$]") +
+  xlim(0, 15) +
+  #ggshow() 
+  ggsave("/home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf", useTeX = true, standalone = true, width = 600, height = 360)
