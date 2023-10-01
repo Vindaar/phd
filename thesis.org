@@ -3992,88 +3992,70 @@ k = 2π \sin{θ} / λ.
 :END:
 
 Another relevant aspect for gaseous detectors is the energy deposition
-of charged particles. In particular for experiments that sit near the
-surface, a major source of background is due to cosmic radiation, with
-cosmic muons making up more than \SI{95}{\percent} cite:Zyla:2020zbs
-of radiation (aside from neutrinos) at the surface, see
-sec. [[#sec:theory:cosmic_radiation]].
+of charged particles. In particular for experiments that sit near
+Earth's surface, a major source of background is due to cosmic
+radiation, with cosmic muons making up more than \SI{95}{\percent}
+cite:Zyla:2020zbs of radiation (aside from neutrinos) at the surface,
+see sec. [[#sec:theory:cosmic_radiation]].
 
 These muons lose energy according to the Bethe-Bloch equation, which
 describes the average energy loss per distance for a charged particle
-with charge $z$ in a homogeneous medium with charge carriers $Z$. cite:Zyla:2020zbs
+with charge $z$ in a homogeneous medium with charge carriers
+$Z$. cite:Zyla:2020zbs [fn:bethe_equation_form]
 
+#+NAME: eq:theory:bethe_bloch_eq
 \begin{equation}
-  \label{eq:theory:bethe_bloch_eq}
   \left\langle -\frac{\mathrm{d}E}{\mathrm{d}x}\right\rangle = 
     K z² \frac{Z}{A} \frac{1}{β²} \left[ 
       \frac{1}{2} \ln\frac{2m_e c² β² γ² W_{\text{max}}}{I²} - β² - \frac{δ(βγ)}{2} 
     \right]
 \end{equation}
-where the different variables are as follows: 
-*TURN INTO TABLE?*
-- $K = 4π N_A r_e² m_e c² = \SI{0.307075}{\MeV \mol^{-1} \cm²}$
-- $N_A = \SI{6.022 140 857(74)e23}{\mol^{-1}}$: Avogadro's number
-- $r_e = e² / 4π ε_0 m_e c² = \SI{2.817 940 3227(19)}{fm}$: classical
-  electron radius
-- $m_e = \SI{9.1093837015(28)e-31}{\kg}$: electron mass
-- $c = \SI{299792458}{\meter\per\second}$: speed of light in vacuum
-- $z$: charge number of incident particle
-- $Z$: atomic number of absorber material
-- $A$: atomic mass of absorber material
-- $β = \frac{v}{c}$: speed of incident particle
-- $γ = \frac{1}{\sqrt{1 - β²}}$: Lorentz factor
-- $W_{\text{max}}$: Maximum possible energy transfer to an electron in
+where the different variables are as follows:
+- $K = 4π N_A r_e² m_e c² = \SI{0.307075}{MeV.mol^{-1}.cm^2}$
+- $W_{\text{max}}$: maximum possible energy transfer to an electron in
   a single interaction
 - $I$: mean excitation energy of the absorber material in \si{\eV}
-- $δ(βγ)$: density-effect correction to energy loss
+- $δ(βγ)$: density-effect correction to energy loss  
+- and $r_e = \frac{e²}{4π ε_0 m_e c²}$ the classical electron radius,
+  $N_A$ Avogadro's number, $m_e$ electron mass, $c$ speed of light
+  in vacuum, $z$ charge number of incident particle, $Z$ atomic number
+  of absorber material, $A$ atomic mass of absorber material, $β =
+  v/c$ speed of incident particle, $γ$ Lorentz factor
 
 This interaction behavior of muons leads to a specific, expected
-energy loss per distance. For argon gas at normal conditions (1 bar,
-20°C, ...) this is shown in
-fig. *FIG BETHE*. 
-
-*CITE PDG*
-There are multiple different representations of the Bethe-Bloch
-equation mention multiple different ways to write formula.
+energy loss per distance. For argon gas at normal conditions this is shown in
+fig. [[fig:theory:muon_argon_3cm_bethe_loss]].
 
 As the Bethe formula was derived from quantum mechanical perturbation
 theory, higher order corrections can be computed. For our purposes
-here the leading order is enough. The next corrections proportional to
-$Z³$ and $Z⁴$ are called /??/ and /shell correction/ respectively. 
-At higher energies also the density correction by Fermi *CITE* needs
-to be accounted for. These higher order corrections are mainly
-relevant for very low energies. *SEE PDG "Energy loss at low energies" section*
-*SHOW WITH OR WITHOUT. EQUATION WITH, BUT DROP IN CALCS*
+here the leading order is enough. It is important to keep in mind that
+the Bethe-Bloch equation gives the /mean energy/ per distance. When
+considering short distances as typically encountered in particle
+detectors, this mean is skewed by rare interactions that deposit large
+amounts of energy (towards $W_{\text{max}}$). The energy deposition
+along short distances is typically described by a Landau-Vavilov
+distribution (similar, but different from a normal Landau
+distribution) [[cite:Zyla:2020zbs,BICHSEL2006154]]. The most probable
+energy loss is often a more appropriate number to look at. It can be
+expressed as
 
-It is important to keep in mind that the Bethe-Bloch equation gives
-the *mean energy* per distance. When considering short distances as
-typically encountered in particle detectors, this mean is skewed by
-rare interactions that deposit large amounts of energy (towards
-$W_{\text{max}}$). The energy deposition along short distances is
-typically described by a Landau-Vavilov distribution (similar, but
-different from a normal Landau distribution)
-[[cite:Zyla:2020zbs,BICHSEL2006154]]. The most probable energy loss is
-often a more appropriate number to look at. It can be expressed as
-
+#+NAME: eq:theory:most_probable_loss
 \begin{equation}
-\label{eq:theory:most_probable_loss}
-Δ_p = ξ \left[ \ln{ \frac{2 m_e c² β² γ²}{I}} + \ln{\frac{ξ}{I}} + j -
-β² - δ(βγ) \right],
+Δ_p = ξ \left[ \ln{ \frac{2 m_e c² β² γ²}{I}} + \ln{\frac{ξ}{I}} + j - β² - δ(βγ) \right],
 \end{equation}
 
 where $ξ$ is
 
 \[
-ξ = \frac{1}{2} K z² \left\langle \frac{Z}{A} \right\rangle
-\frac{x}{β²} \, \si{MeV},
+ξ = \frac{1}{2} K z² \left\langle \frac{Z}{A} \right\rangle \frac{x}{β²} \, \si{MeV},
 \]
 
-for a detector in which the material column the particle
-travels through is expressed as $x = d · ρ$ of a distance $d$ in \si{g
-cm^{-2}}. $j = \num{0.200}$ is an empirical constant
-cite:Zyla:2020zbs, bichsel1988straggling. Further, $\langle Z / A
+for a detector in which the material column the particle travels
+through is expressed as $x = d · ρ$ of a distance $d$ in
+$\si{g.cm^{-2}}$. $j = \num{0.200}$ is an empirical constant
+cite:Zyla:2020zbs,bichsel1988straggling. Further, $\langle Z / A
 \rangle$ is simply the average $Z/A$ for a material compound $\langle
-Z/A \rangle = \sum_i w_i Z_i / A_i$. 
+Z/A \rangle = \sum_i w_i Z_i / A_i$.
 
 The large difference typically encountered between the most probable
 and the mean value for the energy loss in particle detectors, makes
@@ -4087,7 +4069,56 @@ and the mean energy loss via the Bethe-Bloch equation
 [[eq:theory:bethe_bloch_eq]] for muons of different energies traversing
 $\SI{3}{cm}$ of argon gas.
 
-*TODO: ADD MOST PROBABLE LOSS TO PLOT BELOW!*
+# \input{~/phd/Figs/muonStudies/ar_energy_loss_cast.tex}
+#+CAPTION: Mean energy loss via Bethe-Bloch (purple) equation of muons in \SI{3}{\cm} of argon at
+#+CAPTION: conditions in use in GridPix detector at CAST. \SI{1050}{mbar} of chamber pressure at room 
+#+CAPTION: temperature. Note that the mean is skewed by events that transfer a large amount of energy,
+#+CAPTION: but are very rare! As such care must be taken interpreting the numbers. Green shows the most 
+#+CAPTION: probable energy loss, based on the peak of the Landau-Vavilov distribution underlying the 
+#+CAPTION: Bethe-Bloch mean value. Interactive Vega-Lite version available at cite:vega_fig:theory:muon_argon_3cm_bethe_loss.
+#+NAME: fig:theory:muon_argon_3cm_bethe_loss
+[[~/phd/Figs/muonStudies/ar_energy_loss_cast.pdf]]
+
+
+[fn:bethe_equation_form] Note that there are different common
+parametrizations of the Bethe-Bloch equation.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] Maybe restructure bethe bloch parameter explanation?
+
+- [X] *TODO: ADD MOST PROBABLE LOSS TO PLOT BELOW!*
+
+- [ ] Either replace referencing figure from bibliography and simply
+  put mini description into reference or something like this:
+  https://chat.openai.com/share/cdec7de9-40d3-4dfa-a0ff-0f5e43263ec3
+
+Landau distribution!
+
+Also check out this $f$ function that is mentioned here:
+https://doi.org/10.1016/j.nima.2006.03.009
+
+as a better way to compute the actual energy loss per distance?
+
+- [ ] Also: read again PDG part about PDG and later in chapter the average
+energy loss. Of course cannot take the mean of the Landau distribution
+due to the long tail. We don't really do that in our muon simulation
+though.
+
+- [ ] *Mention* higher order corrections and names?
+  -> The next corrections proportional to $Z³$ and $Z⁴$ are called /??/ and
+  /shell correction/ respectively.  At higher energies also the density
+  correction by Fermi *CITE* needs to be accounted for. These higher
+  order corrections are mainly relevant for very low energies. *SEE PDG
+  "Energy loss at low energies" section* *SHOW WITH OR WITHOUT. EQUATION
+  WITH, BUT DROP IN CALCS*
+
+***** Muons
+
+The below is not really needed here, right? We have an entire section
+about muons after all!
+
+
 
 *REPHRASE* instead focus on fact that they lose > 2 GeV instead of
 talking about typical muon energies.
@@ -4107,19 +4138,26 @@ By taking into account the Bethe formula and a Landau distribution for
 each point, we can compute an expectation for the energy loss for
 muons under typical conditions met in a gaseous detector.
 
-Landau distribution!
 
-Also check out this $f$ function that is mentioned here:
-https://doi.org/10.1016/j.nima.2006.03.009
 
-as a better way to compute the actual energy loss per distance?
+**** Parameters Bethe-Bloch long                                :noexport:
 
-Also: read again PDG part about PDG and later in chapter the average
-energy loss. Of course cannot take the mean of the Landau distribution
-due to the long tail. We don't really do that in our muon simulation
-though. 
+- $K = 4π N_A r_e² m_e c² = \SI{0.307075}{MeV.mol^{-1}.cm^2}$
+- $r_e = \frac{e²}{4π ε_0 m_e c²} = \SI{2.817 940 3227(19)}{fm}$: classical  
+- $N_A = \SI{6.022 140 857(74)e23}{\mol^{-1}}$: Avogadro's number
 
-\input{~/phd/Figs/muonStudies/ar_energy_loss_cast.tex}
+  electron radius
+- $m_e = \SI{9.1093837015(28)e-31}{\kg}$: electron mass
+- $c = \SI{299792458}{\meter\per\second}$: speed of light in vacuum
+- $z$: charge number of incident particle
+- $Z$: atomic number of absorber material
+- $A$: atomic mass of absorber material
+- $β = \frac{v}{c}$: speed of incident particle
+- $γ = \frac{1}{\sqrt{1 - β²}}$: Lorentz factor
+- $W_{\text{max}}$: Maximum possible energy transfer to an electron in
+  a single interaction
+- $I$: mean excitation energy of the absorber material in \si{\eV}
+- $δ(βγ)$: density-effect correction to energy loss
 
 **** Bethe equation for muons traversing \SI{3}{\cm} of argon gas :noexport:
 
@@ -4251,12 +4289,15 @@ proc plotDetectorAbsorption(element: Element) =
     xlab(r"μ Energy [\si{\GeV}]") +
     ylab(r"$-\left\langle \frac{\mathrm{d}E}{\mathrm{d}x}\right\rangle$ (BB), $Δ_p$ (MP) [\si{\keV}]") +
     scale_x_log10() + scale_y_log10() +
-    theme_latex() + 
+    #theme_latex() +
+    margin(right = 5.5) + 
     ggtitle(r"Energy loss of Muons in \SI{3}{\cm} " & &"{element.name.capitalizeAscii} at CAST conditions") +
     #ggsave(&"/home/basti/phd/Figs/muonStudies/{element.name}_energy_loss_cast.pdf", useTeX = true, standalone = true)
     ggvegatex(&"/home/basti/phd/Figs/muonStudies/{element.name}_energy_loss_cast",
+              onlyTikZ = false,
               caption = argonCaption(),
-              label = argonLabel())
+              label = argonLabel(),
+              width = 600, height = 360)
 plotDetectorAbsorption(Argon)
 
 proc plotMostProbable(e: Element) =
