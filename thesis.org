@@ -3826,13 +3826,10 @@ ggplot(df, aes("Energy [keV]", "Trans", color = "Compound")) +
 
 The same atomic scattering factors $f₁$ and $f₂$ introduced in section
 [[#sec:theory:xray_matter_gas]] for the attenuation can also be used to
-compute the reflectivity of X-rays under shallow angles.
-
-*TODO: FIX THIS UP LIKELY TO INCLUDE SURFACE ROUGHNESS. ALSO LOOK AT
-XRAY DATA BOOKLET FOR IT AGAIN*
-- [ ] *REWRITE THIS IN KNOWLEDGE OF MULTILAYER CODE* I.e. Fresnell
-  equations & complex refractive indices!!!
-
+compute the reflectivity of X-rays under shallow angles. A great
+overview of the relevant physics for X-ray reflectivity is found in
+cite:windt98_imd, which introduces the ~IMD~ program for the
+simulation of multilayer coatings for X-rays.
 
 By defining the combined scattering factor
 
@@ -3846,11 +3843,124 @@ at energy $E$, the refractive index $n$ of a medium can be computed using
 n(E) = 1 - r_e \frac{λ²}{2π} \sum_i n_{ai} f_i(E)
 \]
 
-where $n_{ai}$ is the number density of the $i$-th compound of the
-medium.
+where $n_{ai}$ is the number density of the $i\text{-th}$ compound of the
+medium. By expressing the refractive index for X-rays in this fashion,
+reflectivity can be expressed using the Fresnell equations, just like
+for visible light. The reflectivity for s-polarization is calculated
+by
+#+NAME: eq:theory:fresnell_reflectance_s
+\begin{equation}
+r^s_{ij} = \frac{n_i · \cos(θ_i) - n_j · \cos(θ_j)}{n_i · \cos(θ_i) + n_j · \cos(θ_j}
+\end{equation}
+while for p-polarization it is done via
+#+NAME: eq:theory:fresnell_reflectance_p
+\begin{equation}
+r^p_{ij} = \frac{n_i · \cos(θ_j) - n_j · \cos(θ_i)}{n_i · \cos(θ_j) + n_j · \cos(θ_i)}.
+\end{equation}
 
-Then, in what is essentially an application of Snell's law, the
-reflectivity can be expressed as
+Here $θ_i$, $θ_j$ are the incident and refracted angles and $n_i$, $n_j$ the
+refractive indices on the incident and outgoing
+side $i$ and $j$, respectively. [fn:practical_calculation]
+
+The total reflected energy, the reflectance $R$, is expressed as
+
+\[
+R = \frac{1}{2}\left( \left|r^s\right|² + \left|r^p\right|²\right)
+\]
+
+for unpolarized light. This can be generalized to multiple layers of
+material on a substrate and including a surface roughness. Combined
+these provide the essence for a realistic computation of the
+efficiency of an X-ray telescope mirror shell. 
+
+This is also implemented in [fn:scinim_xrayAttenuation]
+cite:Schmidt_xrayAttenuation_2022 and [fn:henke_gov]
+cite:henke1993x also provides an online calculator for such
+reflectivities.
+
+- Depth graded multilayers :: One particular kind of surface, the
+  depth graded multilayer, is used
+  in certain kinds of modern X-ray telescopes, for example the LLNL
+  telescope at CAST following the NuSTAR design. In such a multilayer
+  repeating layers of a low $Z$ material and a high $Z$ material are
+  stacked at decreasing thicknesses.
+  
+  A depth-graded multilayer is described by the equation:
+  \[
+  d_i = \frac{a}{(b + i)^c}
+  \]
+  where $d_i$ is the depth of layer $i$ (out of $N$ layers),
+  \[
+  a = d_{\text{min}} (b + N)^c
+  \]
+  and
+  \[
+  b = \frac{1 - N k}{k - 1}
+  \]
+  with
+  \[
+  k = \left(\frac{d_{\text{min}}}{d_{\text{max}}}\right)^{\frac{1}{c}}
+  \]
+  where $d_{\text{min}}$ and $d_{\text{max}}$ are the thickness of the
+  bottom and top most layers, respectively.
+
+  For example for the the LLNL telescope a Pt/C depth graded
+  multilayer is used, in which a top layer of carbon is stacked on top
+  of a platinum layer. Between 2 to 5 repetitions of decreasing
+  thickness are stacked with a ratio of $\SIrange{40}{45}{\%}$ carbon
+  to platinum in thickness. More details on this will be discussed in
+  appendix [[#sec:appendix:raytracing]], as it is of vital importance to
+  calculate the axion image required for the limit calculation
+  correctly.
+
+  The reflectivity for a depth-graded multilayer is computed
+  recursively from the bottom of the stack to the top layer using
+  
+  \[
+  r_i = \frac{r_{ij} + r_j \exp(2 i β_i)}{1 + r_{ij} r_j \exp(2 i β_i)}
+  \]
+  
+  with
+
+  \[
+  β_i = 2π · d_i · \frac{\cos(θ_i)}{λ},
+  \]
+
+  where $θ_i$ as seen from the normal axis and with the wavelength of
+  the incoming X-rays $λ$. The $r_{ij}$ values are computed following
+  equations [[eq:theory:fresnell_reflectance_s]] and
+  [[eq:theory:fresnell_reflectance_p]]. Such multilayers work by summing
+  the reflecting contributions from the different layer
+  transitions. Different thicknesses of the different multilayers mean
+  X-rays at different energies and angles are best reflected from
+  different layers. Thus, a much improved overall reflectivity over a
+  wider energy and angle range can be achieved compared to a normal
+  single layer on a substrate (e.g. a gold coating as used for the
+  XMM-Newton or ABRIXAS optics).
+
+[fn:practical_calculation] In practice care must be taken to compute
+these. Instead of attempting to explicitly compute refracted and
+reflected angles, one should work with the complex $\sin$ or $\cos$
+expressions. *CHECK ME AGAIN, I DONT THINK THIS IS REALLY NEEDED!!* 
+
+[fn:henke_gov] https://henke.lbl.gov/optical_constants/ 
+
+[fn:scinim_xrayAttenuation] https://github.com/SciNim/xrayAttenuation
+
+**** TODOs for this section                                     :noexport:
+
+- [ ] *FIX UP REFERENCE TO APPENDIX WHEN WRITTEN TO LINK EXPLICIT LLNL
+  SECTION ABOVE!*
+
+- [ ] *IN APPENDIX ABOUT MULTILAYERS* explain how the reflectance for
+  depth graded multilayer is calculated!  
+
+*TODO: FIX THIS UP LIKELY TO INCLUDE SURFACE ROUGHNESS. ALSO LOOK AT
+XRAY DATA BOOKLET FOR IT AGAIN*
+- [ ] *REWRITE THIS IN KNOWLEDGE OF MULTILAYER CODE* I.e. Fresnell
+  equations & complex refractive indices!!!
+
+**** Other notes                                                :noexport:
 
 \[
 R = \left| \frac{k_m - k_p}{k_m + k_p} \right|²
@@ -3874,22 +3984,6 @@ defined via the wave number $k$, which itself is computed via
 k = 2π \sin{θ} / λ.
 \]
 
-This can be generalized to multiple layers of material on a substrate
-and including a surface roughness. Combined these provide the essence
-for a realistic computation of the efficiency of an X-ray telescope
-mirror shell.
-
-This is also implemented in [fn:scinim_xrayAttenuation]
-cite:Schmidt_xrayAttenuation_2022 and [fn:henke_gov]
-cite:henke1993x also provides an online calculator for such
-reflectivities. 
-
-
-[fn:henke_gov] https://henke.lbl.gov/optical_constants/ 
-
-[fn:scinim_xrayAttenuation] https://github.com/SciNim/xrayAttenuation
-Note: at the time of writing this, multi layers are not yet
-implemented and the reflectivity code still has to be cleaned up.
 
 
 *** Bethe-Bloch equation
