@@ -120,12 +120,15 @@ proc plotDetectorAbsorption(element: Element) =
     xlab(r"μ Energy [\si{\GeV}]") +
     ylab(r"$-\left\langle \frac{\mathrm{d}E}{\mathrm{d}x}\right\rangle$ (BB), $Δ_p$ (MP) [\si{\keV}]") +
     scale_x_log10() + scale_y_log10() +
-    theme_latex() + 
+    #theme_latex() +
+    margin(right = 5.5) + 
     ggtitle(r"Energy loss of Muons in \SI{3}{\cm} " & &"{element.name.capitalizeAscii} at CAST conditions") +
     #ggsave(&"/home/basti/phd/Figs/muonStudies/{element.name}_energy_loss_cast.pdf", useTeX = true, standalone = true)
     ggvegatex(&"/home/basti/phd/Figs/muonStudies/{element.name}_energy_loss_cast",
+              onlyTikZ = false,
               caption = argonCaption(),
-              label = argonLabel())
+              label = argonLabel(),
+              width = 600, height = 360)
 plotDetectorAbsorption(Argon)
 
 proc plotMostProbable(e: Element) =
