@@ -247,7 +247,7 @@ proc barometricFormula(h: KiloMeter): g•cm⁻³ =
   else: doAssert false, "Invalid height! Outside of range!"
 
 import random
-randomize(43)
+randomize(430)
 proc intBetheAtmosphere(E: GeV, θ: Radian, dx = 10.cm): eV =
   ## integrated energy loss using Bethe formula for muons generated at
   ## `15.km` under an angle of `θ` to the observer for a muon of energy
@@ -355,7 +355,7 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
   ## angles.
   ##
   ## The energy loss is computed using a fixed 
-  let energies = logspace(log10(E_c.float), 2.float, 100)
+  let energies = logspace(log10(E_c.float), 2.float, 1000)
   let angles = linspace(0.0, 80.0, 9)
   block CalcLossEachMuon:
     var df = newDataFrame()
@@ -365,6 +365,7 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
       var flux = newSeq[float]()
       var E_initials = newSeq[float]()
       var E_lefts = newSeq[float]()
+      var lastDropped = 0.GeV
       for e in E:
         let E_left = intBetheAtmosphere(e, θ).to(GeV)
         if E_left <= 0.0.GeV:
@@ -372,26 +373,30 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
           continue
         elif E_left <= E_c:
           echo "Skipping energy : ", e, " as muon has less than E_c = ", E_c, " energy left"
+          lastDropped = e
           continue
         let E₀ = e - E_left
         flux.add muonFlux(e, θ, E₀, E_c, I₀, ε).float
         E_initials.add e.float        
         E_lefts.add E_left.float
       let dfLoc = toDf({E_initials, E_lefts, flux, "angle [°]" : angle})
+      #  .filter(f{`E_initials` >= lastDropped.float})
       df.add dfLoc
     ggplot(df, aes("E_initials", "flux", color = factor("angle [°]"))) +
       geom_line() +
-      xlab("Initial energy [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+      xlab(r"Initial energy [\si{GeV}]") + ylab(r"Flux [\si{m^{-2}.s^{-1}.sr^{-1}}]") +
       scale_x_log10() + scale_y_log10() +
       ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
-      ggsave(&"/home/basti/phd/Figs/muons/initial_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
+      ggsave(&"/home/basti/phd/Figs/muons/initial_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf",
+             useTeX = true, standalone = true, width = 600, height = 450)
   
     ggplot(df, aes("E_lefts", "flux", color = factor("angle [°]"))) +
       geom_line() +
-      xlab("Energy at surface [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+      xlab(r"Energy at surface [\si{GeV}]") + ylab(r"Flux [\si{m^{-2}.s^{-1}.sr^{-1}}]") +
       scale_x_log10() + scale_y_log10() +
       ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
-      ggsave(&"/home/basti/phd/Figs/muons/final_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
+      ggsave(&"/home/basti/phd/Figs/muons/final_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf",
+             useTeX = true, standalone = true, width = 600, height = 450)              
   block StaticLoss:
     var df = newDataFrame()
     for angle in angles:
@@ -431,8 +436,8 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
 #    ggsave(&"/home/basti/phd/Figs/muons/energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
 
 # different angles!      
-#block MuonBehavior:
-#  plotE_vs_flux_and_angles(1.0.GeV, 90.m⁻²•s⁻¹•sr⁻¹, 854.GeV)
+block MuonBehavior:
+  plotE_vs_flux_and_angles(0.3.GeV, 90.m⁻²•s⁻¹•sr⁻¹, 854.GeV)
 
 proc unbinnedCdf(x: seq[float]): (seq[float], seq[float]) =
   ## Computes the CDF of unbinned data

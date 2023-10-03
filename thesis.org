@@ -4764,11 +4764,11 @@ elementary particles and nuclei also contribute to a lesser
 extent. Cosmic rays are isotropic at most energies, because of the
 influence of galactic magnetic fields. Their energies range from
 $\SI{1e9}{eV}$ up to $\SI{1e21}{eV}$. It is generally assumed that
-particles below \SI{1e18}{eV} are of mainly galactic origin, whereas
+particles below $\SI{1e18}{eV}$ are of mainly galactic origin, whereas
 the above is dominated by extragalactic sources. The flux of the
 primary cosmic rays generally follows a power law
 distribution. Different contributions follow a generally similar power
-law. cite:Zyla:2020zbs (chapter on cosmic rays)
+law cite:Zyla:2020zbs (chapter on cosmic rays).
 
 When cosmic rays interact with the molecules of Earth's atmosphere,
 mesons are produced, mainly pions. Neutral pions generate showers of
@@ -4776,8 +4776,8 @@ photons and electron-positron pairs. Charged pions on the other hand
 decay into muons and anti muon-neutrinos. Muons are produced over
 electrons in this case, due to chirality. As they are more massive
 than electrons they have a larger component of the opposite chirality
-than their neutrino partner, which is necessary for this 'forbidden'
-decay due to angular momentum conservation.
+to the neutrino, which is necessary for this 'forbidden' decay due to
+angular momentum conservation.
 
 They are produced at an altitude of roughly $\SI{15}{km}$. A large
 fraction of them reaches the surface as they are highly
@@ -4852,10 +4852,10 @@ datasets shown in cite:doi:10.1142/S0217751X18501750 and provides a
 way to fit any measured muon flux at a specific location, it is
 limited in applicability to arbitrary locations, altitudes and
 angles. For that an approach that does not require a fit to a dataset
-is preferable, namely by utilizing the a combination of the
-approximation by Gaisser, eq. [[#eq:theory:muon_flux_gaisser]], and the
-interaction of muons with the atmosphere. As such, we modify the
-equation for the intensity $I$ to the following:
+is preferable, namely by utilizing a combination of the approximation
+by Gaisser, eq. [[eq:theory:muon_flux_gaisser]], and the interaction of
+muons with the atmosphere. As such, we modify the equation for the
+intensity $I$ to the following:
 
 \[
 I(E, θ) = I_0 (n-1) (E_θ(E, θ) + E_c)^{n-1} (E_θ(E, θ) + E)^{-n} \left[ \frac{1}{1 + \frac{1.1
@@ -4872,42 +4872,58 @@ the angle $θ$. The transport must take into account the density change
 using the barometric height formula of the atmosphere. Transport is
 done using the Bethe-Bloch equation as introduced in
 sec. [[#sec:theory:bethe_bloch]] assuming an atmosphere made up of
-nitrogen, oxygen and argon. As such we remove all parameters except
-an initial intensity $I_0$, which can be set to the best fit of the
+nitrogen, oxygen and argon. As such we remove all parameters except an
+initial intensity $I_0$, which can be set to the best fit of the
 integrated muon flux at the zenith angle at sea level. In the
 following figures we simply use $I_0 = \SI{90}{\per\meter\squared
-\per\steradian \per\second}$. Figure [[fig:theory:muon_flux_surface]]
+\per\steradian \per\second}$. Figure [[sref:fig:theory:muon_flux_surface]]
 shows the expected differential muon flux using these parameters for
-different angles at sea level. On the left the initial energy of the
+different angles at sea level. In
+sref:fig:theory:muon_flux_surface:initial the initial energy of the
 muons is shown before transporting through the atmosphere. For each
 angle the lines cut off at the energy below which the muon would
-likely stopped by the atmosphere according to its energy loss per
-distance. On the right we see the same final energy of the same muons
-at the surface. The lines are cut to the lowest muon energy that was
-calculated for which more than \SI{1}{GeV} was left at the
-surface. These numbers match reasonably well with different datasets
-for different locations under different angles, but they should *not*
-be considered as more than a starting point for a general expectation.
+likely be stopped by the atmosphere according to its energy loss per
+distance or reaches the surface with less than $\SI{300}{MeV}$. On the
+right we see the final energy of the same muons at the surface. The
+lines in sref:fig:theory:muon_flux_surface:final are ragged, because
+muon decay is simulated using Monte Carlo. [fn:note_on_flux]
 
-#+CAPTION: Differential muon flux at sea level for different zenith angles.
-#+CAPTION: \ref{fig:theory:muon_flux_surface:initial} shows the initial energy of the muon. The cut-off corresponds to the
-#+CAPTION: lowest energy transported through the atmosphere. \ref{fig:theory:muon_flux_surface:final} shows the
-#+CAPTION: final muon energy at the surface, with the lowest computed value above
-#+CAPTION: $\SI{1}{GeV}$ shown. 
-#+NAME: fig:theory:muon_flux_surface
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \includegraphics[width=0.95\linewidth]{/home/basti/phd/Figs/muons/initial_energy_vs_flux_and_angle_cosmic_muons.pdf}
-    \caption{Initial energy}
-    \label{fig:theory:muon_flux_surface:initial}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \includegraphics[width=0.95\linewidth]{/home/basti/phd/Figs/muons/final_energy_vs_flux_and_angle_cosmic_muons.pdf}
-    \caption{Final energy}
-    \label{fig:theory:muon_flux_surface:final}
-  \end{subfigure}
-\end{figure}
+These numbers match reasonably well with different datasets for
+different locations under different angles, but they should /not/ be
+considered as more than a starting point for a general expectation.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Initial energy") (label "fig:theory:muon_flux_surface:initial")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/muons/initial_energy_vs_flux_and_angle_cosmic_muons.pdf"))
+        (subfigure (linewidth 0.5) (caption "Final energy") (label "fig:theory:muon_flux_surface:final")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/muons/final_energy_vs_flux_and_angle_cosmic_muons.pdf"))
+        (caption
+          "Differential muon flux at sea level for different zenith angles. "
+          (subref "fig:theory:muon_flux_surface:initial") " shows the initial energy of the muon. The cut-off corresponds to the
+          lowest energy transported through the atmosphere; muons still arrive at the surface without decay or stopping. "
+          (subref "fig:theory:muon_flux_surface:final") " shows the final muon energy at the surface, with the lowest muon "
+          ($ (SI 300 "MeV")) " at the surface. ")
+        (label "fig:theory:muon_flux_surface"))
+#+end_src
+
+[fn:note_on_flux] The calculation is a "hybrid" Monte Carlo
+approach. We don't sample a large number of muons and transport them
+through the atmosphere. We just compute the loss through the
+atmosphere and allow the muon to decay randomly, dropping a single
+data point. This is for simplicity on the one hand and the fact that
+there is a very sharp transition of 'most muons traverse' to
+'essentially no muons traverse' the atmosphere at a given energy. For
+that reason the flux in sref:fig:theory:muon_flux_surface:final at low
+energies is to be taken with a grain of salt. The fluxes are literally
+mappings from data points in sref:fig:theory:muon_flux_surface:initial
+to the corresponding energy left at the surface (i.e. assuming no
+muons decay). Further the $\SI{300}{MeV}$ energy left is already well
+inside the energy range where a large number of muons would already decay.
+
+*** TODOs for this section                                       :noexport:
 
 Because of their large energies, muons behave as minimally ionizing
 particles (MIPS), which means their mean energy loss is more or less
@@ -4920,15 +4936,15 @@ only the actual rate of muons is important.
 
 *SECONDARY MUON PRODUCTION*
 
-*MUON FLUX AT ZENITH*, *MUON FLUX UNDER ANGLE* (cos²)
+- [X] *MUON FLUX AT ZENITH*, *MUON FLUX UNDER ANGLE* (cos²)
 
-*REFERENCE TO MUON CHIRALITY OVER ELECTRON PROD*
+- [X] *REFERENCE TO MUON CHIRALITY OVER ELECTRON PROD*
 
 
 *** Calculation of muon angular / energy dependence at surface   :noexport:
 
 The code here is directly based on code written in my notes
-[[file:~/org/Doc/StatusAndProgress.org]] being tangled into a file
+[[file:~/org/Doc/StatusAndProgress.org::#sec:muons:expected_muon_flux]] being tangled into a file
 =/tmp/muon_flux.nim=. 
 
 #+begin_src nim :results silent :tangle /home/basti/phd/code/muons.nim
@@ -5181,7 +5197,7 @@ proc barometricFormula(h: KiloMeter): g•cm⁻³ =
   else: doAssert false, "Invalid height! Outside of range!"
 
 import random
-randomize(43)
+randomize(430)
 proc intBetheAtmosphere(E: GeV, θ: Radian, dx = 10.cm): eV =
   ## integrated energy loss using Bethe formula for muons generated at
   ## `15.km` under an angle of `θ` to the observer for a muon of energy
@@ -5289,7 +5305,7 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
   ## angles.
   ##
   ## The energy loss is computed using a fixed 
-  let energies = logspace(log10(E_c.float), 2.float, 100)
+  let energies = logspace(log10(E_c.float), 2.float, 1000)
   let angles = linspace(0.0, 80.0, 9)
   block CalcLossEachMuon:
     var df = newDataFrame()
@@ -5299,6 +5315,7 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
       var flux = newSeq[float]()
       var E_initials = newSeq[float]()
       var E_lefts = newSeq[float]()
+      var lastDropped = 0.GeV
       for e in E:
         let E_left = intBetheAtmosphere(e, θ).to(GeV)
         if E_left <= 0.0.GeV:
@@ -5306,26 +5323,30 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
           continue
         elif E_left <= E_c:
           echo "Skipping energy : ", e, " as muon has less than E_c = ", E_c, " energy left"
+          lastDropped = e
           continue
         let E₀ = e - E_left
         flux.add muonFlux(e, θ, E₀, E_c, I₀, ε).float
         E_initials.add e.float        
         E_lefts.add E_left.float
       let dfLoc = toDf({E_initials, E_lefts, flux, "angle [°]" : angle})
+      #  .filter(f{`E_initials` >= lastDropped.float})
       df.add dfLoc
     ggplot(df, aes("E_initials", "flux", color = factor("angle [°]"))) +
       geom_line() +
-      xlab("Initial energy [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+      xlab(r"Initial energy [\si{GeV}]") + ylab(r"Flux [\si{m^{-2}.s^{-1}.sr^{-1}}]") +
       scale_x_log10() + scale_y_log10() +
       ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
-      ggsave(&"/home/basti/phd/Figs/muons/initial_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
+      ggsave(&"/home/basti/phd/Figs/muons/initial_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf",
+             useTeX = true, standalone = true, width = 600, height = 450)
   
     ggplot(df, aes("E_lefts", "flux", color = factor("angle [°]"))) +
       geom_line() +
-      xlab("Energy at surface [GeV]") + ylab("Flux [m⁻²•s⁻¹•sr⁻¹]") +
+      xlab(r"Energy at surface [\si{GeV}]") + ylab(r"Flux [\si{m^{-2}.s^{-1}.sr^{-1}}]") +
       scale_x_log10() + scale_y_log10() +
       ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
-      ggsave(&"/home/basti/phd/Figs/muons/final_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
+      ggsave(&"/home/basti/phd/Figs/muons/final_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf",
+             useTeX = true, standalone = true, width = 600, height = 450)              
   block StaticLoss:
     var df = newDataFrame()
     for angle in angles:
@@ -5365,8 +5386,8 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
 #    ggsave(&"/home/basti/phd/Figs/muons/energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf")
 
 # different angles!      
-#block MuonBehavior:
-#  plotE_vs_flux_and_angles(1.0.GeV, 90.m⁻²•s⁻¹•sr⁻¹, 854.GeV)
+block MuonBehavior:
+  plotE_vs_flux_and_angles(0.3.GeV, 90.m⁻²•s⁻¹•sr⁻¹, 854.GeV)
 
 proc unbinnedCdf(x: seq[float]): (seq[float], seq[float]) =
   ## Computes the CDF of unbinned data
