@@ -6805,7 +6805,290 @@ While writing the thesis at some point I had the following thoughs:
   which we placed the detector towards the zenith. Question: what does
   the data look like, in which the *FADC DID NOT TRIGGER*? If there is
   significant contribution of spherical events of ~8 keV then DUHHH.
-    
+#+end_quote
+
+To investigate this we can use ~plotData~ from ~TimepixAnalysis~ to
+make a bunch of plots comparing properties like the energy of clusters
+with and without FADC. Both for the raw data as well as for the
+results of the ~likelihood~ application (i.e. after all cuts).
+
+We will use the entire Run-3 dataset for both cases, because the
+scintillators were fully working in those.
+
+First the plots of the raw data without FADC:
+#+begin_src sh :dir ~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/ :results drawer
+plotData \
+    --h5file ~/CastData/data/DataRuns2018_Reco.h5 \
+    --runType=rtBackground \
+    --config ~/CastData/ExternCode/TimepixAnalysis/Plotting/karaPlot/config.toml \
+    --ingrid --fadc \
+    --cuts '("../fadcReadout", -0.1, 0.5)' \
+    --applyAllCuts \
+    --chips 3 \
+    --region crGold
+#+end_src
+
+#+RESULTS:
+:results:
+figs/DataRuns2018_Reco_2023-10-03_22-41-58
+:end:
+
+where we only plot chip 3 in the center 5·5 cm² and apply the cut to
+the ~fadcReadout~ flag (such that we avoid any floating point
+issues). ~fadcReadout == 0~ means no FADC and ~1~ means FADC.
+
+Let's wrap them all up in one PDF:
+#+begin_src sh :dir ~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/ :results drawer
+dir=figs/DataRuns2018_Reco_2023-10-03_22-41-58
+pdfunite $dir/*.pdf run3_no_fadc_histograms.pdf
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+[[~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/run3_no_fadc_histograms.pdf]]
+
+Now the same _with_ the FADC. Note for this plot change the rise time
+in ~config.toml~ to 2500 upper and 500 bins!
+#+begin_src sh :dir ~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/ :results drawer 
+plotData \
+    --h5file ~/CastData/data/DataRuns2018_Reco.h5 \
+    --runType=rtBackground \
+    --config ~/CastData/ExternCode/TimepixAnalysis/Plotting/karaPlot/config.toml \
+    --ingrid --fadc \
+    --cuts '("../fadcReadout", 0.5, 1.1)' \
+    --applyAllCuts \
+    --chips 3 \
+    --region crGold \
+    --quiet
+#+end_src
+
+#+RESULTS:
+:results:
+figs/DataRuns2018_Reco_2023-10-03_23-45-37
+:end:
+
+Let's wrap them all up in one PDF:
+#+begin_src sh :dir ~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/ :results drawer
+dir=figs/DataRuns2018_Reco_2023-10-03_23-45-37
+pdfunite $dir/*.pdf run3_with_fadc_histograms.pdf
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+[[~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/run3_with_fadc_histograms.pdf]]
+
+
+And now for the result of the data with all cuts applied:
+#+begin_src sh :dir ~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/ :results drawer
+plotData \
+    --h5file ~/org/resources/lhood_lnL_04_07_23/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99_default_cluster.h5 \
+    --runType=rtBackground \
+    --config ~/CastData/ExternCode/TimepixAnalysis/Plotting/karaPlot/config.toml \
+    --ingrid --fadc \
+    --cuts '("../fadcReadout", -0.1, 0.5)' \
+    --applyAllCuts \
+    --chips 3 \
+    --region crGold
+#+end_src
+
+#+RESULTS:
+:results:
+figs/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99_default_cluster_2023-10-03_22-46-10
+:end:
+#+begin_src sh :dir ~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/ :results drawer
+dir=figs/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99_default_cluster_2023-10-03_22-46-10
+pdfunite $dir/*.pdf run3_lhood_no_fadc_histograms.pdf
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+[[~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/run3_lhood_no_fadc_histograms.pdf]]
+
+#+begin_src sh :dir ~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/ :results drawer
+plotData \
+    --h5file ~/org/resources/lhood_lnL_04_07_23/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99_default_cluster.h5 \
+    --runType=rtBackground \
+    --config ~/CastData/ExternCode/TimepixAnalysis/Plotting/karaPlot/config.toml \
+    --ingrid --fadc \
+    --cuts '("../fadcReadout", 0.5, 1.1)' \
+    --applyAllCuts \
+    --chips 3 \
+    --region crGold
+#+end_src
+
+#+RESULTS:
+:results:
+figs/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99_default_cluster_2023-10-03_22-46-44
+:end:
+
+#+begin_src sh :dir ~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/ :results drawer
+dir=figs/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99_default_cluster_2023-10-03_22-46-44
+pdfunite $dir/*.pdf run3_lhood_with_fadc_histograms.pdf
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+
+[[~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/run3_lhood_with_fadc_histograms.pdf]]
+
+
+To summarize the results:
+- [[~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/run3_no_fadc_histograms.pdf]]
+  -> This file shows that there are barely any events near the
+  $\SI{8}{keV}$ range for events without an FADC trigger. This already
+  seems to indicate that orthogonal muons _should_ be triggering the
+  FADC.
+- [[~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/run3_with_fadc_histograms.pdf]]
+  -> Shows much higher statistics in the same range. Rise time shows a
+  very long tail, but no visible peaks at higher values.
+- [[~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/run3_lhood_no_fadc_histograms.pdf]]
+  -> There are literally *no* events in the $\SI{8}{keV}$ range after
+  the likelihood cuts without an FADC trigger!
+- [[~/org/Figs/statusAndProgress/FADC/orthogonalMuonsOnFadc/run3_lhood_with_fadc_histograms.pdf]]
+  -> There are plenty of events in the $\SI{8}{keV}$ range after
+  the likelihood cuts *with* the FADC. And all their rise times are
+  between 45 and 70 clock cycles! This means either there are no
+  orthogonal muons in this dataset or for some reason their rise time
+  is also exceptionally short, which seems surprising.
+
+At this point we could investigate further and see what the
+correlation of rise times actually looks like more generally, but
+well. At least for _all_ data the rise time looks unsuspicious. It's
+just a long exponential like tail. 
+
+*** Maximum allowed angle before being vetoed                    :extended:
+
+The section below explains the reasoning behind why an angle of
+$\SI{88}{°}$ was chosen when computing the muon flux at CAST under
+shallow angles in sec. [[#sec:theory:calc_muon_angular_flux]] and why
+this is the smallest angle at which a muon is likely going to pass the
+normal likelihood cut and thus requires the SiPM.
+
+
+
+The reason ϑ = 88° was chosen is due to the restriction on the maximum
+allowed eccentricity for a cluster to still end up as a possible
+cluster in our 8-10 keV hump. See the =eccentricity= subplot in
+fig. [[8_10_keV_properties]].
+
+#+begin_center
+#+CAPTION: See the eccentricity subplot for an upper limit on the allowed eccentricity
+#+CAPTION: for events in the 8-10 keV hump. Values should not be above ε = 1.3.
+#+NAME: 8_10_keV_properties
+[[~/org/Figs/statusAndProgress/muonStudies/lhood_facet_remaining_8_10_keV.pdf]]
+#+end_center
+
+From this we can deduce the eccentricity should be smaller than ε =
+1.3. What does this imply for the largest possible angles allowed in
+our detector? And how does the opening of the "lead pipe window"
+correspond to this?
+
+Let's compute by modeling a muon track as a cylinder. Reading off the
+mean =width= from the above fig. to w = 5 mm and taking into account
+the detector height of 3 cm we can compute the relation between
+different angles and corresponding eccentricities.
+
+In addition we will compute the largest possible angle a muon (from
+the front of the detector of course) can enter, under which it does
+not see the lead shielding.
+
+#+begin_src nim :flags -d:QuietTikZ=true :results drawer :tangle ~/phd/code/max_muon_angle_est.nim
+import unchained, ggplotnim, strformat, sequtils
+let w = 5.mm # mean width of a track in 8-10keV hump
+let h = 3.cm # detector height
+proc computeLength(α: UnitLess): mm =  ## todo: add degrees?
+  ## α: float # Incidence angle
+  var w_prime = w / cos(α)       # projected width taking incidence
+                                 # angle into account
+  let L_prime = tan(α) * h       # projected `'length'` of track
+                                 # from center to center
+  let L_full = L_prime + w_prime # full `'length'` is bottom to top, thus
+                                 # + w_prime
+  result = L_full.to(mm)
+proc computeEccentricity(L_full, w: mm, α: UnitLess): UnitLess =
+  let w_prime = w / cos(α)
+  result = L_full / w_prime
+
+let αs = linspace(0.0, degToRad(25.0), 1000)
+let εs = αs.mapIt(it.computeLength.computeEccentricity(w, it).float)
+let αsDeg = αs.mapIt(it.radToDeg)
+let df = toDf(αsDeg, εs)
+
+# maximum eccentricity for text annotation
+let max_εs = max(εs)
+let max_αs = max(αsDeg)
+
+# compute the maximum angle under which `no` lead is seen
+let d_open = 28.cm # assume 28 cm from readout to end of lead shielding
+let h_open = 5.cm # assume open height is 10 cm, so 5 cm from center
+let α_limit = arctan(h_open / d_open).radToDeg
+
+# data for the limit of 8-10 keV eccentricity
+let ε_max_hump = 1.3 # 1.2 is more reasonable, but 1.3 is the
+                     # absolute upper limit
+echo df.head(1)
+echo α_limit
+echo ε_max_hump
+echo max_εs
+echo max_αs
+ggplot(df, aes("αsDeg", "εs")) +
+  geom_line() +
+  geom_linerange(aes = aes(x = α_limit, yMin = 1.0, yMax = max_εs),
+                 color = color(1.0, 0.0, 1.0)) +
+  geom_linerange(aes = aes(y = ε_max_hump, xMin = 0, xMax = max_αs),
+                 color = color(0.0, 1.0, 1.0)) +
+  geom_text(aes = aes(x = α_limit, y = max_εs + 0.1,
+                      text = "Maximum angle no lead traversed")) +
+  geom_text(aes = aes(x = 17.5, y = ε_max_hump + 0.1,
+                      text = r"Largest $ε$ in $\SIrange{8}{10}{keV}$ hump")) +
+  xlab(r"$α$: Incidence angle [°]") +
+  ylab(r"$ε$: Eccentricity") +
+  ylim(1.0, 4.0) +
+  ggtitle(&"Expected eccentricity for tracks of mean width {w}") +
+  ggsave("~/phd/Figs/muonStudies/exp_eccentricity_given_incidence_angle.pdf", useTeX = true, standalone = true,
+        width = 600, height = 360)
+#+end_src
+
+#+RESULTS:
+:results:
+DataFrame with 2 columns and 1 rows:
+     Idx       αsDeg          εs
+  dtype:        float        float
+       0            0            1
+
+10.12467165539782
+1.3
+3.535709570444218
+25.00000000000023
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v xelatex
+shellCmd: xelatex -output-directory /home/basti/phd/Figs/muonStudies /home/basti/phd/Figs/muonStudies/exp_eccentricity_given_incidence_angle.tex
+Generated: /home/basti/phd/Figs/muonStudies/exp_eccentricity_given_incidence_angle.pdf
+:end:
+
+
+Resulting in fig. [[exp_eccentricity_given_incidence_angle]].
+
+#+begin_center
+#+CAPTION: Relationship between incidence angle of muons of a width of 5 mm and
+#+CAPTION: their expected mean eccentricity. Drawn as well are the maximum angle
+#+CAPTION: under which no lead is seen (from the front) as well as the larges ε
+#+CAPTION: seen in the data.
+#+NAME: exp_eccentricity_given_incidence_angle
+[[~/phd/Figs/muonStudies/exp_eccentricity_given_incidence_angle.pdf]]
+#+end_center
+
+This leads to an upper bound of ~3° from the horizontal. Hence the
+(somewhat arbitrary choice) of 88° for the ϑ angle above.
+
+
 
 ** FADC [0/4]
 :PROPERTIES:
