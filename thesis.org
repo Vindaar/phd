@@ -5489,27 +5489,22 @@ discard sampleFlux(samples = 1_000_000)
 
 ** Gaseous detector fundamentals
 
-*HOW TO START CHAPTER / SECTION?*
-
-Gaseous detectors consist of a volume filled with some kind of
-gas. Usually a noble gas with a small amount of molecular gas. Some
-kind of entrance window allows the particles to be detected to
-enter. An electric field is applied over the gas volume, strong enough
-to cause electron-ion pairs created by ionization of the incoming
-particles to drift to opposite ends of the volume. At least on the
-side of the anode (where the electrons arrive), a readout of some form
-is installed to measure the time of arrival, amount of collected
-charge and / or the position of the electrons. Depending on the
-details, this in principle allows for a 3D reconstruction of the
-initial event in the gas volume. The details of choice of detector
-gas, applied electric fields, gas volume dimensions and types of
-readout have a very large impact on the applications a detector is
-useful for. In the following we will focus on the physics concepts
-required for gaseous detectors with few \si{cm} long drift volumes and
-high spatial resolution readouts.
-
-
-
+Gaseous detectors consist of a volume filled with some kind of gas,
+usually a noble gas with a small amount of molecular gas. Some kind of
+entrance window allows the particles to be detected to enter. An
+electric field is applied over the gas volume, strong enough to cause
+electron-ion pairs created by ionization of the incoming particles to
+drift to opposite ends of the volume (magnetic fields may be utilized
+in addition). At least on the side of the anode (where the electrons
+arrive), a readout of some form is installed to measure the time of
+arrival, amount of collected charge and / or the position of the
+electrons. Depending on the details, this in principle allows for a 3D
+reconstruction of the initial event in the gas volume. The details of
+choice of detector gas, applied electric fields, gas volume dimensions
+and types of readout have a very large impact on the applications a
+detector is useful for. In the following we will focus on the physics
+concepts required for gaseous detectors with few \si{cm} long drift
+volumes and high spatial resolution readouts.
 
 Note: this section covers the basic fundamentals that will be later
 referenced in the thesis. For a much more in-depth understanding of
@@ -5518,6 +5513,7 @@ cite:kolanoski2020particle and to some extent the PDG
 cite:Zyla:2020zbs (in particular chapters on particle detectors and
 passage of particles through matter; chapter number varies by year).
 
+*** TODOs for this section                                       :noexport:
 
 Write a few general things about gaseous detectors here. I.e. contain
 usually mainly a noble gas, with some quencher for rotational and
@@ -5528,11 +5524,11 @@ Electric fields should be strong enough to let electrons and ions
 drift in opposite directions and have a fast enough drift velocity,
 but low enough to not cause further ionization.
 
+
 *** Gas mixtures and Dalton's law [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:theory:daltons_law
 :END:
-
 
 Of common interest when dealing with gas mixtures is the notion of
 partial pressures. In ideal gas theory, a mixture of gases at a
@@ -5540,15 +5536,16 @@ pressure $P$ can be considered to be the sum of the 'partial
 pressures' of each gas species
 
 \[
-P = \sum_i p_i.
+P = \sum_i p_i,
 \]
 
+initially noted by John Dalton in 1802 cite:dalton1802essay.
+
 The contribution of each gas only depends on the species' mole
-fraction, which means given the mole fractions. Typically when
-considering gas mixtures the fractions of each gas species is given as
-a percentage. The percentage already refers to the mole fraction of
-each species. As such, the partial pressure of a single species can be
-expressed as:
+fraction. Typically when considering gas mixtures the fractions of
+each gas species is given as a percentage. The percentage already
+refers to the mole fraction of each species. As such, the partial
+pressure of a single species can be expressed as:
 
 \[
 p_i = n_i P
@@ -5558,15 +5555,18 @@ where $n_i$ is the mole fraction of species $i$.
 
 This is an extremely valuable property when computing different
 interactions of particles with gas mixtures. For example when
-computing the absorption of X-rays after in propagating through a
-certain distance of gas, as one can compute absorption for each
+computing the absorption of X-rays after propagating through a certain
+distance of a gas mixture, as one can compute absorption for each
 partial pressure independently and combine the contributions after
 (whether they be added, multiplied or something else of course depends
 on the considered process).
 
-- [ ] *FIND GOOD REFERENCE FOR DALTON'S LAW*
+**** TODOs for this section                                     :noexport:
 
-*** Mean free path
+- [X] *FIND GOOD REFERENCE FOR DALTON'S LAW*
+    -> Reference to original work of John Dalton
+
+*** Mean free path                                               :optional:
 
 *NOTE*: This is already explained for X-rays in the previous
 section. Do we need this concept in some more detail? Otherwise we can
@@ -5591,20 +5591,9 @@ NOT INTRODUCED DETECTORS YET!!*
 
 *** Ionization energy and average energy per electron-ion pair
 
-*FIND GOOD REFERENCES* beyond these two. Better would be a primary
-like reference. cite:bronic1992relation, doi:10.1080/00223131.2014.974710 
-
-Why expect ~26 eV for argon
-
-Talk about ionization energy vs. the actual mean energy loss for a
-single ionization. Argon ionization energy is only like 15 eV or so,
-but effective one is 26.
-
-Leads to our 226 or so primary electrons for our \cefe spectra.
-
 In order to understand the signals detected by a gaseous detector the
 average number of electrons created by an incident particle should be
-known. Denoted by the $W$-value, it is defined by
+known. Denoted by the $W\text{-value}$, it is defined by
 
 \[
 W = \frac{I}{\langle N \rangle} 
@@ -5612,29 +5601,31 @@ W = \frac{I}{\langle N \rangle}
 
 where $I$ is the mean ionization energy of the gas and $\langle N
 \rangle$ the average number of electron-ion pairs generated per
-interaction. This number is usually smaller one, \numrange{0.6}{0.7}
+interaction. This number is usually smaller than one, \numrange{0.6}{0.7}
 for noble gases and even below \num{0.5} for molecular gases. Not all
 energy of the incoming particle is always deposited in the form of
 generation of, for example, a photoelectron. Other forms of energy
 loss are possible. In molecular gases vibrational and rotational modes
 offer even more possibilities, resulting in the smaller values.
 
-The mean excitation energy of an element is the weighted combination
-of the most likely energy levels the element is ionized from. The
-exact values are dependent on the specific element and tabulated
-values like from NIST cite:hubbell1996nist. Above some $Z$ a
-rough approximation of $I = \SI{10}{eV} Z$ can be substituted,
+The mean excitation energy $I$ of an element is the weighted
+combination of the most likely energy levels the element is ionized
+from. The exact values are dependent on the specific element and
+tabulated values like from NIST cite:hubbell1996nist exist. Above some
+$Z$ a rough approximation of $I = \SI{10}{eV} · Z$ can be substituted,
 developed by Bloch cite:bloch1933bremsvermogen.
 
 The precise number for $W$ strongly depends on the used gas mixture
-and typically requires experimental measurements to determine or Monte
-Carlo based simulations. Tools for Monte Carlo simulations include
-GEANT4 cite:GEANT4:2002zbu [fn:geant4] and MCNelectron
+and typically requires experimental measurements to determine. Monte
+Carlo based simulations can be used as a rough guide, but care must be
+taken interpreting the results as significant uncertainty can
+remain. Tools for such Monte Carlo simulations include GEANT4
+cite:GEANT4:2002zbu [fn:geant4] and MCNelectron
 cite:doi:10.1080/00223131.2014.974710 [fn:mcn_electron]. These are
 based on atomic excitation cross sections, which are well tabulated in
-projects like ENDF cite:brown2018endf (citation for latest data
-release) [fn:endf_website] and LXCat cite:pancheshnyi2012lxcat,
-pitchford2017lxcat, carbone2021data [fn:lxcat_website].
+projects like ENDF cite:brown2018endf (citation for the latest data
+release) [fn:endf_website] and LXCat
+cite:pancheshnyi2012lxcat,pitchford2017lxcat,carbone2021data [fn:lxcat_website].
 
 # Note: there is also MCNP6 https://mcnp.lanl.gov/ which I will
 # conveniently *not* mention, as it is under ridiculous US export
@@ -5654,6 +5645,20 @@ linear relationship between the W-value as shown here and the Fano
 factor cite:bronic1992relation.
 *NOTE*: Given how Fano discovered / described Fano noise, it's maybe
 not quite surprising that this is related! 
+
+**** TODOs for this section                                     :noexport:
+
+
+*FIND GOOD REFERENCES* beyond these two. Better would be a primary
+like reference. cite:bronic1992relation,doi:10.1080/00223131.2014.974710 
+
+Why expect ~26 eV for argon
+
+Talk about ionization energy vs. the actual mean energy loss for a
+single ionization. Argon ionization energy is only like 15 eV or so,
+but effective one is 26.
+
+Leads to our 226 or so primary electrons for our \cefe spectra.
 
 
 *** Diffusion
