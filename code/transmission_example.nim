@@ -39,7 +39,7 @@ echo dff
 ggplot(dff, aes("Energy [keV]", "l_abs")) +
   geom_line() +
   xlab(r"Energy [$\si{keV}$]") + ylab(r"Absorption length [$\si{cm}$]") +
-  ggtitle("Absorption length example of $# Argon at NTP" % [dA]) +
+  ggtitle("Absorption length of $# Argon at NTP" % [dA]) +
   ggsave("/home/basti/phd/Figs/theory/absorption_length_example.pdf",
          useTex = true, standalone = true, width = 600, height = 360)
   
