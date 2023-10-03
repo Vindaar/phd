@@ -7502,6 +7502,9 @@ nim c -d:danger --threads:on plotBackgroundClusters.nim
 in the detector @ CAST? Or explain it here, then refer back?
 
 ** Water cooling and temperature readout for the septemboard [0/1]
+:PROPERTIES:
+:CUSTOM_ID: sec:detector:water_cooling
+:END:
 
 During development of the septemboard one particular set of problems
 manifested. While testing a prototype board with 5 active GridPix in a
@@ -10875,23 +10878,24 @@ threshold voltage has to be set.
   FEWER SIGNALS THAN LOTS OF NOISE?*
 
 *** Large scintillator paddle
-- [ ] Part that now lives in appendix.
 
 The large veto scintillator paddle was calibrated at the RD51
 laboratory at CERN prior to the data taking campaign in
 March 2017. Using two smaller, calibrated scintillators to create a
 coincidence setup of the three scintillators, measurements were taken
 at different thresholds. Each measurement was $\SI{10}{\minute}$ long.
+An amplifier was installed after the PMT to increase the signal.
 
-An amplifier was installed after the PMT to increase the signal. The
-PMT was supplied with a voltage of \SI{1200}{V}. Table
-[[tab-daq-scintillator_coincidence_measurements]] shows the recorded
-measurements. Based on these a threshold of \SI{-110}{mV} was chosen
-for the CAST data taking. Fig. [[fig:daq:veto_scintillator_coincidence]]
-also shows the data from table. While the coincidence counts at
-\SI{-110}{mV} are below the visible plateau above \SI{-100}{mV}, the
-threshold was chosen as the raw counts were still considered too high
-compared to expectation based on cosmic muon rate and the size of the
+The Canberra 2007 base and Bicron Corp. 31.49x15.74M2BC408/2-X PMT
+require a positive high voltage. It was supplied with
+$\SI{1200}{V}$. Table [[tab-daq-scintillator_coincidence_measurements]]
+shows the recorded measurements. Based on these a threshold of
+$\SI{-110}{mV}$ was chosen for the CAST data
+taking. Fig. [[fig:daq:veto_scintillator_coincidence]] also shows the data
+from table. While the coincidence counts at $\SI{-110}{mV}$ are below
+the visible plateau above $\SI{-100}{mV}$, the threshold was chosen as
+the raw counts were still considered too high compared to expectation
+based on cosmic muon rate and the size of the
 scintillator. [fn:threshold_choice]
 
 #+CAPTION: Measurements for the calibration of the large veto scintillator taken
@@ -10917,6 +10921,40 @@ scintillator. [fn:threshold_choice]
 |         -160.0 |         11866 |                267 |
 |         -170.1 |         10008 |                243 |
 |----------------+---------------+--------------------|
+
+#+CAPTION: Calibration measurements for the veto scintillator printed in table
+#+CAPTION: [[tab-daq-scintillator_coincidence_measurements]]. The line is simply an
+#+CAPTION: interconnection of all data points. The errors simply represent Poisson-like
+#+CAPTION: $\sqrt{N}$ uncertainties.
+#+NAME: fig:daq:veto_scintillator_coincidence
+[[~/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.pdf]]
+
+See the appendix [[#sec:appendix:scintillator_calibration_notes]] for a
+reproduction of the notes taken during the calibration of the veto
+paddle scintillator.
+
+[fn:threshold_choice] While it is unclear to me now given it's been 5
+years, I believe at the time of the calibration we wrongly assumed a
+muon rate of $\SI{100}{Hz.m⁻².sr⁻¹}$ instead of about
+$\SI{1}{Hz.min⁻¹}$. The former number only works out if one integrates
+it over the $\cos^2(θ)$ dependence, _but only along $θ$_ and not $φ$!
+Either way, the number seems problematic. However, it did misguide us
+in likely choosing a too low threshold, as using the former number
+yields an expected number of counts of $\sim\num{32000}$ compared to
+only $\sim\num{20000}$ in our naive approach.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *MUON RATE MENTIONED IN FOOTNOTE. Hz/min ? WHAT IS
+  THAT. MISSING cm²?*
+  -> *CHECK THIS!!!*
+
+- [X] Part that now lives in appendix.
+  -> ??? I think referring to notes of scintillator calibration
+  -> Referenced the appendix.
+
+
+**** Generate the plots of the scintillator calibration data    :noexport:
 
 #+begin_src nim :var tbl=tab-daq-scintillator_coincidence_measurements :results none :exports none
 import ggplotnim, sequtils
@@ -10947,30 +10985,7 @@ ggplot(df, aes("Thr", "Coinc")) +
   ggsave("/home/basti/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.pdf",
          useTeX = true, standalone = true)
 #+end_src
-
-#+CAPTION: Calibration measurements for the veto scintillator printed in table
-#+CAPTION: [[tab-daq-scintillator_coincidence_measurements]]. The line is simply an
-#+CAPTION: interconnection of all data points. The errors simply represent Poisson-like
-#+CAPTION: $\sqrt{N}$ uncertainties.
-#+NAME: fig:daq:veto_scintillator_coincidence
-[[~/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.pdf]]
-
-See the appendix [[#sec:appendix:scintillator_calibration_notes]] for a
-reproduction of the notes taken during the calibration of the veto
-paddle scintillator.
-
-- [ ] *MUON RATE MEN TIONED IN FOOTNOTE. Hz/min ? WHAT IS
-  THAT. MISSING cm²?*
-
-[fn:threshold_choice] While it is unclear to me now given it's been 5
-years, I believe at the time of the calibration we wrongly assumed a
-muon rate of \SI{100}{Hz.m⁻².sr⁻¹} instead of about
-\SI{1}{Hz.min⁻¹}. The former number only works out if one integrates
-it over the $\cos^2(θ)$ dependence, _but only along $θ$_ and not $φ$!
-Either way, the number seems problematic. However, it did misguide us
-in likely choosing a too low threshold, as using the former number
-yields an expected number of counts of $\sim\num{32000}$ compared to
-only $\sim\num{20000}$ in our naive approach.
+  
 
 **** Raw scintillator data  :noexport:
 
@@ -32224,7 +32239,7 @@ Then use [[file:PyS_mm_veto_szinti_calib.py]] to plot the data.
 A threshold of $\SI{-110}{\milli\volt}$ was selected, after analysis.
 
 
-* CAST data taking run list
+* CAST data taking run list                                        :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:cast_run_list
 :END:
