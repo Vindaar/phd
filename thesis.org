@@ -4942,10 +4942,20 @@ only the actual rate of muons is important.
 
 
 *** Calculation of muon angular / energy dependence at surface   :noexport:
+:PROPERTIES:
+:CUSTOM_ID: sec:theory:calc_muon_angular_flux
+:END:
 
 The code here is directly based on code written in my notes
 [[file:~/org/Doc/StatusAndProgress.org::#sec:muons:expected_muon_flux]] being tangled into a file
-=/tmp/muon_flux.nim=. 
+=/tmp/muon_flux.nim=.
+
+Aside from the figures included in the main thesis, this also produces
+fig. [[fig:theory:flux_at_88deg_CAST]].
+
+#+CAPTION: Expected muon flux under an angle of $\SI{88}{°}$ at CAST.
+#+NAME: fig:theory:flux_at_88deg_CAST
+[[~/phd/Figs/muons/flux_at_cast_88_deg.pdf]]
 
 #+begin_src nim :results silent :tangle /home/basti/phd/code/muons.nim
 import math, macros, unchained
@@ -6077,13 +6087,17 @@ Explain Fe ↦ Mn excited ↦ Mn + γ and what spectrum looks like
 The detector in use in the 2014 / 2015 data taking campaign, presented
 in section [[#sec:detector:detector_2014_15]] had a few significant
 drawbacks for more sensitive searches, in particular for searches at
-low energies $\lesssim\SI{2}{\keV}$ and/or searches requiring low
+low energies $\lesssim\SI{2}{\keV}$ and searches requiring low
 backgrounds over larger areas on the chip (for example the chameleon
-search done in cite:krieger2018search).
+search done in cite:krieger2018search). For this reason a new detector
+was built to improve each downside of the detector.
 
-All detector upgrades were done to alleviate one or more of these
-drawbacks. We will now go through each of the new detector features
-and highlight the aspects it is intended to improve on.
+We start with a basic overview of the new detector, the 'septemboard'
+detector in section [[#sec:detector:detector_overview]]. From there we
+continue looking at each of the new detector features motivating their
+addition. All detector upgrades were done to alleviate one or more of
+these drawbacks. We will now go through each of the new detector
+features and highlight the aspects it is intended to improve on.
 
 Section [[#sec:detector:scintillators]] introduces two new scintillators as
 vetoes. These require the addition of an external shutter for the
@@ -6094,8 +6108,11 @@ section [[#sec:detector:sin_window]]. Another aspect is the addition of another 
 GridPixes around the central GridPix, the 'Septemboard' introduced in
 section [[#sec:detector:septemboard]]. 
 
-The full detector is presented in section [[#sec:detector:detector_overview]]
+** TODOs for this section                                         :noexport:
 
+- [ ] *REWRITE PARAGRAPHS*
+
+- [ ] *HAVE TO MENTION FPGA AND TOF BRIEFLY FOR SCINTILLATORS AND FADC!*
 
 Why do we build such a 'complicated' detector?
 
@@ -6123,6 +6140,8 @@ After we have introduced the detector as a whole we talk about the
 calibrations that are necessary to perform sensible measurements.
 
 *IN EACH SUBSECTION START WITH WHAT IT'S SUPPOSED TO HELP WITH?*
+
+
 
 ** Micromegas working principle
 
@@ -6263,8 +6282,8 @@ will have an effect.
 
 The Timepix3 is the successor of the
 Timepix. cite:Poikela_2014_timepix3,timepix3_manual It is generally
-similar to the Timepix, but would provide 3 important advantages for the
-applications in this thesis:
+similar to the Timepix, but would provide 3 important advantages if
+used in a gaseous detector for the applications in this thesis:
 - clock rates of up to \SI{300}{MHz} for higher possible data rates
   (less interesting for data taking in an axion helioscope)
 - a stream based data readout. This means no fixed shutter times and
@@ -6336,9 +6355,16 @@ Fig. [[sref:fig:detector:ingrid_explanation]] shows an image of such an InGrid.
         (label "fig:detector:timepix_and_ingrid"))
 #+end_src
 
-Production nowadays in Berlin IZM. Show sketch of production process?
-Imo should be enough to refer to Lucian's thesis for production
-process. Is there a paper about IZM process? Ask Yevgen & Lucian.
+*** TODOs for this section                                       :noexport:
+
+- [ ] Talk about potential caveats?
+  Caveats
+  E.g. things like charge up effects etc. discussed in other theses.
+
+- [X] Production nowadays in Berlin IZM. Show sketch of production process?
+  Imo should be enough to refer to Lucian's thesis for production
+  process. Is there a paper about IZM process? Ask Yevgen & Lucian.
+  -> Just referencing to Lucian MSc
 
 \SI{50}{\micro\meter} pillars (amplification gap). Typical gas gains
 of 2000-5000. 
@@ -6347,13 +6373,7 @@ Polya plot.
 
 Important: single electron detection efficiency. 
 
-*** TODOs for this section                                       :noexport:
-
-- [ ] Talk about potential caveats?
-  Caveats
-  E.g. things like charge up effects etc. discussed in other theses.
-
-** 2014 / 2015 GridPix detector [/]
+** 2014 / 2015 GridPix detector for CAST [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:detector:detector_2014_15
 :END:
@@ -6366,21 +6386,19 @@ cite:SchmidtMaster.
 
 The detector consists of a single GridPix in a \SI{78}{mm} diameter
 gas volume and a drift distance of \SI{3}{cm}. The detector has a
-\SI{2}{μm} Mylar entrance window X-rays. This detector serves as the
-foundation for the detector used in the course of this thesis. See
-fig. [[fig:detector:exploded_schematic]] for an exploded schematic of the
-detector. Further, fig. [[fig:detector:background_rate_2014]] shows the
-achieved background rate of this detector in the center $\num{5}
-\times \SI{5}{mm^2}$ region of the detector. The background rate shows
-the copper $Kα$ line near \SI{8}{keV}, possibly overlaid with a muon
-contribution as well as the expected argon $Kα$ lines at
-\SI{3}{keV}. Below \SI{2}{keV} the background starts to rise more and
-more the lower the energy becomes, likely due to background and signal
-like events being less geometrically different at low energies (fewer
-pixels). The average background rate in the range from
-\SIrange{0}{8}{keV} is \SI{2.8793e-05}{keV^{-1}.cm^{-2}.s^{-1}}.
-
-- [ ] *WHICH COPPER LINE? AND WHICH ARGON?*
+\SI{2}{μm} thick Mylar entrance window for X-rays. This detector
+serves as the foundation the detector used in the course of this
+thesis was built on. See fig. [[fig:detector:exploded_schematic]] for an
+exploded schematic of the detector. Further,
+fig. [[fig:detector:background_rate_2014]] shows the achieved background
+rate of this detector in the center $\num{5} \times \SI{5}{mm^2}$
+region of the detector. The background rate shows the copper $Kα$ line
+near $\SI{8}{keV}$, possibly overlaid with a muon contribution as well
+as the expected argon $Kα$ lines at $\SI{3}{keV}$. Below $\SI{2}{keV}$
+the background rises the lower the energy becomes, likely due
+to background- and signal-like events being less geometrically
+different at low energies (fewer pixels). The average background rate
+in the range from $\SIrange{0}{8}{keV}$ is $\SI{2.8793e-05}{keV^{-1}.cm^{-2}.s^{-1}}$.
 
 #+CAPTION: Exploded view of the GridPix detector used during the 2014/15 data taking campaign
 #+CAPTION: at CAST. Consists of a \SI{3}{cm} drift volume with a \SI{78}{mm} inner diameter
@@ -6389,11 +6407,15 @@ pixels). The average background rate in the range from
 [[~/org/Figs/ingrid_detector_exploded_krieger_thesis.png]]
 
 #+CAPTION: Background rate in the center $\num{5} \times \SI{5}{mm^2}$ for the GridPix used in
-#+CAPTION: 2014/15 at CAST. It corresponds to a background rate of \SI{2.8793e-05}{keV^{-1}.cm^{-2}.s^{-1}}
-#+CAPTION: in the range from \SIrange{0}{8}{keV}. *INSERT INTERACTIVE VEGA-LITE VERSION*
+#+CAPTION: 2014/15 at CAST. It corresponds to a background rate of $\SI{2.8793e-05}{keV^{-1}.cm^{-2}.s^{-1}}$
+#+CAPTION: in the range from $\SIrange{0}{8}{keV}$. *INSERT INTERACTIVE VEGA-LITE VERSION*
 #+NAME: fig:detector:background_rate_2014
 [[~/phd/Figs/background_rate_2014_gold.pdf]]
 
+**** TODOs for this section                                     :noexport:
+
+- [X] *WHICH COPPER LINE? AND WHICH ARGON?*
+- [X] *ADD AVERAGE BACKGROUND RATE IN TEXT*.  
 As an example and a reference shown here. The foundation of what is
 done in this thesis.
 
@@ -6403,45 +6425,102 @@ rate achieved by that detector here?
 - background rate
 - background over chip (latter comes later??)
 
-- [ ] *ADD AVERAGE BACKGROUND RATE IN TEXT*.  
-
 *** Create background rate plot for 2014 data                    :noexport:
 
 We simply generate the code with our background rate plotting script,
 as the 2014/15 dataset background rate is stored in our resources of
-the TPA repository:
-#+begin_src sh
-plotBackgroundRate --show2014 --xMax 10.0 \
-  --title "Background rate in center 5·5 mm² for GridPix 2014/15 CAST data"
+the TPA repository. It also outputs the integrated background rates.
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Plotting/plotBackgroundRate :results drawer
+plotBackgroundRate --show2014 --energyMax 10.0 \
+  --title "Background rate in center 5·5 mm² for GridPix 2014/15 CAST data" \
+  --useTeX \
+  --outpath ~/phd/Figs/ \
+  --outfile background_rate_2014_gold.pdf
 #+end_src
-(Note: the half space between numbers and unit for the gold area)
 
-which also outputs the integrated background rates:
+#+RESULTS:
+:results:
+[INFO]:Dataset: 2014/15
+[INFO]:	 Integrated background rate in range: 0.0 .. 12.0: 3.0372e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 12.0: 2.5310e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: 2014/15
+[INFO]:	 Integrated background rate in range: 0.5 .. 2.5: 8.4056e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 2.5: 4.2028e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: 2014/15
+[INFO]:	 Integrated background rate in range: 0.5 .. 5.0: 1.4269e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.5 .. 5.0: 3.1708e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: 2014/15
+[INFO]:	 Integrated background rate in range: 0.0 .. 2.5: 1.2016e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 2.5: 4.8065e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: 2014/15
+[INFO]:	 Integrated background rate in range: 4.0 .. 8.0: 5.7818e-05 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 4.0 .. 8.0: 1.4454e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: 2014/15
+[INFO]:	 Integrated background rate in range: 0.0 .. 8.0: 2.3034e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 0.0 .. 8.0: 2.8793e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:Dataset: 2014/15
+[INFO]:	 Integrated background rate in range: 2.0 .. 8.0: 1.1610e-04 cm⁻²·s⁻¹
+[INFO]:	 Integrated background rate/keV in range: 2.0 .. 8.0: 1.9350e-05 keV⁻¹·cm⁻²·s⁻¹
+[INFO]:DataFrame with 5 columns and 50 rows:
+     Idx             Rate             yMax             yMin           Energy          Dataset
+  dtype:            float            float            float            float         constant
+       0          11.8422         13.12774         10.67764              0.2          2014/15
+       1           7.5465          8.59779         6.617637              0.4          2014/15
+       2           9.1719          10.3181          8.14745              0.6          2014/15
+       3           7.7787          8.84413         6.835589              0.8          2014/15
+       4           8.3592          9.45909         7.381376                1          2014/15
+       5           3.2508         3.984673         2.643112              1.2          2014/15
+       6            4.644         5.495964         3.916433              1.4          2014/15
+       7           4.7601         5.621061         4.023424              1.6          2014/15
+       8           4.4118         5.245432         3.702803              1.8          2014/15
+       9           2.5542         3.219597         2.016388                2          2014/15
+      10           1.0449         1.519657         0.704645              2.2          2014/15
+      11           1.2771         1.787224         0.899653              2.4          2014/15
+      12           2.7864         3.475531         2.224329              2.6          2014/15
+      13           6.1533         7.114793         5.315002              2.8          2014/15
+      14           4.7601         5.621061         4.023424                3          2014/15
+      15           5.1084         5.995723         4.345048              3.2          2014/15
+      16           3.7152         4.490788         3.065089              3.4          2014/15
+      17           1.2771         1.787224         0.899653              3.6          2014/15
+      18            1.161         1.653855         0.801667              3.8          2014/15
+      19            1.161         1.653855         0.801667                4          2014/15
+      20           0.1161         0.381798        0.0202424              4.2          2014/15
+      21           1.5093         2.051874         1.098013              4.4          2014/15
+      22           0.3483         0.685427         0.159398              4.6          2014/15
+      23            1.161         1.653855         0.801667              4.8          2014/15
+      24           1.5093         2.051874         1.098013                5          2014/15
+      25           0.9288         1.384499          0.60876              5.2          2014/15
+      26            1.161         1.653855         0.801667              5.4          2014/15
+      27           2.0898         2.704354         1.604131              5.6          2014/15
+      28            1.161         1.653855         0.801667              5.8          2014/15
+      29           1.0449         1.519657         0.704645                6          2014/15
+      30           1.6254         2.183307         1.198198              6.2          2014/15
+      31           1.2771         1.787224         0.899653              6.4          2014/15
+      32           0.8127          1.24821         0.514242              6.6          2014/15
+      33           0.9288         1.384499          0.60876              6.8          2014/15
+      34           0.6966         1.110561         0.421413                7          2014/15
+      35           0.8127          1.24821         0.514242              7.2          2014/15
+      36           2.4381         3.091237         1.912838              7.4          2014/15
+      37           2.6703         3.347689         2.120225              7.6          2014/15
+      38           3.2508         3.984673         2.643112              7.8          2014/15
+      39           5.5728         6.493931         4.775268                8          2014/15
+      40           6.2694         7.238737         5.423184              8.2          2014/15
+      41           6.3855         7.362609          5.53144              8.4          2014/15
+      42           6.3855         7.362609          5.53144              8.6          2014/15
+      43           5.4567         6.369513         4.667574              8.8          2014/15
+      44            3.483         4.238071         2.853743                9          2014/15
+      45           2.5542         3.219597         2.016388              9.2          2014/15
+      46           1.5093         2.051874         1.098013              9.4          2014/15
+      47           1.0449         1.519657         0.704645              9.6          2014/15
+      48           0.8127          1.24821         0.514242              9.8          2014/15
+      49                0                0                0               10          2014/15
 
-#+begin_src
--xMax 10.0 --title "Background rate in center 5·5 mm² for GridPix 2014/15 CAST data"
-Dataset: 2014/15
-         Integrated background rate in range: 0.0 .. 12.0: 3.0372e-04 cm⁻² s⁻¹
-         Integrated background rate/keV in range: 0.0 .. 12.0: 2.5310e-05 keV⁻¹·cm⁻²·s⁻¹
-Dataset: 2014/15
-         Integrated background rate in range: 0.5 .. 2.5: 8.4056e-05 cm⁻² s⁻¹
-         Integrated background rate/keV in range: 0.5 .. 2.5: 4.2028e-05 keV⁻¹·cm⁻²·s⁻¹
-Dataset: 2014/15
-         Integrated background rate in range: 0.5 .. 5.0: 1.4269e-04 cm⁻² s⁻¹
-         Integrated background rate/keV in range: 0.5 .. 5.0: 3.1708e-05 keV⁻¹·cm⁻²·s⁻¹
-Dataset: 2014/15
-         Integrated background rate in range: 0.0 .. 2.5: 1.2016e-04 cm⁻² s⁻¹
-         Integrated background rate/keV in range: 0.0 .. 2.5: 4.8065e-05 keV⁻¹·cm⁻²·s⁻¹
-Dataset: 2014/15
-         Integrated background rate in range: 4.0 .. 8.0: 5.7818e-05 cm⁻² s⁻¹
-         Integrated background rate/keV in range: 4.0 .. 8.0: 1.4454e-05 keV⁻¹·cm⁻²·s⁻¹
-Dataset: 2014/15
-         Integrated background rate in range: 0.0 .. 8.0: 2.3034e-04 cm⁻² s⁻¹
-         Integrated background rate/keV in range: 0.0 .. 8.0: 2.8793e-05 keV⁻¹·cm⁻²·s⁻¹
-Dataset: 2014/15
-         Integrated background rate in range: 2.0 .. 8.0: 1.1610e-04 cm⁻² s⁻¹
-         Integrated background rate/keV in range: 2.0 .. 8.0: 1.9350e-05 keV⁻¹·cm⁻²·s⁻¹
-#+end_src
+[INFO]:INFO: storing plot in /home/basti/phd/Figs/background_rate_2014_gold.pdf
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v xelatex
+shellCmd: xelatex -output-directory /home/basti/phd/Figs /home/basti/phd/Figs/background_rate_2014_gold.tex
+Generated: /home/basti/phd/Figs/background_rate_2014_gold.pdf
+:end:
 
 ** Scintillator vetoes [2/9]
 :PROPERTIES:
