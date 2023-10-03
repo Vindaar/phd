@@ -5666,25 +5666,22 @@ Leads to our 226 or so primary electrons for our \cefe spectra.
 :CUSTOM_ID: sec:theory:gas_diffusion
 :END:
 
-*SEE Hilke2020 FOR OVERVIEW OF DIFFUSION MATH*
+Diffusion in the context of gaseous detectors is the process of the
+random walk of electrons either in longitudinal or transverse (to the
+electric field) direction they exhibit, when drifting towards the
+readout. Depending on the specific detector technology, some
+transverse diffusion may be a desired property. For long drift
+distances, magnetic fields can be used to significantly reduce the
+transverse diffusion.
 
-Diffusion is the process of the random walk of electrons either in
-longitudinal or transverse (orthogonal to the electric field)
-direction they exhibit, when drifting towards the readout. Depending
-on the specific detector technology, some transverse diffusion may be
-a desired property. For long drift distances, magnetic fields can be
-used to significantly reduce the transverse diffusion.
+For an overview of the mathematics of diffusion as a random walk
+process, see cite:berg1993random. In the context of gaseous detectors
+see for example any of cite:sauli2014gaseous,kolanoski2020particle,Hilke2020
 
-For a point like source of multiple electrons, after diffusion of some
-distance a 2 dimensional gaussian distribution will be expected.
-
-Transverse diffusion depends, as one expects from a 2D random walk,
-via the square root of the drift distance. 
-
-In general for precise numbers, numerical simulations using a tool
-like Magboltz or PyBoltz must be performed or measurements taken.
-
-- [ ] *CITE MAGBOLTZ, PYBOLTZ*
+In general for precise numbers measurements must be taken. Monte Carlo
+simulations using tools like Magboltz cite:biagi1995magboltz or
+PyBoltz cite:pyboltz can be used as a general reference if no
+measurements are available.
 
 The mean squared distance $σ_t$ from a starting point after a certain amount
 of time $t$ is given by
@@ -5694,9 +5691,12 @@ of time $t$ is given by
 \]
 
 for a random walk in $N$ dimensions, where $D$ is a diffusion
-coefficient specifying the movement in distance squared per time. By
-relating the time to the drift velocity $v$ along an axis and
-introducing the diffusion constant $D_t$
+coefficient specifying the movement in distance squared per time.  For
+example for a point like source of multiple electrons, after diffusion
+of some distance a 2 dimensional gaussian distribution will be
+expected with a standard deviation of $σ_t$. By relating the time to
+the drift velocity $v$ along an axis and introducing the diffusion
+constant $D_t$
 
 \[
 D_t = \sqrt{ \frac{2 N D}{v} }
@@ -5710,7 +5710,7 @@ we can further express $σ_t$ as
 \end{equation}
 
 which is often practically useful to estimate the expected diffusion
-after a certain drift length.
+after a certain drift length. 
 
 Note that the terminology of "diffusion constant", "diffusion
 coefficient" and similar is often used ambiguously as to whether they
@@ -5719,8 +5719,6 @@ clearly indicated. Keeping $N = 1$ and handling multiple dimensions as
 independent random walks is a practical approach to take (as long as
 it is valid in the application). [fn:diffusion_and_simulation]
 
-*EXPLAIN WHERE COMES FROM, COMES DOWN TO $D_t$ AND PARAMETER FROM MAGBOLTZ* 
-
 [fn:diffusion_and_simulation] Later in chapter
 [[#sec:background:mlp:event_generation]] we will discuss Monte Carlo event
 generation, which use the diffusion coefficient as an input to
@@ -5728,6 +5726,14 @@ generate clusters after drift. Distance $x$ and $y$ are each sampled
 individually according to eq. [[eq:gas_physics:diffusion_after_drift]] and
 combined to a radial distance from the cluster center.
 
+**** TODOs for this section                                     :noexport:
+
+- [X] *CITE MAGBOLTZ, PYBOLTZ*
+- [X] *HILKE2020*
+
+*EXPLAIN WHERE COMES FROM, COMES DOWN TO $D_t$ AND PARAMETER FROM
+MAGBOLTZ*
+-> ?
 
 **** Additional thoughts on diffusion                           :noexport:
 
@@ -5745,7 +5751,7 @@ data cleaning!*
   standard deviation!
   -> Normal distribution describes position!
   See also:
-  [[file:~/org/Papers/randomwalkBerg_diffusion.pdf]]
+  [[file:~/org/Papers/gas_physics/randomwalkBerg_diffusion.pdf]]
   <x²> = 2 D t    ( 1 dimension )
   <x²> = 4 D t    ( 2 dimensions )
   <x²> = 6 D t    ( 3 dimensions )
