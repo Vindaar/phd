@@ -6522,7 +6522,116 @@ shellCmd: xelatex -output-directory /home/basti/phd/Figs /home/basti/phd/Figs/ba
 Generated: /home/basti/phd/Figs/background_rate_2014_gold.pdf
 :end:
 
-** Scintillator vetoes [2/9]
+** Septemboard detector overview 
+:PROPERTIES:
+:CUSTOM_ID: sec:detector:detector_overview
+:END:
+
+
+Generally, the detector follows the same design as the old detector
+shown in sec. [[#sec:detector:detector_2014_15]], mainly so that mounting
+it inside of the lead shielding and to the vacuum pipes at CAST is
+possible without significant changes. An exploded view of the full
+detector can be seen in fig. [[fig:detector:full_septemboard_exploded]].
+
+At the center of the new detector is the 'septemboard', 7 GridPixes
+replace the single GridPix on the carrier board,
+sec. [[#sec:detector:septemboard]]. Analogue signals induced by the
+amplified charges on the center GridPix are now read out using a flash
+ADC (FADC), sec. [[#sec:detector:fadc]]. The housing with an inner
+diameter of $\SI{78}{mm}$ is again made of acrylic glass, same as in
+the old detector. The detector entrance window is replaced by a
+$\SI{300}{nm}$ $\ce{Si_3 N_4}$ window (sec. [[#sec:detector:sin_window]]),
+which also acts as part of the detector cathode. The copper anode
+slots in right above the septemboard. The carrier board sits on the
+intermediate board. Below the intermediate board is a bespoke water
+cooling made of oxygen-free copper to cool the heat emitted by the
+additional 6 GridPixes, sec. [[#sec:detector:water_cooling]]. On the
+underside of the intermediate board is a new small silicone
+photomultiplier (SiPM), sec. [[#sec:detector:scintillators]]. Finally, a
+large veto scintillator is installed above the detector setup at CAST,
+also sec. [[#sec:detector:scintillators]].
+
+During developments multiple septemboards were built and tested. The
+septemboard used in the final detector is septemboard 'H'. The GridPixes of
+the final board are listed in tab. [[tab:detector:septem_h_chips]].
+
+#+CAPTION: Overview of the different chips on septemboard H. The first part of the name corresponds
+#+CAPTION: to the position on the wafer and =W69= is Timepix wafer number \num{69}.
+#+NAME: tab:detector:septem_h_chips
+#+ATTR_LATEX: :booktabs t
+|---------+--------|
+| Chip    | Number |
+|---------+--------|
+| E 6 W69 |      0 |
+| K 6 W69 |      1 |
+| H 9 W69 |      2 |
+| H10 W69 |      3 |
+| G10 W69 |      4 |
+| D 9 W69 |      5 |
+| L 8 W69 |      6 |
+|---------+--------|
+
+
+#+CAPTION: Exploded view of the main GridPix septemboard detector. The FADC and
+#+CAPTION: large veto scintillator paddle are not shown for obvious reasons. At the
+#+CAPTION: center of the detector is the 'septemboard', 7 GridPix on a carrier board.
+#+CAPTION: The housing is made of acrylic glass, same as in the old detector. The
+#+CAPTION: top shows the \SI{300}{nm} \ce{Si_3 N_4} window. Below the intermediate board
+#+CAPTION: is the water cooling made of pure copper. At the bottom, the SiPM veto
+#+CAPTION: scintillator can be seen.
+#+NAME: fig:detector:full_septemboard_exploded
+#+ATTR_LATEX: :height 0.5\textheight
+[[~/phd/Figs/detector/detector-mk4c-assembly-exploded-whitebg-no-cables-cropped.jpg]]
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *TALK ABOUT SIZES OF FULL DETECTOR*
+
+- [ ] *SEPTEMBOARD CAN BE NAMED HERE INSTEAD OF ABOVE POSSIBLY*
+- [ ] *REARRANGE THE TABLE TO ALIGN LEFT COLUMN*  
+
+*AS LAST SECTION?*
+
+- [ ] *REPLACE IMAGE BY A PROPER RAYTRACED RENDER*
+  
+** Detector readout system (Virtex, ...) [0/1]
+
+The detector is operated by a Xilinx Virtex-6 \textbf{F}ield
+\textbf{P}rogrammable \textbf{G}ate \textbf{A}rray (FPGA) in the form
+of a Virtex-6 ML605 evaluation board. [fn:ml605_weblink] It is
+connected to the intermediate board via two
+\textbf{H}igh-\textbf{D}efinition \textbf{M}ultimedia
+\textbf{I}nterface (HDMI) cables. The Virtex-6 contains the firmware
+controlling the Timepix ASICs and correlating the scintillator and
+FADC signals (see sec. [[#sec:daq:tof]]), the Timepix Operating Firmware
+(TOF). The high voltage (HV) supply both for the septemboard as well
+as for the scintillators sit inside a VME crate, which also houses the
+FADC. A USB connection is used to read out and control the FADC and HV
+supply via the computer running the data acquisition and control
+software (see sec. [[#sec:daq:tos]]), the Timepix Operating Software
+(TOS). A schematic of this setup is shown in
+fig. [[fig:detector:flowchart_setup]], which leaves out the SiPM and
+temperature readout.
+
+#+CAPTION: Flowchart of the whole detector and readout system
+#+NAME: fig:detector:flowchart_setup
+[[file:~/org/Doc/Detector/figs/2016_detector_setup_schematic.pdf]]
+
+[fn:ml605_weblink]
+https://www.xilinx.com/products/boards-and-kits/ek-v6-ml605-g.html
+(visited 2022/10/17)
+
+*** TODOs for this section                                       :noexport:
+
+Note however, that in this plot the SiPM is not illustrated, as it is
+connected to the bottom of the intermediate board and only provides an
+offline flag to be used in the analysis.
+
+- [ ] *CLARIFY SIPM. PROBABLY ADD TO PLOT*
+
+
+** Scintillator vetoes [0/0]
 :PROPERTIES:
 :CUSTOM_ID: sec:detector:scintillators
 :END:
@@ -7671,99 +7780,6 @@ had temperature readout) yields fig. [[fig:detector:occupancy_sparking_run_268]]
 #+CAPTION: before the fan was placed next to it.
 #+NAME: fig:detector:occupancy_sparking_run_268
 [[~/phd/Figs/detector/sparking/sparking_occupancy_80_quantile_run_268.pdf]]
-
-
-** Full detector overview [0/4]
-:PROPERTIES:
-:CUSTOM_ID: sec:detector:detector_overview
-:END:
-
-- [ ] *TALK ABOUT SIZES OF FULL DETECTOR*
-
-Generally the main detector follows the same design as the old
-detector shown in sec. [[#sec:detector:detector_2014_15]], mainly so that
-mounting it inside of the lead shielding and to the vacuum pipes is
-possible without significant changes.
-
-An exploded view of the full detector can be seen in
-fig. [[fig:detector:full_septemboard_exploded]]. The FADC and large veto
-scintillator paddle are not visible in the schematic of course. At the
-center of the detector is the 'septemboard', 7 GridPix on a carrier
-board. The housing with an inner diameter of \SI{78}{mm} is again made
-of acrylic glass, same as in the old detector. The top shows the
-\SI{300}{nm} \ce{Si_3 N_4} window, which also acts as part of the
-detector cathode. The copper anode slots in right above the
-septemboard. The carrier board sits on the intermediate board and
-itself it is above the water cooling made of oxygen-free copper. At
-the bottom, the SiPM veto scintillator can be seen.
-
-The septemboard used in the final detector is septemboard H. The chips
-of these are listed in tab. [[tab:detector:septem_h_chips]].
-
-#+CAPTION: Overview of the different chips on septemboard H. The first part of the name corresponds
-#+CAPTION: to the position on the wafer and =W69= is Timepix wafer number \num{69}.
-#+NAME: tab:detector:septem_h_chips
-#+ATTR_LATEX: :booktabs t
-|---------+--------|
-| Chip    | Number |
-|---------+--------|
-| E6 W69  |      0 |
-| K6 W69  |      1 |
-| H9 W69  |      2 |
-| H10 W69 |      3 |
-| G10 W69 |      4 |
-| D9 W69  |      5 |
-| L8 W69  |      6 |
-|---------+--------|
-
-
-- [ ] *SEPTEMBOARD CAN BE NAMED HERE INSTEAD OF ABOVE POSSIBLY*
-- [ ] *REARRANGE THE TABLE TO ALIGN LEFT COLUMN*  
-
-#+CAPTION: Exploded view of the main GridPix septemboard detector. The FADC and
-#+CAPTION: large veto scintillator paddle are not shown for obvious reasons. At the
-#+CAPTION: center of the detector is the 'septemboard', 7 GridPix on a carrier board.
-#+CAPTION: The housing is made of acrylic glass, same as in the old detector. The
-#+CAPTION: top shows the \SI{300}{nm} \ce{Si_3 N_4} window. Below the intermediate board
-#+CAPTION: is the water cooling made of pure copper. At the bottom, the SiPM veto
-#+CAPTION: scintillator can be seen.
-#+NAME: fig:detector:full_septemboard_exploded
-#+ATTR_LATEX: :height 0.5\textheight
-[[~/phd/Figs/detector/detector-mk4c-assembly-exploded-whitebg-no-cables-cropped.jpg]]
-
-*AS LAST SECTION?*
-
-- [ ] *REPLACE IMAGE BY A PROPER RAYTRACED RENDER*
-  
-** Detector readout system (Virtex, ...) [0/1]
-
-The detector is operated by a Xilinx Virtex-6 \textbf{F}ield
-\textbf{P}rogrammable \textbf{G}ate \textbf{A}rray (FPGA) in the form
-of a Virtex-6 ML605 evaluation board. [fn:ml605_weblink] It is
-connected to the intermediate board via two
-\textbf{H}igh-\textbf{D}efinition \textbf{M}ultimedia
-\textbf{I}nterface (HDMI) cables. The Virtex-6 contains the firmware
-controlling the Timepix ASICs and correlating the scintillator and
-FADC signals (see sec. [[#sec:daq:tof]]). The high voltage (HV) supply both for the
-septemboard as well as for the scintillators sit inside a VME crate,
-which also houses the FADC. A USB connection is used to read out and
-control the FADC and HV supply via the computer running the data
-acquisition and control software (see sec. [[sec:daq:tos]]). A schematic
-of this setup is shown in fig. [[fig:detector:flowchart_setup]].
-
-#+CAPTION: Flowchart of the whole detector and readout system
-#+NAME: fig:detector:flowchart_setup
-[[file:~/org/Doc/Detector/figs/2016_detector_setup_schematic.pdf]]
-
-Note however, that in this plot the SiPM is not illustrated, as it is
-connected to the bottom of the intermediate board and only provides an
-offline flag to be used in the analysis.
-
-- [ ] *CLARIFY SIPM. PROBABLY ADD TO PLOT*
-  
-[fn:ml605_weblink]
-https://www.xilinx.com/products/boards-and-kits/ek-v6-ml605-g.html
-(visited 2022/10/17)
 
 ** Detector efficiency [0/1]
 
