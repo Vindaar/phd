@@ -5791,6 +5791,44 @@ Random walk + a force acting on particles.
 
 *** Drift velocity
 
+The drift velocity is the average speed at which electrons move
+towards the anode in a gaseous detector. It is required to understand
+how recorded time information relates to longitudinal shape
+information of recorded data. Based on the so called 'friction force
+model' an analytical expression for the drift velocity in an
+electromagnetic field can be written to:
+
+\[
+\vec{v} = \frac{e}{m_e} \frac{τ}{1 + ω²τ²}\left( \vec{E} + \frac{ωτ}{B} (\vec{E}
+× \vec{B}) + \frac{ω²τ²}{B²}(\vec{E} · \vec{B}) \vec{B} \right)
+\]
+
+with the electron charge $e$ and mass $m_e$, in an electric field
+$\vec{E}$ and magnetic field $\vec{B}$, given the Lamor frequency $ω =
+eB / m_e$ and the mean collision time $τ$. cite:Zyla:2020zbs
+
+For detectors without a magnetic field $B = 0, ω = 0$ and a constant,
+homogeneous electric field $E$, this reduces to the Townsend
+expression:
+
+\[
+v = \frac{e E τ}{m_e}.
+\]
+
+If measurements are not available, these can also be computed by Magboltz
+cite:biagi1995magboltz or PyBoltz cite:pyboltz, which solve the
+underlying transport equation, the Boltzmann equation.
+
+**** TODOs for this section                                     :noexport:
+
+Boltzmann equation:
+
+\begin{align*}
+  \frac{∂f}{∂t} + \vec{v} \frac{∂}{∂\vec{r}}f + \frac{∂}{∂\vec{v}}\vec{g} &= Q(t) \\
+  \vec{g} &= \left(\frac{e\vec{E}}{m} + \vec{ω} × \vec{v}\right) f
+\end{align*}
+
+
 *MENTION MOLECULAR GASES HAVE HIGHER DRIFT VELOCITY*
 
 Talk about drift velocity of electrons for a given electric
@@ -5798,69 +5836,42 @@ field. Required to know time scales associated with e.g. muons + FADC,
 time it takes for X-rays to drift (for random coincidences in long
 frames etc.)
 
-*USE FORMULA PDG*
+- [ ] *USE FORMULA PDG*
 
 The detector used in this thesis does not make use of magnetic
 fields. Thus, all terms but the first are zero. Further, the electric
 field is constant, leading to the following simplification:
 
-
-Based on the so called 'friction force model' an analytical expression
-for the drift velocity in an electromagnetic field can be written to:
-\[
-\vec{v} = \frac{e}{m_e} \frac{τ}{1 + ω²τ²}\left( \vec{E} + \frac{ωτ}{B}
-(\vec{E} × \vec{B}) + \frac{ω²τ²}{B²}(\vec{E} · \vec{B}) \vec{B} \right)
-\]
-with the electron charge $e$ and mass $m_e$, in an electric field
-$\vec{E}$ and magnetic field $\vec{B}$, given the Lamor frequency 
-$ω = eB / m_e$ and the mean collision time $τ$. cite:Zyla:2020zbs
-
-For the typical case in Micromegas detectors without a magnetic field
-$B = 0, ω = 0$ and a constant, homogeneous electric field $E$, this
-reduces to the Townsend expression:
-
-\[
-v = \frac{e E τ}{m_e}
-\]
-
-These can be computed using software packages like MAGBOLTZ (or its
-Python port PyBoltz) that solve the underlying transport equation, the
-Boltzmann equation:
-
-\begin{align}
-  \frac{∂f}{∂t} + \vec{v} \frac{∂}{∂\vec{r}}f + \frac{∂}{∂\vec{v}}\vec{g} &= Q(t) \\
-  \vec{g} &= \left(\frac{e\vec{E}}{m} + \vec{ω} × \vec{v}\right) f
-\end{align}
 *FIX THIS*
+-> ?
 
 *BOLTZMANN EQUATION: https://en.wikipedia.org/wiki/Boltzmann_equation*
 
 - [X] *COMPUTE USING PYBOLTZ: https://github.com/UTA-REST/PyBoltz*
   -> DONE
 
-*** Gas amplification, avalanche effect [0/1]
+
+
+*** Gas amplification
 :PROPERTIES:
 :CUSTOM_ID: sec:theory:gas_gain_polya
 :END:
 
-
-*FIX TYPING OF POLYA DISTRIBUTION*
-
 In order to turn the individual electrons into a measurable signal,
 gaseous detectors use some kind of gas amplification stage. Details
 vary, but it is usually a region in the gas volume close to the
-readout with a very strong electric field (multiple $si{kV.cm^-1}$)
+readout with a very strong electric field (multiple $\si{kV.cm^{-1}}$)
 such that each electron causes many secondary ionizations, leading to
 an avalanche effect. In case of the detectors described in this
 thesis, amplification factors between \numrange{2000}{4500} are
-desired.
+desired. 
 
 The statistical distribution describing the number of electrons after
 gas amplification is the Polya distribution
 
 \[
 p(x) = \frac{N}{G} \frac{(1 + θ)^{1 + θ}}{Γ(1 + θ)}
-\left(\frac{x}{G}\right)^θ \exp{- \frac{(1 + θ) x}{G}}
+\left(\frac{x}{G}\right)^θ \exp\left[- \frac{(1 + θ) x}{G}\right]
 \]
 
 where $N$ is a normalization constant, $θ$ is another parameter
@@ -5874,7 +5885,7 @@ commonly used. Due to the complexity of this definition, care needs to
 be taken when performing numerical fits to data with this function
 (using bounded parameters and preferring more general non-linear
 optimization routines instead of a normal Levenberg-Marquardt
-approach).
+non-linear least squares approach).
 
 The largest impacts on the expected gas amplification have the
 electric field, the choice of gas and the temperature of the
@@ -5884,17 +5895,41 @@ hard to measure. As such depending on the detector details and
 application, gas gain variations are expected and corrections based on
 a running gas gain value may be necessary.
 
-If it fits here, Polya distribution to describe avalanche effect.
+As the large number of interactions in the amplification region can
+excite many atoms of the (typically) noble gas, UV photons can be
+produced. Their mean free path is comparatively long relative to the
+size of the amplification region. They can start further avalanches,
+potentially away from the location of the initial avalanche start,
+lowering spatial resolution and increasing apparent primary electron
+counts. Molecular gases are added in small fractions to the gas
+mixture to provide non UV photon producing ways to absorb energy. In
+this context the molecular additions are called 'quencher gases'.
 
-What gas properties affect the gas gain? Temperature, density etc.
+**** TODOs for this section                                     :noexport:
 
-Gas gain.
 
-- [ ] *MENTION UV PHOTONS AND HENCE MOLECULAR GASES CALLED QUENCHER
+- [ ] *FIX TYPING OF POLYA DISTRIBUTION*
+  -> ?
+
+- [X] If it fits here, Polya distribution to describe avalanche effect.
+
+- [X] What gas properties affect the gas gain? Temperature, density etc.
+
+- [X] Gas gain.
+
+- [X] *MENTION UV PHOTONS AND HENCE MOLECULAR GASES CALLED QUENCHER
   GAS*
-- [ ] *ADD PLOT OF FUNCTION?*  
+- [ ] *ADD PLOT OF FUNCTION?*
+  -> No, would be too much. Will be seen shortly anyway for real detector.
 
-*** TODO Mobility in a gas and mean free path in amplification region
+*** TODO Mobility in a gas and mean free path in amplification region :optional:
+
+- [ ] Not sure if I want to include this. For now I guess I
+  don't. Will depend on when I reread the detector behavior part.
+
+*NOTE*: The first Townsend coefficient is α = 1/λ, where λ is the mean
+free path!
+
 
 - [ ] This is related to the GridPix variability in the gas gain &
   peak position.
@@ -5916,54 +5951,75 @@ signal in energy, will lead to a natural spread of the measured
 signal. The convolution of different ionization yields, potential
 losses and gas gain variation all contribute to such a spread.
 
-
-
 As such a typical measure of interest for gaseous detectors is the
 energy resolution, which is commonly defined by
 
-- [ ] *REWRITE TO USE σ/μ AS OUR 15 PERCENT MATCHES FOR THAT NOT FOR
-  FWHM. ONLY BEST IN CLASS REACH BELOW 15 IN THE LATTER CASE*
-
 \[
-ΔE = \frac{\text{FWHM}(E)}{E}
+ΔE = \frac{σ}{E}
 \]
 
-which is to say the full-width-half maximum (FWHM) of the distribution
-of a line at given energy $E$. Typical values for the energy
-resolution are smaller than \SI{15}{\percent}.
+where $σ$ is the standard deviation of the normal distribution
+associated with the resolved peak in the detectors data, assuming a --
+for practical purposes -- delta peak as the input spectrum. Sometimes
+definitions using the full width at half maximum (FWHM) are also used
+in place of $σ$. Typical values for the energy resolution defined like
+this are smaller than $\SI{15}{\%}$.
 
-If the absolute magnitude of the FWHM at a given energy is constant,
-which at least is partially reasonable, as the width is not fully due
+If the absolute magnitude of the $σ$ at a given energy is constant,
+which at least is partially reasonable as the width is not fully due
 to energy dependent effects, the energy resolution is proportional to
-$1/E$. 
+$1/E$.
 
-*THINK ABOUT REPHRASING THIS / GIVING A VALUE FOR IDEAL RESOLUTION?*
-(See Alkhazov paper maybe?)
-
-The Fano factor, defined by the variance over the mean of a
-distribution $F = σ² / μ$ (typically within some time window), helps
-to improve the ideal energy resolution. It arises in the associated
+The Fano factor cite:fano63, defined by the variance over the mean of
+a distribution $F = σ² / μ$ (typically within some time window),
+lowers the ideal energy resolution. It arises in the associated
 statistical processes, because there are a finite number of possible
-interactions, which limits the statistics. *CHECK IF SENTENCE
-CORRECT!* In practice the energy
-resolution of gaseous detectors is usually limited by other effects. 
+interaction states. For X-rays an additional aspect is due to the
+maximum energy transferable into the gas due to the X-rays energy. In
+practice though the energy resolution of gaseous detectors is usually
+limited by other effects.
 
+**** TODOs for this section                                     :noexport:
 
-What is energy resolution, definition.
+- [ ]  *CHECK IF SENTENCE ABOUT FANO FACTOR CORRECT!*
+  -> I just checked the Fano paper. It's super long and I'm not sure
+  if I understand what the Fano factor in there really is!
+  
+About Fano factor from cite:bronic1992relation:
+#+begin_quote
+The Fano factor F represents the ratio of the observed variance of the distribution
+of the number of ion pairs to the variance of the Poisson distribution. At high incident
+energies the value of the Fano factor is constant, around 0.17 in noble gases, and
+between 0.2 and 0.4 in molecular gases. The value of F increases toward unity as the
+initial energy of an incident particle decreases toward the ionization potential of a gas
+because at low electron energies the non-ionizing collisions become more numerous.
+#+end_quote
+  
 
-E / σ_E or something like this.
+- [X] *THINK ABOUT REPHRASING THIS / GIVING A VALUE FOR IDEAL RESOLUTION?*
+  (See Alkhazov paper maybe?)
+  -> Rephrased the part, but did not consider Alkhazov
+  
+- [X] *REWRITE TO USE σ/μ AS OUR 15 PERCENT MATCHES FOR THAT NOT FOR
+  FWHM. ONLY BEST IN CLASS REACH BELOW 15 IN THE LATTER CASE*
+
+- [X] What is energy resolution, definition.
 
 Why important for our detector.
 
-*WRITE SOMETHING FANO?* See Sauli about it. Section 7.5 on energy
+- [X] *WRITE SOMETHING FANO?* See Sauli about it. Section 7.5 on energy
 resolution and section 3.6 about photo ionization of X-rays.
 
 Fano factors are related to this! Theory and observation
 disagree. Fano factor fixes this by doing a scaling. Related to the
 fact that theory assumes a perfectly statistical process, but reality
-has fixed number of possible interactions, hence not really perfect statistics.
+has fixed number of possible interactions, hence not really perfect
+statistics.
 
-*** Escape photons / peaks | 55Fe as a typical calibration source
+
+  
+
+*** Escape photons and peaks | 55Fe as a typical calibration source
 :PROPERTIES:
 :CUSTOM_ID: sec:theory:escape_peaks_55fe
 :END:
