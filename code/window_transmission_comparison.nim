@@ -30,9 +30,9 @@ let dM = r"$\SI{2}{\micro\meter}$" #pretty(2.μm, 1, short = true)
 let si = r"$\mathrm{Si}₃\mathrm{N}₄$"
 ggplot(df, aes("Energy [keV]", "Trans", color = "Compound")) +
   geom_line() +
-  xlab("Energy [keV]") + ylab("Transmission") +
+  xlab(r"Energy [$\si{keV}$]") + ylab("Transmission") +
   xlim(0.0, 3.0) + 
   ggtitle(r"Transmission examples of $# $# and $# Mylar" % [dS, si, dM]) +
   ggsave("/home/basti/phd/Figs/detector/window_transmisson_comparison.pdf",
-         #width = 800, height = 600,
+         width = 600, height = 360,
          useTex = true, standalone = true) 

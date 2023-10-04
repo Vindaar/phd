@@ -23,20 +23,20 @@ proc sample() =
   let black = color(0.0, 0.0, 0.0)
   var dataX = newSeqOfCap[float](nmc)
   var dataY = newSeqOfCap[float](nmc)
-  var inside = newSeqOfCap[bool](nmc)
+  var strongback = newSeqOfCap[bool](nmc)
   for idx in 0 ..< nmc:
     let x = rand(-7.0 .. 7.0)
     let y = rand(-7.0 .. 7.0)
     if x*x + y*y < 7.0 * 7.0:
       dataX.add x
       dataY.add y
-      inside.add colorMe(y)
-  let df = toDf(dataX, dataY, inside)
-  echo "A fraction of ", df.filter(f{`inside` == true}).len / df.len, " is occluded by the strongback"
+      strongback.add colorMe(y)
+  let df = toDf(dataX, dataY, strongback)
+  echo "A fraction of ", df.filter(f{`strongback` == true}).len / df.len, " is occluded by the strongback"
   let dfGold = df.filter(f{abs(idx(`dataX`, float)) <= 2.25 and
                            abs(idx(`dataY`, float)) <= 2.25})
-  echo "Gold region: A fraction of ", dfGold.filter(f{`inside` == true}).len / dfGold.len, " is occluded by the strongback"
-  ggplot(df, aes("dataX", "dataY", fill = "inside")) +
+  echo "Gold region: A fraction of ", dfGold.filter(f{`strongback` == true}).len / dfGold.len, " is occluded by the strongback"
+  ggplot(df, aes("dataX", "dataY", fill = "strongback")) +
     geom_point(size = 1.0) +
     # draw the gold region as a black rectangle
     geom_linerange(aes = aes(y = 0, x = 2.25, yMin = -2.25, yMax = 2.25), color = "black") +
@@ -44,6 +44,6 @@ proc sample() =
     geom_linerange(aes = aes(x = 0, y = 2.25, xMin = -2.25, xMax = 2.25), color = "black") +
     geom_linerange(aes = aes(x = 0, y = -2.25, xMin = -2.25, xMax = 2.25), color = "black") +
     xlab("x [mm]") + ylab("y [mm]") +
-    ggtitle("Idealized schematic of the window layout. Strongback in red.") +
-    ggsave("/home/basti/phd/Figs/SiN_window_occlusion.png", width = 1150, height = 1000)
+    ggtitle("Idealized schematic of the window layout. Strongback in purple.") +
+    ggsave("/home/basti/phd/Figs/SiN_window_occlusion.png", 640, 500)#width = 1150, height = 1000)
 sample()
