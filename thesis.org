@@ -6651,7 +6651,7 @@ The first scintillator is a large 'paddle' installed above the
 detector installation, aiming to tag a large fraction of cosmic muons
 traversing in the area around the detector. It has a Canberra 2007
 base and the photomultiplier tube (PMT) is a Bicron
-Corp. 31.49x15.74M2BC408/2-X (first two numbers dimensions in
+Corp. 31.49x15.74M2BC408/2-X (first two numbers: dimensions in
 inches). The full outer dimensions of the scintillator paddle are
 closer to $\SI{42}{cm} \times \SI{82}{cm}$. It is the same
 scintillator paddle used during the Micromegas data taking behind the
@@ -6971,8 +6971,6 @@ shallow angles in sec. [[#sec:theory:calc_muon_angular_flux]] and why
 this is the smallest angle at which a muon is likely going to pass the
 normal likelihood cut and thus requires the SiPM.
 
-
-
 The reason ϑ = 88° was chosen is due to the restriction on the maximum
 allowed eccentricity for a cluster to still end up as a possible
 cluster in our 8-10 keV hump. See the =eccentricity= subplot in
@@ -7101,28 +7099,26 @@ of cosmic muons, the scintillators introduced in previous section
 require an external trigger to close the Timepix shutter early if a
 signal is measured on the Timepix. This is one the main purposes of
 the \text{f}lash \textbf{a}nalog to \textbf{d}igital
-\textbf{c}onverter (FADC) that is part of the detector.
+\textbf{c}onverter (FADC) that is part of the detector. This is done
+by decoupling the induced analogue signals from the grid of the center
+GridPix.
 
-The specific FADC used for the detector is an Caen V1792a *WHICH
-REVISION?*. It runs at an internal \SI{50}{MHz} or \SI{100}{MHz} clock
-and utilizes virtual frequency multiplication to achieve sampling
-rates of \SI{1}{GHz} or \SI{2}{GHz}, respectively. It has 4 channels,
-each with a cyclic register of \num{2560} channels. At an operating
-clock frequency of $\SI{1}{GHz}$ that means each channel covers the
-last $\sim\SI{2.5}{\micro\second}$ at any time. cite:fadc_manual
+The specific FADC used for the detector is an Caen V1792a. It runs at
+an internal $\SI{50}{MHz}$ or $\SI{100}{MHz}$ clock and utilizes virtual
+frequency multiplication to achieve sampling rates of $\SI{1}{GHz}$ or
+$\SI{2}{GHz}$, respectively. It has 4 channels, each with a cyclic
+register of $\num{2560}$ channels. At an operating clock frequency of
+$\SI{1}{GHz}$ that means each channel covers the last
+$\sim\SI{2.5}{\micro\second}$ at any time. cite:fadc_manual
 
 The raw signal decoupled from the grid is first fed into an Ortec 142
-B pre-amplifier, which then feeds into an Ortec 474 shaping amplifier,
+B pre-amplifier and then feeds into an Ortec 474 shaping amplifier,
 which integrates and shapes the signal as well as amplifies it. For a
 detailed introduction to this FADC system, see the thesis of
 A. Deisting cite:Deisting and cite:SchmidtMaster for further work
 integrating it into this detector. In addition see the FADC manual
 cite:fadc_manual [fn:fadc_manual] for a deep explanation of the
 working principle of this FADC.
-
-- [ ] *HAVE PRE AMPLIFIER BEFORE FADC. ORTEC*
-- [ ] *SHOW IMAGE OF FADC AND SHAPING AMPLIFIER*
-- [ ] *MERGE BOTH SCHEMATICS?*  
 
 #+CAPTION: Schematic of the setup to decouple signals induced on the grid of the
 #+CAPTION: InGrid. The signal is decoupled in the sense that the capacitor essentially
@@ -7134,29 +7130,16 @@ working principle of this FADC.
 #+NAME: fig:detector:fadc_circuit
 [[~/phd/Figs/decouple_fadc.pdf]]
 
-The analogue signal measured by the FADC is the induced signal on the
-grid of the central GridPix (introduced in detail in section
-[[#sec:septemboard]]) via a small $C_{\text{dec}} = \SI{10}{nF}$ capacitor
-in parallel to the high voltage line. For a schematic of the circuit
-see fig. [[fig:detector:fadc_circuit]]. When a primary electron traverses
+The analogue signal of the center grid is decoupled via a small
+$C_{\text{dec}} = \SI{10}{nF}$ capacitor in parallel to the high
+voltage line. For a schematic of the circuit see
+fig. [[fig:detector:fadc_circuit]]. When a primary electron traverses
 through a hole in the grid and is amplified, the back flowing ions
 induce a small voltage spike on top of the constant high voltage
 applied to the grid. The parallel capacitor filters out the constant
 high voltage and only transmits the time varying induced signals. Such
 signals - the envelope of possibly many primary electrons - are
 measured by the FADC.
-
-#+CAPTION: Schematic showing how the FADC and scintillators are used together
-#+CAPTION: to tag possible coincidence events and close the shutter early to
-#+CAPTION: reduce the likelihood of multi-hit events. If the scintillator
-#+CAPTION: triggers when the shutter is open, a clock starts counting up to
-#+CAPTION: 4096 clock cycles. On every new trigger this clock is reset. If
-#+CAPTION: the FADC triggers, the scintillator clock values are read out and
-#+CAPTION: can be used to correlate events in the scintillator with FADC and
-#+CAPTION: GridPix information. Further, the FADC trigger is used to close the
-#+CAPTION: Timepix shutter \SI{50}{μs} after the trigger.
-#+NAME: fig:detector:scintillator_fadc_shutter_close
-[[~/phd/Figs/scintillator_fadc_shutter_close.pdf]]
 
 This signal can be used for two distinct things:
 1. it may be used as a trigger to close the shutter of the ongoing
@@ -7183,11 +7166,48 @@ used together to remove certain kinds of background by correlating
 events in the scintillators, the FADC and the GridPix is shown in
 fig. [[fig:detector:scintillator_fadc_shutter_close]].
 
+#+CAPTION: Schematic showing how the FADC and scintillators are used together
+#+CAPTION: to tag possible coincidence events and close the shutter early to
+#+CAPTION: reduce the likelihood of multi-hit events. If the scintillator
+#+CAPTION: triggers when the shutter is open, a clock starts counting up to
+#+CAPTION: 4096 clock cycles. On every new trigger this clock is reset. If
+#+CAPTION: the FADC triggers, the scintillator clock values are read out and
+#+CAPTION: can be used to correlate events in the scintillator with FADC and
+#+CAPTION: GridPix information. Further, the FADC trigger is used to close the
+#+CAPTION: Timepix shutter $\SI{50}{μs}$ after the trigger.
+#+NAME: fig:detector:scintillator_fadc_shutter_close
+[[~/phd/Figs/scintillator_fadc_shutter_close.pdf]]
+
+[fn:fadc_manual] A PDF version is available at:
+https://archive.org/details/manualzilla-id-5646050/
+
+*** TODOs for this section                                       :noexport:
+
+- [ ] *UPDATE SCHEMATIC TO SAY e.g. 1.5 μs*!
+
+
+- [X] *HAVE PRE AMPLIFIER BEFORE FADC. ORTEC*
+
+- [ ] *MERGE BOTH SCHEMATICS?*
+  -> Hmm, maybe, but the captions are already pretty long of both of
+  them.
+
+- [ ] *SHOW IMAGE OF FADC AND SHAPING AMPLIFIER*
 - [ ] *PICTURE OF FADC*
-
+  -> A picture would just take more space and it's not particularly
+  interesting.
+  
 - [ ] *COPY OVER SECTION ABOUT MUONS / TOA INFO FROM IAXO TDR TEXT?*
+  -> ?
 
-[fn:fadc_manual] A PDF version is available at: https://archive.org/details/manualzilla-id-5646050/
+*** Update schematic                                             :noexport:
+
+Need to type out μs because we don't use ~unicode-math~ by default in LaTeXDSL.
+#+begin_src nim
+import latexdsl
+let body = r"If $Δt \lesssim \mathcal{O}(\SI{2}{\micro\second})$ events considered correlated, flag them."
+compile("/tmp/text_fadc_scintillator.tex", body)
+#+end_src
 
 ** SiN window [/]
 :PROPERTIES:
