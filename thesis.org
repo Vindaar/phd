@@ -7404,40 +7404,34 @@ detector. While the center chip is large enough to fully cover the
 image for essentially all models, it may not be in the regions of
 lowest background. Hence, improvements to larger areas are needed.
 
-*REFERENCE PAPER ABOUT TRACKS IN TPCS. IONIZATION STATISTICAL AND SO ON*
-
-*THE LATTER NEEDS MORE WORDING ELSEWHERE / CLUSTERING ALGORITHM EXPL /
-SEPTEM VETO*
-
-- [ ] *USE EXACT MEASURES OF THE TIMEPIX BASED ON TIMEPIX MANUAL*
-
 The septemboard is implemented in such a way to optimize the loss of
 active area due to bonding requirements and general manufacturing
-realities. As the Timepix ASIC is a \SI{16.1}{mm} by \SI{14.1}{mm}
-large chip (the bonding area adding \SI{2}{mm} on one side), the upper
+realities. As the Timepix ASIC is a $\SI{16.1}{mm}$ by $\SI{14.1}{mm}$
+large chip (the bonding area adding $\SI{2}{mm}$ on one side), the upper
 two rows are installed such that they are inverted to another. The
 bonding area is above the upper row and below the center row. The
 bottom row again has its bonding area below. This way the top two rows
 are as close together as realistically possible, with a decent gap on
-the order of \SI{2}{mm} between the middle and bottom row. Any gap is
+the order of $\SI{2}{mm}$ between the middle and bottom row. Any gap is
 potentially problematic as it implies loss of signal in that area,
-complicating the possible reconstruction methods.
+complicating the possible reconstruction methods. The layout can be
+seen in fig. [[fig:detector:occupancy_sparking_run_241]] in the next section.
 
 All 7 GridPix are connected in a daisy-chained way. This means that in
 particular for data readout, each chip is read out one after
 another. The dead time for readouts therefore is approximately 7 times
 the readout time of a single Timepix. A single Timepix has a readout
-time of $\sim\SI{25}{ns}$ at a clock frequency of \SI{40}{MHz} (the
+time of $\sim\SI{25}{ms}$ at a clock frequency of $\SI{40}{MHz}$ (the
 frequency used for this detector). This leads to an expected readout
 time of the full septemboard of
-\SI{175}{ns}. [fn:detector_readout_time] Such a long readout time
+$\SI{175}{ms}$. [fn:detector_readout_time] Such a long readout time
 leads to a strong restriction of the possible applications for such a
 detector. Fortunately, for the use cases in a very low rate experiment
 such as CAST, long shutter times are possible, mitigating the effect
 on the fractional dead time to an extent.
 
 Fig. [[cluster_centers_likelihood]] shows a heatmap of all cluster centers
-during roughly \SI{2000}{\hour} of background data after passing these
+during roughly $\SI{2000}{h}$ of background data after passing these
 clusters through a likelihood based cut method aiming to filter out
 non X-ray like clusters (details of this follow later in chapter
 *CHAPTER FOR LIKELIHOOD METHOD*). It is clearly visible that the further a
@@ -7446,7 +7440,7 @@ the more likely it is to be considered an X-ray like cluster. This has
 an easy geometric explanation. Consider a perfect track traversing
 over the whole chip. In this case it is clearly eccentric. Move the
 same track such that its center is in one of the corners and rotate it
-by \SI{45}{\degree} and suddenly the majority of the track won't be
+by $\SI{45}{°}$ and suddenly the majority of the track won't be
 detected on the chip anymore. Instead something roughly circular
 remains visible, 'fooling' the likelihood method. For a schematic
 illustrating this, see fig *SHOW CUT OFF FROM ONE OF MY TALKS*.
@@ -7456,33 +7450,56 @@ background over the whole center chip, with the biggest effect in the
 regions with the most amount of background. 
 
 \input{~/phd/Figs/backgroundClusters/background_cluster_centers.tex}
+
+[fn:detector_readout_time] The ideal readout time for one chip is $t =
+\SI{917504}{bits} · \SI{25}{ns} = \SI{22.9942}{ms}$
+cite:&lupberger2016pixel, but this does not take into account overhead
+from the FPGA, sending data to the computer and processing in TOS. We
+will later see that the practical readout time of the final detector
+is closer to almost \SI{500}{ms} under high rate conditions
+(e.g. \cefe calibration runs) and $\sim\SI{200}{ms}$ for low rate
+background conditions.
+
+*** TODOs for this section                                       :noexport:
+
+- [ ] *First paragraph and later paragraph talk about the same thing!!!*
+
+*REFERENCE PAPER ABOUT TRACKS IN TPCS. IONIZATION STATISTICAL AND SO ON*
+
+*THE LATTER NEEDS MORE WORDING ELSEWHERE / CLUSTERING ALGORITHM EXPL /
+SEPTEM VETO*
+
+- [X] *USE EXACT MEASURES OF THE TIMEPIX BASED ON TIMEPIX MANUAL*
+  16.1 times 14.1 seems fine.
+
 - [ ] *TODO: NEED CAPTION AND LABEL FOR BACKGROUND CLUSTERS*
 
 - [ ] *SIDE BY SIDE INCLUDING A SEPTEM EVENT SHOWING TRACK CUT LEADS
   TO CIRCLE*
+  -> But that makes it exceptionally small!
 
-- [ ] *MENTION SEPTEMBOARDS ARE NAMED BY LETTERS, WHICH ONE USED IN
+- [X] *MENTION SEPTEMBOARDS ARE NAMED BY LETTERS, WHICH ONE USED IN
   DETECTOR*
+  -> Not here! Already done in septemboard introduction
 
-- [ ] *SHOW SCHEMATIC OF LAYOUT*
+- [X] *SHOW SCHEMATIC OF LAYOUT*
+  -> Indirectly in the temperature part!
 
 - [ ] *FIND OUT WHERE 25 NS READOUT FOR SINGLE TIMEPIX COMES FROM*
 
-- [ ] *READOUT TIME:*
-    #+begin_quote
+- [X] *READOUT TIME:*
+  #+begin_quote
   The main driver for the readout speed is the time to readout the
   complete matrix (one frame) from the chip and this value is fixed for
   a given FCLOCK frequency. A frame consists of 917504 bits, which have
   to be packed to the data stream. As the data is sampled with FCLOCK,
   the same amount of clock cycles is needed, what defines the readout
   time
-    #+end_quote
-   page 83 of Lupberger thesis. 917504 * 25ns (one clock at 40MHz) = 22.9442 ms per frame under
+  #+end_quote
+  page 83 of Lupberger thesis. 917504 * 25ns (one clock at 40MHz) = 22.9442 ms per frame under
   ideal conditions
 
-[fn:detector_readout_time] We will later see that the practical
-readout time of the final detector is closer to almost \SI{500}{ms}
-under high rate conditions.  
+
 
 *** Compute the cluster backgrounds                              :noexport:
 
@@ -8128,41 +8145,42 @@ a_i = \text{Absorption}(P_{\text{total}} · f_i)
 where $P_{\text{total}}$ is the total pressure of the gas mixture (in
 this case \SI{1050}{mbar} and $f_i$ is the fraction of the gas
 $i$. 'Absorption' simply refers to the generic function computing the
-absorption for a gas at a given pressure (see sec. [[#sec:theory:daltons_law]]).
+absorption for a gas at a given pressure (see
+sec. [[#sec:theory:daltons_law]] and sec. [[#sec:theory:xray_matter_gas]]).
 
 The full combined efficiency as presented here is shown in
 fig. [[fig:detector:combined_efficiency]]. Different aspects dominate the
 combined efficiency (purple line) in different energy ranges. At
-energies above \SI{5}{keV} the probability of X-rays to not generate a
-photoelectron within the \SI{3}{cm} of drift distance becomes the
+energies above $\SI{5}{keV}$ the probability of X-rays to not generate a
+photoelectron within the $\SI{3}{cm}$ of drift distance becomes the
 major factor for a loss in efficiency. This means the combined
-efficiency at \SI{10}{keV} is slightly below \SI{30}{\percent}. The
-best combined efficiency of about \SI{95}{\percent} is reached at
-about \SI{3.75}{keV} where both the absorption is likely and the
+efficiency at $\SI{10}{keV}$ is slightly below $\SI{30}{\%}$. The
+best combined efficiency of about $\SI{95}{\%}$ is reached at
+about $\SI{3.75}{keV}$ where both the absorption is likely and the
 energy is high enough to transmit well through the window. The argon
-$K 1s$ absorption edge is clearly visible at around \SI{3.2}{keV}. At
+$K 1s$ absorption edge is clearly visible at around $\SI{3.2}{keV}$. At
 energies below the mean free path of X-rays is significantly longer as
 the $K 1s$ absorption is a significant factor in the possible
 generation of a photoelectron. The window leads to a similar, but inverse, effect
-namely due to the $K 1s$ line of \ce{Si} at around
+namely due to the $K 1s$ line of $\ce{Si}$ at around
 $\SI{1.84}{keV}$. Because transmission is desired through the window
 material, the efficiency /increases/ once we go below that
 energy. Finally, the nitrogen $K 1s$ line also contributes to an
-increase in efficiency once we cross below about \SI{400}{eV}. The
-average efficiencies in the energy ranges between \SIrange{0}{5}{keV} and
-\SIrange{0}{10}{keV} are *X* and *Y*, respectively.
+increase in efficiency once we cross below about $\SI{400}{eV}$. The
+average efficiencies in the energy ranges between $\SIrange{0}{5}{keV}$ and
+$\SIrange{0}{10}{keV}$ are *X* and *Y*, respectively.
 
-The improvement in efficiency at energies below \SI{3}{keV} in
+The improvement in efficiency at energies below $\SI{3}{keV}$ in
 comparison to the mylar window used in the 2014/15 detector (see
 sec. [[#sec:detector:sin_window]]) leads to a significant
 improvement in possible signal detection at those energies, which is
 especially important for searches with peak fluxes around
-\SIrange{1}{2}{keV} as is the case for the axion-electron coupling or
+$\SIrange{1}{2}{keV}$ as is the case for the axion-electron coupling or
 a possible chameleon coupling.
 
 #+CAPTION: Combined detection efficiency for the full detector, taking into account
-#+CAPTION: the gas filling of \SI{1050}{mbar} $\ce{Ar}$ / $\ce{iC_4 H_{10}}$, the \SI{300}{nm}
-#+CAPTION: \ce{Si_3 N_4} window and its \SI{20}{nm} \ce{Al} coating. 
+#+CAPTION: the gas filling of $\SI{1050}{mbar}$ $\ce{Ar}$ / $\ce{iC_4 H_{10}}$, the $\SI{300}{nm}$
+#+CAPTION: $\ce{Si_3 N_4}$ window and its $\SI{20}{nm}$ $\ce{Al}$ coating. 
 #+NAME: fig:detector:combined_efficiency
 [[~/phd/Figs/detector/detector_efficiency.pdf]]
 
