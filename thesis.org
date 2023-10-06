@@ -8412,21 +8412,24 @@ FPGA. TOF controls the Timepix ASICs of the Septemboard (both the slow
 control aspects as well as the data taking) as well as coordinating
 the scintillator signals and FADC trigger. It is a VHDL *OR NOT???*
 project, intended to run at a clock frequency of
-\SI{40}{MHz}. Communication with the GridPixes is done via two
+$\SI{40}{MHz}$. Communication with the GridPixes is done via two
 \textbf{H}igh-\textbf{D}efinition \textbf{M}ultimedia
 \textbf{I}nterface (HDMI) cables, while communication with the readout
 software on the DAQ computer is handled via Ethernet.
 
 For a detailed introduction to TOF, see cite:lupberger2016pixel as
-well as cite:*TOBI UPCOMING THESIS*.
-
+well as cite:schiffer_phd.
 
 The firmware versions used for each data taking periods will be listed
 with the other relevant parameters for each period in section *SECTION
 NEEDS TO BE WRITTEN*.
 
+*** TODOs for this section                                       :noexport:
+
 - [ ] *CHECK IF VHDL*
 - [ ] *LUPBERGER THESIS*
+
+
 
 ** Timepix Operating Software - TOS [0/2]
 :PROPERTIES:
@@ -8435,56 +8438,36 @@ NEEDS TO BE WRITTEN*.
 
 The \textbf{T}imepix \textbf{O}perating \textbf{S}ystem (TOS) is the
 computer-side data acquisition software to read out Timepix based
-detectors. It is an object oriented C++ project, available at *PUSH TO
-GITHUB*. [fn:TOS_versions] *ACCORDING TO WIENER VME MANUAL ALL FILES
-ARE OPEN SOURCE*
-https://wikihost.nscl.msu.edu/S800Doc/lib/exe/fetch.php?media=wiki:manual_vm-usb_9_01_1.pdf
+detectors. It is an object oriented C++ project, available at cite:TOS_github. [fn:TOS_versions] 
 The project needs to be used in conjunction with the \textbf{T}imepix
 \textbf{O}perating \textbf{F}irmware (TOF), which communicates with
 TOS via Ethernet. The TOS project started as far back as 2009 by
 people at the University of Mainz. Next is a short overview over the
 basic blocks that make up the main logic of the software.
 
-[fn:TOS_versions] There are unfortunately 2 different versions of TOS,
-as development diverged for different readout systems. One version is
-for the Xilinx Virtex-6 (V6) ML605 evaluation board and the other for
-the \textbf{S}calable \textbf{R}eadout \textbf{S}ystem (SRS). The V6
-version can read out only a single detector (with up to 8 Timepix
-ASICs), but supports readout of an Ortec FADC and controlling a Wiener
-HV module via VME. The SRS version instead supports neither of these
-additional features, but supports multiple detectors at the same
-time. The detector used in this thesis is read out using the Virtex-6
-board.
-
-
-
-- [ ] *PUSH TOS TO GITHUB OR SIMILAR AND REFERENCE*
-- [ ] *CHECK AGAIN WIENER VME SOURCES OPEN SOURCE*  
-*ADD FULL NAME OF V6 BOARD*
-
 The fully object oriented nature of the project means that there are
 different classes for the different software pieces:
-- =Console=: A class representing the user facing REPL
+- =Console= :: A class representing the user facing REPL
   (Read-Evaluate-Print Loop, an 'interpreter') to control the
   software
-- =PC=: A class representing the network layer and communication side
+- =PC= :: A class representing the network layer and communication side
   of the software, sitting between the console and lower layers.
-- =FPGA=: A class representing the functionality required to control
+- =FPGA= :: A class representing the functionality required to control
   the FPGA on the Virtex-6 evaluation board.
-- =Chip=: A class representing each Timepix ASIC and its
+- =Chip= :: A class representing each Timepix ASIC and its
   functionality.
-- =HFManager=: A class unifying the FADC & Wiener HV control unit as
+- =HFManager= :: A class unifying the FADC & Wiener HV control unit as
   they are both controlled via USB, installed in a VME crate. This
   class contains individual attributes that contain explicit classes
   for these two devices. The name is shortened for 'High Voltage and
   FADC Manager'.
-  - =V1729=: A class representing the Ortec Flash ADC.
-  - =HV*=: Multiple classes representing HV channels, groups and more.
-- =MCP2210=: A class representing the PT1000 temperature sensors
+  - =V1729= :: A class representing the Ortec Flash ADC.
+  - =HV*= :: Multiple classes representing HV channels, groups and more.
+- =MCP2210= :: A class representing the PT1000 temperature sensors
   installed on the detector via a =MCP2210= micro controller,
   optionally connected via USB. The actual micro-controllers with
   attached PT1000s are =MAX31685= models.
-- there are a few further classes of minor interest to the general
+- Misc :: there are a few further classes of minor interest to the general
   functionality of TOS (tab command completion and history, classes
   to set masks on the chips, etc.)
 
@@ -8502,7 +8485,8 @@ command, =ActivateHFM=. This triggers the USB connection to the VME
 crate and tries to find the Wiener HV module as well as the Ortec FADC
 in the crate. Additionally, the temperature sensors are attempted to
 be found (via a secondary, optional USB connection). If the latter are
-found a continuous temperature logging begins (see sec. [[#sec:daq:temperature_logging]]). 
+found a continuous temperature logging begins (see
+sec. [[#sec:daq:temperature_readout]]). 
 
 The HV controls are specific to Wiener HV power supplies. In principle
 the implemented functionality is a fully featured HV controller that
@@ -8553,6 +8537,29 @@ user@ingrid-DAQ~/ ./TOS
   > 0 # accept FADC settings
 #+end_src
 
+[fn:TOS_versions] There are unfortunately 2 different versions of TOS,
+as development diverged for different readout systems. One version is
+for the Xilinx Virtex-6 (V6) ML605 evaluation board and the other for
+the \textbf{S}calable \textbf{R}eadout \textbf{S}ystem (SRS). The V6
+version can read out only a single detector (with up to 8 Timepix
+ASICs), but supports readout of an Ortec FADC and controlling a Wiener
+HV module via VME. The SRS version instead supports neither of these
+additional features, but supports multiple detectors at the same
+time. The detector used in this thesis is read out using the Virtex-6
+board.
+
+
+*** TODOs for this section [/]                                   :noexport:
+
+*ACCORDING TO WIENER VME MANUAL ALL FILES
+ARE OPEN SOURCE*
+https://wikihost.nscl.msu.edu/S800Doc/lib/exe/fetch.php?media=wiki:manual_vm-usb_9_01_1.pdf
+
+- [ ] *PUSH TOS TO GITHUB OR SIMILAR AND REFERENCE*
+- [ ] *CHECK AGAIN WIENER VME SOURCES OPEN SOURCE*  
+*ADD FULL NAME OF V6 BOARD*
+
+
 
 Link to repositories (maybe we can make the Virtex TOS public?) 
 
@@ -8561,7 +8568,7 @@ Link to repositories (maybe we can make the Virtex TOS public?)
 - [X] *Septem event display example.* Section further down
 
 - [ ] *INSERT TOS CONFIG FILES SOMEWHERE*
-
+  
 
 *** TOS output data format
 :PROPERTIES:
@@ -9065,6 +9072,9 @@ stopped without ramping the channels down. It is capable of connecting
 to a running HV power supply or leave it running after shut down. 
 
 *** Temperature monitoring
+:PROPERTIES:
+:CUSTOM_ID: sec:daq:temperature_readout
+:END:
 
 - [ ] *SHOULD EXPLANATION OF THE READOUT _HARDWARE_ NOT BE IN THE
   DETECTOR CHAPTER?*
@@ -9073,7 +9083,7 @@ The two =MAX31685= micro controllers read out =PT1000= sensors, a
 group of \textbf{R}esistance \textbf{T}emperature \textbf{S}ensors
 (RTDs), which measure temperatures by its effect on the electrical
 resistance. They are platinum based and have a resistance of
-\SI{1000}{Ω} at \SI{0}{\degree\celsius}. As the expected change in
+$\SI{1000}{Ω}$ at $\SI{0}{\celsius}$. As the expected change in
 resistance is well understood, the temperature can be precisely
 measured.
 
