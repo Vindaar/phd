@@ -38,11 +38,11 @@ let ρ_Iso = density(1050.mbar.to(Pascal) * fracIso, 293.K, iso.molarWeight)
 df[ar.name()] = ar.compTrans(ρ_Ar, 3.cm.to(Meter))
 df[iso.name()] = iso.compTrans(ρ_Iso, 3.cm.to(Meter))
 
-let nSiN = r"\SI{300}{nm} \ce{Si_3 N_4}"
-let nAl = r"\SI{20}{nm} \ce{Al}"
-let nAr = r"\SI{3}{cm} \ce{Ar} Absorption"
-let nIso = r"\SI{3}{cm} \ce{iC_4 H_{10}} Absorption"
-let nArIso = r"\SI{3}{cm} \SI{97.7}{\percent} \ce{Ar} / \SI{2.3}{\percent} \ce{iC_4 H_{10}}"
+let nSiN = r"$\SI{300}{nm}$ $\ce{Si_3 N_4}$"
+let nAl = r"$\SI{20}{nm}$ $\ce{Al}$"
+let nAr = r"$\SI{3}{cm}$ $\ce{Ar}$ Absorption"
+let nIso = r"$\SI{3}{cm}$ $\ce{iC_4 H_{10}}$ Absorption"
+let nArIso = r"$\SI{3}{cm}$ $\SI{97.7}{\percent} \ce{Ar} / \SI{2.3}{\percent} \ce{iC_4 H_{10}}$"
 
 # finally just need to combine all of them in useful ways
 # - argon + iso
@@ -58,15 +58,21 @@ df = df.mutate(f{"Trans_ArIso" ~ `Argon` * `C4H10`},
           f{nArIso <- "Abs ArIso"}) # ,                    
   .gather([nSiN, nAl, nAr, nIso, nArIso, "Efficiency"], "Material", "Efficiency")
 
+echo "Mean efficiency 0-3  keV = ", df.filter(f{idx("Energy [keV]") < 3.0})["Efficiency", float].mean  
+echo "Mean efficiency 0-5  keV = ", df.filter(f{idx("Energy [keV]") < 5.0})["Efficiency", float].mean
+echo "Mean efficiency 0-10 keV = ", df.filter(f{idx("Energy [keV]") < 10.0})["Efficiency", float].mean
+
 ggplot(df, aes("Energy [keV]", "Efficiency", color = "Material")) +
   geom_line() +
   xlab("Energy [keV]") + ylab("Efficiency") +
   xlim(0.0, 10.0) + 
   ggtitle(r"Transmission (absorption for gases) of relevant detector materials and combined \\" &
     "detection efficiency of the Septemboard detector",
-    titleFont = font(10.0)) +
-  margin(top = 1.25, right = 2.0) +
+    titleFont = font(12.0)) +
+  margin(top = 1.5, right = 2.0) +
+  titlePosition(0.0, 0.8) + 
   legendPosition(0.42, 0.15) + 
   ggsave("/home/basti/phd/Figs/detector/detector_efficiency.pdf",
+         width = 600, height = 400,
          #width = 800, height = 600,
          useTex = true, standalone = true) 

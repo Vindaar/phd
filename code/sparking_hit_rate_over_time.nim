@@ -2,7 +2,10 @@ import std / [options, sequtils, times]
 import ggplotnim, nimhdf5, unchained
 defUnit(Second⁻¹)
 import ingrid / tos_helpers
-const path = "/mnt/1TB/CAST/2017/development/reco_268_sparking.h5"
+# Laptop
+# const path = "/mnt/1TB/CAST/2017/development/reco_268_sparking.h5"
+# Desktop
+const path = "~/CastData/data/2017/development/reco_268_sparking.h5"
 let h5f = H5open(path, "r")
 
 var df = newDataFrame()
@@ -52,7 +55,9 @@ ggplot(dfR, aes("rateTime", "rate", color = factor("chip"))) +
                formatString = "HH:mm:ss",
                dateSpacing = initDuration(hours = 2),
                dateAlgo = dtaAddDuration,
-               timeZone = local()) +                
-  ggsave("/home/basti/phd/Figs/detector/sparking/mean_hit_rate_sparking_run_268.pdf")
+               timeZone = local()) +
+  xlab("Time of day") + ylab(r"Rate [$\si{pixel.s^{-1}}$]") + 
+  ggsave("/home/basti/phd/Figs/detector/sparking/mean_hit_rate_sparking_run_268.pdf",
+        width = 600, height = 360, useTex = true, standalone = true)
 
 dfR.writeCsv("/home/basti/phd/resources/mean_hit_rate_sparking_run_268.csv", precision = 10)
