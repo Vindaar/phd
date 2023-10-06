@@ -7219,7 +7219,7 @@ combined efficiency below $\SI{2}{keV}$, due to its $\SI{2}{μm}$ Mylar
 window. Therefore, the next improvement for the new detector is an
 ultra-thin silicon nitride $\ce{Si_3 N_4}$ window of $\SI{300}{nm}$
 thickness and $\SI{14}{mm}$ diameter, developed by Norcada™ [fn:norcada_website]. A
-strongback support structure consisting of 4 lines of \SI{200}{μm}
+strongback support structure consisting of 4 lines of $\SI{200}{μm}$
 thick and $\SI{500}{μm}$ wide $\ce{Si_3 N_4}$, helps to support a pressure
 difference of up to $\SI{1.5}{bar}$. On the outer side a $\SI{20}{nm}$
 thin layer of aluminum is coated to allow the window to be part of the
@@ -7263,11 +7263,11 @@ chameleon searches, which both peak near $\SI{1}{keV}$ in their solar
 flux. The window alone significantly increases the signal to noise
 ratio of these physics searches.
 
-#+CAPTION: Comparison of the transmission of a \SI{2}{μm} Mylar window and a
-#+CAPTION: \SI{300}{nm} \ce{Si_3 N_4} window. The efficiency gains become
+#+CAPTION: Comparison of the transmission of a $\SI{2}{μm}$ Mylar window and a
+#+CAPTION: $\SI{300}{nm}$ $\ce{Si_3 N_4}$ window. The efficiency gains become
 #+CAPTION: more and more pronounced the lower the energy is, aside from the
-#+CAPTION: absorption edge of carbon at around \SI{250}{eV} and above about
-#+CAPTION: \SI{1.75}{keV}. In the interesting range around \SI{1}{keV} significant
+#+CAPTION: absorption edge of carbon at around $\SI{250}{eV}$ and above about
+#+CAPTION: $\SI{1.75}{keV}$. In the interesting range around $\SI{1}{keV}$ significant
 #+CAPTION: transmission gains are achieved.
 #+NAME: fig:detector:window_efficiency_comparison
 [[~/phd/Figs/detector/window_transmisson_comparison.pdf]]
@@ -7428,35 +7428,46 @@ $\SI{175}{ms}$. [fn:detector_readout_time] Such a long readout time
 leads to a strong restriction of the possible applications for such a
 detector. Fortunately, for the use cases in a very low rate experiment
 such as CAST, long shutter times are possible, mitigating the effect
-on the fractional dead time to an extent.
+on the fractional dead time to a large extent.
 
-Fig. [[cluster_centers_likelihood]] shows a heatmap of all cluster centers
-during roughly $\SI{2000}{h}$ of background data after passing these
-clusters through a likelihood based cut method aiming to filter out
-non X-ray like clusters (details of this follow later in chapter
-*CHAPTER FOR LIKELIHOOD METHOD*). It is clearly visible that the further a
-cluster center is towards the chip edges, and especially the corners,
-the more likely it is to be considered an X-ray like cluster. This has
-an easy geometric explanation. Consider a perfect track traversing
-over the whole chip. In this case it is clearly eccentric. Move the
-same track such that its center is in one of the corners and rotate it
-by $\SI{45}{°}$ and suddenly the majority of the track won't be
-detected on the chip anymore. Instead something roughly circular
-remains visible, 'fooling' the likelihood method. For a schematic
-illustrating this, see fig *SHOW CUT OFF FROM ONE OF MY TALKS*.
+Fig. [[fig:detector:cluster_centers_likelihood]] shows a heatmap of all
+cluster centers during roughly $\SI{2000}{h}$ of background data after
+passing these clusters through a likelihood based cut method aiming to
+filter out non X-ray like clusters (details of this follow later in
+sec. [[#sec:background:method]]). It is clearly visible that the further
+a cluster center is towards the chip edges, and especially the
+corners, the more likely it is to be considered an X-ray like
+cluster. This has an easy geometric explanation. Consider a perfect
+track traversing over the whole chip. In this case it is very
+eccentric. Move the same track such that its center is in one of the
+corners and rotate it by $\SI{45}{°}$ and suddenly the majority of the
+track won't be detected on the chip anymore. Instead something roughly
+circular remains visible, 'fooling' the likelihood method. For a
+schematic illustrating this, see fig. [[fig:detector:gridpix_ring_veto_idea]].
 
 The septemboard therefore is expected to significantly reduce the
 background over the whole center chip, with the biggest effect in the
 regions with the most amount of background. 
 
-\input{~/phd/Figs/backgroundClusters/background_cluster_centers.tex}
+#+CAPTION: Cluster centers left after 2014/15 like cuts applied to about $\SI{2000}{h}$ of
+#+CAPTION: background data. Background increasing dramatically towards edges and
+#+CAPTION: corners.
+#+NAME: fig:detector:cluster_centers_likelihood
+[[~/phd/Figs/backgroundClusters/background_cluster_centers.pdf]]
+
+#+CAPTION: Illustration of the basic idea behind the GridPix veto ring. If a cluster on the center
+#+CAPTION: chip is X-ray like and near the corners, checking the outer chips close to the corner
+#+CAPTION: for a track containing the center cluster can overrule the X-ray like definition of
+#+CAPTION: the center chip only.
+#+NAME: fig:detector:gridpix_ring_veto_idea
+[[~/org/Figs/InGridSeptemExplanation/septem_explanation_lnL_monokai.pdf]]
 
 [fn:detector_readout_time] The ideal readout time for one chip is $t =
 \SI{917504}{bits} · \SI{25}{ns} = \SI{22.9942}{ms}$
 cite:&lupberger2016pixel, but this does not take into account overhead
 from the FPGA, sending data to the computer and processing in TOS. We
 will later see that the practical readout time of the final detector
-is closer to almost \SI{500}{ms} under high rate conditions
+is closer to almost $\SI{500}{ms}$ under high rate conditions
 (e.g. \cefe calibration runs) and $\sim\SI{200}{ms}$ for low rate
 background conditions.
 
@@ -7469,14 +7480,20 @@ background conditions.
 *THE LATTER NEEDS MORE WORDING ELSEWHERE / CLUSTERING ALGORITHM EXPL /
 SEPTEM VETO*
 
+- [X] *REFERENCE* that schematic of how everything is connected is explained
+in the detector @ CAST? Or explain it here, then refer back?
+-> Already done further up. 
+
 - [X] *USE EXACT MEASURES OF THE TIMEPIX BASED ON TIMEPIX MANUAL*
   16.1 times 14.1 seems fine.
 
-- [ ] *TODO: NEED CAPTION AND LABEL FOR BACKGROUND CLUSTERS*
+- [X] *TODO: NEED CAPTION AND LABEL FOR BACKGROUND CLUSTERS*
 
-- [ ] *SIDE BY SIDE INCLUDING A SEPTEM EVENT SHOWING TRACK CUT LEADS
+- [X] *SIDE BY SIDE INCLUDING A SEPTEM EVENT SHOWING TRACK CUT LEADS
   TO CIRCLE*
   -> But that makes it exceptionally small!
+  -> Added an additional illustration based on what we used back in
+  ~2016. 
 
 - [X] *MENTION SEPTEMBOARDS ARE NAMED BY LETTERS, WHICH ONE USED IN
   DETECTOR*
@@ -7485,8 +7502,8 @@ SEPTEM VETO*
 - [X] *SHOW SCHEMATIC OF LAYOUT*
   -> Indirectly in the temperature part!
 
-- [ ] *FIND OUT WHERE 25 NS READOUT FOR SINGLE TIMEPIX COMES FROM*
-
+- [X] *FIND OUT WHERE 25 MS READOUT FOR SINGLE TIMEPIX COMES FROM*
+  -> Luppis thesis as mentioned in the footnote now.
 - [X] *READOUT TIME:*
   #+begin_quote
   The main driver for the readout speed is the time to readout the
@@ -7496,10 +7513,19 @@ SEPTEM VETO*
   the same amount of clock cycles is needed, what defines the readout
   time
   #+end_quote
-  page 83 of Lupberger thesis. 917504 * 25ns (one clock at 40MHz) = 22.9442 ms per frame under
+
+    page 83 of Lupberger thesis. 917504 * 25ns (one clock at 40MHz) = 22.9442 ms per frame under
   ideal conditions
 
+*** GridPix veto ring illustration                               :noexport:
 
+The event used in the illustration is event 23707 of run 242.
+
+The full event display:
+[[~/org/Figs/statusAndProgress/exampleEvents/example_track_corner_gridpix_ring_run242_event23707.pdf]]
+
+and the SVG of the illustration:
+[[~/org/Figs/InGridSeptemExplanation/septem_explanation_lnL_monokai.svg]]
 
 *** Compute the cluster backgrounds                              :noexport:
 
@@ -7519,28 +7545,73 @@ to plot these cluster centers.
 
 Assuming the reconstructed data files are found in *...* and the CDL
 data files in *...*, let's generate the data after likelihood method:
+(this takes ~2 minutes or so, so better run it in a terminal instead of
+via C-c C-c)
 #+begin_src sh 
 likelihood \
     -f ~/CastData/data/DataRuns2017_Reco.h5 \
     --h5out /tmp/lhood_2017_full_chip.h5 \
     --cdlYear=2018 \
     --region=crAll \
-    --cdlFile=/home/basti/CastData/data/CDL_2019/calibration-cdl-2018.h5
+    --cdlFile=/home/basti/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --lnL
+#+end_src
+
+- [ ] *WHY DOES THIS* produce background suppression numbers below 1
+  towards the corners?
+
+
+Compile the plotting tool if not done:
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Plotting/plotBackgroundClusters
+nim c -d:danger --threads:on plotBackgroundClusters.nim
 #+end_src
 
 Now we can create the plot:
 #+begin_src sh
-cd ~/CastData/ExternCode/TimepixAnalysis/Plotting/plotBackgroundClusters
-nim c -d:danger --threads:on plotBackgroundClusters.nim
-./plotBackgroundClusters -f /tmp/lhood_2017_full_chip.h5 --useTikZ
+plotBackgroundClusters \
+    -f /t/lhood_2017_full_chip.h5 \
+    --title "2000 h background data, cuts applied" \
+    --outpath ~/phd/Figs/backgroundClusters/ \
+    --energyMin 0.2 \
+    --energyMax 12.0 \
+    --zMax 15.0 
 #+end_src
 
-*** GENERAL
+#+RESULTS:
+|                        reading: | /t/lhood_2017_full_chip.h5 |         |         |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+| @["/t/lhood_2017_full_chip.h5"] |                            |         |         |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                       DataFrame |                       with |       3 | columns | and                                                                     | 20202 | rows: |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                             Idx |                          x |       y |   count |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                          dtype: |                        int |     int |     int |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               0 |                          2 |     247 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               1 |                          3 |     247 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               2 |                          6 |     166 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               3 |                          9 |      33 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               4 |                          9 |     122 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               5 |                          9 |     128 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               6 |                          9 |     224 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               7 |                         10 |       7 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               8 |                         10 |      57 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                               9 |                         10 |     106 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              10 |                         10 |     107 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              11 |                         10 |     146 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              12 |                         10 |     147 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              13 |                         10 |     165 |       2 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              14 |                         10 |     166 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              15 |                         10 |     185 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              16 |                         10 |     188 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              17 |                         10 |     202 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              18 |                         10 |     224 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                              19 |                         10 |     231 |       1 |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                                 |                            |         |         |                                                                         |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                         [INFO]: |                     Saving |    plot |      to | /home/basti/phd/Figs/backgroundClusters//background_cluster_centers.pdf |       |       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |              |        |
+|                           INFO: |                        The | integer |  column | `x`                                                                     | has   | been  | automatically | determined | to | be | continuous. | To | overwrite | this | behavior | add | a | `+ | scale_x/y_discrete()` | call | to | the | plotting | chain. | Choose | `x` | or | `y` | depending | on | which | axis | this | column | refers | to. | Or | apply | a | `factor` | to | the | column | name | in | the | `aes` | call, | i.e. | `aes(..., | factor("x"), | ...)`. |
+|                           INFO: |                        The | integer |  column | `y`                                                                     | has   | been  | automatically | determined | to | be | continuous. | To | overwrite | this | behavior | add | a | `+ | scale_x/y_discrete()` | call | to | the | plotting | chain. | Choose | `x` | or | `y` | depending | on | which | axis | this | column | refers | to. | Or | apply | a | `factor` | to | the | column | name | in | the | `aes` | call, | i.e. | `aes(..., | factor("y"), | ...)`. |
 
-*REFERENCE* that schematic of how everything is connected is explained
-in the detector @ CAST? Or explain it here, then refer back?
 
-** Water cooling and temperature readout for the septemboard [0/1]
+
+
+** Water cooling and temperature readout for the septemboard [0/0]
 :PROPERTIES:
 :CUSTOM_ID: sec:detector:water_cooling
 :END:
@@ -7549,8 +7620,8 @@ During development of the septemboard one particular set of problems
 manifested. While testing a prototype board with 5 active GridPix in a
 gaseous detector, the readout was plagued by excessive noise
 problems. The detector exhibited a large number of frames with more
-than \num{4096} active pixels (the limit for a zero suppressed
-readout) and common pixel values of \num{11810} indicating overrun ToT
+than $\num{4096}$ active pixels (the limit for a zero suppressed
+readout) and common pixel values of $\num{11810}$ indicating overrun ToT
 counters. On an occupancy (sum of all active pixels) of the individual
 chips, it is quite visible the data is clearly not due to cosmic
 background. Fig. [[fig:detector:occupancy_sparking_run_241]] shows such an
@@ -7565,7 +7636,8 @@ pixels is visible (some being clearly more active than others
 resulting in a scatter of 'points').
 
 #+CAPTION: Occupancy of a testing background run with $\mathcal{O}(\SI{1}{s})$ long frames
-#+CAPTION: using septemboard F during development without any kind of cooling.
+#+CAPTION: using septemboard F during development without any kind of cooling. This also shows
+#+CAPTION: the layout of the full septemboard with realistic spacing.
 #+NAME: fig:detector:occupancy_sparking_run_241
 [[~/phd/Figs/detector/sparking/sparking_occupancy_80_quantile_run_241.pdf]]
 
@@ -7580,81 +7652,65 @@ Serial Peripheral Interface (SPI) (see
 sec. [[#sec:daq:temperature_readout]] for more information about the
 temperature logging and readout). In the run shown in
 fig. [[fig:detector:occupancy_sparking_run_241]] the temperature sensors
-were not functional yet, as the readout software was not written
-yet. The required logic was added to the Timepix Operating System
-(TOS), the readout software of the detector, motivated by this noise
-activity to monitor the temperature before and during a data taking
-period. The temperature on the carrier board indicated temperatures on
-the order of \SI{75}{\degree\celsius} in background runs similar to
-the one of fig. [[fig:detector:occupancy_sparking_run_241]]. One way to
-get a measure for the noise like activity seen on the detector is to
-look at the rate of active pixels over time. With values well above
-numbers expected due to background, excess temperature seemed a
-possible cause for the issues. As no proper cooling mechanism was
-available, a regular desk fan was placed pointing at the detector when
-it was run without any kind of shielding. This saw the temperature
-under the carrier board drop from \SI{76}{\degree\celsius} down to
-\SI{68}{\degree\celsius}. As a result the majority of noise
-disappeared as can be seen in
-fig. \ref{fig:detector:sparking_run_with_fan_mean_hits} with the
-temperature curve during the full run in
-fig. \ref{fig:detector:sparking_run_with_fan_temps}. [fn:detector_sparking_run_268] [fn:detector_troubleshooting]
+were not functional yet, as the readout software was not written. The
+required logic was added to the Timepix Operating System (TOS), the
+readout software of the detector, motivated by this noise activity to
+monitor the temperature before and during a data taking period. The
+temperature on the carrier board indicated temperatures of
+$\sim\SI{75}{\celsius}$ in background runs similar to the one of
+fig. [[fig:detector:occupancy_sparking_run_241]]. One way to get a measure
+for the noise like activity seen on the detector is to look at the
+rate of active pixels over time. With values well above numbers
+expected due to background, excess temperature seemed a possible cause
+for the issues. As no proper cooling mechanism was available, a
+regular desk fan was placed pointing at the detector when it was run
+without any kind of shielding. This saw the temperature under the
+carrier board drop from $\SI{76}{\celsius}$ down to
+$\SI{68}{\celsius}$. As a result the majority of noise disappeared as
+can be seen in fig. sref:fig:detector:sparking_run_with_fan_mean_hits
+with the temperature curve during the full run in
+fig. sref:fig:detector:sparking_run_with_fan_temps. [fn:detector_sparking_run_268] [fn:detector_troubleshooting]
 
 The features visible in the occupancy plots are thus likely multiple
 different artifacts due to too high temperatures. A mixture of real
 sparks (bottom left chip in
-fig. [[fig:detector:occupancy_sparking_run_241]]), instabilities that
-possibly affect either voltages for the pixels (and thus change the
-thresholds of each pixel). As the temperature is measured on the
-bottom side of the carrier board, temperatures in the amplification
-region are likely significantly higher. As the gas gain is
-proportional to the temperature, it is possible slight height
-differences of the InGrid cause local amplification events, similar to
-a photomultiplier tube. 
+fig. [[fig:detector:occupancy_sparking_run_241]]) and possible
+instabilities that possibly affect voltages for the pixels (and thus
+change the thresholds of each pixel). As the temperature is measured
+on the bottom side of the carrier board, temperatures in the
+amplification region are likely significantly higher. 
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{./Figs/detector/sparking/temperature_sparking_run_268.pdf}
-    \caption{Temperature}
-    \label{fig:detector:sparking_run_with_fan_temps}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{./Figs/detector/sparking/mean_hit_rate_sparking_run_268.pdf}
-    \label{fig:detector:sparking_run_with_fan_mean_hits}
-    \caption{Mean hit rate}
-  \end{subfigure}
-  \label{fig:detector:sparking_run_with_fan}
-  \caption{\subref{fig:detector:sparking_run_with_fan_temps} shows the temperature on the bottom side of the
-    carrier board ('septem') and intermediate board ('IMB') during the background run. The point at which
-    the desk fan is placed next to the detector is clearly visible by the \SI{8}{\degree\celsius} drop in
-    temperature from about \SI{76}{\degree\celsius} to \SI{68}{\degree\celsius}. 
-    \subref{fig:detector:sparking_run_with_fan_mean_hits} shows the mean hit rate of each of the 5 chips
-    installed on the carrier board at the time during the same run. The placement of the desk fan is easily
-    visible as a reduction in mean rate on all chips.
-  }
-\end{figure}
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Temperature") (label "fig:detector:sparking_run_with_fan_temps")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/detector/sparking/temperature_sparking_run_268.pdf"))
+        (subfigure (linewidth 0.5) (caption "Mean hit rate") (label "fig:detector:sparking_run_with_fan_mean_hits")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/detector/sparking/mean_hit_rate_sparking_run_268.pdf"))
+        (caption
+         (subref "fig:detector:sparking_run_with_fan_temps") " shows the temperature on the bottom side of the
+          carrier board ('septem') and intermediate board ('IMB') during the background run. The point at which
+          the desk fan is placed next to the detector is clearly visible by the " ($ (SI 8 "\\celsius")) " drop in
+          temperature from about " ($ (SI 76 "\\celsius")) " to " ($ (SI 68 "\\celsius")) "."
+         (subref "fig:detector:sparking_run_with_fan_mean_hits") " shows the mean hit rate of each of the 5 chips
+          installed on the carrier board at the time during the same run. The placement of the desk fan is easily
+          visible as a reduction in mean rate on all chips."
+         )
+         (label "fig:detector:sparking_run_with_fan"))
+#+end_src
 
-Following this a bespoke water cooling was designed made from
-oxygen-free copper with \SI{3}{mm} channels for water to circulate
-through the copper body. The body has the same diameter as the
-intermediate board and is installed right below. The water circulation
-is handled by an off-the-shelf pump and radiator from
-Alphacool [fn:detector_alphacool] intended for water cooling setups
-for desktop computers. The pump manages a water flow rate of about
-\SI{0.3}{\liter\per\minute} through the small holes in the copper. In
-common operation the temperatures on the carrier board are between
-\SIrange{45}{50}{\degree\celsius} and noise free operation is
-possible.
-
-- [ ] *REF TOBI THESIS & UPCOMING PAPER*
-- [ ] See
-  ~/org/Papers/tobias_schiffer_septemboard_cooling_chapter.pdf~
-  for his chapter about the cooling device! Good for the size of holes
-  etc and check if our bla bla is correct!
-- [ ] *REFERENCE CODE TO TEMP READOUT?*
+Following this a bespoke water cooling was designed by T. Schiffer
+made from oxygen-free copper with $\SI{3}{mm}$ channels for water to
+circulate through the copper body. cite:schiffer_phd The body has the
+same diameter as the intermediate board and is installed right
+below. The water circulation is handled by an off-the-shelf pump and
+radiator from Alphacool [fn:detector_alphacool] intended for water
+cooling setups for desktop computers. The pump manages a water flow
+rate of about $\SI{0.3}{\liter\per\minute}$ through the $\SI{3}{mm}$
+channels in the copper. In common operation the temperatures on the
+carrier board are between $\SIrange{45}{50}{\celsius}$ and noise free
+operation is possible.
 
 [fn:detector_troubleshooting] The realization that the issues are
 purely due to temperature effects was only after several months of
@@ -7669,6 +7725,28 @@ better deal with large variations in required power.
 [fn:detector_sparking_run_268] See the full thesis version for the
 occupancy of the run with temperature readout in the subsection
 after this if interested.
+
+*** TODOs for this section [3/5]                                 :noexport:
+
+- [ ] *TAKE OUT DETAILS* about the MCP2210 etc. logic to read out
+  sensors etc. That is going to be explained later on anyway.
+
+- [X] *REF TOBI THESIS & UPCOMING PAPER*
+  - [ ] *UPCOMING PAPER CITE*
+- [X] See
+  ~/org/Papers/tobias_schiffer_septemboard_cooling_chapter.pdf~
+  for his chapter about the cooling device! Good for the size of holes
+  etc and check if our bla bla is correct!
+  -> 3 mm channels!
+- [X] *REFERENCE CODE TO TEMP READOUT?*
+  -> Will be referenced in section about readout itself
+
+- [ ] *REWRITE SENTENCE*:
+  Further, the gas gain is proportional to the temperature, it is possible slight height
+  differences of the InGrid cause local amplification events, similar to
+  a photomultiplier tube.
+  -> This was after the "As the temperature is measured" ... sentence.
+
 
 *** Sparking behavior :noexport:
 
@@ -7691,7 +7769,10 @@ This is essentially a reproducible version of the following plot:
 #+begin_src nim :tangle /home/basti/phd/code/sparking_temperature.nim
 import ggplotnim, times
 
-const path = "/mnt/1TB/CAST/2017/development/Run_268_170418-05-43/temp_log.txt"
+# Laptop:
+#const path = "/mnt/1TB/CAST/2017/development/Run_268_170418-05-43/temp_log.txt"
+# Desktop:
+const path = "~/CastData/data/2017/development/Run_268_170418-05-43/temp_log.txt"
 
 proc p(x: string): DateTime =
   result = x.parse("YYYY-MM-dd'.'HH:mm:ss", local())
@@ -7705,20 +7786,25 @@ let df = readCsv(path, sep = '\t', skipLines = 2, colNames = @["IMB", "Septem", 
 ggplot(df, aes("Timestamp", "Temperature", color = "Type")) +
   geom_line() +
   # scale_x_continuous() +
-  ggtitle("Temperature during run on 2017/04/18 in which fan was placed next to detector") + 
+  ggtitle("Temperature during run on 2017/04/18 with fan next to detector") + 
   xlab("Time of day") + ylab("Temperature [°C]") +
-  margin(top = 2.0) + 
+  #margin(top = 2.0) + 
   scale_x_date(isTimestamp = true,
                formatString = "HH:mm:ss",
                dateSpacing = initDuration(hours = 2),
                dateAlgo = dtaAddDuration,
-               timeZone = local()) +                
-  ggsave("/home/basti/phd/Figs/detector/sparking/temperature_sparking_run_268.pdf")
+               timeZone = local()) +
+  ggsave("/home/basti/phd/Figs/detector/sparking/temperature_sparking_run_268.pdf",
+        width = 600, height = 360, useTeX = true, standalone = true)
 df.writeCsv("/home/basti/phd/resources/temperature_sparking_run_268.csv")  
 #+end_src
 
 #+RESULTS:
-| INFO: The integer column `Timestamp` has been automatically determined to be continuous. To overwrite this behavior add a `+ scale_x/y_discrete()` call to the plotting chain. Choose `x` or `y` depending on which axis this column refers to. Or apply a `factor` to the column name in the `aes` call | i.e. `aes(... | Timestamp | ...)`. |
+| INFO:      | The                                                                     | integer           | column                                 | `Timestamp`                                                             | has | been | automatically | determined | to | be | continuous. | To | overwrite | this | behavior | add | a | `+ | scale_x/y_discrete()` | call | to | the | plotting | chain. | Choose | `x` | or | `y` | depending | on | which | axis | this | column | refers | to. | Or | apply | a | `factor` | to | the | column | name | in | the | `aes` | call, | i.e. | `aes(..., | factor("Timestamp"), | ...)`. |
+| [INFO]     | TeXDaemon                                                               | ready             | for                                    | input.                                                                  |     |      |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
+| shellCmd:  | command                                                                 | -v                | xelatex                                |                                                                         |     |      |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
+| shellCmd:  | xelatex                                                                 | -output-directory | /home/basti/phd/Figs/detector/sparking | /home/basti/phd/Figs/detector/sparking/temperature_sparking_run_268.tex |     |      |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
+| Generated: | /home/basti/phd/Figs/detector/sparking/temperature_sparking_run_268.pdf |                   |                                        |                                                                         |     |      |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
 
 Next up we need to compute the mean hit rate of the four most active
 chips and plot it against time.
@@ -7727,10 +7813,13 @@ How will we go about doing that? Read and reconstruct the run, then
 manually extract hits per time, bin by time and that's it?
 
 #+begin_src sh
-cd /mnt/1TB/CAST/2017/development/
+# cd /mnt/1TB/CAST/2017/development/
+cd ~/CastData/data/2017/development/
 raw_data_manipulation -p Run_268_170418-05-43 --runType background --out raw_268_sparking.h5
-reconstruction raw_268_sparking.h5 --out reco_268_sparking.h5
+reconstruction -i raw_268_sparking.h5 --out reco_268_sparking.h5
 #+end_src
+
+#+RESULTS:
 
 With the resulting file, we can now generate the plot of the hits over
 time.
@@ -7742,7 +7831,10 @@ import std / [options, sequtils, times]
 import ggplotnim, nimhdf5, unchained
 defUnit(Second⁻¹)
 import ingrid / tos_helpers
-const path = "/mnt/1TB/CAST/2017/development/reco_268_sparking.h5"
+# Laptop
+# const path = "/mnt/1TB/CAST/2017/development/reco_268_sparking.h5"
+# Desktop
+const path = "~/CastData/data/2017/development/reco_268_sparking.h5"
 let h5f = H5open(path, "r")
 
 var df = newDataFrame()
@@ -7792,8 +7884,10 @@ ggplot(dfR, aes("rateTime", "rate", color = factor("chip"))) +
                formatString = "HH:mm:ss",
                dateSpacing = initDuration(hours = 2),
                dateAlgo = dtaAddDuration,
-               timeZone = local()) +                
-  ggsave("/home/basti/phd/Figs/detector/sparking/mean_hit_rate_sparking_run_268.pdf")
+               timeZone = local()) +
+  xlab("Time of day") + ylab(r"Rate [$\si{pixel.s^{-1}}$]") + 
+  ggsave("/home/basti/phd/Figs/detector/sparking/mean_hit_rate_sparking_run_268.pdf",
+        width = 600, height = 360, useTex = true, standalone = true)
 
 dfR.writeCsv("/home/basti/phd/resources/mean_hit_rate_sparking_run_268.csv", precision = 10)
 #+end_src
@@ -8110,12 +8204,12 @@ had temperature readout) yields fig. [[fig:detector:occupancy_sparking_run_268]]
 
 #+CAPTION: Occupancy of a testing background run with $\mathcal{O}(\SI{1}{s})$ long frames
 #+CAPTION: using septemboard F during development without any kind of cooling and temperature
-#+CAPTION: logging. Temperatures on the underside of the carrier board reached \SI{76}{\degree\celsius}
+#+CAPTION: logging. Temperatures on the underside of the carrier board reached \SI{76}{\celsius}
 #+CAPTION: before the fan was placed next to it.
 #+NAME: fig:detector:occupancy_sparking_run_268
 [[~/phd/Figs/detector/sparking/sparking_occupancy_80_quantile_run_268.pdf]]
 
-** Detector efficiency [0/1]
+** Detector efficiency [0/0]
 
 For the applications at CAST, the detector is filled with $\ce{Ar}$ / $\ce{iC_4 H_{10}}$ :
 \SI{97.7}{\%} / \SI{2.3}{\%} gas. Combined with its \SI{300}{nm}
@@ -8169,8 +8263,8 @@ $\SI{1.84}{keV}$. Because transmission is desired through the window
 material, the efficiency /increases/ once we go below that
 energy. Finally, the nitrogen $K 1s$ line also contributes to an
 increase in efficiency once we cross below about $\SI{400}{eV}$. The
-average efficiencies in the energy ranges between $\SIrange{0}{5}{keV}$ and
-$\SIrange{0}{10}{keV}$ are *X* and *Y*, respectively.
+average efficiencies in the energy ranges between $\SIrange{0}{3}{keV}$ and
+$\SIrange{0}{10}{keV}$ are $\SI{73.42}{\%}$ and $\SI{67.84}{\%}$, respectively.
 
 The improvement in efficiency at energies below $\SI{3}{keV}$ in
 comparison to the mylar window used in the 2014/15 detector (see
@@ -8186,6 +8280,8 @@ a possible chameleon coupling.
 #+NAME: fig:detector:combined_efficiency
 [[~/phd/Figs/detector/detector_efficiency.pdf]]
 
+*** TODOs for this section [0/2]                                 :noexport:
+
 Outside of that, the general background rate expected from the
 detector should match and exceed the previous detector, due to the
 additional detector features. 
@@ -8194,7 +8290,6 @@ additional detector features.
 - [ ] *REPLACE BY NATIVE TIKZ PLOT + VEGA*  
 
 *** Calculation of full detection efficiency   :noexport:
-
 
 #+begin_src nim :tangle /home/basti/phd/code/detector_efficiency.nim
 import std / strutils
@@ -8237,11 +8332,11 @@ let ρ_Iso = density(1050.mbar.to(Pascal) * fracIso, 293.K, iso.molarWeight)
 df[ar.name()] = ar.compTrans(ρ_Ar, 3.cm.to(Meter))
 df[iso.name()] = iso.compTrans(ρ_Iso, 3.cm.to(Meter))
 
-let nSiN = r"\SI{300}{nm} \ce{Si_3 N_4}"
-let nAl = r"\SI{20}{nm} \ce{Al}"
-let nAr = r"\SI{3}{cm} \ce{Ar} Absorption"
-let nIso = r"\SI{3}{cm} \ce{iC_4 H_{10}} Absorption"
-let nArIso = r"\SI{3}{cm} \SI{97.7}{\percent} \ce{Ar} / \SI{2.3}{\percent} \ce{iC_4 H_{10}}"
+let nSiN = r"$\SI{300}{nm}$ $\ce{Si_3 N_4}$"
+let nAl = r"$\SI{20}{nm}$ $\ce{Al}$"
+let nAr = r"$\SI{3}{cm}$ $\ce{Ar}$ Absorption"
+let nIso = r"$\SI{3}{cm}$ $\ce{iC_4 H_{10}}$ Absorption"
+let nArIso = r"$\SI{3}{cm}$ $\SI{97.7}{\percent} \ce{Ar} / \SI{2.3}{\percent} \ce{iC_4 H_{10}}$"
 
 # finally just need to combine all of them in useful ways
 # - argon + iso
@@ -8257,19 +8352,30 @@ df = df.mutate(f{"Trans_ArIso" ~ `Argon` * `C4H10`},
           f{nArIso <- "Abs ArIso"}) # ,                    
   .gather([nSiN, nAl, nAr, nIso, nArIso, "Efficiency"], "Material", "Efficiency")
 
+echo "Mean efficiency 0-3  keV = ", df.filter(f{idx("Energy [keV]") < 3.0})["Efficiency", float].mean  
+echo "Mean efficiency 0-5  keV = ", df.filter(f{idx("Energy [keV]") < 5.0})["Efficiency", float].mean
+echo "Mean efficiency 0-10 keV = ", df.filter(f{idx("Energy [keV]") < 10.0})["Efficiency", float].mean
+
 ggplot(df, aes("Energy [keV]", "Efficiency", color = "Material")) +
   geom_line() +
   xlab("Energy [keV]") + ylab("Efficiency") +
   xlim(0.0, 10.0) + 
   ggtitle(r"Transmission (absorption for gases) of relevant detector materials and combined \\" &
     "detection efficiency of the Septemboard detector",
-    titleFont = font(10.0)) +
-  margin(top = 1.25, right = 2.0) +
+    titleFont = font(12.0)) +
+  margin(top = 1.5, right = 2.0) +
+  titlePosition(0.0, 0.8) + 
   legendPosition(0.42, 0.15) + 
   ggsave("/home/basti/phd/Figs/detector/detector_efficiency.pdf",
+         width = 600, height = 400,
          #width = 800, height = 600,
          useTex = true, standalone = true) 
 #+end_src
+#+RESULTS:
+Mean efficiency 0-3  keV = 0.7342084765204602
+Mean efficiency 0-5  keV = 0.7544999372201439
+Mean efficiency 0-10 keV = 0.6783959312693081
+
 
 * Data acquisition, detector monitoring and preparation            :Detector:
 :PROPERTIES:
