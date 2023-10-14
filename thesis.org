@@ -142,11 +142,40 @@ on disc.
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+end_src
 
+#+RESULTS:
+| book-noparts | \documentclass{book}          | (\chapter{%s} . \chapter*{%s}) | (\section{%s} . \section*{%s})       | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s}) |
+| article      | \documentclass[11pt]{article} | (\section{%s} . \section*{%s}) | (\subsection{%s} . \subsection*{%s}) | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s})   |                                          |
+| report       | \documentclass[11pt]{report}  | (\part{%s} . \part*{%s})       | (\chapter{%s} . \chapter*{%s})       | (\section{%s} . \section*{%s})             | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) |                                          |
+| book         | \documentclass[11pt]{book}    | (\part{%s} . \part*{%s})       | (\chapter{%s} . \chapter*{%s})       | (\section{%s} . \section*{%s})             | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) |                                          |
+
 Bibliography for org-ref:
 #+begin_src emacs-lisp
 (setq bibtex-completion-bibliography "~/phd/references.bib")
 #+end_src
 
+#+RESULTS:
+: ~/phd/references.bib
+
+
+#+begin_src emacs-lisp
+(add-to-list 'org-latex-packages-alist '("outputdir=texout" "minted"))
+#+end_src
+
+#+RESULTS:
+| outputdir=texout   | minted       |     |
+| labelformat=simple | subcaption   |     |
+| margin=2.5cm       | geometry     |     |
+|                    | mhchem       |     |
+|                    | amsmath      |     |
+|                    | unicode-math |     |
+|                    | fontspec     |     |
+|                    | siunitx      |     |
+|                    | pdfpages     |     |
+|                    | longtable    |     |
+|                    | booktabs     |     |
+|                    | minted       |     |
+|                    | minted       | t   |
+|                    | booktabs     | nil |
 
 ** Customize exclude tags per backend
 
@@ -160,6 +189,9 @@ Bibliography for org-ref:
 
 (add-hook 'org-export-before-processing-hook 'my-custom-org-exclude-tags)
 #+end_src
+
+#+RESULTS:
+| my-custom-org-exclude-tags | my/org-process-subfigure-dsl | my/org-html-export-figs | org-blackfriday--reset-org-blackfriday--code-block-num-backticks |
 
 
 * Introduction                                                        :Intro:
