@@ -8377,7 +8377,7 @@ Mean efficiency 0-5  keV = 0.7544999372201439
 Mean efficiency 0-10 keV = 0.6783959312693081
 
 
-* Data acquisition, detector monitoring and preparation            :Detector:
+* Data acquisition and detector monitoring          :Detector:
 :PROPERTIES:
 :CUSTOM_ID: sec:daq
 :END:
@@ -8399,7 +8399,7 @@ event displays) which are used for different data taking purposes.
   different calibrations and then in data taking part talk about what
   they actually look like?
 
-- [ ] *INTRODUCE DAQ ACRONYM*  
+- [X] *INTRODUCE DAQ ACRONYM*  
 
 ** Timepix Operating Firmware - TOF [0/2]
 :PROPERTIES:
@@ -8408,28 +8408,26 @@ event displays) which are used for different data taking purposes.
 
 Starting with the firmware of the detector, the \textbf{T}imepix
 \textbf{O}perating \textbf{F}irmware (TOF), which runs on the Virtex-6
-FPGA. TOF controls the Timepix ASICs of the Septemboard (both the slow
-control aspects as well as the data taking) as well as coordinating
-the scintillator signals and FADC trigger. It is a VHDL *OR NOT???*
-project, intended to run at a clock frequency of
-$\SI{40}{MHz}$. Communication with the GridPixes is done via two
-\textbf{H}igh-\textbf{D}efinition \textbf{M}ultimedia
+FPGA, specifically a Xilinx Virtex-6 (V6) ML605 evaluation board. TOF
+controls the Timepix ASICs of the Septemboard (both the slow control
+aspects and data taking) as well as coordinating the scintillator
+signals and FADC trigger. It is a VHDL project, intended to run at a
+clock frequency of $\SI{40}{MHz}$. Communication with the GridPixes is
+done via two \textbf{H}igh-\textbf{D}efinition \textbf{M}ultimedia
 \textbf{I}nterface (HDMI) cables, while communication with the readout
 software on the DAQ computer is handled via Ethernet.
 
 For a detailed introduction to TOF, see cite:lupberger2016pixel as
 well as cite:schiffer_phd.
 
-The firmware versions used for each data taking periods will be listed
-with the other relevant parameters for each period in section *SECTION
-NEEDS TO BE WRITTEN*.
+The firmware versions used for each data taking period can be found in
+appendix [[#sec:appendix:configuration:tof_versions]].
 
 *** TODOs for this section                                       :noexport:
 
-- [ ] *CHECK IF VHDL*
-- [ ] *LUPBERGER THESIS*
-
-
+- [X] *CHECK IF VHDL*
+  -> Confirmed by Tobi on discord.
+- [X] *LUPBERGER THESIS*
 
 ** Timepix Operating Software - TOS [0/2]
 :PROPERTIES:
@@ -8443,7 +8441,7 @@ The project needs to be used in conjunction with the \textbf{T}imepix
 \textbf{O}perating \textbf{F}irmware (TOF), which communicates with
 TOS via Ethernet. The TOS project started as far back as 2009 by
 people at the University of Mainz. Next is a short overview over the
-basic blocks that make up the main logic of the software.
+basic blocks that make up the main logic of the software. 
 
 The fully object oriented nature of the project means that there are
 different classes for the different software pieces:
@@ -8476,7 +8474,7 @@ its own REPL (Read-Evaluate-Print Loop; the name for an
 interactive terminal process, which takes commands that are evaluated
 and returns to the terminal). It brings all the expected features one
 might wish from a REPL, including auto completion, history lookup,
-emacs style keybindings and more.
+emacs style keybindings (based on GNU Readline [fn:gnu_readline]) and more.
 
 The aforementioned =HFManager= and the temperature sensors are
 optional pieces that are not required for basic Timepix
@@ -8491,7 +8489,10 @@ sec. [[#sec:daq:temperature_readout]]).
 The HV controls are specific to Wiener HV power supplies. In principle
 the implemented functionality is a fully featured HV controller that
 supports all Wiener functionality like grouping different channels to
-ramp up together, kill channels on a trip and much more.
+ramp up together, kill channels on a trip and more. Most importantly
+it implements a custom slow HV ramping logic, which keeps the
+relative potentials constant between channels in a group to avoid
+tripping a channel.
 
 An example of a typical startup procedure is shown in listing
 [[TOS_startup_commands]], in this case to start a background run. Note
@@ -8548,92 +8549,81 @@ additional features, but supports multiple detectors at the same
 time. The detector used in this thesis is read out using the Virtex-6
 board.
 
+[fn:gnu_readline] https://tiswww.case.edu/php/chet/readline/rltop.html
+
 
 *** TODOs for this section [/]                                   :noexport:
 
 *ACCORDING TO WIENER VME MANUAL ALL FILES
 ARE OPEN SOURCE*
 https://wikihost.nscl.msu.edu/S800Doc/lib/exe/fetch.php?media=wiki:manual_vm-usb_9_01_1.pdf
+[[file:~/org/Papers/manual_vm-usb_9_01_1.pdf]]
+-> page 13
 
 - [ ] *PUSH TOS TO GITHUB OR SIMILAR AND REFERENCE*
-- [ ] *CHECK AGAIN WIENER VME SOURCES OPEN SOURCE*  
-*ADD FULL NAME OF V6 BOARD*
-
-
+  -> Pushed, but not public yet!
+- [ ] *CHECK AGAIN WIENER VME SOURCES OPEN SOURCE*
+  -> See above.
+- [X] *ADD FULL NAME OF V6 BOARD*
 
 Link to repositories (maybe we can make the Virtex TOS public?) 
 
 - [ ] *Link to TOF firmware.*
+  -> ??? I guess they are on our office computer?
 
 - [X] *Septem event display example.* Section further down
 
-- [ ] *INSERT TOS CONFIG FILES SOMEWHERE*
+- [X] *INSERT TOS CONFIG FILES SOMEWHERE*
+  -> Appendix, but there's a configuration section. Referred there.
   
-
 *** TOS output data format
 :PROPERTIES:
 :CUSTOM_ID: sec:daq:tos_output_format
 :END:
 
-TOS needs to talk about data format that was used in V6 TOS. Stupid
-ASCII files. Mention that in hindsight the time should have been
-invested to either use a really simple binary format (like NIO) or HDF5
-(even if painful from C++).
+When starting a data taking run with TOS, a new directory for the run
+is created in the ~data/runs~ subdirectory. The name will be of the
+form ~Run_<run number>_YYMMdd-HH-mm~ where the run number is an
+increasing number based on the last run present in the directory and
+the suffix is the date and time of day when starting the run. This
+directory contains the configuration of all DACs for each chip,
+~fsr<chip number>.txt~, the written configuration matrix for all
+pixels, ~matrix<chip number>.txt~ and finally the data files
+~data<event number>.txt~. If an FADC is used for the readout additional
+~data<event number>.txt-fadc~ files are created, one for each file the
+FADC triggered (sec. [[#sec:daq:fadc_data_files]]). 
 
-
-
-
-Data taken with TOS is stored - for historic reasons - in raw ASCII
-text files. Two different readout modes (with different output
+The Timepix data files are stored -- for historic reasons -- in raw ASCII
+format. Two different readout modes (with different output
 formats) are supported. For the following explanation it is assumed
 the Timepix is used in the ToT (Time-over-Threshold) mode.
-1. full matrix readout: reads out the whole Timepix ASIC(s) and writes
+- full matrix readout :: reads out the whole Timepix ASIC(s) and writes
    a single 256x256 pixel matrix as an ASCII file (for each chip). 256
    lines, each containing space separated ToT values for each pixel.
-2. zero suppressed readout: reads out only those pixels that have ToT
+- zero suppressed readout :: reads out only those pixels that have ToT
    values larger than 0, up to \num{4096} pixels. Stores the data in
-   TSV files (tab separated values) =X Y ToT= with an additional
+   TSV files (tab separated values) '=X Y ToT=' with an additional
    header. The header contains a global "run" and "event" header,
    which contains information about the run the event is taken from
    and a "chip" header, which contains information about the specific
    Timepix ASIC(s) being read out (up to 8 can be read out at the same
    time using TOS).
-
-The Timepix is only capable of shutter based readouts. Typically, a
-fixed shutter is used. The readout is complicated for the case of
-using an FADC, in which case an FADC signal can be used as an external
-trigger to close the shutter early. This will be further explained in
-the FADC section, [[FADC]]
-*REWRITE THIS PART, REFER TO SCHEMATIC ABOUT TIMEPIX*
-
+   
 As for our purposes most events are extremely sparse (< 500 pixels
 active) the zero suppressed readout is the only relevant readout
-mode. An example of the file type produced in this mode is in listing
-[[zero_suppressed_readout]]. *REPHRASE*
-
-The data files can be split into 3 distinct parts. A global run
+mode. The data files can be split into 3 distinct parts. A global run
 header, see listing [[code:daq:zero_suppressed_readout_run_header]], which
-contains information about the run the event is part of including important
-settings used as well as the timestamp of the event. Next is an event
-specific header, which contains specific information about the event
-in relation to the FADC and the scintillators, see listing
+contains information about the run the event is part of including
+important settings used as well as the timestamp of the event. Next is
+an event specific header, which contains specific information about
+the event in relation to the FADC and the scintillators, see listing
 [[code:daq:zero_suppressed_readout_event_header]]. The final part of the
-data files is the chip header and tab separated value part of the ~X Y
-ToT~ pairs of the active pixels for each chip of the detector in that
-event, see listing [[code:daq:zero_suppressed_readout_chips]]. 
+zero suppressed data files is the chip header and tab separated value
+part of the '~X Y ToT~' pairs of the active pixels for each chip of
+the detector in that event, see listing
+[[code:daq:zero_suppressed_readout_chips]].
 
-- [ ] *EXPLAIN RUN DATA LOCATION. DATA STORED IN =data/runs= AND
-  DIRECTORY NAME SCHEMA*
-- [ ] *HV AND WIENER VME EXPLANATION*  
-- [X] *POSSIBLY SPLIT ZERO SUPPRESSED OUTPUT INTO CHUNKS? !! GENERAL
-  HEADER, EVENT HEADER, CHIP HEADER, DATA*
-- [ ] *ADD SECTION (EVEN IF POSSIBLY NOEXPORT) EXPLAINING THE FIELIDS
-  OF THE DATA FILE*
-- [ ] *ADD EXPLANATION OF HOW TO CALCULATE SHUTTER LENGTH. POSSIBLY
-  SOMEWHERE HERE? OR IN TIMEPIX INTRO? NEED IT LATER TO EXPLAIN LENGTH
-  OF EVENTS*  
-
-#+CAPTION: TOS generated data files start by a general header, which mainly contains 
+#+CAPTION: TOS generated data files start with a general header, which mainly contains 
 #+CAPTION: information about the run the data file is part of. The only exception is the
 #+CAPTION: =dateTime= field, which represents the timestamp of the event. [fn:daq_datetime_header]
 #+NAME: code:daq:zero_suppressed_readout_run_header
@@ -8669,7 +8659,7 @@ event, see listing [[code:daq:zero_suppressed_readout_chips]].
 
 #+CAPTION: The event header is followed by the beginning of the actual GridPix data. Each chip
 #+CAPTION: appears with a 3 line chip header containing number and name as well as the number
-#+CAPTION: of hits seen by that chip in the event. ~numHits~ lines follow with ~X Y TOT~ values
+#+CAPTION: of hits seen by that chip in the event. ~numHits~ lines follow with '~X Y TOT~' values
 #+CAPTION: in tab seperated fashion. This snippet would be followed by the remaining chips, 
 #+CAPTION: as many as written in the run header [[code:daq:zero_suppressed_readout_run_header]]
 #+CAPTION: as ~numChips~.
@@ -8688,10 +8678,40 @@ event, see listing [[code:daq:zero_suppressed_readout_chips]].
 211     142     2
 #+end_src
 
-
 [fn:daq_datetime_header] It is an oversight that the =dateTime= field
 is part of the =[General]= header instead of the =[Event]= header.
 
+**** TODOs for this section                                     :noexport:
+
+- [ ] The below was still mentioned in the section above, but I don't
+  think this is needed here anymore, given that we explain this
+  before:
+  #+begin_quote
+  The Timepix is only capable of shutter based readouts. Typically, a
+  fixed shutter is used. The readout is complicated for the case of
+  using an FADC, in which case an FADC signal can be used as an external
+  trigger to close the shutter early. This will be further explained in
+  the FADC section, [[FADC]]
+  *REWRITE THIS PART, REFER TO SCHEMATIC ABOUT TIMEPIX*
+  #+end_quote
+
+- [X] TOS needs to talk about data format that was used in V6 TOS. Stupid
+  ASCII files. Mention that in hindsight the time should have been
+  invested to either use a really simple binary format (like NIO) or HDF5
+  (even if painful from C++).
+
+- [X] *EXPLAIN RUN DATA LOCATION. DATA STORED IN =data/runs= AND
+  DIRECTORY NAME SCHEMA*
+- [ ] *HV AND WIENER VME EXPLANATION*  
+- [X] *POSSIBLY SPLIT ZERO SUPPRESSED OUTPUT INTO CHUNKS? !! GENERAL
+  HEADER, EVENT HEADER, CHIP HEADER, DATA*
+- [ ] *ADD SECTION (EVEN IF POSSIBLY NOEXPORT) EXPLAINING THE FIELIDS
+  OF THE DATA FILE*
+- [ ] *ADD EXPLANATION OF HOW TO CALCULATE SHUTTER LENGTH. POSSIBLY
+  SOMEWHERE HERE? OR IN TIMEPIX INTRO? NEED IT LATER TO EXPLAIN LENGTH
+  OF EVENTS*
+  -> This is explained later where we talk about extracting
+  information from the data files in sec. [[#sec:reco:event_duration]].
 
 **** FADC data files [/]
 :PROPERTIES:
@@ -8699,7 +8719,7 @@ is part of the =[General]= header instead of the =[Event]= header.
 :END:
 
 If the FADC triggered during an event, as indicated by the
-~fadcReadout~ field in the event header as seen in listing
+~fadcReadout~ field in the event header seen in listing
 [[code:daq:zero_suppressed_readout_event_header]], an additional data file
 is written with the same name as the event file, but a ~.txt-fadc~
 extension. It contains a memory dump of the channels of the circular
@@ -8713,16 +8733,16 @@ The different fields in the header, see listing
   separate. We only use a single channel. [fn:fadc_chosen_settings]
 - ~channel mask~: decimal value of a 4-bit field to (de-)activate
   channels. ~15~ corresponds to all 4 channels active.
-- ~posttrig~: how many clock cycles in the \SI{50}{MHz} [fn:base_clock] base clock of
+- ~posttrig~: how many clock cycles in the $\SI{50}{MHz}$ [fn:base_clock] base clock of
   the FADC it continues taking data before commencing the readout
   (useful to record the rest of the signal and center it in the
   readout window)
 - ~pretrig~: the minimum acquisition time before a trigger is allowed
-  to happen, in units of the \SI{50}{MHz} [fn:base_clock] base clock.
+  to happen, in units of the $\SI{50}{MHz}$ [fn:base_clock] base clock.
 - ~triggerrecord~: together with ~posttrig~ allows to reconstruct the
   time of the trigger in the acquisition window
 - ~frequency~: decimal representation of a 6-bit field to select the
-  operating frequency. ~2 = 0b000010~ corresponds to \SI{1}{GHz}
+  operating frequency. ~2 = 0b000010~ corresponds to $\SI{1}{GHz}$
   operation.
 - ~sampling mode~: decimal representation of a 3-bit field changing
   the operation mode (manual or automatic trigger) and register
@@ -8731,21 +8751,10 @@ The different fields in the header, see listing
 - ~pedestal run~: a 1-bit flag indicating whether this file is a
   pedestal run.
 
-- [X] *Introduce FADC data files.*
-- [ ] *VERIFY THE EXPLANATION OF THE HEADER FIELDS*
-- [X] *ISN'T THE POSTTRIG VALUE SOMETHING ONE SHOULD TAKE INTO ACCOUNT
-  WHEN COMPUTING THE TIME OF THE ACTUAL TRIGGER IN RELATION TO OTHER
-  DETECTOR FEATURES?*
-  -> No, because our explanation was wrong. It has nothing to do with
-  when the trigger is sent! It is sent, whenever it appears. It just
-  changes the time *after the trigger* that the FADC continues
-  recording data into the registers to record full signal shapes and
-  center the signal!
-
 #+CAPTION: The file starts with a header indicated by ~#~. Some of the values are
 #+CAPTION: decimal representation of bit fields, hence the weird values like
 #+CAPTION: "0 channels". It mixes both the configuration used as well as the
-#+CAPTION: time the trigger occured (~triggerrecord~). 
+#+CAPTION: time the trigger occurred (~triggerrecord~). 
 #+NAME: code:daq:fadc_data_header
 #+begin_src sh
 # nb of channels: 0  
@@ -8764,15 +8773,15 @@ not explained in the FADC manual, but instead refer to "reserved for
 expert usage" cite:fadc_manual. One exception is data point 2, which
 is the so called Vernier, which could be used to determine the trigger
 time within two registers to get up to $\sim\SI{50}{ps}$ RMS accurate
-time information. For our purposes though \SI{1}{ns} time resolution
+time information. For our purposes though $\SI{1}{ns}$ time resolution
 is more than enough, given the signal undergoes integration and
-differentiation of a multiple of that anyway in the shaping amplifier.
+differentiation of a multiple of that in the shaping amplifier, anyway.
 
-#+CAPTION: After the header starts the data portion with some auxilaury information.
+#+CAPTION: After the header starts the data portion with some auxiliary information.
 #+CAPTION: The lines are neither of significant interest to us, nor are they properly
 #+CAPTION: explained in the manual. The second number corresponds to the Vernier, which
 #+CAPTION: can be used to determine the trigger more precisely than between individual
-#+CAPTION: register values, which is also not important for our purposes, as \SI{1}{ns}
+#+CAPTION: register values, which is also not important for our purposes, as $\SI{1}{ns}$
 #+CAPTION: resolution is plenty.
 #+NAME: code:daq:fadc_data_header_2
 #+begin_src sh
@@ -8791,13 +8800,13 @@ differentiation of a multiple of that anyway in the shaping amplifier.
 # 6151
 #+end_src
 
-The final portion of the file contains the actual data (\num{10240}
+The final portion of the file contains the actual data ($\num{10240}$
 lines) and 3 fields at the very end to reconstruct the trigger within
 the acquisition window [fn:fadc_data_last_3_lines]. The data
 represents a pure memory dump of the cyclic register. See listing
 [[code:daq:fadc_data_raw]] for a shortened example.
 
-#+CAPTION: Actual data portion of the FADC data. The first \num{10240} lines represent
+#+CAPTION: Actual data portion of the FADC data. The first $\num{10240}$ lines represent
 #+CAPTIOn: a memory dump of the cyclic registers at trigger time (that is in their natural
 #+CAPTION: order instead of starting from the register in which the trigger was recorded).
 #+CAPTION: It starts at register 0 for channel 0, followed by register 0 of channel 1, and so on.
@@ -8819,8 +8828,8 @@ represents a pure memory dump of the cyclic register. See listing
 # 0
 #+end_src
 
-[fn:base_clock] If running in \SI{1}{GHz} mode. Else it corresponds to
-\SI{100}{MHz} clocks.
+[fn:base_clock] If running in $\SI{1}{GHz}$ mode. Else it corresponds to
+$\SI{100}{MHz}$ clocks.
 
 [fn:fadc_chosen_settings] As of writing this thesis, I don't remember
 why the choice was made to only use a single channel instead of using
@@ -8828,9 +8837,9 @@ all 4 channels to extend the time interval (development of these
 things happened between 2015-2017). It's possible there were issues
 trying to combine all 4 channels. But it's also just as likely it was
 an oversight due to lack of time combined with the fact that a
-\SI{2.5}{μs} window is long enough for all intents and
+$\SI{2.5}{μs}$ window is long enough for all intents and
 purposes. However, combining all 4 channels would even yield a long
-enough acquisition window when running in the \SI{2}{GHz} sampling
+enough acquisition window when running in the $\SI{2}{GHz}$ sampling
 mode. Similarly, the choice of the 12-bit readout mode may represent
 plenty resolution in ADC values, but it seems prudent to not use the
 14-bit mode given availability. All in all it leaves me head
@@ -8842,6 +8851,21 @@ contain the trigger record, which is already printed by us in the
 header part and the ~Valp_cp~ and ~Vali_cp~ registers, which are only
 important if the FADC is used at a sampling frequency of $<
 \SI{1}{GHz}$, which is why we ignore it here.
+
+***** TODOs for this section [/]                               :noexport:
+
+- [ ] Maybe make this a full section and not subsection of TOS output format?
+
+- [X] *Introduce FADC data files.*
+- [X] *VERIFY THE EXPLANATION OF THE HEADER FIELDS*
+- [X] *ISN'T THE POSTTRIG VALUE SOMETHING ONE SHOULD TAKE INTO ACCOUNT
+  WHEN COMPUTING THE TIME OF THE ACTUAL TRIGGER IN RELATION TO OTHER
+  DETECTOR FEATURES?*
+  -> No, because our explanation was wrong. It has nothing to do with
+  when the trigger is sent! It is sent, whenever it appears. It just
+  changes the time *after the trigger* that the FADC continues
+  recording data into the registers to record full signal shapes and
+  center the signal!
 
 ***** Explanation of beginning of data portion                 :noexport:
 
@@ -8857,7 +8881,7 @@ either. I think it allows to more precisely find the time of trigger
 between two register entries? Ah yes, see page 14 of the manual about
 the Vernier. Allows for 50 ps RMS time information between two bins.
 
-***** Explanation of FADC settings  :noexport:
+***** Explanation of FADC settings                             :noexport:
 
 As mentioned in the footnote in the previous section, I really don't
 understand the choice of FADC settings we used for the actual data
@@ -8879,8 +8903,10 @@ we observed at times etc., which will be mentioned later.
 
 Everything related to the =HFManager= in TOS is controlled by a
 configuration file, normally located in
-=TOS/config/HFM_settings.ini=. We will go through the sections of it
-one by one and explain them.
+=TOS/config/HFM_settings.ini=. The TOS configuration files used during
+CAST data taking are found in appendix
+[[#sec:appendix:configuration:tos_config]]. We will go through the
+sections of it one by one and explain them.
 
 Starting with the =[General]= section, listing
 [[code:daq:general_config]]. This section defines the VME related
@@ -8960,7 +8986,7 @@ increasing prefix numbers.
 #+CAPTION: This is an excerpt of the full =[HvChannels]= section for a single HV channel.
 #+CAPTION: It maps the physical HV connectors to their voltages, current bounds and
 #+CAPTION: a human readable name. In this case the grid of the GridPixes of the Septemboard
-#+CAPTION: all receive a voltage of \SI{300}{V}. The naming scheme of the fields is 
+#+CAPTION: all receive a voltage of $\SI{300}{V}$. The naming scheme of the fields is 
 #+CAPTION: hardcoded for practical reasons and simply repeats with increasing numbers.
 #+NAME: code:daq:hv_channels_config
 #+begin_src toml
@@ -8980,7 +9006,7 @@ Second to last is the =[FADC]= section in listing
 [[code:daq:fadc_config]]. As the name implies it configures all parameters
 of the FADC. The main parameter to change is the
 =fadcTriggerThresholdRegisterAll= parameter, which defines the trigger
-threshold in effectively \si{mV}. Depending on the amount of noise in
+threshold in effectively $\si{mV}$. Depending on the amount of noise in
 the system, adjustments to the threshold may be necessary. 
 
 #+CAPTION: The =[FADC]= section configures the FADC. The most important setting is the trigger
@@ -9037,6 +9063,9 @@ is coupled to the =checkModuleTimeInterval= setting in the previous
 footnote. It was disabled together with the above during actual data taking.
 
 *** HV control via TOS
+:PROPERTIES:
+:CUSTOM_ID: sec:daq:tos_hv_control
+:END:
 
 As is being alluded to in the previous section 
 [[#sec:daq:tos_config_file]], the HV control built into TOS can also
@@ -9076,9 +9105,6 @@ to a running HV power supply or leave it running after shut down.
 :CUSTOM_ID: sec:daq:temperature_readout
 :END:
 
-- [ ] *SHOULD EXPLANATION OF THE READOUT _HARDWARE_ NOT BE IN THE
-  DETECTOR CHAPTER?*
-
 The two =MAX31685= micro controllers read out =PT1000= sensors, a
 group of \textbf{R}esistance \textbf{T}emperature \textbf{S}ensors
 (RTDs), which measure temperatures by its effect on the electrical
@@ -9088,7 +9114,7 @@ resistance is well understood, the temperature can be precisely
 measured.
 
 The micro controller communicates with another micro controller, an
-=MC2210= via the \textbf{S}erial \textbf{P}eripheral
+=MCP2210= via the \textbf{S}erial \textbf{P}eripheral
 \textbf{I}nterface (SPI). SPI allows to address both =MAX31685= from
 the single =MCP2210=. The =MCP2210= is a USB-to-SPI micro
 controller. The USB connection from the intermediate board with the
@@ -9108,13 +9134,9 @@ the logging location is moved over to the data storage directory of
 the run. In either case the log file is named =temp_log.txt= and
 contains one temperature value for the intermediate board sensor
 (=Temp_IMB=) and one for the carrier board sensor (=Temp_Septem=)
-computed - based on an average over \SI{5}{s} - and a timestamp
+computed -- based on an average over $\SI{5}{s}$ -- and a timestamp
 (=DateTime=). A short snippet of the temperature log is shown in listing
 [[code:daq:temperature_readout]]. [fn:temp_logs_lost]
-
-- [X] *INSERT TEMPERATURE LOGGING EXAMPLE SNIPPET*
-- [ ] *THINK ABOUT PUTTING FOOT NOTE INTO ACTUAL TEXT*
-- [ ] *ADD CITATION* https://github.com/kerrydwong/MCP2210-Library  
 
 #+CAPTION: Snippet of a temperature log file as recorded for a run during the
 #+CAPTION: CAST detector lab measurements. Tabs were replaced by spaces for
@@ -9132,14 +9154,6 @@ computed - based on an average over \SI{5}{s} - and a timestamp
 26.5416     42.9707       2019-02-16.16:12:21
 26.5432     43.0771       2019-02-16.16:12:27
 26.5616     43.1804       2019-02-16.16:12:33
-26.5692     43.2684       2019-02-16.16:12:39
-26.5708     43.3454       2019-02-16.16:12:45
-26.5908     43.4164       2019-02-16.16:12:51
-26.5969     43.4904       2019-02-16.16:12:57
-26.6015     43.5598       2019-02-16.16:13:03
-26.6184     43.6154       2019-02-16.16:13:09
-26.6215     43.6709       2019-02-16.16:13:15
-26.6368     43.7264       2019-02-16.16:13:21
 ...
 #+end_src
 
@@ -9166,6 +9180,19 @@ these things were more entangled than necessary. A more thorough
 testing period of the detector and software package should have been
 performed, but was not in scope.
 
+**** TODOs for this section [/]                                 :noexport:
+
+
+- [ ] *SHOULD EXPLANATION OF THE READOUT _HARDWARE_ NOT BE IN THE
+  DETECTOR CHAPTER?*
+  -> Probably yes. In particular once / if we move the data readout
+  parts of the detailed descriptions to the appendix, it becomes more
+  important to put the actual hardware description into the detector
+  chapter where we already mention it a bit.
+
+- [X] *INSERT TEMPERATURE LOGGING EXAMPLE SNIPPET*
+- [ ] *THINK ABOUT PUTTING FOOT NOTE INTO ACTUAL TEXT*
+- [X] *ADD CITATION* https://github.com/kerrydwong/MCP2210-Library  
 
 
 *** TOS development                                              :noexport:
@@ -9181,27 +9208,23 @@ developed for multi chip detectors that were initially planned for a
 large GridPix based TPC to be used for the ILD (the detector planned
 for the ILC, the International Linear Collider to be built in Japan).
 
-In addition there was recent a master thesis (by Alexander Deisting, ref
-*CITE DEISTING*), which included work on using an FADC to read out the
+In addition there was recent a master thesis (by Alexander Deisting
+[[cite:&Deisting]]), which included work on using an FADC to read out the
 induced charges on the grid of the InGrid by decoupling the signal
-using a capacitor.
-The software library to interact with the used FADC had partially been
-implemented into the Virtex 6 TOS. 
+using a capacitor. The software library to interact with the used FADC
+had partially been implemented into the Virtex 6 TOS.
 
 As the FADC was an integral part in the new detector design, it was
-natural to start with the Virtex 6 version.
+natural to start with the Virtex 6 version. 
 
 At the same time the SRS TOS version at the time was even more
-ugly than the same code paths in the Virtex 6 TOS.
-
-... 
-
-A large amount of time spent
-
-*what else*
+ugly than the same code paths in the Virtex 6 TOS, due to its
+hardcoded extra loops for each FEC of the TOS. At a later time the SRS
+TOS was required for other detectors and so development effort was
+spent on both systems unfortunately. 
 
 
-** schematic of whole readout chain [0/1]
+** schematic of whole readout chain [0/1]  :noexport:
 
 *ELSEWHERE AS WELL?*
 
@@ -9214,7 +9237,7 @@ for the PhD thesis.
 
 - [X] *THIS IS IN DETECTOR OVERVIEW NOW*
 
-** Septemboard event display [/]
+** Septemboard event display [0/0]
 
 In order to monitor the data taking process while the detector is
 running, an online event display tool was developed during the first
@@ -9227,7 +9250,7 @@ about the current data taking run.
 The backend consists of a multiprocessing architecture with multiple
 worker processes. One process watches the current run directory for
 changes and reads the raw data files, another performs basic event
-reconstruction and another one updates the current event to be
+reconstruction and a last one updates the current event to be
 displayed. The main process renders the =matplotlib= based graphical
 user interface (GUI) [fn:daq_backend]. 
 
@@ -9237,7 +9260,7 @@ run. General information about the current run and event is shown in
 the box at the top center. The top left box shows hit specific
 information for the current event.  The current septemboard event is
 always shown in the left pane in a realistic layout of the
-septemboard. By default the Viridis *CITE VIRIDIS* color scale is used
+septemboard. By default the Viridis [fn:viridis] color scale is used
 in the display of the septemboard events, each shown as an image of
 $(256, 256)$ pixels. If a chip did not record any activity during an
 event, its plot remains white for easier identification of few hits
@@ -9251,8 +9274,6 @@ recorded, as there can be multiple events without FADC activity and it
 is useful to be able to glance at the last large event on the
 FADC. The filename is printed as the title of the plot to show which
 septemboard event it corresponds to.
-
-- [ ] *CITE SOMETHING FOR VIRIDIS COLORSCALE*
 
 #+CAPTION: Screenshot of the Septemboard event display showing a background
 #+CAPTION: event from a CAST data taking run in 2017. The pixel density in the
@@ -9283,7 +9304,9 @@ detector activity online as it takes data. [fn:daq_downsides]
 [fn:daq_backend] =matplotlib= provides a multitude of different GUI
 backends. The explicit choice depends on the specific machine
 (available backends may differ) and preference. Common choices are GTK
-and TkAg. *CHECK BACKENDS*
+and TkAg. https://matplotlib.org/stable/users/explain/figure/backends.html
+
+[fn:viridis] See here for the introduction of Viridis and its siblings: https://bids.github.io/colormap/
 
 [fn:daq_downsides] The main drawbacks are related to it being a
 Python based project that utilizes =matplotlib= possibly too
