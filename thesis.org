@@ -10886,10 +10886,13 @@ else:
     facet_wrap("Channel", scales = "free") +
     geom_point(size = 2.0) +
     facetMargin(0.5) +
-    margin(bottom = 1.0, right = 3.0) +
+    margin(bottom = 1.0, right = 2.0) +
+    legendPosition(0.87, 0.0) + 
+    ylab("Register") + 
     ggtitle("FADC register pedestal values, split by channels") +    
     xlab("Channel", margin = 0.0) + 
-    ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.pdf")
+    ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.pdf",
+          useTeX = true, standalone = true)
 #+end_src
 
 *** Calculate pedestals from real FADC data [/]                  :extended:
@@ -11107,28 +11110,24 @@ for a late 2018 run.
 
 These yield fig. \subref{fig:daq:fadc_pedestals_from_data_compare_real}
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run77.pdf}
-    \caption{Run 77}
-    \label{fig:daq:fadc_pedestals_from_data_compare_real_run77}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run303.pdf}
-    \label{fig:reco:fadc_pedestals_from_data_compare_real_run303}
-    \caption{Run 303}
-  \end{subfigure}
-  \label{fig:daq:fadc_pedestals_from_data_compare_real}
-  \caption{Calculation of the FADC pedestals from data by averaging all channels
+#+begin_src subfigure
+(figure () 
+  (subfigure (linewidth 0.5) (caption "Run 77") (label "fig:daq:fadc_pedestals_from_data_compare_real_run77")
+             (includegraphics (list (cons 'width (linewidth 0.95)))
+                              "~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run77.pdf"))
+  (subfigure (linewidth 0.5) (caption "Run 303") (label "fig:reco:fadc_pedestals_from_data_compare_real_run303")
+             (includegraphics (list (cons 'width (linewidth 0.95)))
+                              "~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run303.pdf"))
+
+  (caption
+   "Calculation of the FADC pedestals from data by averaging all channels
     over all FADC data files of a single run using a truncated mean from the 20-th
     to 80-th percentile of the distribution. Both data runs show a comparatively small
-    variance. Arguably it may make sense to \textit{always} compute it based on each
-    run instead of relying on a pedestal run though.
-  }
-\end{figure}
+    variance. Arguably it may make sense to \\textit{always} compute it based on each
+    run instead of relying on a pedestal run though.")
+  (label "fig:daq:fadc_pedestals_from_data_compare_real")
+)
+#+end_src
 
 Surprisingly, the deviation for the end 2018 run is lower than for the
 2017 run, despite the 2017 run being closer in time to the real
@@ -11288,6 +11287,8 @@ The final piece of the detector requiring calibration, are the two
 scintillators. As both of them are only used as digital triggers and
 no analogue signal information is recorded, a suitable discriminator
 threshold voltage has to be set.
+
+*** TODOs for this section                                       :noexport:
 
 - [ ] *MENTION THAT WE PREFER TOO HIGH THRESHOLD OVER TOO LOW? BETTER
   FEWER SIGNALS THAN LOTS OF NOISE?*
@@ -11479,14 +11480,21 @@ choice of $\SI{-110}{mV}$ was actually due to an expected coincidence
 rate matching at that threshold given the sizes of the calibrated
 scintillators, but I can't verify that anymore.
 
-*** SiPM [/]
+*** SiPM [0/0]
 
 The SiPM was calibrated during the bachelor thesis of Jannes Schmitz
 in 2016 cite:JannesBSc based on a coincidence measurement with
-calibrated scintillators. The exact threshold used *FIND A VALUE OR
-REPHRASE*.
+calibrated scintillators.
 
+**** TODOs for this section [/]                                 :noexport:
+
+The exact threshold used *FIND A VALUE OR REPHRASE*.
 - [ ] *FIND VALUE*
+
+- [ ] *WELL* If I understand Jannes correctly there's not much in
+  terms of a "value" to be had. Pretty much lost. One could try to
+  measure that nowadays of course, but there's not really a point in
+  doing so.  
 
 * Data reconstruction [0/1]                                  :reconstruction:
 :PROPERTIES:
@@ -11525,16 +11533,20 @@ thesis is performed.
 - everything up to energy calibration
 - [ ] wherever we finally show the real calibrations of the detector
   for each run, show:
-  - the full FSR (for one chip, then differences for each,
+  - [X] the full FSR (for one chip, then differences for each,
     particularly THS & THL)
-  - show plot of THL calibration from SCurves, with the THL value as a
+    -> Done in operation_calibration
+  - [X] show plot of THL calibration from SCurves, with the THL value as a
     "rectangle" line (from y axis to fit, down to x axis)
-  - in Polya plot show the theoretical threshold in electrons as a
+    -> Done in operation_calibration    
+  - [ ] in Polya plot show the theoretical threshold in electrons as a
     vertical line (computed from the used THL DAC value and THL
     calibration)
+    -> Partially done in operation_calibration, but needs rework!!!
 
-- [ ] *SHORT INTRO TO TIMEPIX ANALYSIS AND NIM HERE. LIKE 2
-  PARAGRAPHS.* Then link to
+- [X] *SHORT INTRO TO TIMEPIX ANALYSIS AND NIM HERE. LIKE 2
+  PARAGRAPHS.* 
+  -> Below.
 
 ** ~TimepixAnalysis~ and Nim
 
