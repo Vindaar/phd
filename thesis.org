@@ -12534,11 +12534,12 @@ and fall time as well as the minimum is shown in
 fig. [[fig:reco:fadc_reco_example]].
 
 #+CAPTION: Example of a fully reconstructed FADC spectrum from a \SI{5.9}{keV} X-ray
-#+CAPTION: recorded with the Septemboard detector during a calibration run. *REPLACE PLOT
-#+CAPTION: BY PRETTY VERSION. ADD EXPLANATIONS OF START AND END POSITIONS OF RISE TIME*.
+#+CAPTION: recorded with the Septemboard detector during a calibration run. 
+#+CAPTION: ADD EXPLANATIONS OF START AND END POSITIONS OF RISE TIME*.
 #+CAPTION: REFER BY $c_B$ and $c_p$.
+#+ATTR_LATEX: :width 1\linewidth
 #+NAME: fig:reco:fadc_reco_example
-[[~/phd/Figs/FADC/example_fadc_spectrum_reason_for_offsets.pdf]]
+[[~/phd/Figs/CalibrationRuns2018_Reco_2023-10-15_22-49-53/septemEvents/septem_fadc_run_239_event_1068_region_crAll.pdf]]
 
 - [ ] *REPLACE THE PLOT!*
   -> The plot we use now is quite nice as it allows us to explain
@@ -12670,7 +12671,25 @@ when isMainModule:
 - [ ] *MAKE PLOT PRETTY AND RERUN FOR THIS:*
   run 281 and index 1533
 
-  
+*** Generate plot of InGrid and FADC event                       :noexport:
+
+The command to produce the plot as seen in the thesis is:
+#+begin_src sh
+W1=825 W2=675 G_LEFT=0.65 F_LEFT=0.3 L_MARGIN=10 R_MARGIN=4 USE_TEX=true SCALE=1.3 plotData \
+       --h5file ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+       --runType=rtCalibration \
+       --eventDisplay --septemboard \
+       --events 1068 --runs 239
+#+end_src
+The parameters used here are the default now outside the
+~USE_TEX=true~ and ~SCALE=1.3~.
+
+The resulting plot needs to be copied over to the ~phd~ repository
+manually, as ~plotData~ currently does not support outputting a plot
+to a specific file name (it's intended to produce many plots
+automatically and act more as a fast way to visualize data under
+different cuts).
+
 *** Noise sensitive [/]
 
 Because of the small amplitude of the associated signals induced on
