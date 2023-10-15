@@ -9916,7 +9916,7 @@ integral over a normal distribution up to the evaluation point $x$:
 \]
 
 Given that the number of injected electrons is known for each test
-pulse amplitude (see sec. [[#sec:daq:tot_calibration]]), we can compute
+pulse amplitude (see sec. [[#sec:operation_calibration:tot_calibration]]), we can compute
 the relationship of the number of electrons per =THL= value step. This
 is called the =THL= calibration and an example corresponding to
 fig. [[fig:daq:s_curves_examples]] is shown in
@@ -10169,7 +10169,7 @@ detectable charge of $\mathcal{O}(\SIrange{500}{1000}{e^-})$. The
 typically used =THL= threshold will be quite a bit higher than the
 'theoretical limit' however for multiple reasons. One can either
 compute the effective threshold in use based on the =THL= calibration
-as explained in sec. [[#sec:daq:scurve_scan]], or use an experimental
+as explained in sec. [[#sec:operation_calibration:scurve_scan]], or use an experimental
 approach by utilizing the Pólya distribution as introduced in
 sec. [[#sec:theory:gas_gain_polya]]. By taking data over a certain period
 of time and computing a histogram of the charge values recorded by
@@ -10195,7 +10195,7 @@ lowest charge is that sees significant statistics.
 An example of such a Pólya distribution is seen in
 fig. [[fig:daq:polya_example_chip0]], where we see the same chip 0 using
 the same calibration from July 2018 as in the figures in the previous
-section [[#sec:daq:scurve_scan]]. The data is a \SI{30}{min} interval of
+section [[#sec:operation_calibration:scurve_scan]]. The data is a \SI{30}{min} interval of
 background data at CAST. The reasoning behind looking at a fixed time
 interval for the Pólya will be explained in section [[#sec:calib:gas_gain_time_binning]].
 The pink line represents the fit of the Pólya
@@ -10546,7 +10546,7 @@ recorded.
   amplification of =6x=, an integration time of \SI{50}{ns} and a
   differentiation time of \SI{50}{ns}. However, these were changed
   during the data taking campaign, see more on this in section
-  [[#sec:data_taking:fadc_noise]].
+  [[#sec:calibration:fadc_noise]].
 - Pedestals :: The $4 · \num{2560}$ registers of the FADC are part of
   4 separate cyclic registers. Due to implementation details, the
   absolute recorded values of each register is arbitrary. In a
@@ -11100,10 +11100,11 @@ when isMainModule:
 
 - [ ] *SHOW PLOT OF THE ABOVE (~plotCompare~) AS EXAMPLE OF BAD
   PEDESTALS VS GOOD PEDESTALS?*
+  -> Would be nice for extended thesis!
 
 ** Scintillator calibration
 :PROPERTIES:
-:CUSTOM_ID: sec:daq:scintillator_calibration
+:CUSTOM_ID: sec:operation_calibration:scintillators
 :END:
 
 The final piece of the detector requiring calibration, are the two
@@ -11332,9 +11333,14 @@ follows in section [[#sec:reco:fadc_data]]. Finally the scintillators are
 mentioned in section [[#sec:reco:scintillators_data]].
 
 There is an additional long section in the appendix
-[[#sec:appendix:software_data_reconstruction]] that goes through the
-software used for the data reconstruction intended for people using
-these tools in the future. 
+[[#sec:appendix:software]] that goes through the software used for the
+data reconstruction intended for people using these tools in the
+future. And appendix [[#sec:appendix:full_data_reconstruction]] shows how
+the full data reconstruction for all CAST data presented in this
+thesis is performed.
+
+** TODOs for this section [/]                                     :noexport:
+
 
 - [X] *WRITE CHAPTER SUMMARY*
 
@@ -11639,13 +11645,13 @@ multiple clusters from a single event are then treated fully equally
 for the rest of the analysis. The fact that they originate from the
 same event has no further relevance (with a slight exception for one
 veto technique, which utilizes clustering over multiple chips, more on
-that in section [[sec:septem_veto]]).
+that in section [[#sec:background:septem_veto]].
 
 There are two different cluster finding algorithms implemented for use
 in ~TimepixAnalysis~. By default one is strictly used for the general
 cluster finding as part of the reconstruction, the other is intended
-to be used for one of the vetoes (again, sec. [[sec:septem_veto]]). The
-choice is user configurable however. [fn:clustering]
+to be used for one of the vetoes (again, sec. [[#sec:background:septem_veto]]). The
+choice is user configurable however. [fn:clustering] 
 
 - Default :: The default one is the same clustering algorithm
   introduced for the data reconstruction of the 2014/15 GridPix
@@ -11881,7 +11887,7 @@ above. [fn:geometry_calc]
 - igEnergyFromCharge :: The calibrated energy of the cluster in \si{keV}.
 - igLikelihood :: The likelihood value of the cluster for the
   likelihood cut method, explained in detail in section
-  [[#sec:logL:likelihood_of_cluster]].
+  [[#sec:background:likelihood_method]].
 
 After the calculation of all geometric properties for all events and
 chips, the data is written to an output HDF5 file (similar in format to
@@ -11960,7 +11966,7 @@ requires further inputs about each used GridPix than just the raw data
 There are different calibrations to be performed:
 
 1. the charge calibration via the application of the ~ToT~ calibration
-   as introduced in section [[#sec:daq:tot_calibration]].
+   as introduced in section [[#sec:operation_calibration:tot_calibration]].
 2. the calculation of the gas gain, introduced in section
    [[#sec:daq:polya_distribution_threshold]].
 3. the energy calibration (see
@@ -11971,7 +11977,7 @@ more involved and require deeper explanations.
 
 The ~ToT~ calibration is in principle performed simply by converting
 each ~ToT~ value to an equivalent charge in electrons using the
-calibration as presented in section [[#sec:daq:tot_calibration]]. For each
+calibration as presented in section [[#sec:operation_calibration:tot_calibration]]. For each
 GridPix used in a detector, a ~ToT~ calibration must be available.
 
 - [ ] *SHOW AGAIN?*
@@ -12499,7 +12505,7 @@ Near the end of October <2017-10-23> the remount of the detector
 started and was finished by <2017-10-26> in time for another geometer
 measurement and alignment. The next day the veto paddle scintillator
 was calibrated using a 3-way coincidence in the RD51 laboratory (see
-sec. [[#sec:daq:scintillator_calibration]]), followed by the installation
+sec. [[#sec:operation_calibration:scintillators]]), followed by the installation
 of the lead shielding and scintillator installation another day
 later. With everything ready, data taking of the first data taking
 period with the Septemboard detector started on <2017-10-30>. During
@@ -15679,7 +15685,11 @@ and now for 2018 to generate the CSV for the peak positions of the run
 ./code/fadc_rise_fall_different_settings.nim -f ~/CastData/data/CalibrationRuns2018_Reco.h5 --year 2018
 #+end_src
 
-*** FADC noise & study  
+*** FADC noise & study
+:PROPERTIES:
+:CUSTOM_ID: sec:calibration:fadc_noise
+:END:
+
 
 *** Activation threshold [0/2]
 :PROPERTIES:
@@ -15909,7 +15919,7 @@ ToT. This is an argument in favor of using ToT over #pix.
 The reconstructed data from the GridPixes, as described in chapter
 [[#sec:???]] (refer to TOS calibration, charge calib & reconstruction
 parts), still needs to be calibrated in energy. The charge calibration
-[[#sec:daq:tot_calibration]] computes the number of electrons recorded on
+[[#sec:operation_calibration:tot_calibration]] computes the number of electrons recorded on
 each GridPix pixel in an event from the ToT counts. In order to
 calculate an equivalent energy based on a certain amount of charge -
 which depends on the gas gain - the data recorded using the \cefe
@@ -17180,7 +17190,7 @@ talks. Maybe need to fix the radius variable?
 
 *** 3. (optional / required for analysis) charge calibration
 
-- [X] In [[#sec:daq:tot_calibration]]
+- [X] In [[#sec:operation_calibration:tot_calibration]]
 
 Use Timepix ToT calibration (ref theory section before where we
 explain how it works).
@@ -17387,9 +17397,9 @@ work. We can plot some funny plots explaining how it works.
 
 With the CAST data fully reconstructed and energy calibrated it is
 time to define the method used to derive a background rate from the
-data (sec. [[#sec:background:method]]) and introduce the necessary extra
+data (sec. [[#sec:background:likelihood_method]]) and introduce the necessary extra
 inputs required (sec. [[#sec:cdl]]). Next apply it to the data
-(sec. [[#sec:background:apply_method]]) and then improve it further using
+(sec. [[#sec:background:likelihood_cut]]) and then improve it further using
 additional detector features (sec. *???*). Finally, we compare the
 resulting background rate to other detectors and try to understand the
 remaining background (sec. *???*).
@@ -17401,7 +17411,7 @@ Likelihood method demands info about X-ray properties, hence:
   
 ** Likelihood method [/]
 :PROPERTIES:
-:CUSTOM_ID: sec:background:method
+:CUSTOM_ID: sec:background:likelihood_method
 :END:
 
 The detection principle of the GridPix detector implies physically
@@ -19022,7 +19032,7 @@ almost as low as 10% was achieved.
 
 ** Application of likelihood cut for background rate [0/0]
 :PROPERTIES:
-:CUSTOM_ID: sec:background:apply_method
+:CUSTOM_ID: sec:background:likelihood_cut
 :END:
 
 - [ ] This *COULD* become its own chapter after all. That way make the
