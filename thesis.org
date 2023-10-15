@@ -32176,11 +32176,6 @@ bibliography:references.bib
 
 
 
-* ~TimepixAnalysis~ [/]                                            :Appendix:
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:timepix_analysis
-:END:
-
 * Configurations                                                   :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:configuration
@@ -32682,64 +32677,6 @@ A threshold of $\SI{-110}{\milli\volt}$ was selected, after analysis.
 |   306 | b    | <2018-12-20 Thu 6:55>  | <2018-12-20 Thu 11:53> | 0 days 04:58  |           1 |     7546 |    495 |
 
 \normalsize
-
-* Full data reconstruction [/]                                     :Appendix:
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:full_data_reconstruction
-:END:
-
-- [ ] well, actually we want to reduce all this to a single script...
-- [ ] Replace all this by a call to ~runAnalysisChain~.
-- [ ] This chapter may still be one that contains some other stuff
-  that needs to be run. Not sure. Or it might contain the code to set
-  everything up, we'll see.  
-
-This part of the appendix contains the full set of operations to
-perform the data reconstruction.
-
-1. setup toolchain
-2. compile TPA binaries
-3. (chips to ingrid database (well, it's commited))
-3. raw data
-4. reco
-5. cdl same
-6. background rate
-7. limit   
-
-2017 data:
-#+begin_src sh 
-reconstruction ~/CastData/data/CalibrationRuns2017_Raw.h5 --out ~/CastData/data/CalibrationRuns2017_Reco_withFadc.h5
-#+end_src
-#+begin_src sh 
-reconstruction ~/CastData/data/CalibrationRuns2017_Reco_withFadc.h5 --only_fadc
-#+end_src
-
-
-#+begin_src sh
-reconstruction ~/CastData/data/DataRuns2017_Raw.h5 --out ~/CastData/data/DataRuns2017_Reco_withFadc.h5
-#+end_src
-
-#+begin_src sh
-reconstruction ~/CastData/data/DataRuns2017_Reco_withFadc.h5 --only_fadc
-#+end_src
-
-2018 data:
-#+begin_src sh 
-reconstruction ~/CastData/data/CalibrationRuns2018_Raw.h5 --out ~/CastData/data/CalibrationRuns2018_Reco_withFadc.h5
-#+end_src
-#+begin_src sh 
-reconstruction ~/CastData/data/CalibrationRuns2018_Reco_withFadc.h5 --only_fadc
-#+end_src
-
-
-#+begin_src sh
-reconstruction ~/CastData/data/DataRuns2018_Raw.h5 --out ~/CastData/data/DataRuns2018_Reco_withFadc.h5
-#+end_src
-
-#+begin_src sh
-reconstruction ~/CastData/data/DataRuns2018_Reco_withFadc.h5 --only_fadc
-#+end_src
-
 
 * CAST data taking notes [0/1]                            :Appendix:noexport:
 :PROPERTIES:
@@ -34525,8 +34462,6 @@ related to this in the ~Figs/behavior_over_time~ directory.
 #+NAME: fig:calib:median_energy_ridgeline_Oct2018
 [[~/phd/Figs/behavior_over_time/medianEnergy_kde_ridges_21_10_2018.pdf]]
 
-
-
 * CAST Detector Lab data                                           :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:cast_detector_lab
@@ -35547,7 +35482,6 @@ new detector features would be beyond the scope of the framework.
   keeping it very focused on things that "should be" in a thesis.
 
 - [ ] *IN APPENDIX ABOUT THIS, EXPLAIN CONFIG FILE OF TPA!*  
-
   
 ** Nim
 
@@ -35556,6 +35490,9 @@ Shortly introduce Nim & why it was chosen.
 Efficient, productive, gets out of my way.
 
 ** TimepixAnalysis
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:timepix_analysis
+:END:
 
 Framework written for data analysis.
 
@@ -35730,10 +35667,11 @@ that?
 
 
 After all geometrical properties have been computed, the next step is
-to apply the ToT calibration (sec. [[sec:daq:tot_calibration]]) to the ToT
-values of all clusters, resulting in the equivalent charge in
-electrons. The charge values for all recorded pixels are then used to
-compute a histogram, which roughly follows a Pólya distribution
+to apply the ToT calibration
+(sec. [[sec:operation_calibration:tot_calibration]]) to the ToT values of
+all clusters, resulting in the equivalent charge in electrons. The
+charge values for all recorded pixels are then used to compute a
+histogram, which roughly follows a Pólya distribution
 (sec. [[sec:polya_distribution]]). From the mean value of that
 distribution a value for the gas gain is obtained, which is a
 necessary input to perform an energy calibration for each cluster.
@@ -35768,6 +35706,65 @@ data for the likelihood method.
 
 Many other tools are present. Mainly different plotting tools and
 tools dealing with other data, e.g. log files of the CAST experiment.
+
+* Full data reconstruction [/]                                     :Appendix:
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:full_data_reconstruction
+:END:
+
+- [ ] well, actually we want to reduce all this to a single script...
+- [ ] Replace all this by a call to ~runAnalysisChain~.
+- [ ] This chapter may still be one that contains some other stuff
+  that needs to be run. Not sure. Or it might contain the code to set
+  everything up, we'll see.  
+
+This part of the appendix contains the full set of operations to
+perform the data reconstruction.
+
+1. setup toolchain
+2. compile TPA binaries
+3. (chips to ingrid database (well, it's commited))
+3. raw data
+4. reco
+5. cdl same
+6. background rate
+7. limit   
+
+2017 data:
+#+begin_src sh 
+reconstruction ~/CastData/data/CalibrationRuns2017_Raw.h5 --out ~/CastData/data/CalibrationRuns2017_Reco_withFadc.h5
+#+end_src
+#+begin_src sh 
+reconstruction ~/CastData/data/CalibrationRuns2017_Reco_withFadc.h5 --only_fadc
+#+end_src
+
+
+#+begin_src sh
+reconstruction ~/CastData/data/DataRuns2017_Raw.h5 --out ~/CastData/data/DataRuns2017_Reco_withFadc.h5
+#+end_src
+
+#+begin_src sh
+reconstruction ~/CastData/data/DataRuns2017_Reco_withFadc.h5 --only_fadc
+#+end_src
+
+2018 data:
+#+begin_src sh 
+reconstruction ~/CastData/data/CalibrationRuns2018_Raw.h5 --out ~/CastData/data/CalibrationRuns2018_Reco_withFadc.h5
+#+end_src
+#+begin_src sh 
+reconstruction ~/CastData/data/CalibrationRuns2018_Reco_withFadc.h5 --only_fadc
+#+end_src
+
+
+#+begin_src sh
+reconstruction ~/CastData/data/DataRuns2018_Raw.h5 --out ~/CastData/data/DataRuns2018_Reco_withFadc.h5
+#+end_src
+
+#+begin_src sh
+reconstruction ~/CastData/data/DataRuns2018_Reco_withFadc.h5 --only_fadc
+#+end_src
+
+
 
 * Raytracing - where does this belong? [0/1]                       :Software:Appendix:
 :PROPERTIES:
