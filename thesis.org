@@ -8715,6 +8715,10 @@ is part of the =[General]= header instead of the =[Event]= header.
 
 **** TODOs for this section                                     :noexport:
 
+- [ ] *MAYBE* move this section _after_ the configuration file? That
+  way the FADC explanation makes a bit more sense? For the HV of
+  course it is pretty much the same.
+
 - [ ] The below was still mentioned in the section above, but I don't
   think this is needed here anymore, given that we explain this
   before:
@@ -11554,7 +11558,7 @@ The data reconstruction software handling the processes mentioned in
 the remainder of this chapter is the ~TimepixAnalysis~ cite:TPA [fn:tpa_github]
 framework. It is only a "framework" in a loose sense, as it is a set
 of programs to parse data from different Timepix (usually GridPix) DAQ
-software packages and process and analyze it. In addition it contains
+software packages, process and analyze it. In addition it contains
 a large number of tools to visualize that data as well as analyze
 auxiliary data like lists of data taking runs, CAST log files and
 more.
@@ -11564,8 +11568,8 @@ cite:nim [fn:nim_lang]. Nim is a statically typed, compiled language
 with a Python-like whitespace sensitive syntax, taking inspirations
 from Pascal, Modula and in particular ideas regarding type safety from
 Ada. Further, it has a strong metaprogramming focus with full access
-3to the abstract syntax tree (AST) at compile time, offering Lisp-like
-macro functionality, which allows to construct powerful and concise
+to its abstract syntax tree (AST) at compile time, offering Lisp-like
+macro functionality. This allows to construct powerful and concise
 domain specific languages (DSLs). Nim compiles its code by default
 first to C code, which can then utilize the decades of compiler
 optimization techniques available via GCC cite:gcc or Clang
@@ -11581,7 +11585,7 @@ interfacing with existing C and C++ code bases and its strong
 metaprogramming features, which allow to reduce boilerplate code to a
 minimum.
 
-Appendix [[#sec:appendix:software]] contains a detailed overview of the
+Appendix [[#sec:appendix:timepix_analysis]] contains a detailed overview of the
 important tools part of ~TimepixAnalysis~ and how they are used for
 the context of the data analysis presented in this thesis. Read it if
 you wish to understand how to recreate the results presented in this thesis.
@@ -11590,112 +11594,7 @@ you wish to understand how to recreate the results presented in this thesis.
 
 [fn:nim_lang] [[https://nim-lang.org]]
 
-** GridPix data reconstruction [/]
-
-- [X] introduce what signal and background events actually look like
-  -> motivates the kind of steps we then perform. So an "intro"
-  section, then description of the processes.
-- [X] data parsing?
-- [X] clustering (our custom and DBSCAN cite:ester1996density)
-- [ ] in particular the geometric reconstruction. Split up our explanation
-  schematic made in inkscape and somehow present that?
-
-- [ ] *THIS WAS: * ~***~ Expectation of event shapes [/]
-
-Based on the theoretical aspects of a gaseous detector as explained in
-chapter [[#sec:theory_detector]] and the expected kinds of signal sources
-at an experiment like CAST (c.f. [[#sec:cast]]), we can have a good
-expectation of the kinds of signals that a GridPix detector records
-for different types of events.
-
-The signal source we are interested in for an axion helioscope are
-soft energy X-rays, typically below \SI{10}{keV}. The main goal in
-later determining a background rate and computing a physics result
-from data is to filter out these X-rays from the rest of the data the
-detector records. The dominant source of background in any gaseous
-detector at surface level is due to cosmic muons.
-
-Fortunately, muons and X-rays behave very different in the
-detector. X-rays generally produce a single photoelectron, which
-creates further primary electrons in a local region. These drift under
-transverse diffusion to the readout plane, which effectively gives
-them a roughly circular shape. Muons on the other hand produce
-electrons (which each produce further local primaries) on a track
-along their entire path through the gas volume. Under most angles this
-implies their shape is very eccentric, i.e. 'track-like'.
-
-Two example events, one of a $\sim\SI{5.9}{keV}$ \cefe X-ray
-and the other of a typical muon is shown in
-fig. [[fig:reco:example_signal_background_event]].
-
-#+CAPTION: Two example events one might see in the detector, left a common background event
-#+CAPTION: of a (likely) muon track, which enters the readout plane (hence the slightly
-#+CAPTION: triangular shape) and right a classical \SI{5.9}{keV} X-ray from a \cefe
-#+CAPTION: calibration source.
-#+NAME: fig:reco:example_signal_background_event
-[[~/phd/Figs/reco/gridpix_example_events.pdf]]
-
-Given the distinct geometric properties of these different types of
-events and the fact that a GridPix provides extremely high spatial
-resolution and single electron efficiency, the data reconstruction
-fully embraces this. Most of the computed properties, which we will
-introduce in the next sections, are directly related to geometric
-properties of the events.
-
-- [ ] *SHOULD WE MENTION ALPHAS, NEUTRONS ETC HERE?*
-- [ ] *MOTIVATED BY PHYSICAL STUFF SHOWN IN THEORY, DESCRIBE
-  EXPECTATION OF WHAT EVENTS SHOULD LOOK LIKE*
-
-*** Generate example events for known events                     :extended:  
-
-While we have two pretty nice events to plot as examples, in
-principle, they are generated by =karaPlot= (an extensive plotting
-tool part of TPA) and thus not quite suited to a thesis.
-
-As we know the run number and event number, we can just generate them
-quickly here. The two events (and plots) are:
-- [[~/org/Figs/statusAndProgress/exampleEvents/background_event_run267_chip3_event1456_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.pdf]]
-- [[~/org/Figs/statusAndProgress/exampleEvents/calibration_event_run266_chip3_event5791_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.pdf]]
-so run 267 and 266, events 1456 and 5791.
-
-Ah, I had forgotten that these are not the event numbers, but their
-indices of the clusters. Therefore, we'll just search for pretty
-events in the same runs.
-  
-#+begin_src nim :tangle code/generate_example_gridpix_event.nim
-const calib = "/mnt/1TB/CAST/2018_2/CalibrationRuns/Run_266_181107-22-14"
-const back  = "/mnt/1TB/CAST/2018_2/DataRuns/Run_267_181108-02-05"
-const cEv = 5898
-const bEv = 1829 # this event is nice
-import ingrid / tos_helpers
-import std / [strformat, os, strutils, sequtils]
-import ggplotnim
-
-proc toFile(i: int, path: string): string =
-  let z = align($i, 6, '0')
-  path / &"data{z}.txt"
-
-proc drawPlot() =   
-  let protoFiles = readMemFilesIntoBuffer(@[toFile(cEv, calib), toFile(bEv, back)])
-  var df = newDataFrame()
-  var names = @["X-ray", "Background"]
-  for (pf, name) in zip(protoFiles, names):
-    let ev = processEventWithScanf(pf)
-    let pix = ev.chips[3].pixels
-    if pix.len == 0: return
-    let dfL = toDf({ "x" : pix.mapIt(it.x.int), "y" : pix.mapIt(it.y.int),
-                     "ToT" : pix.mapIt(it.ch.int), "type" : name })
-    df.add dfL
-  ggplot(df, aes("x", "y", color = "ToT")) +
-    facet_wrap("type") +
-    geom_point() +
-    xlim(0, 256) + ylim(0, 256) +
-    ggsave("/home/basti/phd/Figs/reco/gridpix_example_events.pdf", width = 1200, height = 600)
-
-drawPlot()
-#+end_src
-
-*** TOS data parsing [/]
+** TOS data parsing [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:reco:tos_data_parsing
 :END:
@@ -11712,7 +11611,7 @@ conversion is the main purpose, pixels with ~ToT~ or ~ToA~ values
 outside a user defined range can be filtered out at this
 stage [fn:toa_tot_filter_in_raw]. Each data taking run is processed
 separately and will be represented by one group (similar to a
-directory on a real file system) in the output HDF5 file.
+directory on a file system) in the output HDF5 file.
 
 As the data is being processed anyway, at this time we already compute
 an occupancy map for each chip in the run. This allows for a quick
@@ -11737,7 +11636,7 @@ junk data (because of a faulty chip for example). In this case it is
 useful to remove such data in this preprocessing stage to lighten the
 workload for anything after.
 
-**** HDF5 data layout generated by ~raw_data_manipulation~      :optional:
+*** HDF5 data layout generated by ~raw_data_manipulation~        :optional:
 
 The listing [[code:reco:abstract_hdf5_layout]] shows the layout of the
 data stored in the HDF5 files after the ~raw_data_manipulation~
@@ -11784,7 +11683,134 @@ as reading individual columns from these is inefficient.
     - ...
 #+end_src
 
-*** Data reconstruction
+**** Notes on data layout                                       :extended:
+
+Of course we generate the layout from real data files. Either using
+~h5ls~ or using ~nimhdf5~, most conveniently using its iterators
+and/or the JSON interface of it.
+
+** Expectation of event shapes [0/0]
+
+Based on the theoretical aspects of a gaseous detector as explained in
+chapter [[#sec:theory_detector]] and the expected kinds of signal sources
+at an experiment like CAST (c.f. [[#sec:cast]]), we can have a good
+expectation of the kinds of signals that a GridPix detector records
+for different types of events.
+
+The signal source we are interested in for an axion helioscope are
+soft energy X-rays, below $\SI{10}{keV}$. The main goal in later
+determining a background rate and computing a physics result from data
+is to filter out these X-rays from the rest of the data the detector
+records. The dominant source of background in any gaseous detector at
+surface level is due to cosmic muons.
+
+Fortunately, muons and X-rays behave very different in the
+detector. X-rays generally produce a single photoelectron, which
+creates further primary electrons in a local region. These drift under
+transverse diffusion to the readout plane, which effectively gives
+them a roughly circular shape. Muons on the other hand produce
+electrons (which each produce further local primaries) on a track
+along their entire path through the gas volume. Under most angles this
+implies their shape is very eccentric, i.e. 'track-like'.
+
+Two example events, one of a $\sim\SI{5.9}{keV}$ \cefe X-ray
+and the other of a typical muon is shown in
+fig. [[fig:reco:example_signal_background_event]].
+
+#+CAPTION: Two example events one might see in the detector, left a common background event
+#+CAPTION: of a (likely) muon track, which enters the readout plane (hence the slightly
+#+CAPTION: triangular shape) and right a classical $\SI{5.9}{keV}$ X-ray from a \cefe
+#+CAPTION: calibration source.
+#+NAME: fig:reco:example_signal_background_event
+[[~/phd/Figs/reco/gridpix_example_events.pdf]]
+
+Given the distinct geometric properties of these different types of
+events and the fact that a GridPix provides extremely high spatial
+resolution and single electron efficiency, the data reconstruction
+fully embraces this. Most of the computed properties, which we will
+introduce in the next sections, are directly related to geometric
+properties of the events.
+
+*** TODOs for this section [0/2]                                 :noexport:
+
+- [X] introduce what signal and background events actually look like
+  -> motivates the kind of steps we then perform. So an "intro"
+  section, then description of the processes.
+- [X] data parsing?
+- [X] clustering (our custom and DBSCAN cite:ester1996density)
+- [X] in particular the geometric reconstruction. Split up our explanation
+  schematic made in inkscape and somehow present that?
+  -> Used later.
+
+- [X] *THIS WAS: * ~***~ Expectation of event shapes [0/0]
+  -> And is again.
+
+- [ ] *SHOULD WE MENTION ALPHAS, NEUTRONS ETC HERE?*
+- [ ] *MOTIVATED BY PHYSICAL STUFF SHOWN IN THEORY, DESCRIBE
+  EXPECTATION OF WHAT EVENTS SHOULD LOOK LIKE*
+
+*** Generate example events for known events                     :extended:  
+
+While we have two pretty nice events to plot as examples, in
+principle, they are generated by =karaPlot= (an extensive plotting
+tool part of TPA) and thus not quite suited to a thesis.
+
+As we know the run number and event number, we can just generate them
+quickly here. The two events (and plots) are:
+- [[~/org/Figs/statusAndProgress/exampleEvents/background_event_run267_chip3_event1456_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.pdf]]
+- [[~/org/Figs/statusAndProgress/exampleEvents/calibration_event_run266_chip3_event5791_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.pdf]]
+so run 267 and 266, events 1456 and 5791.
+
+Ah, I had forgotten that these are not the event numbers, but their
+indices of the clusters. Therefore, we'll just search for pretty
+events in the same runs.
+  
+#+begin_src nim :tangle code/generate_example_gridpix_event.nim
+# Laptop
+#const calib = "/mnt/1TB/CAST/2018_2/CalibrationRuns/Run_266_181107-22-14"
+#const back  = "/mnt/1TB/CAST/2018_2/DataRuns/Run_267_181108-02-05"
+# Desktop
+# All raw files found in `/mnt/4TB/CAST`. The two runs needed here copied to
+from std/os import expandTilde
+const calib = "~/CastData/data/2018_2/Run_266_181107-22-14" # calibration
+const back  = "~/CastData/data/2018_2/Run_267_181108-02-05" # data
+
+const cEv = 5898
+const bEv = 1829 # this event is nice
+import ingrid / tos_helpers
+import std / [strformat, os, strutils, sequtils]
+import ggplotnim
+
+proc toFile(i: int, path: string): string =
+  let z = align($i, 6, '0')
+  path / &"data{z}.txt"
+
+proc drawPlot() =   
+  let protoFiles = readMemFilesIntoBuffer(@[toFile(cEv, calib.expandTilde), toFile(bEv, back.expandTilde)])
+  var df = newDataFrame()
+  var names = @["X-ray", "Background"]
+  for (pf, name) in zip(protoFiles, names):
+    let ev = processEventWithScanf(pf)
+    let pix = ev.chips[3].pixels
+    if pix.len == 0: return
+    let dfL = toDf({ "x" : pix.mapIt(it.x.int), "y" : pix.mapIt(it.y.int),
+                     "ToT" : pix.mapIt(it.ch.int), "type" : name })
+    df.add dfL
+  echo df
+  ggplot(df, aes("x", "y", color = "ToT")) +
+    facet_wrap("type") +
+    geom_point() +
+    xlim(0, 256) + ylim(0, 256) +
+    #theme_font_scale(2.0) +
+    #margin(left = 3, bottom = 3, right = 5) +
+    margin(right = 3) + 
+    facetHeaderText(font = font(12.0, alignKind = taCenter)) + 
+    ggsave("/home/basti/phd/Figs/reco/gridpix_example_events.pdf", width = 800, height = 400, useTeX = true, standalone = true)
+
+drawPlot()
+#+end_src
+
+** Data reconstruction
 :PROPERTIES:
 :CUSTOM_ID: sec:reco:data_reconstruction
 :END:
@@ -11796,32 +11822,33 @@ can begin. This is handled by the
 the HDF5 file created before and proceeds to reconstruct all runs in
 the given input file.
 
-- [ ] *REFER TO ~reconstructSingleChip~ HERE*
 For each run, each GridPix chip is processed sequentially, while all
 events for that chip are then processed in parallel using
-multithreading.
-
-For each event, the data processing is essentially a two step process:
+multithreading. For each event, the data processing is essentially a
+two step process:
 1. perform cluster finding, see section [[#sec:reco:cluster_finding]].
 2. compute geometric properties for each found cluster, see section
    [[#sec:reco:cluster_geometry]].
 
-
-Basic reconstruction:
-- [ ] per run, per chip
-- [ ] clustering (2 cluster methods)
-- [ ] geometric properties
-  - [ ] find rotated coordinate system
-  - [ ] compute parameters for long & short axis
-  - [ ] resulting parameters
-- [ ] table of parameters (we have that somewhere already)
-- [ ] use a description to describe all parameters like
-  - X :: description    
-
 [fn:reco_reconstruction]
 https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/reconstruction.nim
 
-**** Cluster finding 
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *REFER TO ~reconstructSingleChip~ HERE*
+
+Basic reconstruction:
+- [X] per run, per chip
+- [X] clustering (2 cluster methods)
+- [X] geometric properties
+  - [X] find rotated coordinate system
+  - [X] compute parameters for long & short axis
+  - [X] resulting parameters
+- [X] table of parameters (we have that somewhere already)
+- [X] use a description to describe all parameters like
+  - X :: description    
+
+*** Cluster finding 
 :PROPERTIES:
 :CUSTOM_ID: sec:reco:cluster_finding
 :END:
@@ -11871,13 +11898,22 @@ choice is user configurable however. [fn:clustering]
   scientific fields and even in 2017 was still considered highly
   relevant cite:10.1145/3068335.
 
-- [ ] *THINK ABOUT EXAMPLE OF CLUSTERING THAT DBSCAN FINDS AND DEFAULT
-  WOULDN'T* NON LINEAR CLUSTERABLE
+Another clustering algorithm (currently not implemented) is CLASSIX
+cite:&CLASSIX, which promises fast clustering based on sorting along
+the first principal component axis. Based on its properties as
+presented in its paper it could be an extremely useful algorithm for
+our application and should be investigated in the future.
 
 [fn:clustering] The clustering logic of TPA is found here: https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/clustering.nim
 
 [fn:default_algo_core] The heart of the algorithm is the following
-pixel search: https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/clustering.nim#L120-L148
+pixel search:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/clustering.nim#L120-L148
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *THINK ABOUT EXAMPLE OF CLUSTERING THAT DBSCAN FINDS AND DEFAULT
+  WOULDN'T* NON LINEAR CLUSTERABLE
 
 **** CLASSIX clustering algorithm [/]                           :extended:
 
@@ -11904,58 +11940,52 @@ people, among other things it lead to the discovery of a clustering
 bug in MarlinTPC (which was finally the point that let me drop this
 pursuit).
 
-
-
 - [ ] *INSERT DISCUSSION FROM STATUSANDPROGRESS ABOUT MARLIN CLUSTER
   BUG* See section ~sec:marlin_vs_tpa_output~ in TPA for the Marlin
   clustering bug.
 
-**** Calculation of geometric properties
+*** Calculation of geometric properties
 :PROPERTIES:
 :CUSTOM_ID: sec:reco:cluster_geometry
 :END:
 
+For each individual cluster the geometric event reconstruction is up
+next. As the basic differentiator between X-rays and common background
+events is their circularity, most properties are in some sense related
+to how eccentric clusters are. Therefore, the first thing to be
+computed for each cluster, is the rotation angle [fn:rotation_angle].
 
-- [ ] *REWRITE ME*
-For each individual cluster the geometric event reconstruction
-is up next. As the basic differentiator between X-rays and common
-background events is their circularity, most properties are in some
-sense related to eccentric clusters are. Therefore, the first thing to
-be computed for each cluster, is the rotation
-angle [fn:rotation_angle].
+The rotation angle is found via a non linear optimization of
 
-The rotation angle is found via a non linear optimization
-
-\begin{align}
+\begin{align*}
   x'_i &= \cos(θ) \left( x_i - \bar{x} \right) · P - \sin(θ) \left( y_i - \bar{y} \right) · P \\
   y'_i &= \sin(θ) \left( x_i - \bar{x} \right) · P + \cos(θ) \left( y_i - \bar{y} \right) · P 
-\end{align}
+\end{align*}
 
 where $θ$ is the rotation angle (in the context of the optimization
-the parameter to be fitted), $x_i, y_i$ the coordinates of the $i$-th
+the parameter to be fitted), $x_i, y_i$ the coordinates of the $i\text{-th}$
 pixel in the cluster, and $\bar{x}, \bar{y}$ the center coordinates of
 the cluster. $P = \SI{55}{μm}$ is the pixel pitch of a Timepix. The
 resulting variables $x'_i, y'_i$ define a new rotated coordinate
-system. From these coordinates, the RMS of each of these new axes is
+system. From these coordinates, the RMS [fn:rms_terminology] of each of these new axes is
 computed via
 
-\begin{align}
+\begin{align*}
   x_{\text{RMS}} &= \sqrt{ \frac{1}{N} \left( \sum_i x^{\prime2}_i \right) - \frac{1}{N²} \left( \sum_i x'_i \right)² }\\
   y_{\text{RMS}} &= \sqrt{ \frac{1}{N} \left( \sum_i y^{\prime2}_i \right) - \frac{1}{N²} \left( \sum_i y'_i \right)² }.
-\end{align}
+\end{align*}
 
-These then can define the eccentricity $ε$ to (see also fig. [[fig:reco:prop_expl_ecc]])
+These then can define the eccentricity $ε$ to (see also fig. [[sref:fig:reco:prop_expl_ecc]])
 
 \[
-ε = \frac{x_{\text{RMS}}}{y_{\text{RMS}}}
+ε = \frac{x_{\text{RMS}}}{y_{\text{RMS}}}.
 \]
 
 During the non linear optimization, the algorithm attempts to maximize
 the eccentricity. In a track like cluster, the maximum eccentricity is
 found under the rotation angle $θ$, which points along the longest
 axis of the cluster. The resulting rotated coordinate system after the
-fit has converged, is illustrated in
-fig. \subref{fig:reco:prop_expl_axes}.
+fit has converged, is illustrated in fig. sref:fig:reco:prop_expl_axes.
 
 Once the rotation angle and therefore the rotated coordinate system of
 a cluster is defined, most other properties follow in a straight
@@ -11965,41 +11995,48 @@ long axis of the cluster is called "longitudinal" and the short axis
 kurtosis for each axis are computed as well as the length and width of
 the cluster based on the biggest spread of pixels along each axis.  In
 addition to the geometric properties a few other properties like the
-number of pixels are also computed. 
+number of pixels are also computed. Three of the most important
+variables are illustrated in
+fig. sref:fig:reco:property_explanations. These enter the likelihood
+cut definition as we will see in sec. [[#sec:background:likelihood_method]].
 
-- [ ] *EXPLANATION OF THE 3 MAIN PROPERTIES USED FOR LIKELIHOOD*
-- [ ] *LOOK INTO \subref RENDERING. SHOULDN'T JUST SHOW a) HERE*  
-
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/long_short_axis.pdf}
-    \caption{Rotated axes}
-    \label{fig:reco:prop_expl_axes}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/eccentricity.pdf}
-    \label{fig:reco:prop_expl_ecc}
-    \caption{Eccentricity}
-  \end{subfigure}
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/frac_in_trans_rms.pdf}
-    \caption{Fraction in transverse RMS}
-    \label{fig:reco:prop_expl_fracRms}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/org/Figs/InGridPropExplanation/length_div_rms_trans.pdf}
-    \label{fig:reco:prop_expl_ldiv}
-    \caption{Length divided by transverse RMS}
-  \end{subfigure}
-  \label{fig:reco:property_explanations}
-  \caption{Funky things.
-  }
-\end{figure}
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Rotated axes") (label "fig:reco:prop_expl_axes")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/InGridPropExplanation/long_short_axis.pdf"))
+        (subfigure (linewidth 0.5) (caption "Eccentricity") (label "fig:reco:prop_expl_ecc")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/InGridPropExplanation/eccentricity.pdf")
+                   (spacing "")) ;; avoid spacing to break line
+        (subfigure (linewidth 0.5) (caption "Fraction in transverse RMS") (label "fig:reco:prop_expl_fracRms")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/InGridPropExplanation/frac_in_trans_rms.pdf"))
+        (subfigure (linewidth 0.5) (caption "Length divided by transverse RMS") (label "fig:reco:prop_expl_ldiv")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/InGridPropExplanation/length_div_rms_trans.pdf"))        
+  (caption
+   "Schematic explanation of the basic cluster reconstruction and the three most 
+    important geometric properties."
+   (subref "fig:reco:prop_expl_axes")
+    "defines the rotated coordinate system found by non-linear optimization of the long and
+     short cluster axis. "
+    "Along the long and short axes, "
+    (subref "fig:reco:prop_expl_ecc")
+    ", the transverse standard deviation " ($ "σ_{\\text{transverse}}") " is computed, which then defines the eccentricity 
+     by this ratio."
+    (subref "fig:reco:prop_expl_fracRms")
+    "shows the definition of a less obvious variable: the fraction of pixels within a 
+     circle of one " ($ "σ_{\\text{transverse}}") " radius around the cluster center.
+     Similarly "
+    (subref "fig:reco:prop_expl_ldiv")
+    " shows the full cluster length defined by the furthest active pixels in the cluster
+     divided by " ($ "σ_{\\text{transverse}}") " as another variable. These three variables enter
+     the likelihood cut used for background suppression."
+   )
+  (label "fig:reco:property_explanations")
+)
+#+end_src
 
 #+begin_comment
 Probably won't end up using this table, instead use the descriptions
@@ -12043,19 +12080,19 @@ by the ~reconstruction~ tool. All but the likelihood, charge and energy properti
 during the first pass of the tool, namely in the context discussed
 above. [fn:geometry_calc]
 
-- igCenterX / igCenterY :: The center position of the cluster along
-  the ~x~ / ~y~ axis of the detector.
-- igHits :: The number of pixels in the cluster.
 - igEventNumber :: The event number the cluster is part of (multiple
   clusters may share the same event number).
+- igHits :: The number of pixels in the cluster.
+- igCenterX / igCenterY :: The center position of the cluster along
+  the ~x~ / ~y~ axis of the detector.
 - igRotationAngle :: The rotation angle of the long axis of the
   cluster over the chip coordinate system.
 - igLength :: The length of the cluster along the long axis in the 
   rotated coordinate system, defined by the furthest pixel at each
   end in that direction.
 - igWidth :: The equivalent of *igLength* for the short axis.
-- igRadius :: The radius of the cluster, defined by *IM NOT DEFINED
-  YET, DEFINE ME*
+# - igRadius :: The radius of the cluster, defined by *IM NOT DEFINED
+#   YET, DEFINE ME* <-- Does not exist in TPA
 - igRmsLongitudinal :: The root mean square (RMS) along the long axis.
 - igRmsTransverse :: The RMS along the short axis.
 - igSkewnessLongitudinal / igKurtosisLongitudinal :: The skewness / kurtosis along the long axis.
@@ -12063,16 +12100,16 @@ above. [fn:geometry_calc]
 - igEccentricity :: The eccentricity of the cluster, defined by the
   ratio of the longitudinal RMS over the transverse RMS.
 - igLengthDivRmsTrans :: The length of the cluster divided by the
-  transverse RMS (see fig. \subref{fig:reco:prop_expl_ldiv}).
+  transverse RMS (see fig. sref:fig:reco:prop_expl_ldiv).
 - igFractionInTransverseRms :: The fraction of all pixels within a
-  radius of the transverse RMS around the center (see fig. \subref{fig:reco:prop_expl_fracRms}).
-- igRadiusDivRmsTrans :: The radius over the transverse RMS.
-- igFractionInHalfRadius :: Equivalent to *igFractionInTransveresRms*
-  but for a radius of half the cluster radius.
-- igLengthDivRadius :: The length divided by the cluster radius.
+  radius of the transverse RMS around the center (see fig. sref:fig:reco:prop_expl_fracRms).
+# - igRadiusDivRmsTrans :: The radius over the transverse RMS.
+# - igFractionInHalfRadius :: Equivalent to *igFractionInTransveresRms*
+#   but for a radius of half the cluster radius.
+# - igLengthDivRadius :: The length divided by the cluster radius.
 - igTotalCharge :: The sum of the charge of the ~ToT~ calibrated
   charges of all pixels in the cluster.
-- igEnergyFromCharge :: The calibrated energy of the cluster in \si{keV}.
+- igEnergyFromCharge :: The calibrated energy of the cluster in $\si{keV}$.
 - igLikelihood :: The likelihood value of the cluster for the
   likelihood cut method, explained in detail in section
   [[#sec:background:likelihood_method]].
@@ -12082,14 +12119,9 @@ chips, the data is written to an output HDF5 file (similar in format to
 the output of ~raw_data_manipulation~) for each run. This concludes
 the first pass of ~reconstruction~ over the data.
 
-The properties are computed here:
-https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366
-and here:
-https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569
-
-- [ ] *PLACE THE LINKS AFTER FIX UP SOMEWHERE THEY BELONG*
-- [ ] *CONSIDER MOVING LIST OF ALL PROPERTIES TO FURTHER DOWN ONCE WE
-  HAVE DISCUSSED CHARGE CALIB?*  
+[fn:rms_terminology] The term 'root mean square' is used although we
+actually refer to the standard deviation of the sample. We follow
+[[cite:&krieger2018search]], but this ambiguity is often encountered unfortunately.
 
 [fn:rotation_angle] Note that the absolute value of the rotation angle
 is of secondary importance. For X-rays the rotation angle is going to
@@ -12098,12 +12130,33 @@ be random, as the definition of a long and short axis in a
 of the pixels. However, for pure muons it allows to map the rotation
 angle to the incidence angle.
 
-[fn:calc_eccentricity]
-https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L296-L329
+[fn:calc_eccentricity] https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L296-L329
 
 [fn:geometry_calc] In particular all these properties are computed
 here: https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L331-L391
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *REWRITE THIS SECTION*
+
+- [ ] *PROPERLY LINK THE CODE LATER*
+  -> Still need to decide how we will do this, but for sure needs a
+  specific git tag!
+
+  The properties are computed here:
+  https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366
+  and here:
+  https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569
   
+
+- [X] *EXPLANATION OF THE 3 MAIN PROPERTIES USED FOR LIKELIHOOD*
+- [X] *LOOK INTO \subref RENDERING. SHOULDN'T JUST SHOW a) HERE*
+  -> Adjusted in our LaTeX defaults now. Option to ~subcaption~ package.
+
+- [ ] *PLACE THE LINKS AFTER FIX UP SOMEWHERE THEY BELONG*
+- [ ] *CONSIDER MOVING LIST OF ALL PROPERTIES TO FURTHER DOWN ONCE WE
+  HAVE DISCUSSED CHARGE CALIB?*  
+
 **** HDF5 data layout generated by ~reconstruction~             :optional:
 
 The HDF5 file generated by ~reconstruction~ follows closely the one
@@ -12277,8 +12330,47 @@ manual cite:fadc_manual [fn:reco_fadc_manual].
 - [ ] *ADD EXPLANATION HOW IT FITS INTO ~raw_data_manipulation~ AND
   ~reconstruction~*
 
-- [ ] *ADD MENTION OF SAVITZKY GOLAY!*  
-  
+- [ ] *ADD MENTION OF SAVITZKY GOLAY!*
+
+*** FADC pedestal calculation
+:PROPERTIES:
+:CUSTOM_ID: sec:reco:fadc_pedestal_calc
+:END:
+
+As alluded to in sec. [[#sec:operation_calibration:fadc]] the pedestal
+values cannot only be taken from a pedestal run recorded before data
+taking, but can also be extracted from real data, under the condition
+that a decent fraction of FADC registers in a single FADC event
+is normally distributed between events. 
+
+The idea is to remove all recorded events in a register, in which it
+was involved in a real signal. At least in typical signals recorded
+with a GridPix the signal lengths are $\mathcal{O}(\SI{10}{\percent})$
+of the window length, leaving plenty of registers free to recover
+pedestal information. Regular noise affects things, but is partially
+taken care by the truncation and partially cancels out as real noise
+is normal distributed around the actual pedestal. This latter approach
+is the one used in the data analysis by calculating:
+
+\[
+p(r) = \text{mean}_{i, P_{20}, P_{98}}{r_i}
+\]
+
+where $p(r)$ is the pedestal in register $r$ and the mean is taken
+over all data $i$ in that register within the 20-th ($P_{20}$) and
+98-th ($P_{98}$) percentile. All data refers to a full data run of
+$\sim\SI{1}{day}$. The highly biased nature is due to the real
+signals being negative. Removing the smallest $\SI{20}{\percent}$ of
+data guarantees in the vast majority of events the full physical
+signal is excluded given the typical signal lengths involved. A
+small upper percentile is used to exclude possible significant
+outliers to the top. While such a biased estimator will not result in
+the real mean (and in case of signal and noise free input data thus
+the real pedestals), a slight bias is irrelevant, as the baseline is
+still calculated for the reconstructed signal which is used to
+correct any global offset. 
+
+
 *** FADC spectrum reconstruction [/]
 
 The first step to reconstruct the FADC data is to perform the pedestal
