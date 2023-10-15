@@ -12392,10 +12392,20 @@ usable signals, given the FADC settings we use and the data TOS
 generates from it. For a detailed overview of the process see the FADC
 manual cite:fadc_manual [fn:reco_fadc_manual].
 
+In ~TimepixAnalysis~ FADC data is automatically parsed from the ASCII
+data files into HDF5 files as part of ~raw_data_manipulation~ if FADC
+files are present. The spectrum reconstruction is done automatically
+as part of the ~reconstruction~ program, but calculation of the
+baseline, rise and fall time is an optional step.
+
+*** TODOs for this section [/]                                   :noexport:
+
 - [ ] *ADD SOME KIND OF MOTIVATON FOR WHAT WE MIGHT WANT TO DO WITH THE SIGNALS?*
 
-- [ ] *ADD EXPLANATION HOW IT FITS INTO ~raw_data_manipulation~ AND
+- [X] *ADD EXPLANATION HOW IT FITS INTO ~raw_data_manipulation~ AND
   ~reconstruction~*
+  -> Question whether this needs to be part of this section here. Or
+  just part of an :extended: section?
 
 - [ ] *ADD MENTION OF SAVITZKY GOLAY!*
 
@@ -12420,12 +12430,12 @@ is normal distributed around the actual pedestal. This latter approach
 is the one used in the data analysis by calculating:
 
 \[
-p(r) = \text{mean}_{i, P_{20}, P_{98}}{r_i}
+p_i(r) = \text{mean}_{20^{\text{th}}}^{98^{\text{th}}}(\{r_i\})
 \]
 
-where $p(r)$ is the pedestal in register $r$ and the mean is taken
-over all data $i$ in that register within the 20-th ($P_{20}$) and
-98-th ($P_{98}$) percentile. All data refers to a full data run of
+where $p_i(r)$ is the pedestal in register $r_i$ and the mean is taken
+over all data $\{r_i\}$ in that register within the 20-th and
+98-th percentile. All data refers to a full data run of
 $\sim\SI{1}{day}$. The highly biased nature is due to the real
 signals being negative. Removing the smallest $\SI{20}{\percent}$ of
 data guarantees in the vast majority of events the full physical
