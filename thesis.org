@@ -9092,7 +9092,93 @@ tested on the live detector.
 
 [fn:temperature_safety_config_settings] The temperature safety range
 is coupled to the =checkModuleTimeInterval= setting in the previous
-footnote. It was disabled together with the above during actual data taking.
+footnote. It was disabled together with the above during actual data
+taking.
+
+**** TODOs about this section [/]                               :noexport:
+
+- [ ] *MAYBE* move the FADC parts to the explanation of the FADC data
+  files? I'm not sure the order of things makes so much sense as it is
+  now. At no point are we actually explaining what the different
+  settings really are!
+  -> Maybe the config file could actually be introduced before the
+  data files are explained?
+
+**** Understanding FADC settings                                :extended:
+
+- [ ] *This should at least* be an :extended: section with an
+  explanation of all the fields that one can actually set.
+
+Given the time since last working with this, I need to look up the
+values of the TOS config file in the FADC manual.
+
+For reference our settings:
+#+begin_src toml
+[Fadc] # FADC Settings
+fadcTriggerType                 = 3 
+fadcFrequency                   = 2
+fadcPosttrig                    = 80
+fadcPretrig                     = 15000
+# was 2033 before, 1966 corresponds to -40 mV
+fadcTriggerThresholdRegisterAll = 1966 
+# run time of a single pedestal run for the FADC in ms
+fadcPedestalRunTime             = 100
+# number of acquisition runs done for each pedestal calibration
+fadcPedestalNumRuns             = 10
+# using channel 0 on FADC as trigger source, thus bit 0  1!
+fadcChannelSource               = 1
+# set FADC mode register (mainly to enable 14-bit readout)
+fadcModeRegister                = 0b000
+#+end_src
+
+=FP_FREQUENCY= is the name for the address =0x01= for the. It needs 6
+bits of data:
+#+begin_src 
+Bits 0-5 Function
+Val = 1 => Fsample = 2GHz.
+Val = 2 => Fsample = 1GHz.
+Val = 4 => Fsample = 500MHz.
+Val = 5 => Fsample = 400MHz.
+Val = 10 => Fsample = 200MHz.
+Val = 20 => Fsample = 100MHz.
+Val = 40 => Fsample = 50MHz.
+#+end_src
+As such our used value of ~fadcFrequency = 2~ corresponds to
+$\SI{1}{GHz}$ as I remembered.
+
+=MODE_REGISTER= is for value =0x03= and its 3 bits of data.
+[[/home/basti/phd/Figs/fadc_settings_mode_register.png]]
+Our value of =0b000= for the data means no interruption tagging, 12
+bits data output and normal acquisition mode.
+
+The ~fadcTriggerThresholdRegisterAll~ controls the trigger threshold
+of the FADC. See [[cite:&fadc_manual]] page 31-32:
+#+begin_quote
+TRIGGER THRESHOLD DAC : common pre-loading register of the DACs. This
+12-bit register covers the range from –1V (000) to +1V (FFF). By USB
+or GPIB, one has access to the MSBs and LSBs via 2 distinct
+sub-addresses. The access is necessarily made in the order MSB (0B)
+then LSB (0A). By VME, the access is made via a single sub-address
+(0A). After loading of this register, one must transfer the value in
+the analog converter via the LOAD_TRIGGER THRESHOLD DAC (09) command.
+#+end_quote
+
+This implies the trigger is calculated by:
+#+begin_src nim
+import unchained
+const U_range = 2.V
+const DAC_range = 4096
+proc threshold(x: float): MilliVolt =
+  result = (U_range / DAC_range * x - 1.V).to(mV)
+echo threshold(1966.0) 
+#+end_src
+
+#+RESULTS:
+: -40.0391 mV
+
+which precisely reproduces our $\SI{-40}{mV}$ number.
+
+
 
 *** HV control via TOS
 :PROPERTIES:
@@ -10671,56 +10757,7 @@ else:
     ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.pdf")
 #+end_src
 
-*** Understanding FADC settings                                  :noexport:
 
-Given the time since last working with this, I need to look up the
-values of the TOS config file in the FADC manual.
-
-For reference our settings:
-#+begin_src toml
-[Fadc] # FADC Settings
-fadcTriggerType                 = 3 
-fadcFrequency                   = 2
-fadcPosttrig                    = 80
-fadcPretrig                     = 15000
-# was 2033 before, 1966 corresponds to -40 mV
-fadcTriggerThresholdRegisterAll = 1966 
-# run time of a single pedestal run for the FADC in ms
-fadcPedestalRunTime             = 100
-# number of acquisition runs done for each pedestal calibration
-fadcPedestalNumRuns             = 10
-# using channel 0 on FADC as trigger source, thus bit 0  1!
-fadcChannelSource               = 1
-# set FADC mode register (mainly to enable 14-bit readout)
-fadcModeRegister                = 0b000
-#+end_src
-
-=FP_FREQUENCY= is the name for the address =0x01= for the. It needs 6
-bits of data:
-#+begin_src 
-Bits 0-5 Function
-Val = 1 => Fsample = 2GHz.
-Val = 2 => Fsample = 1GHz.
-Val = 4 => Fsample = 500MHz.
-Val = 5 => Fsample = 400MHz.
-Val = 10 => Fsample = 200MHz.
-Val = 20 => Fsample = 100MHz.
-Val = 40 => Fsample = 50MHz.
-#+end_src
-As such our used value of ~fadcFrequency = 2~ corresponds to
-\SI{1}{GHz} as I remembered.
-
-=MODE_REGISTER= is for value =0x03= and its 3 bits of data.
-[[/home/basti/phd/Figs/fadc_settings_mode_register.png]]
-Our value of =0b000= for the data means no interruption tagging, 12
-bits data output and normal acquisition mode.
-
-*** Calculate pedestals from real FADC data [/]                  :noexport:
-
-We will now see what happens if we compute the FADC pedestals from the
-raw data by computing a truncated mean of all FADC files in a single
-run and comparing to the real pedestal run we normally use as a
-reference.
 
 *UPDATE*: <2022-12-26 Mon 00:48> This was a big success. We will use
 this in our real data from now on, move this to ~statusAndProgress~
