@@ -13,9 +13,10 @@ proc main(fname: string) =
     ggsave("/home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf",
            useTeX = true, standalone = true)
   df = df.gather(["min", "max", "opt"], "type", "THL")
-  ggplot(df, aes("THL", fill = "type")) +
+  ggplot(df.filter(f{`THL` > 330.0 and `THL` < 460.0}), aes("THL", fill = "type")) +
     geom_histogram(binWidth = 1.0, position = "identity", hdKind = hdOutline, alpha = 0.7) +
     ggtitle("THL distributions for all equalization bits at 0, 15 and optimized") +
+    #xlim(330, 460) + 
     ggsave("/home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf",
            useTeX = true, standalone = true)
 when isMainModule:

@@ -36,7 +36,10 @@ else:
     facet_wrap("Channel", scales = "free") +
     geom_point(size = 2.0) +
     facetMargin(0.5) +
-    margin(bottom = 1.0, right = 3.0) +
+    margin(bottom = 1.0, right = 2.0) +
+    legendPosition(0.87, 0.0) + 
+    ylab("Register") + 
     ggtitle("FADC register pedestal values, split by channels") +    
     xlab("Channel", margin = 0.0) + 
-    ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.pdf")
+    ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.pdf",
+          useTeX = true, standalone = true)

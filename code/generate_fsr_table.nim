@@ -87,7 +87,8 @@ ggplot(df.filter(f{`THL` > 100}), aes("THL", fill = factor("chip"))) +
   facet_wrap("Run") + 
   geom_histogram(binWidth = 1.0, position = "identity", alpha = 0.7, hdKind = hdOutline) +
   ggtitle("Optimized THL distribution of the noise peak for each chip") +
-  ylab("# pixels") +
+  ylab(r"\# pixels") +
+  facetHeaderText(font = font(12.0, alignKind = taCenter)) + 
   ggsave("/home/basti/phd/Figs/detector/calibration/sepemboard_all_thl_optimized.pdf",
-         width = 1200, height = 640)
-
+         useTeX = true, standalone = true,
+         width = 1000, height = 600)
