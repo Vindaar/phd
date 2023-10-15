@@ -11985,11 +11985,21 @@ computed via
   y_{\text{RMS}} &= \sqrt{ \frac{1}{N} \left( \sum_i y^{\prime2}_i \right) - \frac{1}{N²} \left( \sum_i y'_i \right)² }.
 \end{align*}
 
-These then can define the eccentricity $ε$ to (see also fig. [[sref:fig:reco:prop_expl_ecc]])
+
+Based on these we then simply redefine
+
+\begin{align*}
+σ_{\text{transverse}} &= \text{min}(x_{\text{RMS}}, y_{\text{RMS}}) \\
+σ_{\text{longitudinal}} &= \text{max}(x_{\text{RMS}}, y_{\text{RMS}}),
+\end{align*}
+
+which then define the eccentricity $ε$ to (see also fig. [[sref:fig:reco:prop_expl_ecc]])
 
 \[
-ε = \frac{x_{\text{RMS}}}{y_{\text{RMS}}}.
+ε = \frac{σ_{\text{longitudinal}}}{σ_{\text{transverse}}},
 \]
+
+guaranteeing $ε \leq 1$.
 
 During the non linear optimization, the algorithm attempts to maximize
 the eccentricity. In a track like cluster, the maximum eccentricity is
@@ -12253,6 +12263,16 @@ For any chip part of the database, the ~ToT~ calibration is a single
 pass over the ~ToT~ values of all runs. This generates a calibrated
 charge for every pixel of every cluster and a combined property, the
 ~totalCharge~ of the full charge of each cluster.
+
+Gas gain values are computed in $\SI{90}{min}$ time intervals for each
+chip. This strikes a good balance between enough statistics and
+reduced sensitivity to variation in gas gain due to external
+effects. As this deserves its own discussion more on this in
+sec. [[#sec:calib:gas_gain_time_binning]]. 
+
+Finally, while the energy calibration is also handled by ~reconstruction~, we
+will cover it in section [[#sec:calibration]], due to its more
+complex nature.
 
 **** TODOs for this section                                     :noexport:
 
