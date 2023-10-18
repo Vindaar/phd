@@ -3463,12 +3463,12 @@ Observatory (IAXO) first appearing in 2013 cite:vogel2013iaxo. A
 conceptual design report (CDR) was further published in 2014
 cite:Armengaud_2014. 
 
-The proposed experiment is supposed to have a total magnet length of \SI{25}{m}
-length with \num{8} \SI{60}{cm} bores with an average transverse
-magnetic field of \SI{2.5}{T} [fn:magnetic_field_iaxo]. With a cryostat and magnet design
+The proposed experiment is supposed to have a total magnet length of $\SI{25}{m}$
+length with $\num{8}$  $\SI{60}{cm}$ bores with an average transverse
+magnetic field of $\SI{2.5}{T}$ [fn:magnetic_field_iaxo]. With a cryostat and magnet design
 specifically built for the experiment, much larger tilting angles of
 the magnet of about $\pm\SI{25}{°}$ are proposed to allow for solar
-tracking for \SI{12}{\hour} per day for a 1:1 data split between
+tracking for $\SI{12}{\hour}$ per day for a 1:1 data split between
 tracking and background data. cite:Armengaud_2014
 
 In cite:Irastorza_2011 a 'figure of merit' (FOM) is introduced
@@ -3581,6 +3581,39 @@ echo "IAXO FOM over CAST: ", fIAXO * 8 / (fCAST * 2)
 | IAXO  | magnet, | single | bore  | f_M            | =            | 706.858 T²•m⁴ | at | 2.5 | T | *average* | field, | 20 | m | length. |
 | IAXO, | all     | bores  | f_M   | =              | 5654.87 T²•m⁴ |              |    |     |   |           |        |    |   |         |
 | IAXO  | FOM     | over   | CAST: | 293.21 UnitLess |              |              |    |     |   |           |        |    |   |         |
+
+
+Time scaling:
+
+#+begin_src nim
+import unchained, math
+let g = 8e-11
+let g4 = g^4
+let t = 1
+# g⁴ = √t
+# g⁴ / √t = g'⁴ / √t'
+let tp = 2
+let g4p = g4 * sqrt(2.0)
+echo "New g for twice the time: ", pow(g4p, 0.25)
+#+end_src
+#+begin_src nim
+import unchained, math
+let g = 8e-11
+let g4 = g^4
+let t = 1
+# g⁴ · √t = N # <- some number of photons: we observe 0
+# g⁴' · √t' = N' # <- new number of photons: we still observe 0
+# So
+# g⁴ · √t = g⁴' · √t'
+# should hold, meaning
+# g⁴ · √1 = g⁴' · √2
+# g⁴' = g⁴ / √2
+let g4p = g4 / sqrt(2.0)
+echo "New g for twice the time: ", pow(g4p, 0.25)
+#+end_src
+
+#+RESULTS:
+: New g for twice the time: 7.336032345637369e-11
 
 *** TODOs for this section                                       :noexport:
 
