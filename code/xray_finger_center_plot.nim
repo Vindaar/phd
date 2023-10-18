@@ -2,7 +2,7 @@ import nimhdf5, ggplotnim, options
 import ingrid / tos_helpers
 import std / [strutils, tables]
 
-proc main(run: int) =
+proc main(run: int, switchAxes: bool = false) =
   let file = "/t/reco_xray_finger_$#.h5" % $run
   
   #proc readClusters(h5f: H5File): (seq[float], seq[float]) =
@@ -27,14 +27,21 @@ proc main(run: int) =
   discard h5f.close()
  
   echo "Center position of the cluster is at: (x, y) = (", centerX, ", ", centerY, ")"
-  ggplot(df, aes("centerX", "centerY", color = "count")) +
+  let x = if switchAxes: "centerY" else: "centerX"
+  let y = if switchAxes: "centerX" else: "centerY"
+  let cX = if switchAxes: centerY else: centerX
+  let cY = if switchAxes: centerX else: centerY
+  ggplot(df, aes(x, y, color = "count")) +
     geom_point(size = 0.75) +
-    geom_point(data = newDataFrame(), aes = aes(x = centerX, y = centerY),
+    geom_point(data = newDataFrame(), aes = aes(x = cX, y = cY),
                color = "red", marker = mkRotCross) + 
     scale_color_continuous() +
     ggtitle("X-ray finger clusters of run $#" % $run) +
+    xlab(r"x [mm]") + ylab(r"y [mm]") + 
     xlim(0.0, 14.0) + ylim(0.0, 14.0) +
-    ggsave("/home/basti/phd/Figs/CAST_Alignment/xray_finger_centers_run_$#.pdf" % $run)
+    theme_scale(1.0, family = "serif") + 
+    ggsave("/home/basti/phd/Figs/CAST_Alignment/xray_finger_centers_run_$#.pdf" % $run) 
+           #useTeX = true, standalone = true)
 
 when isMainModule:
   import cligen

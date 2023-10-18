@@ -8,7 +8,7 @@ proc main(path: string, run: int) =
   shell:
     raw_data_manipulation -p ($path) "--runType xray --out " ($outfile)
   shell:
-    reconstruction ($outfile) "--out " ($recoOut)
+    reconstruction -i ($outfile) "--out " ($recoOut)
   
 when isMainModule:
   import cligen
