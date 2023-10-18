@@ -12878,11 +12878,6 @@ firmware, resulting in useless "trigger" information.
 
 #+LATEX: \minitoc
 
-- [ ] *HAVE A SORT OF TIMELINE APPROACH?*
-  Or instead first start with a factual representation of what the
-  setup actually looked like and then a "retrospective" of the
-  different times? Including the problems that were encountered?
-
 In this chapter we will cover the data taking with the Septemboard
 detector at the CAST experiment. We will begin with a timeline of the
 important events and the different data taking periods to give some
@@ -12897,29 +12892,38 @@ taken with the Septemboard detector. The final section
 [[#sec:cast:problems_lessons]] finishes by discussing different issues
 encountered and lessons learned.  
 
-- [ ] *REWRITE ABOVE WITH FINAL STRUCTURE!!*
-
-bla bla bla, the setup includes a \cefe source mounted to a
-pneumatic manipulator, see sec. [[#sec:cast:55fe_manipulator]], ...
-
 The appendix contains an additional chapter
 [[#sec:appendix:cast_operations]], which contains details about the
 operating procedures with respect to the gas supply and vacuum
 system. As the details of that are not particularly relevant after
 shutdown of the experiment, it is not discussed here.
 
-** Introduction about data taking? [/]
+** TODOs for this section [0/4]                                   :noexport:
 
-- [ ] *MENTION 2016 COSMIC ALIGNMENT MEASUREMENT? Maybe as a footnote
-  "for completeness sake"*
+- [ ] *NOTE ABOUT THIS CHAPTER*:
+  In my meeting with Klaus on <2023-10-16 Mon> Klaus mentioned that he
+  thinks the CAST chapter can probably be cut down to 2-3 pages.
+  We can get there if we really only have a rewritten version of the
+  Timeline in the thesis that then goes straight over to the data
+  overview that we already have at the end of the chapter!
 
+
+- [ ] *REWRITE ABOVE WITH FINAL STRUCTURE!!*!!
+  
 - [ ] *INTRODUCE NAMING OF RUN-2 AND RUN-3! RELATED TO DETECTOR
   CALIBRATIONS AND WORKING FEATURES*
 
-- [ ] *INTRODUCE NAMING FOR AIRPORT, JURA, SUNSET, SUNRISE*  
+- [ ] *INTRODUCE NAMING FOR AIRPORT, JURA, SUNSET, SUNRISE*
+  -> Not really needed imo.
 
+bla bla bla, the setup includes a \cefe source mounted to a
+pneumatic manipulator, see sec. [[#sec:cast:55fe_manipulator]], ...
 
-** TODO [0/4]
+- [X] *HAVE A SORT OF TIMELINE APPROACH?*
+  Or instead first start with a factual representation of what the
+  setup actually looked like and then a "retrospective" of the
+  different times? Including the problems that were encountered?
+  -> Yup, written.
 
 - [X] alignment photo of laser alignment
 - [X] geometer measurements
@@ -12927,16 +12931,26 @@ shutdown of the experiment, it is not discussed here.
 - [X] section about the 55Fe source and manipulator, with noexport
   section about the software used to control it.  
 
-- [ ] compute real dead time as done in `run_statistics.txt` files
+- [X] compute real dead time as done in `run_statistics.txt` files
   available for 2016 data taking campaign in December (grepping
-  through tpc19, I finally found the code: [[file:~/CastData/Code/scripts/PyS_timeOfRunFolder.py]]
-  
+  through tpc19, I finally found the code:
+  [[file:~/CastData/Code/scripts/PyS_timeOfRunFolder.py]]
+  -> Contained
 
+- [ ] *MENTION 2016 COSMIC ALIGNMENT MEASUREMENT? Maybe as a footnote
+  "for completeness sake"*
+  -> Maybe as footnote?
+- [ ] *AT VERY LEAST FIND 2016 DATA AND LINK IT IN EXTENDED VERSION!!!!!!*
+  -> Might be on laptop or tpc19 or potentially even tpc00.
+  -> Definitely not on voidRipper.
+  -> Not on Laptop either!
+  
 *** X-ray finger [/]
 
 - [ ] include funky reconstruction info / expected rate of X-ray
   finger and what we actually got?
 
+  
 ** Timeline
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:timeline
@@ -12946,9 +12960,9 @@ The Septemboard detector was prepared for data taking at the CAST
 experiment in July 2017 for preliminary alignment and fit tests. The
 detector was mounted behind the LLNL telescope and aligned with a
 laser from the opposite side of the magnet on <2017-07-07> (see
-fig. [[fig:cast:laser_alignment1]]). Vacuum leak tests were performed and
+fig. sref:fig:cast:laser_alignment1). Vacuum leak tests were performed and
 the detector installed on <2017-07-10> (see
-fig. [[fig:cast:detector_installed]]). In addition geometer measurements
+fig. [[sref:fig:cast:detector_installed]]). In addition geometer measurements
 were done for final alignment and as a reference measurement the day
 after. An Amptek COOL-X X-ray generator [fn:amptek] ('X-ray finger')
 was installed on the opposite side of the magnet. A calibration
@@ -12996,7 +13010,7 @@ the lead shielding support to accommodate a parallel data taking with
 KWISP. Unfortunately, external delays pushed the begin of the data
 taking campaign back into late October. On <2018-10-20> the data
 taking finally begins after a power supply issue was fixed the day
-before. For alignment another Geometer measurement was performed on
+before. For alignment another geometer measurement was performed on
 <2018-07-23>. The issues encountered during this data taking period,
 which lasted until <2018-12-20> are mentioned in sec. [[#sec:cast:data_taking_woes_2018_2]].
 
@@ -13008,30 +13022,39 @@ a variety of targets and filters (see sec. [[#sec:calibration:cdl]] in the
 next chapter for a deeper overview). Afterwards the detector was
 dismounted and taken back to Bonn.
 
-- [ ] *MENTION 55Fe for outer chips here?*
+For the results of the different alignments, further see section
+[[#sec:cast:alignment]].
 
-For the results of the different alignments, further see section [[#sec:cast:alignment]].
-
-#+CAPTION: Alignment of the telescope side pipes using an acryllic glass
-#+CAPTION: flange with a centered grid and a laser aligned to the magnet
-#+CAPTION: bore. The central laser spot is the point on the vertical line
-#+CAPTION: extending out from the center. The other points towards the lower right
-#+CAPTION: are further refractions. This was better visible by eye.
-#+NAME: fig:cast:laser_alignment1
-[[~/phd/Figs/CAST_Alignment/laser_alignment_IMG_20170707_121738.jpg]]
-
-#+CAPTION: Detector installed on the beamline behind the LLNL telescope on <2017-07-10>.
-#+NAME: fig:cast:detector_installed
-[[~/org/Figs/CAST_Alignment/detector_installed_after_laser_alignment_IMG_20170710_185009.jpg]]
-
-- [ ] *MERGE TWO FIGURES TO SUBFIG*
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Laser alignment") (label "fig:cast:laser_alignment1")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                     "~/phd/Figs/CAST_Alignment/laser_alignment_IMG_20170707_121738.jpg"))
+        (subfigure (linewidth 0.5) (caption "Detector installed after alignment") (label "fig:cast:detector_installed")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                     "~/org/Figs/CAST_Alignment/detector_installed_after_laser_alignment_IMG_20170710_185009.jpg"))
+        (caption
+         (subref "fig:cast:laser_alignment1")
+          "Alignment of the telescope side pipes using an acrylic glass
+           flange with a centered grid and a laser aligned to the magnet
+           bore. The central laser spot is the point on the vertical line
+           extending out from the center. The other points towards the lower right
+           are further refractions. This was better visible by eye."
+         (subref "fig:cast:detector_installed")
+           "Detector installed on the beamline behind the LLNL telescope on <2017-07-10>.")
+        (label "fig:cast:alignment_detector"))
+#+end_src
 
 [fn:amptek]
 https://www.amptek.com/internal-products/obsolete-products/cool-x-pyroelectric-x-ray-generator
 
-*** Detailed technical timeline [/]                              :noexport:
+*** TODOs for this section [/]                                   :noexport:
 
-- [ ] *COPY BACK TO STATUS AND PROGRESS WITH UPDATES!*
+- [ ] *MENTION 55Fe for outer chips here?*
+
+- [ ] *MERGE TWO FIGURES TO SUBFIG*
+  
+*** Detailed technical timeline [/]                              :extended:
 
 - Initial installation 2017 ::
   - ref:
@@ -13176,59 +13199,60 @@ https://www.amptek.com/internal-products/obsolete-products/cool-x-pyroelectric-x
   - another set of measurements between <2021-10-12 Tue 18:00> to
     <2021-10-16 Sat 19:55> with a new set of calibrations
 
+**** TODOs for this section                                     :noexport:
 
+- [X] *COPY BACK TO STATUS AND PROGRESS WITH UPDATES!*
+  -> Done <2023-10-18 Wed 21:46>.
+  
 ** Alignment
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:alignment
 :END:
-
-- [ ] MAYBE rename to Detector setup & alignment
-- [ ] maybe explain X-ray finger measurements here fully instead of a
-  separate section?
-- [ ] X-ray finger not performed for 2018 data taking for logistical
-  reasons and knowledge that geometer measurements give us precise
-  information relative to "known good" alignment in 2017.  
 
 Detector alignment with the X-ray telescope, the magnet and by
 extension the solar core during solar tracking is obviously crucial
 for a helioscope for a good physics result. The alignment procedure
 used for the Septemboard detector is a three-fold approach:
 
-1. alignment of the piping up to the detector using an acryllic glass
-   target with a millimeter spaced cross. This target is mounted to
-   the vacuum pipes in the same way the detector will be mounted. A
-   laser is installed on the opposite side of the magnet. With the
-   magnet bores fully open the laser is aligned such that it propagates
-   the full bore and is reflected by the X-ray telescope into the
-   focal spot. This alignment guarantees the focal spot location to be
-   near the center of the detector. Uncertainty is introduced due to
-   the need to remove the acrylic glass target and install the
-   detector, as the mounting screws allow for small movements. In
-   addition the vacuum pipes are also not perfectly fixed.
+1. alignment of the piping up to the detector using an acrylic glass
+   target with a millimeter spaced cross, as seen in
+   fig. sref:fig:cast:laser_alignment1. This target is mounted to the
+   vacuum pipes in the same way the detector is mounted. A laser is
+   installed on the opposite side of the magnet. With the magnet bores
+   fully open the laser is aligned such that it propagates the full
+   bore and is reflected by the X-ray telescope into the focal
+   spot. This alignment guarantees the focal spot location to be near
+   the center of the detector. Uncertainty is introduced due to the
+   need to remove the acrylic glass target and install the detector,
+   as the mounting screws allow for small movements. In addition the
+   vacuum pipes are also not perfectly fixed.
 2. alignment of the fully installed detector using an X-ray
-   finger. The X-ray finger is a small electric X-ray generator, which
-   is installed in the magnet bore at the opposite end of the
-   magnet. The generated X-rays must traverse the magnet and
-   telescope, thereby being focused by the telescope into the focal
-   spot. As the X-ray finger does not emit parallel light, the
-   resulting distribution of the X-rays on the detector is not a
-   perfect focal spot, even if the telescope was perfect and the
-   detector placed right in the focus. The mean position of the taken
-   data can anyhow be used to determine the likely focal spot
-   position. See below for an example and the resulting position from
-   one of the X-ray finger runs.
+   finger. The 'X-ray finger' is a small electric X-ray generator (in
+   particular an Amptek COOL-X), which is installed in the magnet bore
+   at the opposite end of the magnet. The generated X-rays must
+   traverse the magnet and telescope, thereby being focused by the
+   telescope into the focal spot. As the X-ray finger does not emit
+   parallel light, the resulting distribution of the X-rays on the
+   detector is not a perfect focal spot, even if the telescope was
+   perfect and the detector placed right in the focus. The close
+   distance also implies the focal length is slightly different than
+   for an infinite source. The mean position of the taken data can
+   anyhow be used to determine the likely focal spot position. See
+   below for an example and the resulting position from one of the
+   X-ray finger runs.
 3. alignment by the geometer group at CERN. A theodolite is installed
    in the CAST hall and the location of many targets on the magnet,
    telescope, vacuum pipes and the detector itself are measured up to
-   $\SI{0.5}{mm}$ precision at $1σ$ level. The initial geometer
-   measurement from <2017-07-11> mainly serves as a baseline
-   reference. As the first two alignment procedures provide a good
-   alignment, a measurement of the existing position by the geometers
-   can then later be used to re-align the detector after it was
-   removed relative to the previous baseline position relative to the
-   telescope. This assures the detector can be remounted and placed in
-   the right location without the need for an additional laser
-   alignment.
+   $\SI{0.5}{mm}$ precision at $1σ$ level. See
+   fig. sref:fig:cast:alignment_targets for a picture of such a
+   target. The initial geometer measurement from <2017-07-11> mainly
+   serves as a baseline reference. As the first two alignment
+   procedures provide a good alignment, a measurement of the existing
+   position by the geometers can then later be used to re-align the
+   detector after it was removed relative to the previous baseline
+   position relative to the telescope. This assures the detector can
+   be remounted and placed in the right location without the need for
+   an additional laser alignment.
 
 The X-ray finger run taken in April 2018 can be used as a reference
 for the alignment as used during the first data taking. The center
@@ -13237,26 +13261,31 @@ of hits each pixel received is colored. Computing the mean position of
 all those clusters yields the most likely center position of the focal
 spot. See fig. [[fig:cast:xray_finger_centers]] for an example of
 this. The position of the center based on the mean of all cluster
-centers is about \SI{0.4}{mm} away from the center in both axes.
+centers is about $\SI{0.4}{mm}$ away from the center in both axes.
 
-- [X] *REPHRASE ABOVE W.R.T. CORRECT RUN 189 AND WHAT IS WINDOW ETC*
-  Might change significantly. Ideally we can cross reference the X-ray
-  finger center position to the geometer measurement, i.e. use it for
-  the next data taking campaign where we know the deltas to the
-  geometer associated with /this/ X-ray finger run.
-- [ ] *REPHRASE ABOVE TO NOT READ LIKE EXTENSION OF POINT NUMBER 2 ABOVE*  
-- [ ] *ADD NOTE HOW IN PRINCIPLE ONE COULD ARGUE THE POSITION IS
-  ARTIFICIALLY MOVED UP DUE TO CHIP CUT OFF AT BOTTOM!*
-- [ ] *ROTATE THE PLOT*
-  -> And rotate our background & candidates I fear...
-
-#+CAPTION: Cluster center positions of the X-ray finger run 189 from April
-#+CAPTION: 2018. The red cross marks the center of all cluster centers,
-#+CAPTION: which is the most likely position of the focal spot. It is
-#+CAPTION: $\sim\SI{0.4}{mm}$ away from the chip center in both axes.
-#+NAME: fig:cast:xray_finger_centers
-[[~/phd/Figs/CAST_Alignment/xray_finger_centers_run_189.pdf]]
-   
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "X-ray finger clusters") (label "fig:cast:xray_finger_centers")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/CAST_Alignment/xray_finger_centers_run_189.pdf"))
+        (subfigure (linewidth 0.5) (caption "Geometer target") (label "fig:cast:alignment_targets")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/CAST_Alignment/detector_targets_for_alignment_small.png"))
+        (caption
+         (subref "fig:cast:xray_finger_centers")
+          "Cluster center positions of the X-ray finger run 189 from April
+           2018. The red cross marks the center of all cluster centers,
+           which is the most likely position of the focal spot. It is "
+          ($ "\\sim\\SI{0.4}{mm}") " away from the chip center in both axes.
+           The two parallel lines with less clusters are the window strongback.
+           The orthogonal line is a graphite spacer in the center of the LLNL telescope."
+         (subref "fig:cast:alignment_targets")
+          "Image showing the targets on the detector. The acrylic glass
+           cylinders are the fiducial marks used to hold the actual survey
+           target. The survey target is a mirror to reflect the laser of the
+           theodolite. Image from " (cite "geometer_1") ".")
+        (label "fig:cast:xray_finger_alignment"))
+#+end_src
 
 With this setup after each remounting a geometer measurement was
 performed to align the detector back to the initial laser
@@ -13270,38 +13299,6 @@ CenterR and CenterF positions defined based on the initial geometer
 measurement in July 2017. In each case the shifts in X, Y and Z
 direction is usually significantly less than $\SI{1}{mm}$.
 
-
-- [ ] split these things up into something that is not a list? We can
-  still add subsections here.   
-
-#+CAPTION: Image showing the targets on the detector. The acryllic glass
-#+CAPTION: cylinders are the fiducial marks used to hold the actual survey
-#+CAPTION: target. The survey target is a mirror to reflect the laser of the
-#+CAPTION: theodolite. Image from cite:geometer_1.
-#+NAME: fig:cast:alignment_targets
-[[~/phd/Figs/CAST_Alignment/detector_targets_for_alignment_small.png]]
-
-- [ ] have own section for alignment? Problem is that alignment takes
-  place over the whole period, as the detector was removed multiple
-  times etc.
-
-- [ ] Alignment section which goes over the seen deviations based on
-  geometers & X-ray finger run?
-
-- [ ] Geometer measurement 1 not relevant directly. But relevant as it
-  was used later to align against!
-- [ ] Geometer measurement 2 irrelevant, as detector was mounted &
-  dismounted without any data taking due to window rupture
-- [ ] Geometer measurement 3 relevant for data taking Run 2
-- [ ] Geometer measurement 4 relevant for data taking Run 3
-
-- [ ] image showing the targets from 2017/07/11
-
-- [ ] Note: from Oct 2017 report on there's also numbers relative to
-  *magnet* fiducials. We care only about telescope fiducials as that's
-  what we align to. Maybe ask Johanna again about this...
-
-  
 #+CAPTION: Overview of the results of the different geometer alignment measurements. The
 #+CAPTION: first measuremnt servese as the baseline to define 2 points (CenterR and CenterF)
 #+CAPTION: relative to which alignment later is done. The initial alignment is done both
@@ -13327,10 +13324,69 @@ direction is usually significantly less than $\SI{1}{mm}$.
 |             | CenterF |          1.0 |          0.5 |          0.3 |        |
 |-------------+---------+--------------+--------------+--------------+--------|
 
+For a detailed overview of the geometer measurements see the public
+EDMS links under cite:geometer_1,geometer_2,geometer_3,geometer_4,geometer_5
+containing the PDF reports for each measurement.
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [X] *REPHRASE ABOVE W.R.T. CORRECT RUN 189 AND WHAT IS WINDOW ETC*
+  Might change significantly. Ideally we can cross reference the X-ray
+  finger center position to the geometer measurement, i.e. use it for
+  the next data taking campaign where we know the deltas to the
+  geometer associated with /this/ X-ray finger run.
+- [ ] *REPHRASE ABOVE TO NOT READ LIKE EXTENSION OF POINT NUMBER 2
+  ABOVE*
+  -> Refers to the X-ray finger section after the 1, 2, 3 part.
+- [ ] *ADD NOTE HOW IN PRINCIPLE ONE COULD ARGUE THE POSITION IS
+  ARTIFICIALLY MOVED UP DUE TO CHIP CUT OFF AT BOTTOM!*
+  -> The data is partially cut off at the bottom potentially meaning
+  the mean is slightly biased.
+- [ ] *ROTATE THE PLOT*
+  -> And rotate our background & candidates I fear...
+  -> Yep, that still has to be done! :)
+  -> But rotation for the X-ray finger does not really need to be done
+  here. Or well, better rotate by 90° so it is more evident what the
+  telescope graphite spacer is.
+
+- [ ] split these things up into something that is not a list? We can
+  still add subsections here.   
+
+
+- [ ] MAYBE rename to Detector setup & alignment
+- [ ] maybe explain X-ray finger measurements here fully instead of a
+  separate section?
+  -> Do we even have a separate section?
+- [X] X-ray finger not performed for 2018 data taking for logistical
+  reasons and knowledge that geometer measurements give us precise
+  information relative to "known good" alignment in 2017.  
+
+- [X] have own section for alignment? Problem is that alignment takes
+  place over the whole period, as the detector was removed multiple
+  times etc.
+- [X] Alignment section which goes over the seen deviations based on
+  geometers & X-ray finger run?
+
+- [X] Geometer measurement 1 not relevant directly. But relevant as it
+  was used later to align against!
+- [X] Geometer measurement 2 irrelevant, as detector was mounted &
+  dismounted without any data taking due to window rupture
+- [X] Geometer measurement 3 relevant for data taking Run 2
+- [X] Geometer measurement 4 relevant for data taking Run 3
+
+- [ ] image showing the targets from 2017/07/11
+
+- [ ] Note: from Oct 2017 report on there's also numbers relative to
+  *magnet* fiducials. We care only about telescope fiducials as that's
+  what we align to. Maybe ask Johanna again about this...
+
+*About Geometer table:*
 - [ ] *CLARIFY WHAT THE SIGN MEANS. IS MINUS UP OR DOWN, LEFT OR
   RIGHT?*
 - [ ] *LETS HOPE WHEN THINKING MORE DEEPLY ABOUT NUMBERS IT DOESN'T
   MAKE 1mm IN ΔX APPEAR TOO MUCH!*
+  -> This is about comparing the two X-ray finger runs and the
+  associated geometer measurements.
   -> Not sure thinking about it more. On the one hand we need to keep
   in mind that the coordinates X & Y should be flipped. Ok, next the
   center Y position (so real X) in the X-ray finger cluster center
@@ -13353,11 +13409,7 @@ direction is usually significantly less than $\SI{1}{mm}$.
 - [ ] *SEE TIMELINE WHICH ONES ARE UNDER VACUUM AND MAGNET COLD / WARM
   MAYBE MENTION*  
 
-For a detailed overview of the geometer measurements see the public
-EDMS links under cite:geometer_1,geometer_2,geometer_3,geometer_4,geometer_5
-containing the PDF reports for each measurement.
-
-*** Some extra info about the geometer alignment                 :noexport:
+*** Some extra info about the geometer alignment                 :extended:
 
 The following is the snippet from the <2017-09-14> PDF report about
 the definition of the CenterR and CenterF positions.
@@ -13373,13 +13425,15 @@ close to the detector axis CenterR and CenterF have been defined on
 been calculated.
   #+end_quote
 
-*** Generate X-ray heatmap [/]                                   :noexport:
+*** Generate X-ray heatmap [/]                                   :extended:
 
-- [ ] *FIND XRAY FINGER RUN 2, RUN 189!*
+- [X] *FIND XRAY FINGER RUN 2, RUN 189!*
+  [[file:~/CastData/data/XrayFingerRuns/]]
 - [ ] *RECREATE BELOW FOR THE OTHER XRAY FINGER RUN!*
 - [ ] *RECREATE PLOTS AS TIKZ + VEGA*
-- [ ] *VERIFY THAT WE (LIKELY) HAVE TO ROTATE THE DATA BY 90 DEGREES AS ONE OF THE VERTICAL LINES IS THE TELESCOPE AXIS WHICH SHOULD BE
+- [X] *VERIFY THAT WE (LIKELY) HAVE TO ROTATE THE DATA BY 90 DEGREES AS ONE OF THE VERTICAL LINES IS THE TELESCOPE AXIS WHICH SHOULD BE
   HORIZONTAL TO THE GROUND*
+  -> Yes, we do.
 
 First let's reconstruct the X-ray finger run:
 #+begin_src nim :tangle code/xray_finger_data_parsing.nim
@@ -13393,7 +13447,7 @@ proc main(path: string, run: int) =
   shell:
     raw_data_manipulation -p ($path) "--runType xray --out " ($outfile)
   shell:
-    reconstruction ($outfile) "--out " ($recoOut)
+    reconstruction -i ($outfile) "--out " ($recoOut)
   
 when isMainModule:
   import cligen
@@ -13407,7 +13461,7 @@ import nimhdf5, ggplotnim, options
 import ingrid / tos_helpers
 import std / [strutils, tables]
 
-proc main(run: int) =
+proc main(run: int, switchAxes: bool = false) =
   let file = "/t/reco_xray_finger_$#.h5" % $run
   
   #proc readClusters(h5f: H5File): (seq[float], seq[float]) =
@@ -13432,14 +13486,21 @@ proc main(run: int) =
   discard h5f.close()
  
   echo "Center position of the cluster is at: (x, y) = (", centerX, ", ", centerY, ")"
-  ggplot(df, aes("centerX", "centerY", color = "count")) +
+  let x = if switchAxes: "centerY" else: "centerX"
+  let y = if switchAxes: "centerX" else: "centerY"
+  let cX = if switchAxes: centerY else: centerX
+  let cY = if switchAxes: centerX else: centerY
+  ggplot(df, aes(x, y, color = "count")) +
     geom_point(size = 0.75) +
-    geom_point(data = newDataFrame(), aes = aes(x = centerX, y = centerY),
+    geom_point(data = newDataFrame(), aes = aes(x = cX, y = cY),
                color = "red", marker = mkRotCross) + 
     scale_color_continuous() +
     ggtitle("X-ray finger clusters of run $#" % $run) +
+    xlab(r"x [mm]") + ylab(r"y [mm]") + 
     xlim(0.0, 14.0) + ylim(0.0, 14.0) +
-    ggsave("/home/basti/phd/Figs/CAST_Alignment/xray_finger_centers_run_$#.pdf" % $run)
+    theme_scale(1.0, family = "serif") + 
+    ggsave("/home/basti/phd/Figs/CAST_Alignment/xray_finger_centers_run_$#.pdf" % $run) 
+           #useTeX = true, standalone = true)
 
 when isMainModule:
   import cligen
@@ -13449,19 +13510,21 @@ when isMainModule:
 #+RESULTS:
 # Center position of the cluster is at: (x, y) = (7.210714052855218, 5.669514297250704)
 
+First perform the data reconstruction:
 #+begin_src sh
 ./code/xray_finger_data_parsing -p ~/CastData/data/XrayFingerRuns/Run_21_170713-11-03 --run 21
 ./code/xray_finger_data_parsing -p ~/CastData/data/XrayFingerRuns/Run_189_180420-09-53 --run 189
-
-./code/xray_finger_center_plot -p 21
-./code/xray_finger_center_plot -p 189
+#+end_src
+And now create the plots:
+#+begin_src sh
+./code/xray_finger_center_plot -r 21 --switchAxes 
+./code/xray_finger_center_plot -r 189 --switchAxes
 #+end_src
 
 For run 21:
 Center position of the cluster is at: (x, y) = (7.210714052855218,5.669514297250704)
 For run 189:
 Center position of the cluster is at: (x, y) = (7.428075467697270,6.594113570730057)
-
 
 First the plot for the (unused) X-ray finger run taken at the first
 installation before any data taking (detector removed afterwards):
@@ -13495,10 +13558,6 @@ file:Figs/CAST_Alignment/xray_finger_centers_run_189.pdf
 
 ** Detector setup at CAST [/]
 
-- [ ] *POSSIBLY CHANGE TO SOMETHING W/O RENDER AND SHOW IMAGES OF FULL
-  SETUP WITH VETO SCINTI AS WELL*
-- [ ] *MENTION ~VT3~ AS ITS IMPORTANT*  
-
 The setup of the full beamline from the magnet end cap to the detector
 is shown in a render in fig. [[fig:cast:render_beamline_setup]]. The
 piping shows a clear kink introduced using a flexible bellow. This
@@ -13514,18 +13573,13 @@ fig. [[fig:cast:annotated_setup]], which shows lead shielding, veto
 scintillator, \cefe source manipulator and the LLNL X-ray
 telescope. 
 
-
-
-- [ ] *CHECK THICKNESS OF LEAD SHIELDING
-- [ ] *SHOW REAL (ANNOTATED?) IMAGE OF SETUP*  
-
 #+CAPTION: Render of the detector setup up to the magnet end cap as seen
 #+CAPTION: from above. The beamline kinks away from the other beamline
 #+CAPTION: ("below" in this image) to provide more space for two detectors
 #+CAPTION: at the same time.
 #+CAPTION: Image courtesy of Tobias Schiffer.
 #+NAME: fig:cast:render_beamline_setup
-[[~/phd/Figs/CAST_Alignment/llnl_cast_gridpix_render_small.png]]
+[[~/phd/Figs/llnl_cast_gridpix_render_small_annotated.png]]
 
 #+CAPTION: Annotated setup as installed in October 2017 for the first data taking campaign.
 #+CAPTION: The detector is seen in its lead shielding, with the veto scintillator covering
@@ -13534,6 +13588,20 @@ telescope.
 #+CAPTION: LLNL X-ray telescope.
 #+NAME: fig:cast:annotated_setup
 [[~/phd/Figs/CAST_Nov2017Aufbau_annotated_small.png]]
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *POSSIBLY CHANGE TO SOMETHING W/O RENDER AND SHOW IMAGES OF FULL
+  SETUP WITH VETO SCINTI AS WELL*
+  -> Generally the annotated render is already shown earlier in the
+  thesis. So I don't think it's really needed here. We can reference
+  it though.
+  
+- [ ] *MENTION ~VT3~ AS ITS IMPORTANT*  
+
+- [ ] *CHECK THICKNESS OF LEAD SHIELDING
+- [X] *SHOW REAL (ANNOTATED?) IMAGE OF SETUP*  
+
 
 *** \cefe source and manipulator
 :PROPERTIES:
