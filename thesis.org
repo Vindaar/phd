@@ -12492,7 +12492,7 @@ still calculated for the reconstructed signal which is used to
 correct any global offset. 
 
 
-*** FADC spectrum reconstruction [/]
+*** FADC spectrum reconstruction [0/0]
 
 The first step to reconstruct the FADC data is to perform the pedestal
 correction. This is simply done by subtracting the pedestals register
@@ -12533,17 +12533,20 @@ when using the 12 bit operating mode for each register.
 With these corrections applied, the recorded FADC spectrum is
 recovered, centered around the trigger position.
 
-- [ ] *REWRITE TAKING INTO ACCOUNT THAT PEDESTALS ARE COMPUTED BASED
-  ON DATA NOW!* -> Partially done by referencing pedestals from
-  truncated mean.
-
 [fn:reco_fadc_manual] A PDF of the FADC manual is available here:
 https://archive.org/details/manualzilla-id-5646050/
 
 [fn:fadc_code] Data parsing and the mentioned reconstruction code is
 found at *CITE*
 
-- [ ] *ADD CITATION FOR* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_helpers.nim
+**** TODOs for this section [0/2]                               :noexport: 
+
+- [ ] *REWRITE TAKING INTO ACCOUNT THAT PEDESTALS ARE COMPUTED BASED
+  ON DATA NOW!* -> Partially done by referencing pedestals from
+  truncated mean.
+  -> Now that part of the expl is one sec above!
+
+- [ ] *ADD REFERENCE TO CODE* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_helpers.nim
 
 *** Signal baseline, rise time and fall time [0/4]               :analysis:
 :PROPERTIES:
@@ -12607,20 +12610,15 @@ A reconstructed FADC spectrum including indications for baseline, rise
 and fall time as well as the minimum is shown in
 fig. [[fig:reco:fadc_reco_example]].
 
-#+CAPTION: Example of a fully reconstructed FADC spectrum from a \SI{5.9}{keV} X-ray
-#+CAPTION: recorded with the Septemboard detector during a calibration run. 
-#+CAPTION: ADD EXPLANATIONS OF START AND END POSITIONS OF RISE TIME*.
-#+CAPTION: REFER BY $c_B$ and $c_p$.
+#+CAPTION: Example of a fully reconstructed InGrid event and FADC spectrum from a \SI{5.9}{keV} X-ray
+#+CAPTION: recorded with the Septemboard detector during a calibration run. On the left of each
+#+CAPTION: plot are all properties computed for the data. In the FADC plot the blue line indicates
+#+CAPTION: the baseline. Green vertical: rise time from full to dashed line. Red vertical: point of
+#+CAPTION: spectrum minimum. Light red: fall time from dashed to full line. Rise / fall time stops
+#+CAPTION: $\SI{2.5}{\%}$ before baseline is reached.
 #+ATTR_LATEX: :width 1\linewidth
 #+NAME: fig:reco:fadc_reco_example
 [[~/phd/Figs/CalibrationRuns2018_Reco_2023-10-15_22-49-53/septemEvents/septem_fadc_run_239_event_1068_region_crAll.pdf]]
-
-- [ ] *REPLACE THE PLOT!*
-  -> The plot we use now is quite nice as it allows us to explain
-  multiple aspects at the same time. Just need to decide what the plot
-  should look like and prettify it (probably don't want the properties
-  and InGrid event next to it!)
-- [ ] *ADD CITATION FOR* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_analysis.nim  
 
 [fn:naming_rise_fall] The naming of the rise and fall time in the
 context of a negative pulse is slightly confusing. Rise time refers to
@@ -12638,6 +12636,14 @@ from which to compute the mean. The tricky aspect would be choice of
 window size and the behavior in very noisy events.
 
 *** TODOs for this section [/]                                   :noexport:
+
+- [ ] *REPLACE THE PLOT!*
+  -> The plot we use now is quite nice as it allows us to explain
+  multiple aspects at the same time. Just need to decide what the plot
+  should look like and prettify it (probably don't want the properties
+  and InGrid event next to it!)
+  -> Yes we do. It is very illustrative.
+- [ ] *ADD CITATION FOR* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_analysis.nim  
 
 - [X] *CHANGE FADC CODE TO NOT USE MIN, BUT MEAN OF N POINTS AROUND
   MIN? -> ALREADY USES MEAN OF N-th PERCENTILE AROUND ARGMIN*
@@ -12745,7 +12751,7 @@ when isMainModule:
 - [ ] *MAKE PLOT PRETTY AND RERUN FOR THIS:*
   run 281 and index 1533
 
-*** Generate plot of InGrid and FADC event                       :noexport:
+*** Generate plot of InGrid and FADC event                       :extended:
 
 The command to produce the plot as seen in the thesis is:
 #+begin_src sh
@@ -12764,33 +12770,55 @@ to a specific file name (it's intended to produce many plots
 automatically and act more as a fast way to visualize data under
 different cuts).
 
-*** Noise sensitive [/]
+*** Noise sensitive [/]                                          :optional:
 
 Because of the small amplitude of the associated signals induced on
 the grid, electromagnetic interference is a serious issue with this
 FADC setup. Ideally, the detector should be installed in a Faraday
 cage and a short, shielded LEMO cable should be used to connect it to
-the
+the pre-amplifier and amplifier.
+
+**** TODOs for this section                                     :noexport:
 
 - [ ] *WHAT TO DO WITH THIS? WHERE SHOULD THIS GO? MAYBE MENTION IN
   FADC INTRODUCTION ALREADY? OR HERE BECAUSE AFTER ALL? IT SHOWS UP IN
   ANALYSIS AND WE HAVE SIMPLE NOISE DETECTION IN CODE*
   -> Go to analysis / characterization / whatever part!
 
-*** FADC amplifier settings / calibration of amplifier settings [/]
+- [ ] This section does not really belong here. Yes, it is noise
+  sensitive, but we'll mention it in the context of data taking woes
+  and then later when looking at the different data sets.
 
-FADC does not require a proper calibration. However, better
-measurements of the effect of the different integration /
-differentiation settings of the amplifier would have been very
-valuable. [fn:detector_fadc_amp_measurements]
+*** FADC amplifier settings                                      :extended:
 
-Outside of that
-- [ ] *FINISH*
+The FADC does not require a proper calibration in the same sense as
+the Timepix needs to be calibrated. However, the amplifier settings
+have a large impact on the resulting signals. Better measurements of
+the effect of the different integration / differentiation settings of
+the amplifier would have been very valuable, but were never performed
+for lack of time. The same holds for different amplifications as to
+properly understand the data ranges the FADC can record and how the
+trigger threshold in equivalent $\si{keV}$ on the center GridPix is
+related. This would have made smarter decisions about the settings
+possible (e.g. to optimize the lowest possible activation to have the
+FADC as a trigger for lower energies available). Only a single set of
+measurements exists comparing the FADC integration time of
+$\SI{50}{ns}$ and $\SI{100}{ns}$, which is only partially useful (in
+particular because the other parameters (differentiation time,
+amplification etc.) were not properly recorded for these. The problem
+is especially that the TOS data does not record these parameters
+anyway, as they are physical rotary knobs on the amplifier.
+
+We will talk about these things in sec. [[#sec:calib:fadc]] again when
+discussing the impact of noise on the FADC data taking and changing
+parameters that were done to mitigate that to an extent.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [X] *FINISH*
 
 - [ ] *MENTION TALKED ABOUT FURTHER DOWN IN FADC ANALYSIS AS WELL AS
   CAST SECTION MENTIONING CHANGES DUE TO NOISE*
-
-[fn:detector_fadc_amp_measurements] 
 
 *** Example to reconstruct FADC data                             :extended:
 
@@ -12828,12 +12856,13 @@ therefore required to not only look at the scintillator trigger clock
 cycles, but also at whether the FADC actually triggered. This is
 handled in the analysis framework.
 
-[fn:reco_scinti_data_bug_2] *REWRITE AND MOVE* In addition to the
-above bug, there was unfortunately a more serious bug, which rendered
-the scintillator counts useless in the end of 2017 / beginning of 2018
-data taking period. The polarity of the signals was inverted in the
-detector firmware, resulting in useless "trigger" information. 
+[fn:reco_scinti_data_bug_2] In addition to the above bug, there was
+unfortunately a more serious bug, which rendered the scintillator
+counts useless in the end of 2017 / beginning of 2018 data taking
+period. The polarity of the signals was inverted in the detector
+firmware, resulting in useless "trigger" information.
 
+*** TODOs for this section [/]                                   :noexport:
 
 - [ ] *WAS POLARITY REALLY THE ISSUE? I THINK SO, BUT NOT SURE*
 
