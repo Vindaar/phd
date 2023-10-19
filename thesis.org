@@ -14871,8 +14871,7 @@ interlock systems and their corresponding members are shown.
 #+CAPTION: regarding explanations of when the interlock is activated.
 #+NAME: fig:detector-schematic
 #+ATTR_LATEX: :width 1\textwidth :options angle=90
-[[file:~/org/Doc/Detector/figs/detector_system2017.png]]
-
+[[~/org/Doc/Detector/figs/detector_system2017.png]]
 
 ** Interlock systems
 :PROPERTIES:
@@ -14895,11 +14894,18 @@ detector. There are 3 interlock systems to speak of.
 :CUSTOM_ID: sec:cast:hv_interlock
 :END:
 
+#+begin_quote
+This section describes the high voltage interlock as it was
+intended. But as mentioned multiple times previously it was
+deactivated for final data taking due to several bugs causing it do
+trigger under non intended circumstances.
+#+end_quote
+
 The HV system is part of an interlock, which tracks the following
 properties:
 - detector temperature
 - currents on HV lines
-- TO BE IMPLEMENTED: gas pressure inside the detector
+- TO BE IMPLEMENTED: gas pressure inside the detector [fn:gas_pressure]
 
 The detector temperature is measured at two points by PT1000
 sensors. One of these is located on the bottom side of the
@@ -14916,25 +14922,30 @@ HV (note: the two are intertwined, since both sit in the same VME
 crate, which is controlled via a single USB connection), a background
 process which monitors the temperature is started. If the temperature
 exceeds the following boundaries
-#+BEGIN_EXPORT latex
-$\SI{0}{\celsius} \leq T \leq \SI{60}{\celsius}$,
-#+END_EXPORT
+
+\[
+\SI{0}{\celsius} \leq T \leq \SI{60}{\celsius}
+\]
+
 on the lower side of the septemboard, the HV is shut down
 immediately. The lower bound is of less practical value in a physical
-sense, but in case of sensor problems negative temperature
-values may be reported. As the upper bound a value is taken at which
-sparks seen on the pixels become unacceptable. This bound is
-potentially going to be lowered to $\SI{50}{\celsius}$ in the future,
-at which no noticeable noise is detectable. 
+sense, but in case of sensor problems negative temperature values may
+be reported. As the upper bound a value is taken at which sparks and
+general noise seen on the pixels becomes noticeable. 
 
 The interlock currents at which the HV trips are already shown in
-tab. [[tab:hv]]. During ramp up of the HV, these trip currents are set
-higher to avoid trips, while capacitors are being charged.
+tab. [[[[tab:cast:high_voltage]]. During ramp up of the HV, these trip
+currents are set higher to avoid trips, while capacitors are being
+charged.
 
-In the future the gas pressure within the detector is included into
+The gas pressure within the detector was intended to be included into
 the interlock system to shut down the HV if the pressure inside the
-detector leaves a certain safe boundary, since this might indicate a
+detector leaves a certain safe boundary, since this could indicate a
 leak in the detector or an empty gas bottle.
+
+[fn:gas_pressure] The gas pressure inside the detector was intended to
+be added to the HV interlock as well, but also due to lack of time it
+never was.
 
 *** Gas supply interlock
 :PROPERTIES:
