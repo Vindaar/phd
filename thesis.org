@@ -15089,25 +15089,18 @@ to adjust the ray tracing.
   
 ** CAST log files [/]
 
-- [ ] in the above we simply state the number of trackings etc. Of
-  course realistically that is simply not enough. We need the slow
-  control and tracking files to compute when a tracking starts and
-  stops.
-  I think this implies it needs to go before the summary!
-- [ ] INSERT FOOTNOTE LINK TO LABVIEW  
+The CAST experiment is controlled by a central computer running a slow
+control system written in LabVIEW [fn:labview]. It receives data from
+all sensors installed at CAST (vacuum pressures, temperatures, magnet
+current, magnet position and so on). A separate LabVIEW program is
+responsible for controlling the magnet position, either by moving the
+magnet to a specific coordinate or by following the Sun, if it is in
+reach of the magnet.
 
-The CAST experiment is controlled by a central computer running the
-LabVIEW based slow control system. It receives data from all sensors
-installed at CAST (vacuum pressure, temperature, magnet current,
-magnet position etc.). A separate LabVIEW program is responsible for
-controlling the magnet position, either by moving the magnet to a
-specific coordinate or by following the Sun, if it's in reach of the
-magnet.
-
-The slow control software records all sensor data and on the one hand
-presents it in a multitude of graphs and on the other generates log
-files of all information. There are two different kinds of log files
-of interest in the context of the Septemboard detector at CAST.
+The slow control software records all sensor data and presents it in a
+multitude of graphs. All data is also written to log files. There are
+two different kinds of log files of interest in the context of the
+septemboard detector at CAST.
 
 1. The general slow control log file is a versioned space separated
    values file (similar to a comma separated value (CSV) or tab
@@ -15135,19 +15128,32 @@ existence of a solar tracking. However, the slow control log file can
 be used as a further sanity check to make sure the gate valve was
 actually open and the magnet under current during the solar tracking.
 
-This is implemented in *LINK TO LOGREADER*. The code first parses the
-log files and determines valid solar trackings. Then, given a HDF5
-data file containing the background data each solar tracking is mapped
-to a background run. One background run may have zero or more solar
+This is implemented in the ~cast_log_reader~ program part of
+~TimepixAanlysis~. See sec. [[#sec:appendix:software:cast_log_reader]] for
+more details on the program. The program first parses the log files and
+determines valid solar trackings. Then, given an HDF5 data file
+containing the background data each solar tracking is mapped to a
+background run. One background run may have zero or more solar
 trackings attached to it. In the final step the solar tracking start
 and stop information is added to each run as additional meta
 data. During the later stages of processing this meta data is then
 used to only consider background (non tracking) or solar tracking data
 (starting from the computation of background rates).
 
+[fn:labview] https://www.ni.com/labview
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] in the above we simply state the number of trackings etc. Of
+  course realistically that is simply not enough. We need the slow
+  control and tracking files to compute when a tracking starts and
+  stops.
+  I think this implies it needs to go before the summary!
+- [X] INSERT FOOTNOTE LINK TO LABVIEW  
+
 - [ ] *LINK TO CODE!*
 
-*** Add tracking log information to background files             :noexport:
+*** Add tracking log information to background files             :extended:
 
 The code dealing with the log files is [[file:~/CastData/ExternCode/TimepixAnalysis/LogReader/cast_log_reader.nim]]
 
@@ -15469,8 +15475,6 @@ Filtering tracking logs to date: 2018-05-01T02:00:00+02:00 and 2018-12-31T01:00:
 :CUSTOM_ID: sec:cast:data_taking_campaigns
 :END:
 
-- [ ] *UNIFORMLY DECIDE TO EITHER USE ~Run-2~ or ~Run 2~ STYLE*
-
 In summary then the data taken at CAST with the Septemboard detector
 can be split into two periods. The first from October 2017 to April
 2018 and the second from October 2018 to December 2018. The former
@@ -15486,17 +15490,18 @@ FADC was partially noisy. In Run-3 all detector features were working
 as intended. The feature list is summarized in
 tab. [[tab:cast:features_by_run]].
 
-Run-2 ran with a Timepix shutter time of ~2/32~ resulting in about
-$\SI{2.4}{s}$ long frames. This was changed with the start of 2018
-(still in Run-2) to ~2/30~ ($\sim\SI{2.2}{s}$).
-
-- [ ] *VERIFY EXACT SHUTTER TIMES*
+Run-2 ran with a Timepix shutter time of ~2/32~
+(ref. sec. [[#sec:reco:event_duration]]) resulting in about $\SI{2.4}{s}$
+long frames. This was changed with the start of 2018 (still in Run-2)
+to ~2/30~ ($\sim\SI{2.2}{s}$).
 
 In total 115 solar trackings were recorded between Run-2 and
 Run-3. This amounts to about $\SI{180}{\hour}$ of tracking
 data. Further, $\SI{3526}{\hour}$ of background data and
-$\SI{194}{\hour}$ of \cefe calibration data were
-recorded. Two X-ray finger runs were done for alignment purposes.
+$\SI{194}{\hour}$ of \cefe calibration data were recorded. The total
+active fraction of these times is about $\SI{90}{\%}$ in both run
+periods. Two X-ray finger runs were done for alignment purposes (out
+of which only 1 is directly useful).
 
 The appendix [[#sec:appendix:cast_run_list]] lists the full run list with
 additional information about each run.
@@ -15509,44 +15514,18 @@ not affect data quality as they can be calibrated out.
 In total 5 (4) runs out of 120 (119) were missed in the course of the whole data
 taking campaign (one of them was aborted after 30 min).
 
-
-- [ ] table for number of shifts in each run, column for number of
-  trackings
-- [ ] table of temperatures recovered from the shift logs!  
-- [X] number of X-ray finger runs  
-- [X] table of total time taking in each run
-- [X] link to appendix containing total run list!  
-- [X] table of working detector features in each run
-- [ ] table of recorded temperatures (or as a plot? Table takes a lot
-  of space! ~Tools/mapSeptemTempToFePeak.nim~)
-- [X] numbers of the total activity, number of events on the center &
-  outside chips, # of FADC triggers, event durations etc.
-- [ ] *THINK ABOUT WHETHER TO INCLUDE FADC NOISE HERE IN STATISTICS*
-- [ ] *MENTION SHUTTER TIMES USED, 2017 2/32, 2018 2/30?*
-- [ ] plot of event durations already created!
-  
-
-- [ ] *FIX TABLE OF TIME! CODE IN NEXT NOEXPORT SECTION GIVES
-  DIFFERENT NUMBERS THAN THE FIRST TABLE HERE! WHY?*
-  -> Difference (among others) is different number of trackings
-  known. In
-  [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/writeRunList/writeRunList.nim]]
-  the generated run list that's commited to TPA is 115 trackings,
-  whereas here (on voidRipper) only 109 trackings are known. Why?
-
 #+CAPTION: Overview of the total data taken with the Septemboard detector at CAST
-#+CAPTION: in the time between October 2017 and December 2018. See the table below
-#+CAPTION: [[tab:cast:data_stats_overview]] for more precise numbers including the
-#+CAPTION: time the detector was active (shutter open).
+#+CAPTION: in the time between October 2017 and December 2018. 'Active s' and
+#+CAPTION: 'Active b.' refers to the total solar tracking and background time excluding
+#+CAPTION: the dead time due to readout of the septemboard.
+#+CAPTION: See the table below [[tab:cast:data_stats_overview]] for more details.
 #+NAME: tab:cast:total_data_time
-#+ATTR_LATEX: :align lrrr :booktabs t
-|-------+----------------+------------+-------------|
-|       | solar tracking | background | calibration |
-|-------+----------------+------------+-------------|
-| Run-2 | 106 h          | 2401 h     | 107 h       |
-| Run-3 | 74 h           | 1125 h     | 87 h        |
-| Total | 180 h          | 3526 h     | 194 h       |
-|-------+----------------+------------+-------------|
+#+ATTR_LATEX: :align lrrrrr :booktabs t
+|       | Solar tracking [h] | Active s. [h] | Background [h] | Active b. [h] | Active % |
+|-------+--------------------+---------------+----------------+---------------+----------|
+| Run-2 |             106.01 |         94.12 |        2401.43 |       2144.67 |     89.3 |
+| Run-3 |              74.29 |         66.92 |        1124.93 |       1012.68 |     90.0 |
+| Total |             180.30 |        161.05 |        3526.36 |       3157.35 |     89.5 |
 
 #+CAPTION: Overview of working (\green{o}), mostly working (\orange{m}), not
 #+CAPTION: working (\red{x}) features in each run. FADC was partially noisy
@@ -15562,7 +15541,6 @@ taking campaign (one of them was aborted after 30 min).
 | SiPM        | \red{x}    | \green{o} |
 |-------------+------------+-----------|
 
-
 #+CAPTION: Overview of the data taken in each of the runs split by calibration data
 #+CAPTION: ("calib") and background ("back"). First information about the total recorded
 #+CAPTION: time and trackings and then event information regarding general activity and
@@ -15573,12 +15551,12 @@ taking campaign (one of them was aborted after 30 min).
 #+ATTR_LATEX: :booktabs t
 | Field                          | calib Run-2  | calib Run-3  | back Run-2    | back Run-3    |
 |--------------------------------+--------------+--------------+---------------+---------------|
-| total duration                 | 107.42 h     | 87.06 h      | 2507.43 h     | 1199.22 h     |
-| active duration                | 2.6 h        | 3.53 h       | 2238.78 h     | 1079.6 h      |
-| active fraction                | 2.422 %      | 4.049 %      | 89.29 %       | 90.02 %       |
+| total duration                 | 107.42 h      | 87.06 h       | 2507.43 h      | 1199.22 h      |
+| active duration                | 2.6 h         | 3.53 h        | 2238.78 h      | 1079.6 h       |
+| active fraction                | 2.422 %       | 4.049 %       | 89.29 %        | 90.02 %        |
 | # trackings                    | \num{0}      | \num{0}      | \num{68}      | \num{47}      |
-| tracking time                  | 0 h          | 0 h          | 106.01 h      | 74.3 h        |
-| active tracking time           | 0 h          | 0 h          | 94.65 h       | 66.89 h       |
+| tracking time                  | 0 h           | 0 h           | 106.01 h       | 74.3 h         |
+| active tracking time           | 0 h           | 0 h           | 94.65 h        | 66.89 h        |
 |--------------------------------+--------------+--------------+---------------+---------------|
 | Events                         |              |              |               |               |
 |--------------------------------+--------------+--------------+---------------+---------------|
@@ -15588,30 +15566,78 @@ taking campaign (one of them was aborted after 30 min).
 | center + outer                 | \num{51368}  | \num{47825}  | \num{960499}  | \num{460726}  |
 | center chip                    | \num{531600} | \num{414742} | \num{984319}  | \num{470188}  |
 | any chip                       | \num{531607} | \num{414747} | \num{2542253} | \num{1211387} |
-| fraction with center           | 99.92 %      | 99.72 %      | 26.19 %       | 25.59 %       |
-| fraction with any              | 99.92 %      | 99.72 %      | 67.63 %       | 65.93 %       |
+| fraction with center           | 99.92 %       | 99.72 %       | 26.19 %        | 25.59 %        |
+| fraction with any              | 99.92 %       | 99.72 %       | 67.63 %        | 65.93 %        |
 | with fadc readouts             | \num{531529} | \num{413853} | \num{542233}  | \num{211683}  |
-| fraction with FADC             | 99.91 %      | 99.50 %      | 14.43 %       | 11.52 %       |
+| fraction with FADC             | 99.91 %       | 99.50 %       | 14.43 %        | 11.52 %        |
 | with SiPM trigger <4095        | \num{1656}   | \num{20}     | \num{8585}    | \num{4304}    |
 | with veto scinti trigger <4095 | \num{0}      | \num{2888}   | \num{0}       | \num{70016}   |
 | with any SiPM trigger          | \num{531528} | \num{1312}   | \num{825460}  | \num{34969}   |
 | with any veto scinti trigger   | \num{0}      | \num{216170} | \num{0}       | \num{206025}  |
-| fraction with any SiPM         | 99.91 %      | 0.3154 %     | 21.96 %       | 1.903 %       |
-| fraction with any veto scinti  | 0.000 %      | 51.97 %      | 0.000 %       | 11.21 %       |
+| fraction with any SiPM         | 99.91 %       | 0.3154 %      | 21.96 %        | 1.903 %        |
+| fraction with any veto scinti  | 0.000 %       | 51.97 %       | 0.000 %        | 11.21 %        |
 
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *VERIFY EXACT SHUTTER TIMES*
+
+- [ ] *UNIFORMLY DECIDE TO EITHER USE ~Run-2~ or ~Run 2~ STYLE*
+- [ ] table for number of shifts in each run, column for number of
+  trackings
+- [ ] table of temperatures recovered from the shift logs!  
+- [X] number of X-ray finger runs  
+- [X] table of total time taking in each run
+- [X] link to appendix containing total run list!  
+- [X] table of working detector features in each run
+- [ ] table of recorded temperatures (or as a plot? Table takes a lot
+  of space! ~Tools/mapSeptemTempToFePeak.nim~)
+  -> Done later when talking about detector activity & time behavior.
+- [X] numbers of the total activity, number of events on the center &
+  outside chips, # of FADC triggers, event durations etc.
+- [ ] *THINK ABOUT WHETHER TO INCLUDE FADC NOISE HERE IN STATISTICS*
+- [X] *MENTION SHUTTER TIMES USED, 2017 2/32, 2018 2/30?*
+- [ ] plot of event durations already created!
+  -> Not super interesting as a plot, imo.
+
+- [ ] *FIX TABLE OF TIME! CODE IN NEXT NOEXPORT SECTION GIVES
+  DIFFERENT NUMBERS THAN THE FIRST TABLE HERE! WHY?*
+  -> Difference (among others) is different number of trackings
+  known. In
+  [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/writeRunList/writeRunList.nim]]
+  the generated run list that's commited to TPA is 115 trackings,
+  whereas here (on voidRipper) only 109 trackings are known. Why?
+  -> *Investigate*!
 
 - [X] *FIX UP THE TABLE TO NOT USE FIELDS AS ROW NAMES, BUT RATHER
   TEXT*
 - [X] *SEE NOEXPORT SECTION BELOW TO THINK ABOUT ADDING OTHER THINGS*  
 
+*** Extended table about total time                              :extended:
 
-*** Code to compute statistics [10/17]                           :noexport:
+This, tab. [[tab:cast:total_data_time_extended]], is an extended version
+(wider + total times) of the table presented in the section above.
+
+#+CAPTION: Overview of the total data taken with the Septemboard detector at CAST
+#+CAPTION: in the time between October 2017 and December 2018. See the table below
+#+CAPTION: [[tab:cast:data_stats_overview]] for more precise numbers including the
+#+CAPTION: time the detector was active (shutter open).
+#+NAME: tab:cast:total_data_time_extended
+#+ATTR_LATEX: :align lrrrrrrr :booktabs t
+|       | Solar tracking [h] | Background [h] | Active tracking [h] | Active background [h] | Total time [h] | Active time [h] |   Active % |
+|-------+--------------------+----------------+---------------------+-----------------------+----------------+-----------------+------------|
+| Run-2 |            106.006 |        2391.16 |             92.8017 |               2144.12 |        2497.16 |         2238.78 | 0.89653046 |
+| Run-3 |            74.2981 |        1124.93 |             67.0066 |               1012.68 |        1199.23 |          1079.6 | 0.90024432 |
+| Total |           180.3041 |        3516.09 |            159.8083 |                3156.8 |        3696.39 |         3318.38 | 0.89773536 |
+#+TBLFM: $8=$7/$6
+
+*** Code to compute statistics [10/17]                           :extended:
 
 - [ ] code to compute the total run duration of the different parts
 - [ ] code to produce the outer chip & central chip activity
 - [ ] produce number of events with FADC trigger
 - [ ] number of events with scintillator trigger + non trivial
   triggers (i.e. not maximum)
+
 
 Tools we have for this and related:
 
@@ -36353,6 +36379,16 @@ data for the likelihood method.
 
 Many other tools are present. Mainly different plotting tools and
 tools dealing with other data, e.g. log files of the CAST experiment.
+
+*** =cast_log_reader=
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:software:cast_log_reader
+:END:
+
+- [ ] *IMPORTANT* to read log files for tracking info
+
+- [ ] Also mention some of the other features, i.e. generating times
+  the magnet was on, point of the magnet etc.
 
 * Full data reconstruction [/]                                     :Appendix:
 :PROPERTIES:
