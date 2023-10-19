@@ -14954,14 +14954,13 @@ never was.
 
 The gas supply is also part of an interlock system. In case of a
 window rupture the potential amount of gas that might enter the vacuum
-system should be limited by electrovalves. In the future the pressure
-inside the detector will be included into the gas supply
-interlock. This is to make sure the gas inlet and outlet are closed in
-case the pressure inside the detector drops (which might indicate a
-leak somewhere or an empty gas bottle) or in case of rising
-pressure. 
+system should be limited by electrovalves. Ideally the pressure inside
+the detector had been included into the gas supply interlock. This
+could have made sure the gas inlet and outlet are closed in case the pressure
+inside the detector drops (which might indicate a leak somewhere or an
+empty gas bottle) or in case of rising pressure.
 
-The latter is not as important thought, because a pressure controller is
+The latter is not as important though, because a pressure controller is
 already installed behind the detector, which controls the flow such
 that the pressure stays at $\SI{1050}{\milli \bar}$. While a failure
 of the controller is thinkable, potentially leading to a pressure
@@ -14969,53 +14968,71 @@ increase inside the detector, it is questionable whether this could be
 dealt with using this interlock system. That is because the pressure
 sensor used is part of the pressure controller.
 
-Thus, three electrovalves are placed on the gas line of the
-detector. One, $V_{\text{in}}$, is outside of the building next to the
-gas bottles (see fig. [[fig:electrovalve-outside]]). The second valve
+Three electrovalves are placed on the gas line of the detector. One,
+$V_{\text{in}}$, is outside of the building next to the gas bottles
+(see fig. [[sref:fig:cast:electrovalve-outside]]). The second valve
 $V_{\text{interlock}}$ is located right before the buffer volume, next
-to the watercooling system, below the shielding platform. The final
-electrovalve $V_{\text{out}}$ is located after the pressure
-controller on a blue beam, which supports the optical table below the
-telescope (see fig. [[fig:electrovalve-V-out]]). These valves are normally
-closed, i.e. in case of power loss they automatically close. They are
-open if a voltage is applied to them. 
+to the watercooling system, below the shielding platform,
+fig. sref:fig:cast:electrovalve-V-interlock. The final electrovalve
+$V_{\text{out}}$ is located after the pressure controller on a blue
+beam, which supports the optical table below the telescope (see
+fig. [[sref:fig:cast:electrovalve-V-out]]). These valves are normally closed,
+i.e. in case of power loss they automatically close. They are open if
+a voltage is applied to them.
 
 The valves are connected to the pressure sensor $P_{\text{MM}}$ (see
 fig. [[fig:cast:vacuum-schematic]]). The pressures to activate the interlock
 system is defined by upper and lower thresholds asymmetrically. They
 are as follows:
-#+BEGIN_EXPORT latex
-\begin{align}
+
+\begin{align*}
 P_{\text{MM, Gas enable}} \leq \SI{9.9e-3}{\milli \bar}
-\end{align}
-#+END_EXPORT
+\end{align*}
+
 and 
-#+BEGIN_EXPORT latex
-\begin{align}
+
+\begin{align*}
 P_{\text{MM, Gas disable}} \leq \SI{2e-2}{\milli \bar}
-\end{align}
-#+END_EXPORT
+\end{align*}
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.33) (caption "Outside $V_{\\text{in}}$") (label "fig:cast:electrovalve-outside")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/electrovalve_outside.jpg"))
+        (subfigure (linewidth 0.33) (caption "Below $V_{\\text{interlock}}$") (label "fig:cast:electrovalve-V-interlock")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/electrovalve_V_interlock.jpg"))
+        (subfigure (linewidth 0.33) (caption "Output $V_{\\text{out}}$") (label "fig:cast:electrovalve-V-out")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/electrovalve_V_out.jpg"))
+        (caption
+         (subref "fig:cast:electrovalve-outside")
+          ": Location of the electrovalve $V_{\\text{in}}$ located outside the building."
+         (subref "fig:cast:electrovalve-outside")
+          ": Location of the electrovalve $V_{\\text{interlock}}$ next to the 
+           watercooling system below the shielding table."
+         (subref "fig:cast:electrovalve-outside")
+          ": Location of the electrovalve $V_{\\text{out}}$ connected to the beam
+           supporting the optical table, on which the telescope is mounted.")
+        (label "fig:cast:interlock_electrovalves"))
+#+end_src
+
+
+**** TODOs for this section [/]                                 :noexport:
+
 #+BEGIN_COMMENT
 *CHECK THESE VALUES, they are still wrong I believe*.
 #+END_COMMENT
 
+- [X] *MERGE IMAGES INTO ONE SUBFIG*
 
-- [ ] *MERGE IMAGES INTO ONE SUBFIG*
+**** Note on pressures of interlock                             :extended:
 
-#+CAPTION: Location of the electrovalve $V_{\text{in}}$ located outside the building.
-#+NAME: fig:electrovalve-outside
-[[file:~/org/Doc/Detector/figs/electrovalve_outside.jpg]]
-
-#+CAPTION: Location of the electrovalve $V_{\text{interlock}}$ next to the 
-#+CAPTION: watercooling system below the shielding table.
-#+NAME: fig:electrovalve-V-interlock
-[[file:~/org/Doc/Detector/figs/electrovalve_V_interlock.jpg]]
-
-#+CAPTION: Location of the electrovalve $V_{\text{out}}$ connected to the beam
-#+CAPTION: supporting the optical table, on which the telescope is mounted.
-#+NAME: fig:electrovalve-V-out
-[[file:~/org/Doc/Detector/figs/electrovalve_V_out.jpg]]
-
+It's possible the exact numbers are slightly wrong. At this point I'm
+not certain anymore, but I had a note to cross check them in the
+document the above was initially in (a document about the detector &
+operation for CERN).
 
 *** CAST magnet interlock
 :PROPERTIES:
@@ -15029,29 +15046,36 @@ volume is good enough, VT3 can be opened while the interlock is
 activated. 
 
 For this the pressure of $P_{\text{3}}$ is considered relevant
-(cp. fig. [[fig:cast:vacuum-schematic]]). The upper and lower thresholds which
+(cmp. fig. [[fig:cast:vacuum-schematic]]). The upper and lower thresholds which
 activate and deactivate the interlock are asymmetric and as follows:
-#+BEGIN_EXPORT latex
-\begin{align}
+
+\begin{align*}
 P_{\text{3, VT3 enable}} &\leq \SI{1e-5}{\milli\bar}
-\end{align}
-#+END_EXPORT
+\end{align*}
+
 while
-#+BEGIN_EXPORT latex
-\begin{align}
+
+\begin{align*}
 P_{\text{3, VT3 disable}} &\leq \SI{8e-5}{\milli\bar}.
-\end{align}
-#+END_EXPORT
+\end{align*}
+
 This is to make sure there can be no rapid toggling between the two
 states during pumping or flushing the system. 
 
-** X-ray finger runs [/]
+** X-ray finger runs [/]                                          :noexport:
 
-- [ ] should this go to the alignment part? I suppose we could mention
+- [X] should this go to the alignment part? I suppose we could mention
   this as part of the alignment with a heatmap and the center location
   _before_ (?) geometer alignment and movement? For context
   We can then later refer to this again in the context of determining
   the systematic uncertainty on the position.
+  -> Yes, this is described enough in the alignment part. Note though
+  that we will also need to reference it again for the systematics
+  later, but that's fine.
+
+- [ ] *WHEN WE* rewrite the actual CAST section for the final thesis
+  (not the appendix part) we can rethink whether to have an explicit
+  X-ray finger subsection with a few words about the uncertainty.
 
 2 X-ray finger runs were made. One near beginning, one near end.
 
@@ -15061,6 +15085,8 @@ Mention how this plays into the analysis side, that it means we need
 to adjust the ray tracing.
 
 - [X] *ONE RUN NOW PART OF ALIGNMENT, OTHER IS MISSING ON MY LAPTOP*
+  -> Both found in [[file:~/CastData/data/XrayFingerRuns/]]
+  
 ** CAST log files [/]
 
 - [ ] in the above we simply state the number of trackings etc. Of
