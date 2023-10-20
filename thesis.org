@@ -12283,13 +12283,13 @@ reconstruction -i <h5file> --out /tmp/reco_foo.h5
 The next step of the reconstruction is the data calibration. This is a
 separate pass over the data as it is optional on the one hand and
 requires further inputs about each used GridPix than just the raw data
-(different calibration files).
+(different calibration files) on the other hand.
 
 There are different calibrations to be performed:
 
 1. the charge calibration via the application of the ~ToT~ calibration
    as introduced in section [[#sec:operation_calibration:tot_calibration]].
-2. the calculation of the gas gain, introduced in section
+2. the calculation of the gas gain, introduced previously in section
    [[#sec:daq:polya_distribution_threshold]].
 3. the energy calibration (see sec. [[#sec:calibration:energy]] and
    [[#sec:calib:final_energy_calibration]]).
@@ -12326,6 +12326,12 @@ complex nature.
 
 **** TODOs for this section                                     :noexport:
 
+- [ ] *GIVE THIS SECTION A BETTER NAME!*
+  -> We currently also call the chapter after CAST 'data
+  calibration'...
+  -> Well, but we _do_ talk about related concepts here after all.
+  -> [[#sec:calibration]] really is the extension of this chapter for the
+  more complicated aspects, i.e. energy and gas gain.
 
 And this is where the ugly mess of needing X or Y starts :(
 at least for energy calibration, we will refer to section later
@@ -12336,11 +12342,15 @@ at least for energy calibration, we will refer to section later
 - [X] *MENTION GAS GAIN PROPERLY*
   -> Well, properly is not correct, but we mention it now.
   -> Not ideal though.
+  -> We reference back to the initial gas gain part. Maybe properly
+  explain more details in that original section, then here just
+  mention it needs to be done and in [[#sec:calibration]] talk about the
+  tricky aspects of the binning etc? Seems sensible.
 
 - [ ] *SHOW TOT CALIBRATION AGAIN?*
   -> Not really needed. Just a dumb function.
 
-- [ ] *MENTION INGRID DATABASE STORING TOT CALIB DATA*
+- [X] *MENTION INGRID DATABASE STORING TOT CALIB DATA*
 
 **** ~InGridDatabase~ [0/1]                                     :optional:
 (or :noexport: ?)
@@ -15915,14 +15925,32 @@ when isMainModule:
 
 - [X] generate that table... then onto calibration finally!
 
-* Detector preparation / study / characterization etc.                :Part3:
+* Data calibration                                                    :Part3:
 :PROPERTIES:
 :CUSTOM_ID: sec:calibration
 :END:
 #+LATEX: \minitoc
 
-- [ ] *RENAME* this to something like "data calibration"?
+With the roughly $\SI{3500}{h}$ of data recorded at CAST it is time to
+discuss the final calibrations [fn:calibration_term] necessary for the calculation of a
+physics result. On the side of the septemboard detector this means the
+'energy calibration'; the calculation of the energy of each event
+recorded with the septemboard detector. This necessarily needs to
+include a discussion of detector variability both due to external
+factors as well as differing detector calibrations and
+setups. Similarly, for the FADC the impact of the noise seen during
+data taking and resulting differing amplifier settings will be discussed.
 
+
+[fn:calibration_term] Note that the term 'calibration' is a heavily
+loaded term implying very different things depending on context. This can at
+times be confusing. I try to be explicit by fully specifying what
+calibration is meant when it might be ambiguous. 
+
+** Thoughts and TODOs [/]                                         :noexport:
+
+This was our initial introduction for this chapter, but it seems outdated.
+#+begin_quote
 There are two different kinds of calibrations used for the data taking
 campaign at CAST. One is a data taking campaign behind an X-ray tube
 at the CAST Detector Lab (CDL) to characterize the geometric
@@ -15937,10 +15965,18 @@ for the energy calibration of events, see section
 *NOTE*: Should we therefore maybe split up the section rather by type
 of calibration? Certainly clearer that way. Only question is how to
 best present the other calibrations then (FADC, scintillators).
+#+end_quote
 
-- [ ] *MAYBE THIS CHAPTER CAN NOT ONLY CONTAIN STRICT CALIBRATIONS, BUT ALSO THINGS LiKE GAS GAIN TIME BINNING?*
 
-** Thoughts                                                       :noexport:
+- [ ] *INSERT REFERENCES TO SECTIONS!*
+
+- [X] *RENAME* this to something like "data calibration"?
+  -> Yup.
+
+- [X] *MAYBE THIS CHAPTER CAN NOT ONLY CONTAIN STRICT CALIBRATIONS,
+  BUT ALSO THINGS LiKE GAS GAIN TIME BINNING?*
+  -> Yup.
+
 
 On the one hand:
 - [ ] talk about 55 fe calibration -> energy calibration
@@ -15962,626 +15998,34 @@ We start writing about the general data related parts, i.e. anything
 but CDL. The CDL can be mentioned afterwards as the motivation to "how
 do we even get a background rate from all this?"
 
-
 So then, where do we start? FADC first or GridPix?
+-> GridPix first.
 
-** FADC
-:PROPERTIES:
-:CUSTOM_ID: sec:calib:fadc
-:END:
-
-As described over the course of previous chapters, the FADC serves
-essentially a 4-way purpose. First of all, it is used as a trigger to
-start the readout process of the GridPixes, if the center chip records
-a large enough signal. This brings up the question of the activation
-threshold of the FADC, sec. [[#sec:fadc:activation_threshold]]. Secondly,
-thanks to the high temporal resolution the recorded signal can be used
-to gain information about the longitudinal shape of recorded
-events. This theoretically allows it to act as an additional
-background suppression mechanism,
-sec. [[#sec:fadc:fadc_as_veto]]. Finally, its trigger clock acts as the
-reference time and readout flag for the scintillators, see
-sec. [[#sec:fadc:scintillator_trigger_reference]] (*I THINK THIS MAY NOT
-BE NEEDED, AS THERE IS ENOUGH STUFF ABOUT THIS BEFORE*). Furthermore,
-in principle the FADC provides an independent measurement about the
-total charge collected on the central GridPix. Thus, it serves as a
-reference as to whether changes in the computed gas gain on the
-GridPix as well as possible changes in the recorded number of pixels
-are due to physical changes in the gas gain or due to changes in the
-readout electronics. Such a secondary insight is valuable in the
-context of studying the GridPix behavior over time, sec.
-[[#sec:calib:detector_behavior_over_time]]. 
-
-- trigger
-- longitudinal shape information -> acting as a veto
-- reference clock for scintillators
-- [ ] 
-  -> independent information of total collected charge
-  -> allows to check whether seen changes in gas gain on gridPix are
-  really changes in gas gain or changes in the readout electronics of
-  a timepix!!
-  This is actually an important insight as it allows us to see what
-  happened in the cases where pixel information was lost / peak
-  position changed drastically. Did gas gain change based on FADC information?
-
-problems:  
-- noise
-- different thresholds due to gain changes
-- different shapes due to 50ns 100ns signal integration, 50ns 20ns
-  differentiation
-- [ ] *REGARDING 50ns vs 100ns ~fadc_analysis.nim~ CONTAINS CODE TO 
-  CHECK NOISE COMPARED TO 50 vs 100!!*  
-
-*** FADC spectrum & threshold [0/4]
-
-What is it that we actually want from this? Aside from providing an
-*overview* the FADC is barely used for anything. Things that are
-important:
-- [ ] *barely used not true anymore!* Important veto.
-- [ ] *trigger threshold* deduced from calibration data / real data
-  - [ ] define how to compute & compute for every run, plot trigger
-    threshold vs run (correlate with settings)
-- [ ] show rise time / fall time histograms! Required for our cuts we
-  actually perform on that in background calc later! This is required
-  because otherwise we cannot explain why we do / do not use the FADC
-  as a veto and why it's not super helpful.
-
-#+CAPTION: The peak position in \si{V} of the photopeak in the \cefe calibration
-#+CAPTION: runs during Run-2. The different FADC amplifier settings are clearly visible. *FIX THE PLOT / PRETTIFY*
-#+NAME: fig:fadc:peak_position_55fe_run2_settings
-[[~/phd/Figs/FADC/peak_positions_fadc_run2.pdf]]
-
-#+CAPTION: The mean rise time of the signals recorded during the \cefe data
-#+CAPTION: during Run-2 of the FADC. Again, the FADC amplifier settings are visible
-#+CAPTION: as expected.
-#+NAME: fig:fadc:mean_rise_times_55fe_fadc_run2
-[[~/phd/Figs/FADC/fadc_mean_riseTime_run2.pdf]]
-
-- [ ] *MOST LIKELY THESE RISE/FALL TIME PLOTS CHANGE SIGNIFICANTLY NOW
-  AFTER HAVING CHANGED FADC BASELINE & THRESHOLD CALCS!!!*
-
-
-- [X] show spectra (already one shown in previous chapter!)
-- [ ] show 55Fe spectrum of FADC data
-- [X] create plot showing position of 55 Fe photo peak in FADC data,
-  highlighting when amplifier settings were changed
-- [X] create plot of mean rise times in FADC   
-- [ ] show how FADC events differ in 50ns and 100ns data (*we have 
-  those datasets*)
-  -> partially done in plots comparing rise time between different runs!
-- [ ] show detector pointing to Zenith data for muon related stuff
-- [ ] plot histograms of 50ns runs vs 100ns runs at CAST to see
-  difference in background
-  -> code is there!
-- [ ] plot histograms of the different properties (rise & fall time in
-  particular) for the different FADC settings used at CAST
-  -> partially done! Not the histograms shown above, but the mean
-  value of those histograms!
-  -> For the actual histograms we could split the data by the datasets
-  with different FADC settings (similar to how done in
-  ~fadc_analysis.nim~!) and then plot them by 3 different colors.
-- [X] finish trying to deduce the pedestals from real data. Didn't
-  work last time only due to our confusion of using all 4
-  channels. Try again focusing on the single channel we actually use!
-  -> Now that it's done correctly it works extremely well!
-- [ ] create a plot comparing 55Fe data from GridPix with FADC (by
-  peak position over time. Same correlation or not?)
-  -> also see detector behavior over time / FADC as proxy for charge
-- [ ] *REGARDING 50ns vs 100ns ~fadc_analysis.nim~ CONTAINS CODE TO 
-  CHECK NOISE COMPARED TO 50 vs 100!!*
-- [ ] noise analysis
-- [ ] apply Savitzky Golay filter to FADC spectra & describe
-  -> Still necessary after correct pedestals in use w/ trunc mean?
-  Maybe much more helpful now? Try it!
-- [ ] train NN on FADC data and see what we can gain <- this goes
-  towards analysis chapter of course!
-  Best use a CNN with 1D input data & kernel!
-  
-
-**** Generate plots of FADC fall & rise times and FADC \cefe spectrum [/] :noexport:
-:PROPERTIES:
-:CUSTOM_ID: sec:reco:fadc_rise_fall_plots
-:END:
-
-- [ ] *REPLACE THE ORIGIN OF THIS PLOT*
-
-#+begin_src sh :results drawer
-raw_data_manipulation -p ~/CastData/data/2018_2/Run_240_181021-14-54/ \
-                      --out /t/raw_240.h5 \
-                      --runType rtBackground
-#+end_src
-
-#+begin_src sh :results drawer
-reconstruction /t/raw_240.h5 --out /t/reco_240.h5
-#+end_src
-
-#+RESULTS:
-:results:
-{"<HDF5file>": /t/raw_240.h5, "--only_gain_fit": false,
-"--create_fe_spec": false, "--version": false, "--runNumber": nil,
-"--only_charge": false, "--only_energy_from_e": false,
-"--only_energy": nil, "--out": /t/reco_240.h5, "--config": nil,
-"--only_gas_gain": false, "--only_fadc": false, "--help": false,
-"--only_fe_spec": false}
-...
-INFO Writing data to datasets
-INFO Writing of FADC data took 0.9212641716003418 seconds
-INFO Reconstruction of all runs in /t/raw_240.h5 with flags: {rfReadAllRuns} took 5.32500171661377 seconds
-INFO Performed reconstruction of the following runs:
-INFO {240}
-INFO while iterating over the following:
-INFO {240}
-:end:
-#+begin_src sh :results drawer
-reconstruction /t/reco_240.h5 --only_fadc
-#+end_src
-
-#+RESULTS:
-:results:
-{"<HDF5file>": /t/reco_240.h5, "--only_gain_fit": false, "--create_fe_spec": false, "--version": false, "--runNumber": nil, "--only_charge": false, "--only_energy_from_e": false, "--only_energy": nil, "--out": nil, "--config": nil, "--only_gas_gain": false, "--only_fadc": true, "--help": false, "--only_fe_spec": false}
-INFO Reading config file: /home/basti/CastData/ExternCode/TimepixAnalysis/Analysis/ingrid/config.toml
-Start fadc calc
-FADC minima calculations took: 0.5971462726593018
-INFO Reconstruction of all runs in /t/reco_240.h5 with flags: {rfOnlyFadc, rfReadAllRuns} took 1.252563714981079 seconds
-INFO Performed reconstruction of the following runs:
-INFO {240}
-INFO while iterating over the following:
-INFO {240}
-:end:
-
-#+begin_src sh :results drawer
-raw_data_manipulation -p ~/CastData/data/2017/Run_96_171123-10-42 \
-                      --out /t/raw_96.h5 \
-                      --runType rtCalibration
-#+end_src
-
-#+RESULTS:
-:results:
-Flags are is {}
-...
-INFO Closing h5file with code 0
-INFO Processing all given runs took 0.3456798712412516 minutes
-:end:
-
-#+begin_src sh :results drawer
-reconstruction /t/raw_96.h5 --out /t/reco_96.h5
-#+end_src
-
-#+RESULTS:
-:results:
-{"<HDF5file>": /t/raw_96.h5, "--only_gain_fit": false,
-"--create_fe_spec": false, "--version": false, "--runNumber": nil,
-"--only_charge": false, "--only_energy_from_e": false,
-"--only_energy": nil, "--out": /t/reco_96.h5, "--config": nil,
-"--only_gas_gain": false, "--only_fadc": false, "--help": false,
-"--only_fe_spec": false}
-...
-INFO Writing data to datasets
-INFO Writing of FADC data took 6.967457056045532 seconds
-INFO Reconstruction of all runs in /t/raw_96.h5 with flags: {rfReadAllRuns} took 15.26722311973572 seconds
-INFO Performed reconstruction of the following runs:
-INFO {96}
-INFO while iterating over the following:
-INFO {96}
-:end:
-#+begin_src sh :results drawer
-reconstruction /t/reco_96.h5 --only_fadc
-#+end_src
-
-#+RESULTS:
-:results:
-{"<HDF5file>": /t/reco_96.h5, "--only_gain_fit": false, "--create_fe_spec": false, "--version": false, "--runNumber": nil, "--only_charge": false, "--only_energy_from_e": false, "--only_energy": nil, "--out": nil, "--config": nil, "--only_gas_gain": false, "--only_fadc": true, "--help": false, "--only_fe_spec": false}
-INFO Reading config file: /home/basti/CastData/ExternCode/TimepixAnalysis/Analysis/ingrid/config.toml
-Start fadc calc
-FADC minima calculations took: 4.997849464416504
-INFO Reconstruction of all runs in /t/reco_96.h5 with flags: {rfOnlyFadc, rfReadAllRuns} took 10.23849511146545 seconds
-INFO Performed reconstruction of the following runs:
-INFO {96}
-INFO while iterating over the following:
-INFO {96}
-:end:
-
-#+begin_src nim :results drawer :tangle code/fadc_rise_fall_different_settings.nim
-import nimhdf5, ggplotnim
-import std / [strutils, os, sequtils]
-import ingrid / [tos_helpers]
-import ingrid / calibration / [calib_fitting, calib_plotting]
-import ingrid / calibration 
-
-proc stripPrefix(s, p: string): string =
-  result = s
-  result.removePrefix(p)
-
-from ginger import transparent    
-proc plotFallTimeRiseTime(df: DataFrame, suffix: string) =
-  ## Given a full run of FADC data, create the
-  ## Note: it may be sensible to compute a truncated mean instead
-  let dfG = df.group_by("runNumber").summarize(f{float: "riseTime" << truncMean(col("riseTime").toSeq1D, 0.05)},
-                                               f{float: "fallTime" << truncMean(col("fallTime").toSeq1D, 0.05)})
-  ggplot(dfG, aes(runNumber, riseTime, color = fallTime)) + 
-    geom_point() +
-    ggtitle("Comparison of FADC signal rise times in ⁵⁵Fe data for all runs in $#" % suffix) +
-    ggsave("Figs/FADC/fadc_mean_riseTime_$#.pdf" % suffix)
-  ggplot(dfG, aes(runNumber, fallTime, color = riseTime)) + 
-    geom_point() +
-    ggtitle("Comparison of FADC signal fall times in ⁵⁵Fe data for all runsin $#" % suffix) +
-    ggsave("Figs/FADC/fadc_mean_fallTime_$#.pdf" % suffix)
-
-proc main(fname: string, year: int) =
-  var h5f = H5open(fname, "r")
-  let fileInfo = h5f.getFileInfo()
-  let is2017 = year == 2017
-  let is2018 = year == 2018
-  if not is2017 and not is2018:
-    raise newException(IOError, "The input file is neither clearly a 2017 nor 2018 calibration file!")
-  
-  var peakPos = newSeq[float]()
-  var dfProp = newDataFrame()
-  for run in fileInfo.runs:
-    var df = h5f.readRunDsets(
-      run,
-      commonDsets = @["fadc/eventNumber",
-                      "fadc/baseline",
-                      "fadc/riseStart",
-                      "fadc/riseTime",                  
-                      "fadc/fallStop",
-                      "fadc/fallTime",
-                      "fadc/minvals",
-                      "fadc/argMinval"]                 
-    )
-    df = df.rename(df.getKeys.mapIt(f{it.stripPrefix("fadc/") <- it}))
-    df["runNumber"] = run
-    let dset = h5f[(recoBase() & $run / "fadc/fadc_data").dset_str]
-    let fadcData = dset[float].toTensor.reshape(dset.shape)
-
-    let feSpec = fitFeSpectrumFadc(df["minvals", float].toSeq1D)
-    let ecData = fitEnergyCalib(feSpec, isPixel = false)
-    let texts = buildTextForFeSpec(feSpec, ecData)
-    plotFeSpectrum(feSpec, run, 3, texts = texts, pathPrefix = "Figs/FADC/fe55_fits/")
-
-    # add fit to peak positions
-    peakPos.add feSpec.pRes[feSpec.idx_kalpha]
-    
-    
-    ggplot(df, aes("minvals")) +
-      geom_histogram(bins = 300) +
-      ggsave("/t/fadc_run_$#_minima.pdf" % $run)
-
-    dfProp.add df
-
-  let yearToRun = if is2017: 2 else: 3
-  let suffix = "run$#" % $yearToRun
-    
-  plotFallTimeRiseTime(dfProp, suffix) 
-
-  ##    - run 101 <2017-11-29 Wed 6:40> was the first with FADC noise
-  ##      significant enough to make me change settings:
-  ##      - Diff: 50 ns -> 20 ns (one to left)
-  ##      - Coarse gain: 6x -> 10x (one to right)
-  ##    - run 112: change FADC settings again due to noise:
-  ##      - integration: 50 ns -> 100 ns
-  ##        This was done at around <2017-12-07 Thu 8:00>
-  ##      - integration: 100 ns -> 50 ns again at around
-  ##        <2017-12-08 Fri 17:50>.
-  ##    - run 121: Jochen set the FADC main amplifier
-  ##      integration time from 50 -> 100 ns again, around
-  ##      <2017-12-15 Fri 10:20>
-  let df = toDf({ "runs" : fileInfo.runs,
-                  "peaks" : peakPos })
-
-  let outname = "Figs/FADC/peak_positions_fadc_$#.pdf" % $suffix
-  var plt = ggplot(df, aes("runs", "peaks"))
-
-  if is2017:
-    let settings = @["""Integration: 50 ns\\
-Diff: 50 ns\\
-Gain: 6x""",
-                   """Integration: 50 ns\\
-Diff: 20 ns\\
-Gain: 10x""",
-                   """Integration: 100 ns\\
-Diff: 20 ns\\
-Gain: 10x""" ]
-    let runs = @[80, 101, 121]
-    let widths = @[101 - 80, 121 - 101, fileInfo.runs.max - 121]
-    let ys = @[0.1, 0.1, 0.1]
-    let heights = @[0.25, 0.25, 0.25] # @[0.35, 0.35, 0.35]
-    let textYs = @[0.33, 0.27, 0.22]
-    let dfRects = toDf(settings, ys, textYs, runs, heights, widths)
-
-    
-    plt = plt +
-      geom_tile(data = dfRects, aes = aes(x = "runs", y = "ys", height = "heights", width = "widths", fill = "settings"),
-                alpha = 0.3) +
-      geom_text(data = dfRects, aes = aes(x = f{`runs` + 35}, y = "textYs", text = "settings")) +
-      xlim(80, 200)
-  plt + geom_point() +
-    ylim(0.1, 0.35) +
-    ylab("⁵⁵Fe peak position [V]") + xlab("Run number") +
-    ggtitle("Peak position of the ⁵⁵Fe runs in the FADC data") + 
-    ggsave(outname)
-
-  if is2017:
-    writeCsv(df, "resources/peak_positions_fadc_run2.csv")
-  elif is2018:
-    writeCsv(df, "resources/peak_positions_fadc_run3.csv")
-      
-when isMainModule:
-  import cligen
-  dispatch main
-#+end_src
-
-- [X] *REGENERATE FADC DATA IN H5 FILES ON ~voidRipper~*
-- [X] *GENERATE HISTOGRAMS OF MINVALS FOR ALL CALIBRATION RUNS*
-- [X] *GENERATE PLOT OF ALL FIT TO MINVALS HISTO FIND PEAK FOR ALL
-  CALIBRATION RUNS*
-  -> start by just computing maximum of the above histogram for each
-  run as a basis
-- [ ] *ALL THESE PLOTS SHOULD REALLY BE GENERATED WHEN RUNNING
-  ~reconstruction --only_fadc~! Replace that!*
-- [ ] *GENERATE PLOT OF FADC & GridPix PEAK POSITIONS AGAINST ALL RUNS*  
-
-Run the code for 2017 calibration data to generate the plot of the
-FADC settings (and generate the CSV containing the peak positions by run):
-#+begin_src sh
-./code/fadc_rise_fall_different_settings.nim -f ~/CastData/data/CalibrationRuns2017_Reco.h5 --year 2017
-#+end_src
-and now for 2018 to generate the CSV for the peak positions of the run
-3 data:
-#+begin_src sh
-./code/fadc_rise_fall_different_settings.nim -f ~/CastData/data/CalibrationRuns2018_Reco.h5 --year 2018
-#+end_src
-
-*** FADC noise & study
-:PROPERTIES:
-:CUSTOM_ID: sec:calibration:fadc_noise
-:END:
-
-- [ ] *!!!*
-
-- [ ] *EXAMPLE OF NOISE*
-- [ ] *??*    
-
-
-*** Activation threshold [0/2]
-:PROPERTIES:
-:CUSTOM_ID: sec:fadc:activation_threshold
-:END:
-
-- [ ] What will we write here? Most of the stuff in the noexport
-  subsection doesn't belong in there after all!
-
-
-#+CAPTION: Different activation thresholds of the Run-2 data due to different FADC settings, 
-#+CAPTION: determined based on the 1-th percentile of the data in the \cefe calibration runs.
-#+NAME: fig:fadc:activation_threshold_run2
-file:Figs/FADC/fadc_minima_2017_calibration.pdf
-
-**** Generate plots & determine activation thresholds           :noexport:
-- [ ] how to compute? The fits we perform for the 55 Fe in one of our
-  scripts here ideally should be done for each run again... That way
-  we could compute the energy similar to what we do for GridPix
-  data. Ideally we could compute it more by using an integral approach
-  though, as that gives us a better proxy for the amount of charge. Or
-  at least using a peak finding to detect multiple signals within one
-  FADC event to sum energies of both.
-  As an easier approach we can of course compute a lower percentile
-  (not the total minimum, but maybe 1% of each run and plot that?).
-
-#+begin_src nim :tangle code/fadc_compute_activation_threshold.nim
-import nimhdf5, ggplotnim
-import std / [strutils, os, sequtils]
-import ingrid / [tos_helpers, fadc_helpers, ingrid_types, fadc_analysis]
-
-proc fadcSettingRuns(): seq[int] =
-  result = @[0, 101, 121]
-
-proc stripPrefix(s, p: string): string =
-  result = s
-  result.removePrefix(p)
-
-proc minimum(h5f: H5File, runNumber: int, percentile: int): (float, float) =
-  var df = h5f.readRunDsets(
-    runNumber,
-    chipDsets = some((chip: 3, dsets: @["energyFromCharge", "eventNumber"]))
-  )
-  # sum all energies of all same events to get a combined energy of all
-  # clusters on the center chip in each event (to correlate w/ FADC)
-  df = df.group_by("eventNumber").summarize(f{float -> float: "energyFromCharge" << sum(col("energyFromCharge"))})
-  var run = h5f.readRecoFadcRun(runNumber)
-  let dfFadc = toDf({ "eventNumber" : run.eventNumber,
-                      "minVals" : run.minVals })
-  # join both by `eventNumber` (dropping center chip events w/ no FADC)
-  df = innerJoin(df, dfFadc, "eventNumber")
-  # percentile based on minvals & gridpix energy
-  result = (percentile(run.minvals.mapIt(it.abs), percentile), percentile(df["energyFromCharge", float], percentile))
-
-proc main(fname: string, percentile: int) =
-  var h5f = H5open(fname, "r")
-  let fileInfo = h5f.getFileInfo()
-  echo fileInfo
-  var minimaFadc = newSeq[float]()
-  var minimaGP = newSeq[float]()  
-  var idxs = newSeq[int]()
-  for run in fileInfo.runs:
-    let idx = lowerBound(fadcSettingRuns(), run)
-    echo "idx ", idx, " for run ", run
-    let (minFadc, minEnergy) = minimum(h5f, run, percentile)
-    minimaFadc.add minFadc
-    minimaGP.add minEnergy
-    idxs.add idx
-
-  let df = toDf(minimaFadc, minimaGP, idxs)
-  ggplot(df, aes("minimaFadc", fill = "idxs")) +
-    geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
-    ggsave("/t/fadc_minima.pdf")
-
-  ggplot(df, aes("minimaGP", fill = "idxs")) +
-    geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
-    ggsave("/t/fadc_minima_gridpix_energy.pdf")    
-
-when isMainModule:
-  import cligen
-  dispatch main
-#+end_src
-  
-#+begin_src sh
-./code/fadc_compute_activation_threshold -f ~/CastData/data/CalibrationRuns2017_Reco.h5 --percentile 1
-#+end_src
-
-yields
-
-[[file:Figs/FADC/fadc_minima_2017_calibration.pdf]]
-
-showing a _very_ clear difference in the activation threshold in terms
-of voltages.
-
-Of course this itself does not imply a difference in activation
-threshold of the equivalent physical energy!
-
-- [ ] *COMPUTE IN ENERGY INSTEAD OF VOLTAGE*
-
-*NOTE*: From the FADC plots here (pure FADC & GridPix energy
-correlated) as well as the raw FADC spectra it's clearly evident that
-the actual gain of the FADC went _down_ instead of up after changing
-diff 50->20ns and coarse gain 6x->10x and further when going from
-50ns-100ns integration time.
-To some extent this may make sense: differentiation
-
-According to FADC manual the "differentiation" setting adjusts the RC
-differentiation time and therefore
-#+begin_quote
-DIFFERENTIATE Front panel 6-position switch
-selects a differentiation time constant to control the
-decay time of the pulse; settings select Out
-(equivalent to 150 µs), 20, 50, 100, 200, or 500 ns.
-
-INTEGRATE Front panel 6-position switch selects
-an integration time constant to control the risetime
-of the pulse; settings select 20, 50, 100,
-#+end_quote
-And further:
-#+begin_quote
-Generally speaking, the Integrate time constant can
-be selected so that the rise time of the output
-pulses is normalized at a rate that is slower than
-the rise times of the input pulses. This function is of
-greatest value when the pulses originate in a large
-detector so that they generate a wide variety of rise
-times and are difficult to observe for timing
-measurements. The Differentiate time constant is
-also selectable and determines the total interval
-before the pulse returns to the baseline and allows
-a new pulse to be observed. The combination of
-integration and differentiation time constants also
-contributes to the amount of electronic noise that is
-seen in the system, so the resulting waveforms
-should be considered from each of these points of
-view and adjusted for optimum results.
-
-When the shaping time constants impose
-considerable changes in the input waveform, the
-nominal gain, which is the product of the Coarse
-and Fine control settings, may be degraded
-somewhat. This is not normally a problem, since
-the gain is constant even though it may be less
-than the nominal settings indicate. 
-#+end_quote
-
-I.e. this means the differentiation time is responsible for getting
-the signal back to baseline. And it's expected that it has an effect
-on the amplitude on the signal!
-
-- [ ] *ADD ABOVE AS EXPLANATION FOR THE SEEN BEHAVIOR*
-  -> maybe 4 fold plot:
-  - histogram as above for lower percentile energies of min vals &
-    gridpix energies together with three spectra, one for each setting
-    combined in one plot?
-
-All this is effectively good news. This explains also _why_ the
-changes to the integration / differentiation had such an effect on the
-noise! They simply reduced the effective gain, ergo made the FADC less
-sensitive to the same noise!    
-
-Ref:
-https://www.ortec-online.com/-/media/ametekortec/manuals/4/474-mnl.pdf?la=en&revision=07c47ecb-5c63-48ff-a393-ba39e45be57b
-from here:
-https://www.ortec-online.com/products/electronics/amplifiers/474
-
-*** How to compute an effective charge based on FADC signals? [0/1]
-
-This section should cover our ideas about how we compute an effective
-charge (in arbitrary units) based on the FADC signals as a measure
-about the effective charge recorded in a signal. To cross correlate
-changes in FADC "charge" to GridPix charge.
-
-- [ ] -> is detector behavior over time visible in FADC data?
-
--> Looking at [[file:Figs/time_vs_55fe_peak_pos_2017.pdf]] generated via
-#+begin_src sh
-./mapSeptemTempToFePeak ~/CastData/data/CalibrationRuns2017_Reco.h5 --inputs fePixel --inputs feCharge --inputs feFadc
-#+end_src
-shows a _very_ strong correlation between all three kinds of
-calibration.
-
-Note the strong fall in the FADC data in the "left hump" of points is
-the change of the integration / differentiation time during the 2017
-data taking (up to Dec 2017). But looking closely even there a strong
-correlation is visible inside of each "block".
-
-This puts to rest at least _most_ theories that the change might _not_
-be a change in the gas gain, but some other effect like electronics!
-
-- [ ] *EXPAND ON THE ABOVE, EXPLAIN THAT IN DETECTOR BEHAVIOR OVER
-  TIME!*
-  -> given that also temperature is not properly correlated it leaves
-  charge up effects (changing effective voltage) and gas flow
-  (unlikely as flow constant & pressure always stable).
-
-
-** Scintillators [/]
-
-- [ ] *DO THE SCINTILLATORS DESERVE A SECTION HERE TO EXPLAIN THEIR
-  USAGE?*
-  -> probably not, as this really should be about the stuff we do to
-  calibrate and use data. But none of this is needed for
-  scintillators.
-  -> As a matter of fact the explanation for the FADC above about
-  being of 4-fold use might actually be better placed somewhere else?
-
-- [ ] Well, at the very least we should present the information
-  about the number of triggers, clock cycle distributions
-  etc. somewhere. Either do it here somewhere or do it before we
-  perform the cuts. Both can work.
-  -> In principle this chapter here could really be about the detector
-  energy etc. while other calculations could be presented before?
-  Or we have another short chapter/section about "data overview"?
-
-** Energy calibration, how done? [0/1]
+** Energy calibration - in principle [0/1]
 :PROPERTIES:
 :CUSTOM_ID: sec:calibration:energy
 :END:
 
-- [ ] Mention something about section [[#sec:large_events_few_pixels_tot]] in
-=StatusAndProgress=, i.e. events that convert very close to grid and
-thus have few pixels, but a lot of energy as determined by the
-ToT. This is an argument in favor of using ToT over #pix.
-
 The reconstructed data from the GridPixes, as described in chapter
-[[#sec:???]] (refer to TOS calibration, charge calib & reconstruction
-parts), still needs to be calibrated in energy. The charge calibration
-[[#sec:operation_calibration:tot_calibration]] computes the number of electrons recorded on
-each GridPix pixel in an event from the ToT counts. In order to
-calculate an equivalent energy based on a certain amount of charge -
-which depends on the gas gain - the data recorded using the \cefe
-calibration source at CAST is used. As the \cefe spectrum (see
-sec. [[#sec:theory:escape_peaks_55fe]]) has a photo peak at
+[[#sec:reco:data_reconstruction]] (cluster finding, cluster reconstruction
+and charge calibration), still needs to be calibrated in energy.
+
+The charge calibration [[#sec:operation_calibration:tot_calibration]]
+computes the number of electrons recorded on each GridPix pixel in an
+event from the ~ToT~ counts.
+
+- [ ] GAS GAIN?
+
+In order to calculate an equivalent energy based on a certain amount
+of charge -- which depends on the gas gain -- the data recorded using
+the \cefe calibration source at CAST is used. As the \cefe spectrum
+(see sec. [[#sec:theory:escape_peaks_55fe]]) has a photo peak at
 $\SI{5.9}{keV}$ and an escape peak at $\SI{2.9}{keV}$ it provides two
-different lines for calibration. While the charge calibration for each
-pixel from ToT to electrons is non linear, the relation between energy
-and recorded charge is. The position of the two peaks in the \cefe
-spectrum needs to be determined precisely, which is done using a
-double gaussian fit
+different lines relating charges to energies for calibration. While
+the charge calibration for each pixel from ~ToT~ to electrons is
+non-linear, the relation between energy and recorded charge is
+linear. The position of the two peaks in the \cefe spectrum needs to
+be determined precisely, which is done using a double gaussian fit
 
 #+NAME: eq:calib:fe55_charge_fit_function
 \begin{equation}
@@ -16594,8 +16038,6 @@ $G^{\text{esc}}$ and one for the photo peak $G$. An example spectrum
 with such a fit can be seen in
 fig. [[fig:calib:fe55_example_fit_spectrum]].
 
-- [X] *INSERT A 55 FE FIT W/ FIT PARAMETERS SHOWN*
-
 #+CAPTION: Fit to a \cefe calibration run from the CAST data (run 149)
 #+CAPTION: using eq. [[eq:calib:fe55_charge_fit_function]]. *REPLACE ME*
 #+NAME: fig:calib:fe55_example_fit_spectrum
@@ -16604,19 +16046,13 @@ fig. [[fig:calib:fe55_example_fit_spectrum]].
 Then, a linear function without y-offset
 
 \[
-Q(E) = m · E
+Q(E) = m_c · E
 \]
 
 is fitted to the found peak positions of the spectra by charge $Q$,
 against the known energies $E$ of the peaks in the \cefe spectrum. This
-yields the calibration factor, $a = m⁻¹$, which can be used to
+yields the calibration factor, $a = m_c⁻¹$, which can be used to
 calibrate all events with _the same_ gas gain.
-
-- [ ] *CLARIFY WHAT IS BEING FIT / UNITS OF FIT FUNCTION / CLARIFY
-  PIXEL VS CHARGE FITS / CHECK RELATION a to m IS CORRECT*
-  -> maybe add pixel fit only as a footnote? 
-
-- [ ] *INSERT PLOT OF ENERGY CALIBRATION FIT?*
 
 However, the recorded charge is dependent on the detector gas
 gain. The calibration factor is only valid for the specific gas gain
@@ -16639,7 +16075,7 @@ time intervals should be on a slope depending on the gas gain. As such
 a final fit
 
 \[
-a(G) = m · G + b
+a(G) = m_g · G + b
 \]
 
 is performed, which yields the energy calibration factor $a$ valid for
@@ -16657,11 +16093,168 @@ use for all data.
 In sec. [[#sec:calib:final_energy_calibration]] we will see the final
 calibrations based on the chosen time interval.
 
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] Mention something about section [[#sec:large_events_few_pixels_tot]] in
+=StatusAndProgress=, i.e. events that convert very close to grid and
+thus have few pixels, but a lot of energy as determined by the
+~ToT~. This is an argument in favor of using ~ToT~ over #pix.
+
 - [X] *TALK ABOUT DETECTOR BEHAVIOR OVER TIME, REFER TO SUBSECTION*
 
 - [ ] *INSERT REFERENCES TO THE FITS IN CODE*
 
-  
+- [ ] *CLARIFY WHAT IS BEING FIT / UNITS OF FIT FUNCTION / CLARIFY
+  PIXEL VS CHARGE FITS / CHECK RELATION a to m IS CORRECT*
+  -> maybe add pixel fit only as a footnote? 
+
+- [ ] *INSERT PLOT OF ENERGY CALIBRATION FIT?*
+
+- [X] *INSERT A 55 FE FIT W/ FIT PARAMETERS SHOWN*
+  - [ ] *UPDATE PLOT*
+
+*** On ~ToT~ vs. ~ToA~ for a Timepix1 detector                   :extended:
+
+This is a good point to comment on the choice of using all pixels in
+the CAST data taking to record ~ToT~ values. One might argue that due
+to the single electron efficiency of GridPix detectors it would have
+been a good idea to either just record only ~ToA~ values for all
+pixels as to have access to time information (yielding longitudinal
+information about events) or at least use a checkerboard pattern with
+half the pixels recording ~ToT~ and half ~ToA~ values.
+
+There are two major issues with that (outside of the fact that at the
+time of making these choices I was not in a position to make an
+educated choice anyway):
+
+1. the ~ToA~ counter, as far as I'm aware, is too short for the
+   Timepix1 as needed in the context for CAST like shutter times. Ref
+   [[cite:&lupberger2016pixel]] page 30, but the gist is that Timepix1
+   pixels can count to 11810. At a clock frequency of $\SI{40}{MHz}$
+   this only yields a time window of $\SI{295}{μs}$ for ~ToA~
+   values. For shutter lengths on the order of seconds such short
+   ~ToA~ counters would run over pretty much always.
+2. ignoring the practical limitation of 1, which may or may not be
+   possible to circumvent in some way or another, there is a separate
+   problem: Single electron efficiency is an ideal approximation of
+   reality. Either for higher energies or in rare cases -- which are
+   extremely important for low rate experiments like CAST where "rare"
+   means precisely important for the selection of candidates! --
+   conversion of photons can happen very close to the grid. In those
+   cases _many_ primary electrons will enter single holes, resulting
+   in events with very few pixels but very high charges. See
+   sec. [[#sec:large_events_few_pixels_tot]] below.
+
+Fortunately, we do have the FADC signal to get at least some time
+information regardless of the choice.
+
+At the same time in the future with a Timepix3 based GridPix detector
+all these points will become mute: it records both ~ToT~ and ~ToA~ at
+the same time at time high resolution. This _also_ means using an FADC
+will become irrelevant, avoiding the difficulties of dealing with
+analogue signals and associated EMI issues.
+
+**** (While generating fake data) Events with large energy, but few pixels
+:PROPERTIES:
+:CUSTOM_ID: sec:large_events_few_pixels_tot
+:END:
+
+#+begin_quote
+This section is taken out of my regular notes. It was written while
+trying to understand certain behaviors while trying to generate fake
+event data from existing data by removal of pixels. That approach is
+the easiest way to generate lower energy 'simulated' data from
+existing data without having to simulate full events (which we ended
+up doing later anyway).
+#+end_quote
+
+While developing some fake data using existing events in the photo
+peak & filtering out pixels to end up at ~3 keV, I noticed the
+prevalence of events with <150 pixels & ~6 keV energy.
+
+Code produced by splicing in the following code into the body of =generateFakeData=.
+#+begin_src nim
+    for i in 0 ..< xs.len:
+      if xs[i].len < 150 and energyInput[i] > 5.5:
+        # recompute from data
+        let pp = toSeq(0 ..< xs[i].len).mapIt((x: xs[i][it], y: ys[i][it], ch: ts[i][it]))
+        let newEnergy = h5f.computeEnergy(pp, group, a, b, c, t, bL, mL)
+        echo "Length ", xs[i].len , " w/ energy ", energyInput[i], " recomp ", newEnergy
+        let df = toDf({"x" : pp.mapIt(it.x.int), "y" : pp.mapIt(it.y.int), "ch" : pp.mapIt(it.ch.int)})
+        ggplot(df, aes("x", "y", color = "ch")) +
+          geom_point() +
+          ggtitle("funny its real") + 
+          ggsave("/tmp/fake_event.pdf")
+        sleep(200)
+    if true: quit()
+#+end_src
+
+This gives about 100 events that fit the criteria out of a total of
+O(20000). A ratio of 1/200 seems probably reasonable for absorption of
+X-rays at 5.9 keV.
+
+While plotting them I noticed that they all share that they are
+incredibly dense, like:
+[[file:~/org/Figs/statusAndProgress/exampleEvents/event_few_pixels_large_energy.pdf]]
+
+These events must be events where the X-ray to photoelectron
+conversion happens very close to the grid!
+This is one argument "in favor" of using ToT instead of ToA on the
+Timepix1 and more importantly a good reason to keep using the ToT
+values instead of pure pixel counting for at least some events!
+
+- [ ] We should look at number of pixels vs. energy as a scatter plot to see
+what this gives us.
+
+**** Plotting low count / high energy events with ~plotData~
+
+Alternatively to the above section we can also just use ~plotData~ to
+create some event displays for such events for us. We can utilize the
+~--cuts~ argument to create event displays only for events with fewer
+than a certain number of pixels and more than some amount of energy.
+
+Let's say < 100 pixels and > 5 keV for example:
+#+begin_src sh
+plotData \
+    --h5file ~/CastData/data/DataRuns2018_Reco.h5 \
+    --runType=rtBackground \
+    --eventDisplay --septemboard \
+    --cuts '("hits", 0, 100)' \
+    --cuts '("energyFromCharge", 5.0, Inf)' \
+    --cuts '("centerX", 3.0, 11.0)' \
+    --cuts '("centerY", 3.0, 11.0)' \
+    --applyAllCuts
+#+end_src
+
+Or we can produce a scatter plot of how the number of hits relates to
+the energy if we make some similar cuts (producing the plot for all
+background data obviously drowns it in uninteresting events). We do
+this by utilizing the custom ~--x~ and ~--y~ argument:
+#+begin_src sh
+plotData \
+  --h5file ~/CastData/data/DataRuns2018_Reco.h5 \
+  --runType=rtBackground \
+  --x energyFromCharge --y hits --z length \
+  --cuts '("hits", 0, 150)' \
+  --cuts '("energyFromCharge", 4.0, Inf)' \
+  --cuts '("centerX", 3.0, 11.0)' \
+  --cuts '("centerY", 3.0, 11.0)' \
+  --applyAllCuts 
+#+end_src
+In addition we colored each point by the length of the cluster to see
+if these clusters are commonly small.
+
+This yields the following plot, fig. [[fig:calibration:large_energy_few_hits_scatter]].
+
+#+CAPTION: Scatter plot of the energy of clusters against the number of hits
+#+CAPTION: for clusters not at the edges of the chips and filtered to < 150 hits
+#+CAPTION: and more than 4 keV. The color code is the length of the clusters in milli meter.
+#+NAME: fig:calibration:large_energy_few_hits_scatter
+[[~/phd/Figs/eventProperties/events_few_hits_large_energy_scatter.pdf]]
+
+
+
 ** Detector behavior over time [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:calib:detector_behavior_over_time
@@ -16691,10 +16284,10 @@ significant fluctuations can be observed even on such time
 scales. Fig. [[fig:calib:total_charge_over_time]] shows the normalized
 median of the total charge in events for all CAST data normalized by
 the datasets (background and calibration). Each data point represents
-a \SI{90}{min} time slice. Some data is removed prior to calculation
+a $\SI{90}{min}$ time slice. Some data is removed prior to calculation
 of the median as mentioned in the caption and title. The important
 takeaway of the figure is the extreme variability of the median charge
-(up to \SI{30}{\percent}!). Fortunately though, the background and
+(up to $\SI{30}{\%}$!). Fortunately though, the background and
 calibration data behaves the same, evident by the strong
 correlation. While the causes for the variability are not entirely
 certain (see sec. [[#sec:calib:causes_variability]]), it allows us to take
@@ -16801,7 +16394,7 @@ particular in regards to the \cefe spectra showing variation, the
 number of pixels and the amount of charge are directly correlated. The
 number of pixels is plainly a clamped version of the charge
 information. If electronics caused threshold variations it would both
-change the effective ToT value as well as the number of pixels
+change the effective ~ToT~ value as well as the number of pixels
 activated in the first place. Fortunately, the center chip also
 contains the FADC, which allows for an independent measurement of the
 effective charge generated below the grid and thus another indirect
@@ -17755,6 +17348,603 @@ finally using that factor to convert the charge into energy.
   every possibility of the software after all.
 
 
+** FADC
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:fadc
+:END:
+
+As described over the course of previous chapters, the FADC serves
+essentially a 4-way purpose. First of all, it is used as a trigger to
+start the readout process of the GridPixes, if the center chip records
+a large enough signal. This brings up the question of the activation
+threshold of the FADC, sec. [[#sec:fadc:activation_threshold]]. Secondly,
+thanks to the high temporal resolution the recorded signal can be used
+to gain information about the longitudinal shape of recorded
+events. This theoretically allows it to act as an additional
+background suppression mechanism,
+sec. [[#sec:fadc:fadc_as_veto]]. Finally, its trigger clock acts as the
+reference time and readout flag for the scintillators, see
+sec. [[#sec:fadc:scintillator_trigger_reference]] (*I THINK THIS MAY NOT
+BE NEEDED, AS THERE IS ENOUGH STUFF ABOUT THIS BEFORE*). Furthermore,
+in principle the FADC provides an independent measurement about the
+total charge collected on the central GridPix. Thus, it serves as a
+reference as to whether changes in the computed gas gain on the
+GridPix as well as possible changes in the recorded number of pixels
+are due to physical changes in the gas gain or due to changes in the
+readout electronics. Such a secondary insight is valuable in the
+context of studying the GridPix behavior over time, sec.
+[[#sec:calib:detector_behavior_over_time]]. 
+
+- trigger
+- longitudinal shape information -> acting as a veto
+- reference clock for scintillators
+- [ ] 
+  -> independent information of total collected charge
+  -> allows to check whether seen changes in gas gain on gridPix are
+  really changes in gas gain or changes in the readout electronics of
+  a timepix!!
+  This is actually an important insight as it allows us to see what
+  happened in the cases where pixel information was lost / peak
+  position changed drastically. Did gas gain change based on FADC information?
+
+problems:  
+- noise
+- different thresholds due to gain changes
+- different shapes due to 50ns 100ns signal integration, 50ns 20ns
+  differentiation
+- [ ] *REGARDING 50ns vs 100ns ~fadc_analysis.nim~ CONTAINS CODE TO 
+  CHECK NOISE COMPARED TO 50 vs 100!!*  
+
+*** FADC spectrum & threshold [0/4]
+
+What is it that we actually want from this? Aside from providing an
+*overview* the FADC is barely used for anything. Things that are
+important:
+- [ ] *barely used not true anymore!* Important veto.
+- [ ] *trigger threshold* deduced from calibration data / real data
+  - [ ] define how to compute & compute for every run, plot trigger
+    threshold vs run (correlate with settings)
+- [ ] show rise time / fall time histograms! Required for our cuts we
+  actually perform on that in background calc later! This is required
+  because otherwise we cannot explain why we do / do not use the FADC
+  as a veto and why it's not super helpful.
+
+#+CAPTION: The peak position in \si{V} of the photopeak in the \cefe calibration
+#+CAPTION: runs during Run-2. The different FADC amplifier settings are clearly visible. *FIX THE PLOT / PRETTIFY*
+#+NAME: fig:fadc:peak_position_55fe_run2_settings
+[[~/phd/Figs/FADC/peak_positions_fadc_run2.pdf]]
+
+#+CAPTION: The mean rise time of the signals recorded during the \cefe data
+#+CAPTION: during Run-2 of the FADC. Again, the FADC amplifier settings are visible
+#+CAPTION: as expected.
+#+NAME: fig:fadc:mean_rise_times_55fe_fadc_run2
+[[~/phd/Figs/FADC/fadc_mean_riseTime_run2.pdf]]
+
+- [ ] *MOST LIKELY THESE RISE/FALL TIME PLOTS CHANGE SIGNIFICANTLY NOW
+  AFTER HAVING CHANGED FADC BASELINE & THRESHOLD CALCS!!!*
+
+
+- [X] show spectra (already one shown in previous chapter!)
+- [ ] show 55Fe spectrum of FADC data
+- [X] create plot showing position of 55 Fe photo peak in FADC data,
+  highlighting when amplifier settings were changed
+- [X] create plot of mean rise times in FADC   
+- [ ] show how FADC events differ in 50ns and 100ns data (*we have 
+  those datasets*)
+  -> partially done in plots comparing rise time between different runs!
+- [ ] show detector pointing to Zenith data for muon related stuff
+- [ ] plot histograms of 50ns runs vs 100ns runs at CAST to see
+  difference in background
+  -> code is there!
+- [ ] plot histograms of the different properties (rise & fall time in
+  particular) for the different FADC settings used at CAST
+  -> partially done! Not the histograms shown above, but the mean
+  value of those histograms!
+  -> For the actual histograms we could split the data by the datasets
+  with different FADC settings (similar to how done in
+  ~fadc_analysis.nim~!) and then plot them by 3 different colors.
+- [X] finish trying to deduce the pedestals from real data. Didn't
+  work last time only due to our confusion of using all 4
+  channels. Try again focusing on the single channel we actually use!
+  -> Now that it's done correctly it works extremely well!
+- [ ] create a plot comparing 55Fe data from GridPix with FADC (by
+  peak position over time. Same correlation or not?)
+  -> also see detector behavior over time / FADC as proxy for charge
+- [ ] *REGARDING 50ns vs 100ns ~fadc_analysis.nim~ CONTAINS CODE TO 
+  CHECK NOISE COMPARED TO 50 vs 100!!*
+- [ ] noise analysis
+- [ ] apply Savitzky Golay filter to FADC spectra & describe
+  -> Still necessary after correct pedestals in use w/ trunc mean?
+  Maybe much more helpful now? Try it!
+- [ ] train NN on FADC data and see what we can gain <- this goes
+  towards analysis chapter of course!
+  Best use a CNN with 1D input data & kernel!
+  
+
+**** Generate plots of FADC fall & rise times and FADC \cefe spectrum [/] :noexport:
+:PROPERTIES:
+:CUSTOM_ID: sec:reco:fadc_rise_fall_plots
+:END:
+
+- [ ] *REPLACE THE ORIGIN OF THIS PLOT*
+
+#+begin_src sh :results drawer
+raw_data_manipulation -p ~/CastData/data/2018_2/Run_240_181021-14-54/ \
+                      --out /t/raw_240.h5 \
+                      --runType rtBackground
+#+end_src
+
+#+begin_src sh :results drawer
+reconstruction /t/raw_240.h5 --out /t/reco_240.h5
+#+end_src
+
+#+RESULTS:
+:results:
+{"<HDF5file>": /t/raw_240.h5, "--only_gain_fit": false,
+"--create_fe_spec": false, "--version": false, "--runNumber": nil,
+"--only_charge": false, "--only_energy_from_e": false,
+"--only_energy": nil, "--out": /t/reco_240.h5, "--config": nil,
+"--only_gas_gain": false, "--only_fadc": false, "--help": false,
+"--only_fe_spec": false}
+...
+INFO Writing data to datasets
+INFO Writing of FADC data took 0.9212641716003418 seconds
+INFO Reconstruction of all runs in /t/raw_240.h5 with flags: {rfReadAllRuns} took 5.32500171661377 seconds
+INFO Performed reconstruction of the following runs:
+INFO {240}
+INFO while iterating over the following:
+INFO {240}
+:end:
+#+begin_src sh :results drawer
+reconstruction /t/reco_240.h5 --only_fadc
+#+end_src
+
+#+RESULTS:
+:results:
+{"<HDF5file>": /t/reco_240.h5, "--only_gain_fit": false, "--create_fe_spec": false, "--version": false, "--runNumber": nil, "--only_charge": false, "--only_energy_from_e": false, "--only_energy": nil, "--out": nil, "--config": nil, "--only_gas_gain": false, "--only_fadc": true, "--help": false, "--only_fe_spec": false}
+INFO Reading config file: /home/basti/CastData/ExternCode/TimepixAnalysis/Analysis/ingrid/config.toml
+Start fadc calc
+FADC minima calculations took: 0.5971462726593018
+INFO Reconstruction of all runs in /t/reco_240.h5 with flags: {rfOnlyFadc, rfReadAllRuns} took 1.252563714981079 seconds
+INFO Performed reconstruction of the following runs:
+INFO {240}
+INFO while iterating over the following:
+INFO {240}
+:end:
+
+#+begin_src sh :results drawer
+raw_data_manipulation -p ~/CastData/data/2017/Run_96_171123-10-42 \
+                      --out /t/raw_96.h5 \
+                      --runType rtCalibration
+#+end_src
+
+#+RESULTS:
+:results:
+Flags are is {}
+...
+INFO Closing h5file with code 0
+INFO Processing all given runs took 0.3456798712412516 minutes
+:end:
+
+#+begin_src sh :results drawer
+reconstruction /t/raw_96.h5 --out /t/reco_96.h5
+#+end_src
+
+#+RESULTS:
+:results:
+{"<HDF5file>": /t/raw_96.h5, "--only_gain_fit": false,
+"--create_fe_spec": false, "--version": false, "--runNumber": nil,
+"--only_charge": false, "--only_energy_from_e": false,
+"--only_energy": nil, "--out": /t/reco_96.h5, "--config": nil,
+"--only_gas_gain": false, "--only_fadc": false, "--help": false,
+"--only_fe_spec": false}
+...
+INFO Writing data to datasets
+INFO Writing of FADC data took 6.967457056045532 seconds
+INFO Reconstruction of all runs in /t/raw_96.h5 with flags: {rfReadAllRuns} took 15.26722311973572 seconds
+INFO Performed reconstruction of the following runs:
+INFO {96}
+INFO while iterating over the following:
+INFO {96}
+:end:
+#+begin_src sh :results drawer
+reconstruction /t/reco_96.h5 --only_fadc
+#+end_src
+
+#+RESULTS:
+:results:
+{"<HDF5file>": /t/reco_96.h5, "--only_gain_fit": false, "--create_fe_spec": false, "--version": false, "--runNumber": nil, "--only_charge": false, "--only_energy_from_e": false, "--only_energy": nil, "--out": nil, "--config": nil, "--only_gas_gain": false, "--only_fadc": true, "--help": false, "--only_fe_spec": false}
+INFO Reading config file: /home/basti/CastData/ExternCode/TimepixAnalysis/Analysis/ingrid/config.toml
+Start fadc calc
+FADC minima calculations took: 4.997849464416504
+INFO Reconstruction of all runs in /t/reco_96.h5 with flags: {rfOnlyFadc, rfReadAllRuns} took 10.23849511146545 seconds
+INFO Performed reconstruction of the following runs:
+INFO {96}
+INFO while iterating over the following:
+INFO {96}
+:end:
+
+#+begin_src nim :results drawer :tangle code/fadc_rise_fall_different_settings.nim
+import nimhdf5, ggplotnim
+import std / [strutils, os, sequtils]
+import ingrid / [tos_helpers]
+import ingrid / calibration / [calib_fitting, calib_plotting]
+import ingrid / calibration 
+
+proc stripPrefix(s, p: string): string =
+  result = s
+  result.removePrefix(p)
+
+from ginger import transparent    
+proc plotFallTimeRiseTime(df: DataFrame, suffix: string) =
+  ## Given a full run of FADC data, create the
+  ## Note: it may be sensible to compute a truncated mean instead
+  let dfG = df.group_by("runNumber").summarize(f{float: "riseTime" << truncMean(col("riseTime").toSeq1D, 0.05)},
+                                               f{float: "fallTime" << truncMean(col("fallTime").toSeq1D, 0.05)})
+  ggplot(dfG, aes(runNumber, riseTime, color = fallTime)) + 
+    geom_point() +
+    ggtitle("Comparison of FADC signal rise times in ⁵⁵Fe data for all runs in $#" % suffix) +
+    ggsave("Figs/FADC/fadc_mean_riseTime_$#.pdf" % suffix)
+  ggplot(dfG, aes(runNumber, fallTime, color = riseTime)) + 
+    geom_point() +
+    ggtitle("Comparison of FADC signal fall times in ⁵⁵Fe data for all runsin $#" % suffix) +
+    ggsave("Figs/FADC/fadc_mean_fallTime_$#.pdf" % suffix)
+
+proc main(fname: string, year: int) =
+  var h5f = H5open(fname, "r")
+  let fileInfo = h5f.getFileInfo()
+  let is2017 = year == 2017
+  let is2018 = year == 2018
+  if not is2017 and not is2018:
+    raise newException(IOError, "The input file is neither clearly a 2017 nor 2018 calibration file!")
+  
+  var peakPos = newSeq[float]()
+  var dfProp = newDataFrame()
+  for run in fileInfo.runs:
+    var df = h5f.readRunDsets(
+      run,
+      commonDsets = @["fadc/eventNumber",
+                      "fadc/baseline",
+                      "fadc/riseStart",
+                      "fadc/riseTime",                  
+                      "fadc/fallStop",
+                      "fadc/fallTime",
+                      "fadc/minvals",
+                      "fadc/argMinval"]                 
+    )
+    df = df.rename(df.getKeys.mapIt(f{it.stripPrefix("fadc/") <- it}))
+    df["runNumber"] = run
+    let dset = h5f[(recoBase() & $run / "fadc/fadc_data").dset_str]
+    let fadcData = dset[float].toTensor.reshape(dset.shape)
+
+    let feSpec = fitFeSpectrumFadc(df["minvals", float].toSeq1D)
+    let ecData = fitEnergyCalib(feSpec, isPixel = false)
+    let texts = buildTextForFeSpec(feSpec, ecData)
+    plotFeSpectrum(feSpec, run, 3, texts = texts, pathPrefix = "Figs/FADC/fe55_fits/")
+
+    # add fit to peak positions
+    peakPos.add feSpec.pRes[feSpec.idx_kalpha]
+    
+    
+    ggplot(df, aes("minvals")) +
+      geom_histogram(bins = 300) +
+      ggsave("/t/fadc_run_$#_minima.pdf" % $run)
+
+    dfProp.add df
+
+  let yearToRun = if is2017: 2 else: 3
+  let suffix = "run$#" % $yearToRun
+    
+  plotFallTimeRiseTime(dfProp, suffix) 
+
+  ##    - run 101 <2017-11-29 Wed 6:40> was the first with FADC noise
+  ##      significant enough to make me change settings:
+  ##      - Diff: 50 ns -> 20 ns (one to left)
+  ##      - Coarse gain: 6x -> 10x (one to right)
+  ##    - run 112: change FADC settings again due to noise:
+  ##      - integration: 50 ns -> 100 ns
+  ##        This was done at around <2017-12-07 Thu 8:00>
+  ##      - integration: 100 ns -> 50 ns again at around
+  ##        <2017-12-08 Fri 17:50>.
+  ##    - run 121: Jochen set the FADC main amplifier
+  ##      integration time from 50 -> 100 ns again, around
+  ##      <2017-12-15 Fri 10:20>
+  let df = toDf({ "runs" : fileInfo.runs,
+                  "peaks" : peakPos })
+
+  let outname = "Figs/FADC/peak_positions_fadc_$#.pdf" % $suffix
+  var plt = ggplot(df, aes("runs", "peaks"))
+
+  if is2017:
+    let settings = @["""Integration: 50 ns\\
+Diff: 50 ns\\
+Gain: 6x""",
+                   """Integration: 50 ns\\
+Diff: 20 ns\\
+Gain: 10x""",
+                   """Integration: 100 ns\\
+Diff: 20 ns\\
+Gain: 10x""" ]
+    let runs = @[80, 101, 121]
+    let widths = @[101 - 80, 121 - 101, fileInfo.runs.max - 121]
+    let ys = @[0.1, 0.1, 0.1]
+    let heights = @[0.25, 0.25, 0.25] # @[0.35, 0.35, 0.35]
+    let textYs = @[0.33, 0.27, 0.22]
+    let dfRects = toDf(settings, ys, textYs, runs, heights, widths)
+
+    
+    plt = plt +
+      geom_tile(data = dfRects, aes = aes(x = "runs", y = "ys", height = "heights", width = "widths", fill = "settings"),
+                alpha = 0.3) +
+      geom_text(data = dfRects, aes = aes(x = f{`runs` + 35}, y = "textYs", text = "settings")) +
+      xlim(80, 200)
+  plt + geom_point() +
+    ylim(0.1, 0.35) +
+    ylab("⁵⁵Fe peak position [V]") + xlab("Run number") +
+    ggtitle("Peak position of the ⁵⁵Fe runs in the FADC data") + 
+    ggsave(outname)
+
+  if is2017:
+    writeCsv(df, "resources/peak_positions_fadc_run2.csv")
+  elif is2018:
+    writeCsv(df, "resources/peak_positions_fadc_run3.csv")
+      
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+- [X] *REGENERATE FADC DATA IN H5 FILES ON ~voidRipper~*
+- [X] *GENERATE HISTOGRAMS OF MINVALS FOR ALL CALIBRATION RUNS*
+- [X] *GENERATE PLOT OF ALL FIT TO MINVALS HISTO FIND PEAK FOR ALL
+  CALIBRATION RUNS*
+  -> start by just computing maximum of the above histogram for each
+  run as a basis
+- [ ] *ALL THESE PLOTS SHOULD REALLY BE GENERATED WHEN RUNNING
+  ~reconstruction --only_fadc~! Replace that!*
+- [ ] *GENERATE PLOT OF FADC & GridPix PEAK POSITIONS AGAINST ALL RUNS*  
+
+Run the code for 2017 calibration data to generate the plot of the
+FADC settings (and generate the CSV containing the peak positions by run):
+#+begin_src sh
+./code/fadc_rise_fall_different_settings.nim -f ~/CastData/data/CalibrationRuns2017_Reco.h5 --year 2017
+#+end_src
+and now for 2018 to generate the CSV for the peak positions of the run
+3 data:
+#+begin_src sh
+./code/fadc_rise_fall_different_settings.nim -f ~/CastData/data/CalibrationRuns2018_Reco.h5 --year 2018
+#+end_src
+
+*** FADC noise & study
+:PROPERTIES:
+:CUSTOM_ID: sec:calibration:fadc_noise
+:END:
+
+- [ ] *!!!*
+
+- [ ] *EXAMPLE OF NOISE*
+- [ ] *??*    
+
+
+*** Activation threshold [0/2]
+:PROPERTIES:
+:CUSTOM_ID: sec:fadc:activation_threshold
+:END:
+
+- [ ] What will we write here? Most of the stuff in the noexport
+  subsection doesn't belong in there after all!
+
+
+#+CAPTION: Different activation thresholds of the Run-2 data due to different FADC settings, 
+#+CAPTION: determined based on the 1-th percentile of the data in the \cefe calibration runs.
+#+NAME: fig:fadc:activation_threshold_run2
+file:Figs/FADC/fadc_minima_2017_calibration.pdf
+
+**** Generate plots & determine activation thresholds           :noexport:
+- [ ] how to compute? The fits we perform for the 55 Fe in one of our
+  scripts here ideally should be done for each run again... That way
+  we could compute the energy similar to what we do for GridPix
+  data. Ideally we could compute it more by using an integral approach
+  though, as that gives us a better proxy for the amount of charge. Or
+  at least using a peak finding to detect multiple signals within one
+  FADC event to sum energies of both.
+  As an easier approach we can of course compute a lower percentile
+  (not the total minimum, but maybe 1% of each run and plot that?).
+
+#+begin_src nim :tangle code/fadc_compute_activation_threshold.nim
+import nimhdf5, ggplotnim
+import std / [strutils, os, sequtils]
+import ingrid / [tos_helpers, fadc_helpers, ingrid_types, fadc_analysis]
+
+proc fadcSettingRuns(): seq[int] =
+  result = @[0, 101, 121]
+
+proc stripPrefix(s, p: string): string =
+  result = s
+  result.removePrefix(p)
+
+proc minimum(h5f: H5File, runNumber: int, percentile: int): (float, float) =
+  var df = h5f.readRunDsets(
+    runNumber,
+    chipDsets = some((chip: 3, dsets: @["energyFromCharge", "eventNumber"]))
+  )
+  # sum all energies of all same events to get a combined energy of all
+  # clusters on the center chip in each event (to correlate w/ FADC)
+  df = df.group_by("eventNumber").summarize(f{float -> float: "energyFromCharge" << sum(col("energyFromCharge"))})
+  var run = h5f.readRecoFadcRun(runNumber)
+  let dfFadc = toDf({ "eventNumber" : run.eventNumber,
+                      "minVals" : run.minVals })
+  # join both by `eventNumber` (dropping center chip events w/ no FADC)
+  df = innerJoin(df, dfFadc, "eventNumber")
+  # percentile based on minvals & gridpix energy
+  result = (percentile(run.minvals.mapIt(it.abs), percentile), percentile(df["energyFromCharge", float], percentile))
+
+proc main(fname: string, percentile: int) =
+  var h5f = H5open(fname, "r")
+  let fileInfo = h5f.getFileInfo()
+  echo fileInfo
+  var minimaFadc = newSeq[float]()
+  var minimaGP = newSeq[float]()  
+  var idxs = newSeq[int]()
+  for run in fileInfo.runs:
+    let idx = lowerBound(fadcSettingRuns(), run)
+    echo "idx ", idx, " for run ", run
+    let (minFadc, minEnergy) = minimum(h5f, run, percentile)
+    minimaFadc.add minFadc
+    minimaGP.add minEnergy
+    idxs.add idx
+
+  let df = toDf(minimaFadc, minimaGP, idxs)
+  ggplot(df, aes("minimaFadc", fill = "idxs")) +
+    geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
+    ggsave("/t/fadc_minima.pdf")
+
+  ggplot(df, aes("minimaGP", fill = "idxs")) +
+    geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
+    ggsave("/t/fadc_minima_gridpix_energy.pdf")    
+
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+  
+#+begin_src sh
+./code/fadc_compute_activation_threshold -f ~/CastData/data/CalibrationRuns2017_Reco.h5 --percentile 1
+#+end_src
+
+yields
+
+[[file:Figs/FADC/fadc_minima_2017_calibration.pdf]]
+
+showing a _very_ clear difference in the activation threshold in terms
+of voltages.
+
+Of course this itself does not imply a difference in activation
+threshold of the equivalent physical energy!
+
+- [ ] *COMPUTE IN ENERGY INSTEAD OF VOLTAGE*
+
+*NOTE*: From the FADC plots here (pure FADC & GridPix energy
+correlated) as well as the raw FADC spectra it's clearly evident that
+the actual gain of the FADC went _down_ instead of up after changing
+diff 50->20ns and coarse gain 6x->10x and further when going from
+50ns-100ns integration time.
+To some extent this may make sense: differentiation
+
+According to FADC manual the "differentiation" setting adjusts the RC
+differentiation time and therefore
+#+begin_quote
+DIFFERENTIATE Front panel 6-position switch
+selects a differentiation time constant to control the
+decay time of the pulse; settings select Out
+(equivalent to 150 µs), 20, 50, 100, 200, or 500 ns.
+
+INTEGRATE Front panel 6-position switch selects
+an integration time constant to control the risetime
+of the pulse; settings select 20, 50, 100,
+#+end_quote
+And further:
+#+begin_quote
+Generally speaking, the Integrate time constant can
+be selected so that the rise time of the output
+pulses is normalized at a rate that is slower than
+the rise times of the input pulses. This function is of
+greatest value when the pulses originate in a large
+detector so that they generate a wide variety of rise
+times and are difficult to observe for timing
+measurements. The Differentiate time constant is
+also selectable and determines the total interval
+before the pulse returns to the baseline and allows
+a new pulse to be observed. The combination of
+integration and differentiation time constants also
+contributes to the amount of electronic noise that is
+seen in the system, so the resulting waveforms
+should be considered from each of these points of
+view and adjusted for optimum results.
+
+When the shaping time constants impose
+considerable changes in the input waveform, the
+nominal gain, which is the product of the Coarse
+and Fine control settings, may be degraded
+somewhat. This is not normally a problem, since
+the gain is constant even though it may be less
+than the nominal settings indicate. 
+#+end_quote
+
+I.e. this means the differentiation time is responsible for getting
+the signal back to baseline. And it's expected that it has an effect
+on the amplitude on the signal!
+
+- [ ] *ADD ABOVE AS EXPLANATION FOR THE SEEN BEHAVIOR*
+  -> maybe 4 fold plot:
+  - histogram as above for lower percentile energies of min vals &
+    gridpix energies together with three spectra, one for each setting
+    combined in one plot?
+
+All this is effectively good news. This explains also _why_ the
+changes to the integration / differentiation had such an effect on the
+noise! They simply reduced the effective gain, ergo made the FADC less
+sensitive to the same noise!    
+
+Ref:
+https://www.ortec-online.com/-/media/ametekortec/manuals/4/474-mnl.pdf?la=en&revision=07c47ecb-5c63-48ff-a393-ba39e45be57b
+from here:
+https://www.ortec-online.com/products/electronics/amplifiers/474
+
+*** How to compute an effective charge based on FADC signals? [0/1]
+
+This section should cover our ideas about how we compute an effective
+charge (in arbitrary units) based on the FADC signals as a measure
+about the effective charge recorded in a signal. To cross correlate
+changes in FADC "charge" to GridPix charge.
+
+- [ ] -> is detector behavior over time visible in FADC data?
+
+-> Looking at [[file:Figs/time_vs_55fe_peak_pos_2017.pdf]] generated via
+#+begin_src sh
+./mapSeptemTempToFePeak ~/CastData/data/CalibrationRuns2017_Reco.h5 --inputs fePixel --inputs feCharge --inputs feFadc
+#+end_src
+shows a _very_ strong correlation between all three kinds of
+calibration.
+
+Note the strong fall in the FADC data in the "left hump" of points is
+the change of the integration / differentiation time during the 2017
+data taking (up to Dec 2017). But looking closely even there a strong
+correlation is visible inside of each "block".
+
+This puts to rest at least _most_ theories that the change might _not_
+be a change in the gas gain, but some other effect like electronics!
+
+- [ ] *EXPAND ON THE ABOVE, EXPLAIN THAT IN DETECTOR BEHAVIOR OVER
+  TIME!*
+  -> given that also temperature is not properly correlated it leaves
+  charge up effects (changing effective voltage) and gas flow
+  (unlikely as flow constant & pressure always stable).
+
+
+** Scintillators [/]                                              :noexport:
+
+- [X] *DO THE SCINTILLATORS DESERVE A SECTION HERE TO EXPLAIN THEIR
+  USAGE?*
+  -> probably not, as this really should be about the stuff we do to
+  calibrate and use data. But none of this is needed for
+  scintillators.
+  -> As a matter of fact the explanation for the FADC above about
+  being of 4-fold use might actually be better placed somewhere else?
+  -> No, they don't. 
+
+- [X] Well, at the very least we should present the information
+  about the number of triggers, clock cycle distributions
+  etc. somewhere. Either do it here somewhere or do it before we
+  perform the cuts. Both can work.
+  -> In principle this chapter here could really be about the detector
+  energy etc. while other calculations could be presented before?
+  Or we have another short chapter/section about "data overview"?
+  -> We have an overview of the CAST data. Later in the background
+  rate chapter we then present the scintillator in more detail when
+  discussing the cuts.
+
+
 * Chapter about analysis principle [/]                             :Software:
 :PROPERTIES:
 :CUSTOM_ID: sec:analysis_principle
@@ -17774,7 +17964,7 @@ the previous chapter.
   finding algorithms. Certain things, e.g. cluster finding algos could
   also just go to the appendix. Interesting, but technically just a detail.
 - introduce the software stack we use
-- introduce the physics for the calibration (e.g. ToT calib, ...)
+- introduce the physics for the calibration (e.g. ~ToT~ calib, ...)
 - explain the algorithms used in the software
 
 Can we disentangle this from the purely detector focused things? I'm
@@ -17843,11 +18033,11 @@ talks. Maybe need to fix the radius variable?
 
 - [X] In [[#sec:operation_calibration:tot_calibration]]
 
-Use Timepix ToT calibration (ref theory section before where we
+Use Timepix ~ToT~ calibration (ref theory section before where we
 explain how it works).
 
-Given ToT calibration apply function to get number of electrons (given
-that we ran in ToT mode).
+Given ~ToT~ calibration apply function to get number of electrons (given
+that we ran in ~ToT~ mode).
 
 *** 4. (optional / required for analysis) compute gas gain
 
@@ -17947,7 +18137,7 @@ signal-like based on the likelihood method presented above. For these,
 a so called 'septem event' is built based on the raw pixel data of all
 chips. This is simply an 'event' in the same notion as understood by
 the =reconstruction= tool (c/f [[sec:reconstruction]]), i.e. a two
-dimensional array of the ToT values. Except in this case it is not a
+dimensional array of the ~ToT~ values. Except in this case it is not a
 $256 \times 256$ array, but rather a $3 \cdot 256 \times 3 \cdot 256$
 array, where the full septemboard detector is merged into a single
 event without any spacing between the chips (more on that below). 
@@ -22746,7 +22936,7 @@ Two distinctions can be made between X-rays and such muons:
    kind of FADC as used in this detector combined with the Timepix1
    based GridPix, because the FADC records no spatial
    information. However, a detector based on GridPixes using Timepix3,
-   which allows for ToA readout at the same time as ToT this effect
+   which allows for ToA readout at the same time as ~ToT~ this effect
    may be visible and for this reason is important to keep in mind for
    the future.
 
@@ -26100,7 +26290,7 @@ allowed" veto is possible, it severely increases the dead time due to
 the long shutter times. This particular case is perfectly resolved by
 the usage of the GridPix3, as that version not only
 allows for a data driven readout resolving the problem of long
-shutter times, but also allows for *simultaneous* readout of ToT and
+shutter times, but also allows for *simultaneous* readout of ~ToT~ and
 ToA. So with a GridPix3 detector such random coincidences are reduced
 to 'real' random coincidences, which are of the time scale of the
 physical processes we are interested in.
@@ -31969,8 +32159,8 @@ incredibly dense, like:
 
 These events must be events where the X-ray to photoelectron
 conversion happens very close to the grid!
-This is one argument "in favor" of using ToT instead of ToA on the
-Timepix1 and more importantly a good reason to keep using the ToT
+This is one argument "in favor" of using ~ToT~ instead of ToA on the
+Timepix1 and more importantly a good reason to keep using the ~ToT~
 values instead of pure pixel counting for at least some events!
 
 - [ ] We should look at number of pixels vs. energy as a scatter plot to see
@@ -33004,7 +33194,7 @@ safeLowerTempSeptem             = 0
 That means, for all chips:
 - [ ] THS optimization & equalization bits
 - [ ] equalized matrix of all pixels  
-- [ ] ToT calibration
+- [ ] ~ToT~ calibration
 - [ ] S-curves
 - [ ] fit to 50% point of S-curves to get #electrons / THL DAC value    
 
@@ -36340,8 +36530,8 @@ that?
 
 
 After all geometrical properties have been computed, the next step is
-to apply the ToT calibration
-(sec. [[sec:operation_calibration:tot_calibration]]) to the ToT values of
+to apply the ~ToT~ calibration
+(sec. [[sec:operation_calibration:tot_calibration]]) to the ~ToT~ values of
 all clusters, resulting in the equivalent charge in electrons. The
 charge values for all recorded pixels are then used to compute a
 histogram, which roughly follows a Pólya distribution
