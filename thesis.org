@@ -16439,16 +16439,16 @@ among other things, with many more related plots to be found in:
 :CUSTOM_ID: sec:calib:causes_variability
 :END:
 
-As mentioned in the previous section, variability of the data was
-already apparent during the data taking based on the position of the
-peaks in the \cefe spectra. The change in the median of the charge (and related the
-gas gain) is an easier data point to investigate possible reasons for
-such changes.
+# As mentioned in the previous section, variability of the data was
+# already apparent during the data taking based on the position of the
+# peaks in the \cefe spectra. The change in the median of the charge (and related the
+# gas gain) is an easier data point to investigate possible reasons for
+# such changes.
 
-One possible reason for such changes are related to the electronics of
-the detector readout. Either a floating ground or unstable power
-supply can result in the activation thresholds of the pixels moving,
-as was indeed observed as mentioned in section
+One possible cause for the variability seen in the previous section is
+the electronics of the detector readout. Either a floating ground or
+unstable power supply can result in the activation thresholds of the
+pixels moving -- as was indeed observed -- as mentioned in section
 [[#sec:cast:data_taking_woes]]. Lesser versions of the problems discussed
 in that section could theoretically explain the variations. In
 particular in regards to the \cefe spectra showing variation, the
@@ -16468,23 +16468,20 @@ Fig. [[fig:calib:fe55_peak_pos_charge_pixel_fadc]] shows the (normalized)
 position of the \cefe photo peak based on a fit to the pixel, charge
 and FADC spectrum (the latter based on the amplitudes of the FADC
 signals). Aside from the variations in the FADC data in the first
-facet due to the changed FADC settings, the 'temporally local' changes
-in all three datasets are almost perfectly correlated. This implies a
-*real physical origin* in the observed variation and not an electronic
-or power supply origin!
+facet due to the changed FADC settings (more on that in
+sec. [[#sec:fadc:calib]]), the 'temporally local' changes in all three
+datasets are almost perfectly correlated. This implies a *real
+physical origin* in the observed variation and not an electronic or
+power supply origin!
 
-- [ ] *REWRITE TEXT ABOVE PLOT BELOW IS REPLACED BY FACET PLOT*
-
-#+CAPTION: Normalized photo peak positions in the Run-2 data based on the pixel (blue), charge
-#+CAPTION: (red) and FADC (green) spectra. The empty range in the middle is the period between
-#+CAPTION: Dec2017 and Feb2018 (TO BE REPLACED BY NEW PLOT). The strong changes in the FADC
+#+CAPTION: Normalized photo peak positions in the Run-2 data based on the charge (purple), pixel
+#+CAPTION: (green) and FADC (orange) spectra. The empty range in the middle is the period between
+#+CAPTION: Dec 2017 and Feb 2018. The strong changes in the FADC
 #+CAPTION: on the left are due to the different FADC settings. Beyond that the three sets of 
-#+CAPTION: data are fully correlated, implying a physical origin in the variation.
+#+CAPTION: data are fully correlated, implying a physical origin in the variation. Compare how
+#+CAPTION: local (in time) features appear identical in each data.
 #+NAME: fig:calib:fe55_peak_pos_charge_pixel_fadc
-[[~/phd/Figs/time_vs_55fe_peak_pos_2017.pdf]]
-
-- [ ] *UPDATE THE PLOT WITH ALL DATA, SPLIT BY RUN PERIOD AS FACET,
-  AND UPDATE COLORS (!!!) IN THE CAPTION!*
+[[~/phd/Figs/behavior_over_time/mapSeptemTempToFePeak/time_vs_peak_pos.pdf]]
 
 A physical change in the gas gain can either be caused by a change in
 high voltage in the amplification region, a change in gas composition
@@ -16675,6 +16672,15 @@ but actually supplies the wrong voltage. In each faulty case the
 desired target voltage was simply not correctly held and this was
 visible in the read out voltage.
 
+**** TODOs about this section [/]                               :noexport:
+
+About \cefe spectrum peak plot:
+- [ ] *REWRITE TEXT ABOVE PLOT BELOW IS REPLACED BY FACET PLOT*
+- [ ] *UPDATE THE PLOT WITH ALL DATA, SPLIT BY RUN PERIOD AS FACET,
+  AND UPDATE COLORS (!!!) IN THE CAPTION!*
+-> Not sure if we really want a different plot. I think this one is
+now quite nice actually.
+
 **** TODO Note about variability in GridPix 1
 
 - [ ] *CREATE TEMPERATURE PLOT OF TEMP IN CAST HALL DURING GRIDPIX1
@@ -16695,7 +16701,297 @@ gain for different targets of CDL data. But he concludes (by taking a
 cut) that this is due to multiple electrons in the same hole instead
 of real changes. Likely a combination of both I assume.
 
-**** Generate plot of ambient CAST temp against 55Fe peaks      :noexport:
+**** Generate plot of \cefe peak position                       :extended:
+
+From my zsh history:
+#+begin_src 
+: 1672709064:0;./mapSeptemTempToFePeak ~/CastData/data/CalibrationRuns2017_Reco.h5 --inputs fePixel --inputs feCharge --inputs feFadc
+: 1672709066:0;evince /t/time_vs_peak_pos.pdf
+: 1672709148:0;cp /t/time_vs_peak_pos.pdf ~/phd/Figs/time_vs_55fe_peak_pos_2017.pdf
+#+end_src
+
+First of all we need to make sure our calibration HDF5 file not only
+has the reconstructed \cefe spectra including their fits, but also the
+fits for the FADC spectra. If that is not the case:
+
+1. Make sure the FADC data is fully reconstructed:
+#+begin_src sh
+reconstruction -i ~/CastData/data/CalibrationRuns2017_Reco.h5 --only_fadc
+#+end_src
+2. Now redo the \cefe fits:
+#+begin_src sh
+reconstruction -i ~/CastData/data/CalibrationRuns2017_Reco.h5 --only_fe_spec
+#+end_src
+
+With that done we can create a plot of all normalized \cefe peak
+positions and compare it to the temperatures recovered from the CAST
+shift forms of the septemboard. 
+
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools :results drawer
+WRITE_PLOT_CSV=true USE_TEX=true ./mapSeptemTempToFePeak \
+             ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+             --inputs fePixel --inputs feCharge --inputs feFadc \
+             --outpath ~/phd/Figs/behavior_over_time/mapSeptemTempToFePeak/
+#+end_src
+
+#+RESULTS:
+:results:
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos_fePixel.tex
+Generated: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos_fePixel.pdf
+[INFO] Writing CSV file: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos_fePixel.pdf.csv
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos_feCharge.tex
+Generated: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos_feCharge.pdf
+[INFO] Writing CSV file: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos_feCharge.pdf.csv
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos_feFadc.tex
+Generated: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos_feFadc.pdf
+[INFO] Writing CSV file: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos_feFadc.pdf.csv
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos.tex
+Generated: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos.pdf
+[INFO] Writing CSV file: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_pos.pdf.csv
+tot diff 171180   2017-11-09T06:33:00+01:00    2017-11-07T07:00:00+01:00   2017-11-08T17:27:34+01:00
+Temp 98.3078354948008 peak 212.7571189854556 norm 0.5727625012999181
+tot diff 84780   2017-11-13T06:40:00+01:00    2017-11-12T07:07:00+01:00   2017-11-12T15:30:08+01:00
+Temp 68.86005708893606 peak 200.5267629392088 norm 0.5863183224669442
+tot diff 86520   2017-11-18T06:38:00+01:00    2017-11-17T06:36:00+01:00   2017-11-17T20:18:47+01:00
+Temp 85.04725936199722 peak 224.2078745321606 norm 0.625934087076792
+tot diff 518880   2017-11-25T06:52:00+01:00    2017-11-19T06:44:00+01:00   2017-11-23T11:42:19+01:00
+Temp 95.77865970937404 peak 213.4664809739825 norm 0.578611813845371
+tot diff 86220   2017-11-30T07:32:00+01:00    2017-11-29T07:35:00+01:00   2017-11-29T21:19:07+01:00
+Temp 83.69371537926236 peak 219.4480315730993 norm 0.6149695850461161
+tot diff 85500   2017-12-05T07:35:00+01:00    2017-12-04T07:50:00+01:00   2017-12-04T14:39:45+01:00
+Temp 60.80512631578948 peak 222.9204153830614 norm 0.6675160757145163
+tot diff 173400   2017-12-07T07:45:00+01:00    2017-12-05T07:35:00+01:00   2017-12-05T12:20:37+01:00
+Temp 45.89712508650519 peak 222.6633344356147 norm 0.6979010839707228
+tot diff 86160   2017-12-13T07:41:00+01:00    2017-12-12T07:45:00+01:00   2017-12-12T21:59:03+01:00
+Temp 87.18364798050139 peak 214.0834731995871 norm 0.5941256787963686
+tot diff 86460   2017-12-14T07:42:00+01:00    2017-12-13T07:41:00+01:00   2017-12-13T22:30:09+01:00
+Temp 89.09145350451077 peak 216.7236407119627 norm 0.598285035065055
+tot diff 86580   2017-12-15T07:45:00+01:00    2017-12-14T07:42:00+01:00   2017-12-14T18:04:59+01:00
+Temp 74.97479706629706 peak 209.0577735867058 norm 0.60052537293657
+tot diff 86220   2017-12-16T07:42:00+01:00    2017-12-15T07:45:00+01:00   2017-12-15T20:22:45+01:00
+Temp 82.12456158663883 peak 203.3763022789357 norm 0.5724482534597104
+tot diff 86520   2017-12-20T07:46:00+01:00    2017-12-19T07:44:00+01:00   2017-12-19T17:21:16+01:00
+Temp 73.18033009708738 peak 217.0091594597064 norm 0.6265958843364132
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2017-12-22T01:18:26+01:00
+Temp 41.25354131187325 peak 217.00562158794 norm 0.6902136683399531
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-17T18:18:27+01:00
+Temp 58.04207115915322 peak 235.8389880170459 norm 0.7120912864599173
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-18T19:12:58+01:00
+Temp 58.34400536653413 peak 234.861220208172 norm 0.7084931142223374
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-19T18:25:04+01:00
+Temp 58.62524853997592 peak 246.4517606092901 norm 0.7428274462722462
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-20T18:36:37+01:00
+Temp 58.91850227778887 peak 245.8056920522876 norm 0.7402258581172541
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-21T19:05:40+01:00
+Temp 59.21529150553447 peak 249.787911981088 norm 0.7515463207653517
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-22T18:23:52+01:00
+Temp 59.49776704975278 peak 252.4084638125304 norm 0.758785985702344
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-23T18:41:43+01:00
+Temp 59.79229356394149 peak 253.3111732989325 norm 0.7608260596375216
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-26T09:46:35+01:00
+Temp 60.55694259230681 peak 248.9573437917113 norm 0.7460358536677646
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-01T11:26:13+01:00
+Temp 61.44983225836223 peak 244.5913071945384 norm 0.7309965027288973
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-04T21:17:02+01:00
+Temp 62.44195470899375 peak 238.8047287008442 norm 0.7115925317933264
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-06T20:15:43+01:00
+Temp 63.01140765461126 peak 232.606294373343 norm 0.6919482399726685
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-07T19:29:18+01:00
+Temp 63.292950502914 peak 234.8215091323142 norm 0.6979534235486392
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-13T17:55:16+01:00
+Temp 65.01947502375376 peak 228.0743092639248 norm 0.6744378961108312
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-14T22:01:51+01:00
+Temp 65.36021207492874 peak 229.4105013005594 norm 0.6777062939825866
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-15T18:59:25+01:00
+Temp 65.61427574862168 peak 229.7085598544244 norm 0.6780778739045036
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-16T17:28:40+01:00
+Temp 65.88686202242839 peak 228.9962799627942 norm 0.6754318058419422
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-17T21:55:56+01:00
+Temp 66.23177768599042 peak 226.4263956710665 norm 0.6671731087476513
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-22T18:41:57+01:00
+Temp 67.64718919415749 peak 242.4026851767026 norm 0.711281351087089
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-24T19:10:39+01:00
+Temp 68.23482802656184 peak 234.522084598226 norm 0.6869727807000807
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-26T21:47:17+02:00
+Temp 68.8361912941714 peak 235.4174324210365 norm 0.688382859934055
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-30T16:18:57+02:00
+Temp 69.93354002659815 peak 226.9681348675651 norm 0.6615535529625496
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-04-11T18:04:09+02:00
+Temp 73.44583714528223 peak 229.2245575721957 norm 0.6613598116474546
+tot diff 171180   2017-11-09T06:33:00+01:00    2017-11-07T07:00:00+01:00   2017-11-08T17:27:34+01:00
+Temp 98.3078354948008 peak 738.7759551121773 norm 1.988855489151521
+tot diff 84780   2017-11-13T06:40:00+01:00    2017-11-12T07:07:00+01:00   2017-11-12T15:30:08+01:00
+Temp 68.86005708893606 peak 663.3731310792177 norm 1.939630479657839
+tot diff 86520   2017-11-18T06:38:00+01:00    2017-11-17T06:36:00+01:00   2017-11-17T20:18:47+01:00
+Temp 85.04725936199722 peak 799.2321364326664 norm 2.231262567045371
+tot diff 518880   2017-11-25T06:52:00+01:00    2017-11-19T06:44:00+01:00   2017-11-23T11:42:19+01:00
+Temp 95.77865970937404 peak 744.378475487249 norm 2.017675927030548
+tot diff 86220   2017-11-30T07:32:00+01:00    2017-11-29T07:35:00+01:00   2017-11-29T21:19:07+01:00
+Temp 83.69371537926236 peak 773.8471437480873 norm 2.168588405503018
+tot diff 85500   2017-12-05T07:35:00+01:00    2017-12-04T07:50:00+01:00   2017-12-04T14:39:45+01:00
+Temp 60.80512631578948 peak 793.9408389528367 norm 2.377387787729548
+tot diff 173400   2017-12-07T07:45:00+01:00    2017-12-05T07:35:00+01:00   2017-12-05T12:20:37+01:00
+Temp 45.89712508650519 peak 791.8759007288726 norm 2.482002934563872
+tot diff 86160   2017-12-13T07:41:00+01:00    2017-12-12T07:45:00+01:00   2017-12-12T21:59:03+01:00
+Temp 87.18364798050139 peak 738.9641224049003 norm 2.050777457354989
+tot diff 86460   2017-12-14T07:42:00+01:00    2017-12-13T07:41:00+01:00   2017-12-13T22:30:09+01:00
+Temp 89.09145350451077 peak 757.4254599892301 norm 2.090940870133734
+tot diff 86580   2017-12-15T07:45:00+01:00    2017-12-14T07:42:00+01:00   2017-12-14T18:04:59+01:00
+Temp 74.97479706629706 peak 713.9061377206993 norm 2.050719005761439
+tot diff 86220   2017-12-16T07:42:00+01:00    2017-12-15T07:45:00+01:00   2017-12-15T20:22:45+01:00
+Temp 82.12456158663883 peak 686.4979444411518 norm 1.932302558830234
+tot diff 86520   2017-12-20T07:46:00+01:00    2017-12-19T07:44:00+01:00   2017-12-19T17:21:16+01:00
+Temp 73.18033009708738 peak 759.7617308758466 norm 2.193748756174088
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2017-12-22T01:18:26+01:00
+Temp 41.25354131187325 peak 757.8227974988322 norm 2.4103507051376
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-17T18:18:27+01:00
+Temp 58.04207115915322 peak 852.4346835501794 norm 2.573837835449101
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-18T19:12:58+01:00
+Temp 58.34400536653413 peak 853.7613608914891 norm 2.575495626074692
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-19T18:25:04+01:00
+Temp 58.62524853997592 peak 917.1271793854213 norm 2.764302591653144
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-20T18:36:37+01:00
+Temp 58.91850227778887 peak 917.3399036896196 norm 2.762502006053641
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-21T19:05:40+01:00
+Temp 59.21529150553447 peak 942.1628065404408 norm 2.834720804548125
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-22T18:23:52+01:00
+Temp 59.49776704975278 peak 954.5304989241002 norm 2.869493180098019
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-23T18:41:43+01:00
+Temp 59.79229356394149 peak 960.0623610256922 norm 2.883569854549922
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-26T09:46:35+01:00
+Temp 60.55694259230681 peak 934.5722051533741 norm 2.800577650238313
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-01T11:26:13+01:00
+Temp 61.44983225836223 peak 920.0562505712758 norm 2.749721194901412
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-04T21:17:02+01:00
+Temp 62.44195470899375 peak 879.9295382823657 norm 2.622022149027353
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-06T20:15:43+01:00
+Temp 63.01140765461126 peak 837.1503229848131 norm 2.490322517464415
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-07T19:29:18+01:00
+Temp 63.292950502914 peak 847.7053821522342 norm 2.519611068934827
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-13T17:55:16+01:00
+Temp 65.01947502375376 peak 820.5075832242663 norm 2.426320658204387
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-14T22:01:51+01:00
+Temp 65.36021207492874 peak 832.4712512941716 norm 2.459220494978466
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-15T18:59:25+01:00
+Temp 65.61427574862168 peak 829.1939738548302 norm 2.447701936759499
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-16T17:28:40+01:00
+Temp 65.88686202242839 peak 815.0269686899784 norm 2.403947947807698
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-17T21:55:56+01:00
+Temp 66.23177768599042 peak 799.709976352887 norm 2.356372760510467
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-22T18:41:57+01:00
+Temp 67.64718919415749 peak 893.160508660574 norm 2.620797755910266
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-24T19:10:39+01:00
+Temp 68.23482802656184 peak 857.0677293443778 norm 2.510561861518031
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-26T21:47:17+02:00
+Temp 68.8361912941714 peak 849.9825612530595 norm 2.485429478998809
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-30T16:18:57+02:00
+Temp 69.93354002659815 peak 809.3858421341336 norm 2.359150899723678
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-04-11T18:04:09+02:00
+Temp 73.44583714528223 peak 829.1849688901491 norm 2.392368516943787
+tot diff 171180   2017-11-09T06:33:00+01:00    2017-11-07T07:00:00+01:00   2017-11-08T17:27:34+01:00
+Temp 98.3078354948008 peak 0.3156517706638187 norm 0.0008497647390944236
+tot diff 84780   2017-11-13T06:40:00+01:00    2017-11-12T07:07:00+01:00   2017-11-12T15:30:08+01:00
+Temp 68.86005708893606 peak 0.2937728612960976 norm 0.0008589597153855189
+tot diff 86520   2017-11-18T06:38:00+01:00    2017-11-17T06:36:00+01:00   2017-11-17T20:18:47+01:00
+Temp 85.04725936199722 peak 0.3454255849712654 norm 0.0009643445781425574
+tot diff 518880   2017-11-25T06:52:00+01:00    2017-11-19T06:44:00+01:00   2017-11-23T11:42:19+01:00
+Temp 95.77865970937404 peak 0.3330661587350751 norm 0.0009027928570186176
+tot diff 86220   2017-11-30T07:32:00+01:00    2017-11-29T07:35:00+01:00   2017-11-29T21:19:07+01:00
+Temp 83.69371537926236 peak 0.2360089584533551 norm 0.0006613790527388689
+tot diff 85500   2017-12-05T07:35:00+01:00    2017-12-04T07:50:00+01:00   2017-12-04T14:39:45+01:00
+Temp 60.80512631578948 peak 0.2419659658580049 norm 0.0007245463440773799
+tot diff 173400   2017-12-07T07:45:00+01:00    2017-12-05T07:35:00+01:00   2017-12-05T12:20:37+01:00
+Temp 45.89712508650519 peak 0.240435169531754 norm 0.0007536039369311459
+tot diff 86160   2017-12-13T07:41:00+01:00    2017-12-12T07:45:00+01:00   2017-12-12T21:59:03+01:00
+Temp 87.18364798050139 peak 0.2198524965217226 norm 0.0006101359053030192
+tot diff 86460   2017-12-14T07:42:00+01:00    2017-12-13T07:41:00+01:00   2017-12-13T22:30:09+01:00
+Temp 89.09145350451077 peak 0.2288293130553534 norm 0.0006317038285970326
+tot diff 86580   2017-12-15T07:45:00+01:00    2017-12-14T07:42:00+01:00   2017-12-14T18:04:59+01:00
+Temp 74.97479706629706 peak 0.217900953835728 norm 0.0006259277008475522
+tot diff 86220   2017-12-16T07:42:00+01:00    2017-12-15T07:45:00+01:00   2017-12-15T20:22:45+01:00
+Temp 82.12456158663883 peak 0.1503207381427924 norm 0.0004231114591246482
+tot diff 86520   2017-12-20T07:46:00+01:00    2017-12-19T07:44:00+01:00   2017-12-19T17:21:16+01:00
+Temp 73.18033009708738 peak 0.1622721196992897 norm 0.0004685472382791298
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2017-12-22T01:18:26+01:00
+Temp 41.25354131187325 peak 0.1613966941531701 norm 0.00051334248170275
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-17T18:18:27+01:00
+Temp 58.04207115915322 peak 0.1519729807227832 norm 0.0004588666032700798
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-18T19:12:58+01:00
+Temp 58.34400536653413 peak 0.153636081513809 norm 0.0004634656404840052
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-19T18:25:04+01:00
+Temp 58.62524853997592 peak 0.1658627644541513 norm 0.0004999250703120681
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-20T18:36:37+01:00
+Temp 58.91850227778887 peak 0.16726297987167 norm 0.0005037002266831909
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-21T19:05:40+01:00
+Temp 59.21529150553447 peak 0.1702751299217176 norm 0.0005123132116184948
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-22T18:23:52+01:00
+Temp 59.49776704975278 peak 0.1721913218680174 norm 0.0005176385923019391
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-23T18:41:43+01:00
+Temp 59.79229356394149 peak 0.1728023255392353 norm 0.0005190158441256989
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-02-26T09:46:35+01:00
+Temp 60.55694259230681 peak 0.1699640802422223 norm 0.0005093213791775053
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-01T11:26:13+01:00
+Temp 61.44983225836223 peak 0.1683157670935782 norm 0.0005030360175542845
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-04T21:17:02+01:00
+Temp 62.44195470899375 peak 0.1609667718301883 norm 0.0004796502704296638
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-06T20:15:43+01:00
+Temp 63.01140765461126 peak 0.155946231067982 norm 0.0004639028380920181
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-07T19:29:18+01:00
+Temp 63.292950502914 peak 0.1575761287654471 norm 0.0004683591334872756
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-13T17:55:16+01:00
+Temp 65.01947502375376 peak 0.1542088700265075 norm 0.0004560106142509626
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-14T22:01:51+01:00
+Temp 65.36021207492874 peak 0.1574943337701327 norm 0.0004652572600535655
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-15T18:59:25+01:00
+Temp 65.61427574862168 peak 0.1573456420773231 norm 0.0004644694064319835
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-16T17:28:40+01:00
+Temp 65.88686202242839 peak 0.1540871661662128 norm 0.0004544849938943203
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-17T21:55:56+01:00
+Temp 66.23177768599042 peak 0.1542531269493453 norm 0.0004545121072825144
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-22T18:41:57+01:00
+Temp 67.64718919415749 peak 0.1716222596302931 norm 0.0005035905960260642
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-24T19:10:39+01:00
+Temp 68.23482802656184 peak 0.1678832053427238 norm 0.0004917711379067538
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-26T21:47:17+02:00
+Temp 68.8361912941714 peak 0.1651640919999399 norm 0.0004829554414899408
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-03-30T16:18:57+02:00
+Temp 69.93354002659815 peak 0.1559328159354264 norm 0.0004545039261380404
+tot diff 26437920   2018-10-22T08:38:00+02:00    2017-12-20T07:46:00+01:00   2018-04-11T18:04:09+02:00
+Temp 73.44583714528223 peak 0.1591476212920055 norm 0.0004591734932618242
+INFO: The integer column `Timestamp` has been automatically determined to be continuous. To overwrite this behavior add a `+ scale_x/y_discrete()` call to the plotting chain. Choose `x` or `y` depending on which axis this column refers to. Or apply a `factor` to the column name in the `aes` call, i.e. `aes(..., factor("Timestamp"), ...)`.
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_norm_by_temp.tex
+Generated: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_norm_by_temp.pdf
+[INFO] Writing CSV file: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_norm_by_temp.pdf.csv
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_temp_normed_comparison.tex
+Generated: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_temp_normed_comparison.pdf
+[INFO] Writing CSV file: /home/basti/phd/Figs/behavior_over_time/mapSeptemTempToFePeak//time_vs_peak_temp_normed_comparison.pdf.csv
+:end:
+
+Note that the plot that we include in the thesis from the following created:
+- [[~/phd/Figs/behavior_over_time/mapSeptemTempToFePeak/time_vs_peak_pos.pdf]]
+- [[~/phd/Figs/behavior_over_time/mapSeptemTempToFePeak/time_vs_peak_pos_feFadc.pdf]]
+- [[~/phd/Figs/behavior_over_time/mapSeptemTempToFePeak/time_vs_peak_norm_by_temp.pdf]]
+- [[~/phd/Figs/behavior_over_time/mapSeptemTempToFePeak/time_vs_peak_pos_fePixel.pdf]]
+- [[~/phd/Figs/behavior_over_time/mapSeptemTempToFePeak/time_vs_peak_temp_normed_comparison.pdf]]
+- [[~/phd/Figs/behavior_over_time/mapSeptemTempToFePeak/time_vs_peak_pos_feCharge.pdf]]
+is actually one of the ones that does not include the septemboard
+temperatures from the shift forms. That's because of the much more in
+depth plot below of course!
+  
+
+**** Generate plot of ambient CAST temp against 55Fe peaks      :extended:
 
 First we run the CAST log reader to get the temperature data as a
 simple CSV file (by default just written to
