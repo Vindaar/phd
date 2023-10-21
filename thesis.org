@@ -16303,8 +16303,6 @@ This yields the following plot, fig. [[fig:calibration:large_energy_few_hits_sca
 #+NAME: fig:calibration:large_energy_few_hits_scatter
 [[~/phd/Figs/eventProperties/events_few_hits_large_energy_scatter.pdf]]
 
-
-
 ** Detector behavior over time [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:calib:detector_behavior_over_time
@@ -16315,13 +16313,10 @@ Outside the detector related issues discussed in section
 during Run-2 and Run-3 at CAST. This allows and requires to assess the
 data quality in more nuanced ways. Specifically, the stability of the
 recorded signals over time is of interest, which is one of the main
-purposes of the calibration runs. A fixed spectrum allows to verify
+purposes of the \cefe calibration runs. A fixed spectrum allows to verify
 stable operation easily. In particular of interest for the energy
 calibration of the data are the detected charge and gas gain of the
 detector.
-
-- [ ] *LOTS OF REPETITION BETWEEN NEXT PARAGRAPH AND PARTS OF
-  PREVIOUS SECTION!*  
 
 As the charge and gas gain can be computed purely from individual
 pixel data without any physical interpretation, it serves as a great
@@ -16338,36 +16333,35 @@ a $\SI{90}{min}$ time slice. Some data is removed prior to calculation
 of the median as mentioned in the caption and title. The important
 takeaway of the figure is the extreme variability of the median charge
 (up to $\SI{30}{\%}$!). Fortunately though, the background and
-calibration data behaves the same, evident by the strong
-correlation. While the causes for the variability are not entirely
-certain (see sec. [[#sec:calib:causes_variability]]), it allows us to take
-action and calibrate the data accordingly.
+calibration data behaves the same, evident by the strong correlation
+(purple background, green calibration). While the causes for the
+variability are not entirely certain (see
+sec. [[#sec:calib:causes_variability]]), it allows us to take action and
+calibrate the data accordingly.
 
-- [ ] SPLIT THIS BY: EXPLANATION TO A *WHY* SUCH VARIATION AND *WHAT
-  IS DONE* AS A RESULT.
-
-- [X] *FIGURE TOTAL CHARGE OVER TIME*
-  what binning?
-
-- [ ] *INSERT TABLE OF THE MEAN POSITIONS OF THE 55FE PEAKS WITH*
-  column charge and pixel mean of esc and photo. similar to that cdl
-  table we have!
-  -> AND OR have a plot of the positions?
-
-- [ ] *EXPLAIN HOW WE ENDED UP AT 90 MIN BINNING! AND HOW SLICING
-  WORKS ETC*  
-   
-#+CAPTION: The plot shows the median charge within \SI{90}{min} time windows of both
+#+CAPTION: The plot shows the median charge within $\SI{90}{min}$ time windows of both
 #+CAPTION: background and calibration data. Some data is removed (only clusters with
 #+CAPTION: less than 500 pixels active to remove the worst sparks and extremely large
-#+CAPTION: events) and only events within the inner \SI{4.5}{mm} radius are considered.
+#+CAPTION: events) and only events within the inner $\SI{4.5}{mm}$ radius are considered.
 #+CAPTION: Each data type (calibration and background) is normalized to 1 as the median
-#+CAPTION: charge is so different in the datasets. The median is used instead of the mean
+#+CAPTION: charge is very different in the datasets. The median is used instead of the mean
 #+CAPTION: to further remove effect of very rare, but extreme outliers. Each pane of
 #+CAPTION: the plot shows a portion of data taking with significant time without data
-#+CAPTION: between each.
+#+CAPTION: between each. 
 #+NAME: fig:calib:total_charge_over_time
-[[~/phd/Figs/behavior_over_time/median_charge_binned_90min_filtered_crSilver_normalized.pdf]]
+#+ATTR_LATEX: :width 1.0\textwidth
+[[~/phd/Figs/behavior_over_time/plotTotalChargeOverTime/background_median_charge_binned_90.0_min_filtered_crSilver.pdf]]
+
+[fn:calib_amount_of_calibration] As is pretty evident in the top left
+pane of fig. [[fig:calib:total_charge_over_time]] of the first data taking
+campaign in 2017, the amount of calibration data is initially pretty
+limited. The reason for this is plainly that too much was going on at
+the time, leading to a neglect in taking regular calibration runs. (: 
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *LOTS OF REPETITION BETWEEN NEXT PARAGRAPH AND PARTS OF
+  PREVIOUS SECTION!*  
 
 - [X] *CHECK NOTES W/ KLAUS AND STATUSANDPROGRESS FOR HOW WE WENT
   THROUGH GAS GAIN SLICING INVESTIGATION*  
@@ -16376,20 +16370,33 @@ action and calibrate the data accordingly.
   only matters (and can be computed) once we discuss the energy calibration.
 
 - [X] plot of total charge over time as *main motivation*
-- [ ] Plot of the peak position of the 55Fe calibration runs.
+- [X] Plot of the peak position of the 55Fe calibration runs.
+  -> Will be shown next.
 
-
-- [ ] Regarding 55Fe peak positions & temperature correlation:
+- [X] Regarding 55Fe peak positions & temperature correlation:
   _Maybe_ the relevant temperature to correlate to isn't actually the
   septemboard temperature, but the ambient temperature in the CAST hall?
   Unlikely, but can easily check by extracting temps from log files
   and plotting against position!
+  -> lol @ <2023-10-21 Sat 16:57>: What a fun idea right there. That
+  is indeed the relevant parameter to look at, as we discuss in the
+  next section anyway.
 
-[fn:calib_amount_of_calibration] *MOVE THIS WHEREVER FIRST VISIBLE 
-AMOUNT OF CALIBRATION* As is pretty evident in the first data taking
-campaign in 2017, the amount of calibration data is pretty
-limited. The reason for this is plainly that too much was going on at
-the time, leading to a neglect in taking regular calibration runs.
+- [ ] SPLIT THIS BY: EXPLANATION TO A *WHY* SUCH VARIATION AND *WHAT
+  IS DONE* AS A RESULT.
+
+- [X] *FIGURE TOTAL CHARGE OVER TIME*
+  what binning? 90min
+
+- [ ] *INSERT TABLE OF THE MEAN POSITIONS OF THE 55FE PEAKS WITH*
+  column charge and pixel mean of esc and photo. similar to that cdl
+  table we have!
+  -> AND OR have a plot of the positions?
+
+- [X] *EXPLAIN HOW WE ENDED UP AT 90 MIN BINNING! AND HOW SLICING
+  WORKS ETC*
+  -> Section later.
+  
 
 *** Generate plot for median of charge over time                 :noexport:
 
@@ -16406,21 +16413,25 @@ on "Detector behavior over time" in the ~statusAndProgress~ and in
 particular the 'Addendum' there (extreme outliers in some cases is the tl/dr).
 #+begin_src sh
 nim c -d:danger -d:StartHue=285 plotTotalChargeOverTime && \
-    ./plotTotalChargeOverTime ~/CastData/data/DataRuns2017_Reco.h5 \
-                              ~/CastData/data/DataRuns2018_Reco.h5 \
-                              --interval 90 --cutoffCharge 0 \
-                              --cutoffHits 500 \
-                              --calibFiles ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-                              --calibFiles ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-                              --applyRegionCut --timeSeries \
-                              --useMedian --normalizeMedian
+    USE_TEX=true plotTotalChargeOverTime \
+                 ~/CastData/data/DataRuns2017_Reco.h5 \
+                 ~/CastData/data/DataRuns2018_Reco.h5 \
+                 --interval 90 \
+                 --cutoffCharge 0 \
+                 --cutoffHits 500 \
+                 --calibFiles ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+                 --calibFiles ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+                 --applyRegionCut \
+                 --timeSeries \
+                 --useMedian \
+                 --normalizeMedian \
+                 --outpath ~/phd/Figs/behavior_over_time/plotTotalChargeOverTime/
 #+end_src
 
 yielding
-[[~/phd/Figs/behavior_over_time/median_charge_binned_90min_filtered_crSilver_normalized.pdf]]
-from the generated file:
-~out/background_median_charge_binned_90.0_min_filtered_crSilver.pdf~
-
+[[~/phd/Figs/behavior_over_time/plotTotalChargeOverTime/background_median_charge_binned_90.0_min_filtered_crSilver.pdf]]
+among other things, with many more related plots to be found in:
+[[file:Figs/behavior_over_time/plotTotalChargeOverTime/]]
 
 
 *** Potential causes for the variability [0/6]
