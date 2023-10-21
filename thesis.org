@@ -16036,12 +16036,26 @@ G^{\text{esc}}_{\text{K}_{α}}(N_e,μ_e,σ_e) + G_{\text{K}_{α}}(N_p,μ_p,σ_p)
 where $G$ is a regular gaussian, one for the escape peak
 $G^{\text{esc}}$ and one for the photo peak $G$. An example spectrum
 with such a fit can be seen in
-fig. [[fig:calib:fe55_example_fit_spectrum]].
+fig. [[sref:fig:calib:fe55_example_fit_spectrum]].
 
-#+CAPTION: Fit to a \cefe calibration run from the CAST data (run 149)
-#+CAPTION: using eq. [[eq:calib:fe55_charge_fit_function]]. *REPLACE ME*
-#+NAME: fig:calib:fe55_example_fit_spectrum
-[[~/phd/Figs/fe_spec_run_149_chip_3_charge_placeholder.pdf]]
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "\\cefe spectrum") (label "fig:calib:fe55_example_fit_spectrum")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/energyCalibration/run_149/fe_spec_run_149_chip_3_charge.pdf"))
+        (subfigure (linewidth 0.5) (caption "Energy calibration") (label "fig:calib:fe55_example_energy_calib")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/energyCalibration/run_149/energy_calib_run_149_charge.pdf"))
+        (caption
+         (subref "fig:calib:fe55_example_fit_spectrum")
+          ": Fit to a \\cefe calibration run from the CAST data (run 149)
+           using a double gaussian fit."
+         (subref "fig:calib:fe55_example_energy_calib")
+          ": Linear fit to the escape and photo peak energies to relate charges
+           in electrons to energies in " ($ "\si{keV}") ".")
+        (label "fig:calib:fe55_calibration"))
+#+end_src
 
 Then, a linear function without y-offset
 
@@ -16050,49 +16064,51 @@ Q(E) = m_c · E
 \]
 
 is fitted to the found peak positions of the spectra by charge $Q$,
-against the known energies $E$ of the peaks in the \cefe spectrum. This
-yields the calibration factor, $a = m_c⁻¹$, which can be used to
-calibrate all events with _the same_ gas gain.
-
-However, the recorded charge is dependent on the detector gas
-gain. The calibration factor is only valid for the specific gas gain
-at the time of recording the \cefe spectrum. Over the time of
-data taking at CAST the gas gain varies by a significant margin,
-requiring a more complex calibration routine.
+against the known energies $E$ of the peaks in the \cefe
+spectrum. This yields the calibration factor, $a = m_c⁻¹$, which can
+be used to calibrate all events with _the same_ gas gain. Over the
+time of data taking at CAST the gas gain varies by a significant
+margin, requiring a more complex calibration routine as the
+calibration factor would produce too imprecise energy values otherwise
+(for example if each \cefe calibration run were used to deduce one
+calibration factor $a = m_c⁻¹$ to be applied to the closest background
+data in time). An example for this fit is seen in fig. sref:fig:calib:fe55_example_energy_calib.
 
 Fortunately, the gas gain can be computed using raw data without
 evaluating any physical events, allowing calculation of it also for
-raw background data. This motivates the idea to map a gas gain valid
-for a certain time to a calibration factor needed to convert events at
-such gas gains to energies. Taking a certain time interval in which
-the detector gas gain is assumed constant, the gas gain of all time
-slices of this length is computed for background and calibration
-data. For all these slices the procedure above of fitting the \cefe
-spectrum and calculating the energy calibration is performed. A higher
-gas gain leads to linearly more recorded electrons in the \cefe
-spectra. Therefore, all energy calibration factors determined from the
-time intervals should be on a slope depending on the gas gain. As such
-a final fit
+raw background data. This motivates the idea to map a gas gains to a
+calibration factor needed to calibrate events at such gas gains in
+energy. Taking a certain time interval in which the detector gas gain
+is assumed constant, the gas gain of all time slices of this length is
+computed for background and calibration data. For all time slices in
+the calibration data the procedure above -- fitting the \cefe spectrum
+and calculating the energy calibration -- is performed. A higher gas
+gain leads to linearly more recorded electrons in the \cefe
+spectra. Therefore, all energy calibration factors determined from
+different time intervals should be on a slope depending on the gas
+gain. As such a final fit
 
 \[
 a(G) = m_g · G + b
 \]
 
-is performed, which yields the energy calibration factor $a$ valid for
-a given gas gain $G$. Then in order to calibrate the energy of a given
-cluster in the background data, the same time slicing is performed and
-one gas gain calculated for each slice. The gas gain is inserted into
-the fit and the resulting calibration factor is used to calibrate the
-energy of every cluster in that time slice.
+is performed to all time intervals of all calibration runs. This
+yields the energy calibration factor $a$ valid for a given gas gain
+$G$. Then in order to calibrate the energy of a given cluster in the
+background data, the same time slicing is performed and one gas gain
+calculated for each slice. The gas gain is inserted into the fit and
+the resulting calibration factor is used to calibrate the energy of
+every cluster in that time slice. We will come back to this fit in
+sec. [[#sec:calib:final_energy_calibration]] to finalize the energy
+calibration.
 
 The remaining question is the stability of the gas gain over time,
 which we will look at next in the context of the general detector
 behavior over time. This allows us to find a suitable time interval to
-use for all data.
+use for all data and hence perform a temporally stable energy calibration.
 
-In sec. [[#sec:calib:final_energy_calibration]] we will see the final
-calibrations based on the chosen time interval.
-
+# In sec. [[#sec:calib:final_energy_calibration]] we will see the final
+# calibrations based on the chosen time interval.
 
 *** TODOs for this section [/]                                   :noexport:
 
@@ -16110,10 +16126,44 @@ thus have few pixels, but a lot of energy as determined by the
   -> maybe add pixel fit only as a footnote? 
 
 - [ ] *INSERT PLOT OF ENERGY CALIBRATION FIT?*
+  -> Maybe as a side-by-side?
 
 - [X] *INSERT A 55 FE FIT W/ FIT PARAMETERS SHOWN*
   - [ ] *UPDATE PLOT*
 
+*** Generate example plot for \cefe spectrum                     :extended:
+
+We use run number 149 (for no important reason) as an example
+calibration run.
+
+Desktop:
+#+begin_src sh
+raw_data_manipulation \
+    -p /mnt/4TB/CAST/Data/2018/CalibrationRuns/Run_149_180219-17-25.tar.gz \
+    -r calib \
+    -o /tmp/run_149.h5
+#+end_src
+Laptop:
+#+begin_src sh
+raw_data_manipulation \
+    -p /mnt/1TB/CAST/2018/CalibrationRuns/Run_149_180219-17-25.tar.gz \
+    -r calib \
+    -o /tmp/run_149.h5
+#+end_src
+
+We overwrite the default to use TikZ output via an environment
+variable here just to make sure it is set independent of the
+~config.toml~ file.
+#+begin_src sh
+USE_TEX=true PLOT_OUTPATH=~/phd/Figs/energyCalibration/run_149/ reconstruction -i /tmp/run_149.h5 --out /tmp/reco_149.h5
+#+end_src
+
+This produces the following plots:
+- [[~/phd/Figs/energyCalibration/run_149/energy_calib_run_149.pdf]]
+- [[~/phd/Figs/energyCalibration/run_149/energy_calib_run_149_charge.pdf]]
+- [[~/phd/Figs/energyCalibration/run_149/fe_spec_run_149_chip_3.pdf]]
+- [[~/phd/Figs/energyCalibration/run_149/fe_spec_run_149_chip_3_charge.pdf]]
+  
 *** On ~ToT~ vs. ~ToA~ for a Timepix1 detector                   :extended:
 
 This is a good point to comment on the choice of using all pixels in
