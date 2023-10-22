@@ -16438,8 +16438,9 @@ filtered to only clusters with less than 500 hits, also showing the
 calibration data, filtered to the silver region & each data type
 (calibration & background) normalized to 1, as a facet plot.
 
-We hand ~StartHue=285~ manually here for now, but we should change
-that to become a thesis wide setting for everything we compile.
+- [X] We hand ~StartHue=285~ manually here for now, but we should change
+  that to become a thesis wide setting for everything we compile.
+  -> Done.
 
 For a note on why the median and not the mean, see the whole section
 on "Detector behavior over time" in the ~statusAndProgress~ and in
@@ -16500,12 +16501,12 @@ changes or due to electronics.
 Fig. [[fig:calib:fe55_peak_pos_charge_pixel_fadc]] shows the (normalized)
 position of the \cefe photo peak based on a fit to the pixel, charge
 and FADC spectrum (the latter based on the amplitudes of the FADC
-signals). Aside from the variations in the FADC data in the first
-facet due to the changed FADC settings (more on that in
-sec. [[#sec:fadc:calib]]), the 'temporally local' changes in all three
-datasets are almost perfectly correlated. This implies a *real
-physical origin* in the observed variation and not an electronic or
-power supply origin!
+signals). Aside from the variations in the FADC data in the 2017 data
+(left) due to the changed FADC settings (more on that in
+sec. [[#sec:calib:fadc]]), the 'temporally local' changes in all three
+datasets are almost perfectly correlated. This implies a /real
+physical origin/ in the observed variation and not an electronic or
+power supply origin.
 
 #+CAPTION: Normalized photo peak positions in the Run-2 data based on the charge (purple), pixel
 #+CAPTION: (green) and FADC (orange) spectra. The empty range in the middle is the period between
@@ -16569,7 +16570,7 @@ the exterior temperature) during the Run-3 data taking period together
 with the normalized peak position of the \cefe spectra in pixels
 (black points), the temperature from the shift logs (blue points) and
 the gas gain values of each chip (smaller points using the color
-scale, based on \SI{90}{min} per point). The blue points of the
+scale, based on $\SI{90}{min}$ intervals per point). The blue points of the
 temperature of the Septemboard recorded during each solar tracking
 nicely follows the temperature trend of the ambient temperature
 (~T_amb~) in the hall, as expected. Comparing the \cefe spectra mean
@@ -16611,7 +16612,7 @@ leading to a more stable temperature.
   
 This explanation is not meant as a definitive statement about the
 origins of the gas gain variations in the Septemboard detector
-data. *However*, it clearly motivates the need for an in depth study
+data. /However/, it clearly motivates the need for an in depth study
 of the behavior of these detectors for different gas temperatures at
 constant pressures and more precise logging of temperatures in future
 detectors. Further, a significantly improved cooling setup (to more
@@ -16633,13 +16634,7 @@ taken seriously for future endeavors.
 #+ATTR_LATEX: :float sideways
 [[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain.pdf]]
 
-- [ ] *WE COULD CREATE A PLOT SIMILAR TO ABOVE, BUT ACTUALLY PLOTTING
-  TEMPERATURE AGAINST THE GAS GAIN DIRECTLY*
-  -> we'd just have to assign a temperature to each gas gain value
-  (compute a mean of all temps in a gas gain slice interval?) and
-  see what happens!
 
-- [ ] *(RE)MOVE THE PARAGRAPH BELOW?*
 Note that even if the temperature logs were still available, it is not
 obvious how they could lead to a correction that goes beyond the gas
 gain binning in time that was eventually settled on. The variations
@@ -16656,11 +16651,48 @@ binning required to have good statistics for a gas gain. Further,
 temperature changes are not expected to usually occur on time scales
 much shorter than of the order of one hour, if they are due to ambient
 temperature changes. Still, it could be an interesting avenue to
-explore experimenting with the available slow control log information
+explore by experimenting with the available slow control log information
 on the ambient temperature as a proxy for the temperature in the
 amplification region (same as the Septemboard temperature sensors, but
 just with a larger offset and lack of detail regarding local
 temperature changes due to water cooling related variations).
+
+
+[fn:hv_logging] Once again, in hindsight writing a log file of the
+high voltage values would have been valuable, especially as it could
+have been done straight from TOS. However, similar to what lead to
+losses of the temperature log files, this was simply not prioritized
+to implement at the time. The same holds for the gas pressure in the
+chamber, which should have been logged using the ~FlowView~ software
+of the Bronkhorst pressure controller used to control it.
+
+[fn:hv_variability_lab_course] From other Iseg HV modules used in lab
+course experiments we know that when they _are_ faulty it is very
+evident. We have never experienced a module that reads correct values,
+but actually supplies the wrong voltage. In each faulty case the
+desired target voltage was simply not correctly held and this was
+visible in the read out voltage.
+
+**** TODOs about this section [/]                               :noexport:
+
+About \cefe spectrum peak plot:
+- [ ] *REWRITE TEXT ABOVE PLOT BELOW IS REPLACED BY FACET PLOT*
+- [ ] *UPDATE THE PLOT WITH ALL DATA, SPLIT BY RUN PERIOD AS FACET,
+  AND UPDATE COLORS (!!!) IN THE CAPTION!*
+-> Not sure if we really want a different plot. I think this one is
+now quite nice actually.
+
+- [ ] *(RE)MOVE THE PARAGRAPH BELOW?*
+  -> Refers to paragraph about "what if we had temp log files"
+
+
+- [ ] *WE COULD CREATE A PLOT SIMILAR TO ABOVE, BUT ACTUALLY PLOTTING
+  TEMPERATURE AGAINST THE GAS GAIN DIRECTLY*
+  -> Refers to fig. fig:calib:correlation_ambient_temperature_gasgain_and_spectra
+  -> we'd just have to assign a temperature to each gas gain value
+  (compute a mean of all temps in a gas gain slice interval?) and
+  see what happens!  
+
 
 - [X] Reasons for peak position moving:
   - [X] electronic causing the effective threshold to change
@@ -16690,29 +16722,111 @@ temperature changes due to water cooling related variations).
   ADJUST IN FOOTNOTE!*
   -> Bronkhorst.
 
-[fn:hv_logging] Once again, in hindsight writing a log file of the
-high voltage values would have been valuable, especially as it could
-have been done straight from TOS. However, similar to what lead to
-losses of the temperature log files, this was simply not prioritized
-to implement at the time. The same holds for the gas pressure in the
-chamber, which should have been logged using the ~FlowView~ software
-of the Bronkhorst pressure controller used to control it.
+**** Further thoughts about variability, Townsend coefficient, mobility :extended:
 
-[fn:hv_variability_lab_course] From other Iseg HV modules used in lab
-course experiments we know that when they _are_ faulty it is very
-evident. We have never experienced a module that reads correct values,
-but actually supplies the wrong voltage. In each faulty case the
-desired target voltage was simply not correctly held and this was
-visible in the read out voltage.
+Some further discussions of the fact that our temperature vs. gain
+data in
+fig. [[fig:calib:correlation_ambient_temperature_gasgain_and_spectra]]
+seems to imply an inverse proportionality between temperature and gas
+gain from our data at CAST. So let's go back to our theoretical
+expectation here and see what we learn.
 
-**** TODOs about this section [/]                               :noexport:
 
-About \cefe spectrum peak plot:
-- [ ] *REWRITE TEXT ABOVE PLOT BELOW IS REPLACED BY FACET PLOT*
-- [ ] *UPDATE THE PLOT WITH ALL DATA, SPLIT BY RUN PERIOD AS FACET,
-  AND UPDATE COLORS (!!!) IN THE CAPTION!*
--> Not sure if we really want a different plot. I think this one is
-now quite nice actually.
+The number of electrons after a distance $x$ should be
+
+\[
+n = n_0 e^{αx}
+\]
+
+where $α$ is the first Townsend coefficient, cite:&sauli2014gaseous
+(eq. 5.2 p. 146). The gas gain is just this divided by the initial
+number $n_0$.
+
+Sauli on the definition of the first Townsend coefficient:
+[[cite:&sauli2014gaseous]] page 145 eq. 5.1:
+#+begin_quote
+The mean free path for ionization λ is deﬁned as the average distance an electron
+has to travel before having an ionizing collision; its inverse, α = λ⁻¹, is the
+ionization or ﬁrst Townsend coefﬁcient, and represents the number of ion pairs
+produced per unit length of drift; it relates to the ionization cross section through
+the expression:
+α = N σ_i                              (eq 5.1)
+where N is the number of molecules per unit volume.
+As for other quantities in gaseous electronics, the Townsend coefﬁcient is
+proportional to the gas density and therefore to the pressure P; the ratio α/P is a
+sole function of the reduced ﬁeld E/P, as shown in Figure 5.19 for noble gases
+(Druyvesteyn and Penning, 1940).
+#+end_quote
+  
+Also from Sauli [[cite:&sauli2014gaseous]] p. 151 is
+fig. [[fig:sauli_gas_gain_T_over_P]]. The plot (data at least) is taken
+from cite:&altunbas03_gas_gain and shows a linear (or very shallow
+exponential) behavior of the gain vs $T/P$ with experimental data from
+GEMs for COMPASS and Magboltz simulations as well.
+
+#+CAPTION: Figure from cite:&sauli2014gaseous (page 151) showing the gas gain
+#+CAPTION: dependence on the ratio of temperature and pressure. 
+#+NAME: fig:sauli_gas_gain_T_over_P
+[[~/phd/Figs/gas_physics/fig_5_25_sauli_p151_gas_gain_vs_T_P.png]]
+
+Further papers of interest:
+- [[cite:&aoyama85_gener_gas_gain_formul_propor_count]]
+  -> Contains a mathematical derivation for a generalized first
+  Townsend coefficient relationship with S = E/N (where N is the
+  density and E the electric field).
+- [[cite:&Davydov_2006]] contains a discussion about the first Townsend
+  coefficient for very low densities and thus also discussions about
+  the math etc.
+
+Now, if we just go by our intuition from ideal gas physics we would
+expect the following:
+
+Assuming $α = 1 / λ$ where $λ$ is the mean free path. If the
+temperature increases in a gas, the density decreases for constant
+pressure $p$ via
+
+\[
+p = ρ R_s T
+\]
+
+with the specific gas constant $R_s$. A lower density necessarily
+implies less particles per unit volume and thus a typically longer
+path between interactions. This means $λ$ increases and due to the
+inverse relationship with $α$, the first Townsend coefficient -- and
+by extension the gas gain -- decreases.
+
+This is even explicitly mentioned by that quote of Sauli above,
+literally in the sentence
+#+begin_quote
+As for other quantities in gaseous electronics, the Townsend coefﬁcient is
+proportional to the gas density [...]
+#+end_quote
+
+However, this is in stark contrast to
+- the screenshot of the fig. above, [[fig:sauli_gas_gain_T_over_P]]
+- the fact that Jochen kept going on about the gas gain being
+  essentially $G ∝ e^{T/P}$
+- and my Magboltz simulations.
+
+***** Simulations with Magboltz
+
+I wrote a simple interfacing library with Magboltz for Nim:
+
+https://github.com/SciNim/NimBoltz
+[[file:~/CastData/ExternCode/NimBoltz/nimboltz.nim]]
+
+and I ran simulations at different temperatures, but same pressure and
+the first Townsend coefficient (based on the steady state simulation,
+which should be the correct one for high fields
+#+begin_quote
+The simulation of avalanche gain detectors at high field requires the use of SST Townsend parameters.
+#+end_quote
+from https://magboltz.web.cern.ch/magboltz/usage.html and line 256 in
+[[file:~/src/Magboltz/magboltz-11.17.f]].
+
+These seem to indicate that the coefficient should increase.
+
+*Why?*
 
 **** TODO Note about variability in GridPix 1
 
@@ -17263,7 +17377,7 @@ thus it should be taken seriously for future endeavors!
 
 - [X] *ADD A SIMILAR PLOT, BUT NOT USING 55FE POSITIONS, BUT GAS GAIN
   SLICES*
-  -> done by *adding* Gas gain data as well for all chips! 
+  -> done by *adding* Gas gain data as well for all chips!
 
 *** TODO Section covering our plots of logL variables over time? :noexport:
 
