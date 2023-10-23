@@ -16755,30 +16755,6 @@ taken seriously for future endeavors.
 #+ATTR_LATEX: :float sideways
 [[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain.pdf]]
 
-
-Note that even if the temperature logs were still available, it is not
-obvious how they could lead to a correction that goes beyond the gas
-gain binning in time that was eventually settled on. The variations
-lead to gain and loss of information that cannot easily be corrected
-for without introducing potential biases, especially because the
-temperature sensor on the bottom side of the Septemboard does not
-yield an absolute temperature inside the amplification region
-anyway. While theoretically a fit correlating temperature to energy
-calibration factors is thinkable it is not clear it would improve the
-calibration over using gas gains binned in time, as the gas gain is
-the physical result of temperature changes. The only interesting
-aspect of it would be potentially higher time resolution than the time
-binning required to have good statistics for a gas gain. Further,
-temperature changes are not expected to usually occur on time scales
-much shorter than of the order of one hour, if they are due to ambient
-temperature changes. Still, it could be an interesting avenue to
-explore by experimenting with the available slow control log information
-on the ambient temperature as a proxy for the temperature in the
-amplification region (same as the Septemboard temperature sensors, but
-just with a larger offset and lack of detail regarding local
-temperature changes due to water cooling related variations).
-
-
 [fn:hv_logging] Once again, in hindsight writing a log file of the
 high voltage values would have been valuable, especially as it could
 have been done straight from TOS. However, similar to what lead to
@@ -16795,6 +16771,18 @@ desired target voltage was simply not correctly held and this was
 visible in the read out voltage.
 
 **** TODOs about this section [/]                               :noexport:
+
+- [X] *COME BACK TO THIS ONCE WE a) UNDERSTAND
+  [[#sec:calib:behavior_over_time:thoughts_townsend]] OR TALKED TO LUCIAN*
+  -> With our newfound understanding thanks to the talk with Lucian,
+  we should now do the following:
+  - [ ] Merge explanation about gas gain, Townsend coefficient
+    etc. back into Polya / gas gain section of theory
+  - [ ] Refer to theory in the above section saying "this is our
+    expectation"
+  - [ ] Finish / extend section above with adjusted explanation /
+    interpretation of our data.
+
 
 About \cefe spectrum peak plot:
 - [ ] *REWRITE TEXT ABOVE PLOT BELOW IS REPLACED BY FACET PLOT*
@@ -16843,7 +16831,42 @@ now quite nice actually.
   ADJUST IN FOOTNOTE!*
   -> Bronkhorst.
 
+**** Extended thoughts on missing temperature log data          :extended:
+
+- [ ] *THINK ABOUT WHETHER TO PUT INTO MAIN AGAIN / REMOVE EXTENDED*
+
+Note that even if the temperature logs were still available, it is not
+obvious how they could lead to a correction that goes beyond the gas
+gain binning in time that was eventually settled on. The variations
+lead to gain and loss of information that cannot easily be corrected
+for without introducing potential biases, especially because the
+temperature sensor on the bottom side of the Septemboard does not
+yield an absolute temperature inside the amplification region
+anyway. While theoretically a fit correlating temperature to energy
+calibration factors is thinkable it is not clear it would improve the
+calibration over using gas gains binned in time, as the gas gain is
+the physical result of temperature changes. The only interesting
+aspect of it would be potentially higher time resolution than the time
+binning required to have good statistics for a gas gain. Further,
+temperature changes are not expected to usually occur on time scales
+much shorter than of the order of one hour, if they are due to ambient
+temperature changes. Still, it could be an interesting avenue to
+explore by experimenting with the available slow control log
+information on the ambient temperature as a proxy for the temperature
+in the amplification region (same as the Septemboard temperature
+sensors, but just with a larger offset and lack of detail regarding
+local temperature changes due to water cooling related variations).
+
+
 **** Further thoughts about variability, Townsend coefficient, mobility :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:behavior_over_time:thoughts_townsend
+:END:
+
+*NOTE*: This section was me trying to better understand the origin of
+the Townsend coefficient and its temperature dependence. The results
+have since been merged back into the theory part (about mean free path
+and gas gain) and the main section above.
 
 Some further discussions of the fact that our temperature vs. gain
 data in
@@ -16878,7 +16901,7 @@ proportional to the gas density and therefore to the pressure P; the ratio α/P 
 sole function of the reduced ﬁeld E/P, as shown in Figure 5.19 for noble gases
 (Druyvesteyn and Penning, 1940).
 #+end_quote
-  
+
 Also from Sauli [[cite:&sauli2014gaseous]] p. 151 is
 fig. [[fig:sauli_gas_gain_T_over_P]]. The plot (data at least) is taken
 from cite:&altunbas03_gas_gain and shows a linear (or very shallow
@@ -16891,7 +16914,7 @@ GEMs for COMPASS and Magboltz simulations as well.
 [[~/phd/Figs/gas_physics/fig_5_25_sauli_p151_gas_gain_vs_T_P.png]]
 
 Further papers of interest:
-- [[cite:&aoyama85_gener_gas_gain_formul_propor_count]]
+- cite:&aoyama85_gas_gain 
   -> Contains a mathematical derivation for a generalized first
   Townsend coefficient relationship with S = E/N (where N is the
   density and E the electric field).
@@ -16927,9 +16950,116 @@ However, this is in stark contrast to
 - the screenshot of the fig. above, [[fig:sauli_gas_gain_T_over_P]]
 - the fact that Jochen kept going on about the gas gain being
   essentially $G ∝ e^{T/P}$
-- and my Magboltz simulations.
+  -> This is clearly wrong, see both below and generally the fact that
+  neither Magboltz nor Lucian's MSc measurements indicate anything of
+  the sorts of an exponential increase with temperature.
+- and my Magboltz simulations,
+  sec. [[#sec:calib:behavior_over_time:magboltz_sim]]
+
+After a discussion with Lucian today <2023-10-23 Mon>, I'm a little
+bit more illuminated. In his MSc thesis [[cite:&lucianMsc]] goes through
+a derivation based on [[cite:&engel65_gases]] for the temperature
+dependence of the first Townsend coefficient. Starting from the
+argument above about $α = 1/λ$ and then continuing with the
+requirement to accumulate enough energy to produce secondary
+ionization events, $e |\vec{E}| l \geq eV_i$ with the ionization
+potential $V_i$ for the gas mixture and $l$ for the forward distance
+of an electron under the electric field $|\vec{E}|$. This distance
+
+\[
+l = \frac{V_i}{|\vec{E}|} 
+\]
+
+can be compared to the mean free path $λ$ of the electron
+
+\[
+\mathcal{N} = e^{-l/λ}
+\]
+
+where $\mathcal{N}$ is the relative number of colliding electrons with
+$l > λ$. This allows to define the probability of finding $1/l$
+collisions per unit distance to be
+
+\[
+P(l) \frac{1}{λ} e^{-l / λ} = α
+\]
+
+which is precisely the definition of the first Townsend coefficient,
+$α$.
+
+The mean free path $λ$ can be related to the pressure $p$, temperature
+$T$ and cross section of the electron in the gas, $σ$:
+
+\[
+λ = \frac{kT}{pσ}.
+\]
+
+Inserting this into the above definition of $α$ yields:
+
+\[
+α(T) = \frac{pσ}{kT} \exp\left( - \frac{V_i}{|\vec{E}|}\frac{pσ}{kT}\right)
+\]
+
+which allows to analytically compute the temperature dependence of the
+first Townsend coefficient, which we'll do in
+sec. [[#sec:calib:behavior_over_time:townsend_coefficient_temp_scaling]]. The
+expression now is actually similar to (eq. 5.4) in
+[[cite:&sauli2014gaseous]]. It seems to roughly match the Magboltz
+simulations.
+
+Note though that this dependence is 'fragile', as it is a higher order
+dependence on $T$ assuming idealized constant parameters for $p$ and
+$σ$ and gas composition. In reality it is easily thinkable that gas
+contamination and slight variations in pressure can change the results
+from this result.
+
+***** Applying Lucians (eq. 5.17) formula and plotting it
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:behavior_over_time:townsend_coefficient_temp_scaling
+:END:
+
+Lucian gives the following formula for the temperature dependence of
+the first Townsend coefficient:
+
+\[
+α(T) = \frac{pσ}{kT} \exp\left( - \frac{V_i}{|\vec{E}|}\frac{pσ}{kT}\right)
+\]
+
+where $p$ is the gas pressure, $σ$ the cross section of electrons with
+the gas at the relevant energies, $V_i$ the ionization potential for
+the gas, $|\vec{E}|$ the electric field strength.
+
+#+begin_src nim :tangle code/townsend_coefficient_temp_scaling.nim
+import unchained, math, ggplotnim, sequtils
+
+const V_i = 15.7.V # Lucian gives this ionization potential next to fig. 5.4
+defUnit(kV•cm⁻¹)
+defUnit(cm⁻¹)
+proc townsend[P: Pressure; A: Area](p: P, σ: A, T: Kelvin, E: kV•cm⁻¹): cm⁻¹ =
+  let arg = (V_i * p * σ) / (E * k_B * T)
+  echo arg
+  result = (p * σ / (k_B * T) * exp( -arg )).to(cm⁻¹)
+echo townsend(1013.25.mbar, 500.MegaBarn, 273.15.K, 60.kV•cm⁻¹)
+
+let temps = linspace(0.0, 100.0, 1000) # 0 to 100 °C
+#let temps = linspace(-273.15, 10000.0, 1000) # all of da range!
+var αs = temps.mapIt(townsend(1013.25.mbar, 500.MegaBarn, (273.15 + it).K, 60.kV•cm⁻¹).float)
+let df = toDf(temps, αs)
+ggplot(df, aes("temps", "αs")) +
+  geom_line() +
+  xlab("Gas temperature [°C]") +
+  ylab("Townsend coefficient [cm⁻¹]") +
+  theme_font_scale(1.0, family = "serif") +
+  ggsave("~/phd/Figs/gas_physics/townsend_coefficient_temperature_scaling_lucian.pdf")
+#+end_src
+
+#+RESULTS:
+
 
 ***** Simulations with Magboltz
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:behavior_over_time:magboltz_sim
+:END:
 
 I wrote a simple interfacing library with Magboltz for Nim:
 
@@ -16948,6 +17078,7 @@ from https://magboltz.web.cern.ch/magboltz/usage.html and line 256 in
 These seem to indicate that the coefficient should increase.
 
 *Why?*
+-> See above!
 
 **** TODO Note about variability in GridPix 1
 
