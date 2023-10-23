@@ -5685,29 +5685,6 @@ on the considered process).
 - [X] *FIND GOOD REFERENCE FOR DALTON'S LAW*
     -> Reference to original work of John Dalton
 
-*** Mean free path                                               :optional:
-
-*NOTE*: This is already explained for X-rays in the previous
-section. Do we need this concept in some more detail? Otherwise we can
-also remove it later. 
-
-See photons above.
-
-Of major importance for the detection of particles in a gaseous
-detector is the mean free path. This is the mean length a particle
-traverses in a medium before interactions. For charged particles it
-yields the mean distance between individual interaction points,
-whereas for a photon it gives the mean length the photon traverses
-through the detector before interaction.
-
-Especially for photons this value is of crucial importance, as it
-tells us at what distance photons will likely convert depending on
-their energy. This is described by the absorption length as mentioned
-in section [[#sec:theory:xray_matter_gas]]. This is important as it
-directly affects the possible drift distance and thus diffusion
-available to the generated electrons.  *TOO MUCH DETAIL, AS WE HAVE
-NOT INTRODUCED DETECTORS YET!!*
-
 *** Ionization energy and average energy per electron-ion pair
 
 In order to understand the signals detected by a gaseous detector the
@@ -5778,6 +5755,74 @@ single ionization. Argon ionization energy is only like 15 eV or so,
 but effective one is 26.
 
 Leads to our 226 or so primary electrons for our \cefe spectra.
+
+
+*** Mean free path
+
+While we have already discussed the mean free path for X-rays in
+sec. [[#sec:theory:xray_matter_gas]], we should revisit it quickly for
+electrons in a gas. It is a necessary concept when trying to
+understand other gaseous detector physics concepts, in particular for the gas
+amplification. [fn:treatment]
+
+The mean free path of an electron in a gas can be described by
+
+#+NAME: eq:theory:mean_free_path_e_def
+\begin{equation}
+λ = \frac{1}{nσ}
+\end{equation}
+
+where $n = N/V$ is the number density (atoms or molecules per unit
+volume) of the gas particles and $σ$ the cross section of electrons
+interacting with them. Such cross sections are tabulated for different
+elements, for example again see LXCat
+cite:pancheshnyi2012lxcat,pitchford2017lxcat,carbone2021data.
+
+Based on the ideal gas law, we can express it as a function of
+pressure $p$ and temperature $T$ to
+
+\[
+p V = N k_B T ⇔ p = n k_B T,
+\]
+
+with the Boltzmann constant $k_B$.  Inserting this via $n$ into
+eq. [[eq:theory:mean_free_path_e_def]] yields
+
+#+NAME: eq:theory:mean_free_path_e
+\begin{equation}
+λ = \frac{k_B T}{p σ}.
+\end{equation}
+
+[fn:treatment] Its usefulness depends on the angle from which
+different aspects are discussed of course. We mainly use it to
+understand the gas amplification later.
+
+**** TODOs for this section                                     :noexport:
+
+The old text:
+
+
+
+*NOTE*: This is already explained for X-rays in the previous
+section. Do we need this concept in some more detail? Otherwise we can
+also remove it later. 
+
+See photons above.
+
+Of major importance for the detection of particles in a gaseous
+detector is the mean free path. This is the mean length a particle
+traverses in a medium before interactions. For charged particles it
+yields the mean distance between individual interaction points,
+whereas for a photon it gives the mean length the photon traverses
+through the detector before interaction.
+
+Especially for photons this value is of crucial importance, as it
+tells us at what distance photons will likely convert depending on
+their energy. This is described by the absorption length as mentioned
+in section [[#sec:theory:xray_matter_gas]]. This is important as it
+directly affects the possible drift distance and thus diffusion
+available to the generated electrons.  *TOO MUCH DETAIL, AS WE HAVE
+NOT INTRODUCED DETECTORS YET!!*
 
 
 *** Diffusion
@@ -5982,8 +6027,70 @@ vary, but it is usually a region in the gas volume close to the
 readout with a very strong electric field (multiple $\si{kV.cm^{-1}}$)
 such that each electron causes many secondary ionizations, leading to
 an avalanche effect. In case of the detectors described in this
-thesis, amplification factors between \numrange{2000}{4500} are
-desired. 
+thesis, amplification factors between $\numrange{2000}{4500}$ are
+desired.
+
+An electron in a strong electric field $\vec{E}$ will gain enough
+energy to ionize an atom of the gas after a distance
+
+\[
+l \geq \frac{I}{|\vec{E}|}
+\]
+
+with the ionization potential of the gas, $I$. This needs to be put
+into relation with the mean free path,
+eq. [[eq:theory:mean_free_path_e]]. If $l \ll λ$ no secondary ionization
+takes place and if $l \gg λ$ every interaction leads to ionization,
+likely resulting in a breakdown causing an arc (see also Paschen's
+law, not covered here). In the intermediate range some interactions
+cause secondary ionization, some does not.
+
+We can make the statistical argument that
+
+\[
+\mathcal{N} = e^{-l/λ}
+\]
+
+is the relative number of collisions with $l > λ$. This
+allows to define the probability of finding a number of ionizations
+per unit length to be
+
+\[
+P(l) = \frac{1}{λ} e^{-l / λ} = α,
+\]
+
+where we introduce the definition of the 'first Townsend coefficient',
+$α$.  We can insert the definition of the mean free path,
+eq. [[eq:theory:mean_free_path_e]], and $l$ into this equation to obtain
+
+#+NAME: eq:theory:townsend_coefficient
+\begin{equation}
+α(T) = \frac{pσ}{kT} \exp\left( - \frac{I}{|\vec{E}|}\frac{pσ}{kT}\right).
+\end{equation}
+
+With this we have an expression for the temperature and pressure
+dependency of the first Townsend coefficient. [fn:usefulness] This
+derivation followed [[cite:&lucianMsc]] based on [[cite:&engel65_gases]], but
+see [[cite:&aoyama85_gas_gain]] for a more general treatment. Similarly to
+diffusion and drift parameters, the first Townsend coefficient can be
+computed numerically using tools like Magboltz.
+
+Note that [[cite:&sauli2014gaseous]] introduces the Townsend coefficient
+as $α = \frac{1}{λ}$, introducing a specific $λ$ and $σ$ referring to
+the /ionization/ mean free path and /ionizing/ cross sections. This
+can be misleading as it makes it seem as if the Townsend coefficient
+is inversely proportional to the temperature. This is of course only
+the case in the regime where each interaction actually causes another
+ionization.
+
+The first Townsend coefficient can be used to express the
+multiplication factor -- or gas amplification -- used in a detector,
+
+\[
+G = e^{α x}
+\]
+
+as the number increases by $α$ after each step $\mathrm{d}x$.
 
 The statistical distribution describing the number of electrons after
 gas amplification is the Polya distribution
@@ -6006,6 +6113,9 @@ be taken when performing numerical fits to data with this function
 optimization routines instead of a normal Levenberg-Marquardt
 non-linear least squares approach).
 
+
+- [ ] *REVISIT THE BELOW TWO PARAGRAPHS AFTER INSERTING MORE DETAILS ABOVE!*
+
 The largest impacts on the expected gas amplification have the
 electric field, the choice of gas and the temperature of the
 gas. While the former two parameters are comparatively easy to
@@ -6024,6 +6134,9 @@ counts. Molecular gases are added in small fractions to the gas
 mixture to provide non UV photon producing ways to absorb energy. In
 this context the molecular additions are called 'quencher gases'.
 
+[fn:usefulness] This will be a useful reference later when discussing
+possible temperature effects of the detector operated at CAST.
+
 **** TODOs for this section                                     :noexport:
 
 
@@ -6041,10 +6154,18 @@ this context the molecular additions are called 'quencher gases'.
 - [ ] *ADD PLOT OF FUNCTION?*
   -> No, would be too much. Will be seen shortly anyway for real detector.
 
-*** TODO Mobility in a gas and mean free path in amplification region :optional:
+*** TODO Mobility in a gas and mean free path in amplification region :noexport:
+
+- [ ] Delete this subsection?
+
+- [X] This is now covered in the gas gain chapter!
+
+
+
 
 - [ ] Not sure if I want to include this. For now I guess I
   don't. Will depend on when I reread the detector behavior part.
+
 
 *NOTE*: The first Townsend coefficient is α = 1/λ, where λ is the mean
 free path!
