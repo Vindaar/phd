@@ -16701,48 +16701,47 @@ statistics. But the gas gains of each chip compared to the temperature
 lines does imply an (imperfect) inverse correlation between the
 temperature and the gas gain.
 
-While an inverse correlation between temperature and gas gain may
-appear counter intuitive, it is sensible when considering the
-amplification region of the GridPix as an ideal gas. The pressure
-controller keeps the pressure inside the gas chamber constant
-independent of the temperature. This implies that an increase in
-temperature results in a decrease in density in the amplification
-region. The mobility of the charge carriers in the region is inversely
-proportional to the density *CITE CITE CITE* (for now PDG chapter
-detectors!, *REF THEORY SEC*) and a higher mobility implies a longer
-mean free path. This in turn leads to _less_ additional ionization
-events for higher temperatures, reducing the full amplification.
-  
-- [ ] *FIND GOOD REFERENCE FOR MOBILITY IN GAS INVERSELY PROP TO
-  DENSITY!*
-  -> Generally better understand this, add section to gaseous detector
-  theory about this, show equation for mean free path based on
-  mobility!
-  Once section in theory there, reference theory instead!
+As discussed in theory sec. [[#sec:theory:gas_gain_polya]] the expectation
+for the gas gain given constant pressure is $G ∝ e^α$ where
 
-This behavior was likely less relevant in single GridPix detectors as
-the heat emission of a single GridPix is much lower and thus the
-absolute temperatures are lower. For a fixed change in ambient
-temperature this means a single GridPix detector undergoes temperature
-changes in the amplification region at lower absolute temperatures. As
-the behavior is highly non-linear the effect is likely less evident
-for a single GridPix. In addition the single GridPix detector was
-mostly built from acrylic glass, which is a good insulator potentially
-leading to a more stable temperature.
-- [ ] *MAYBE REWRITE ABOVE*
-  
-This explanation is not meant as a definitive statement about the
-origins of the gas gain variations in the Septemboard detector
-data. /However/, it clearly motivates the need for an in depth study
-of the behavior of these detectors for different gas temperatures at
-constant pressures and more precise logging of temperatures in future
-detectors. Further, a significantly improved cooling setup (to more
+#+NAME: eq:calib:townsend_scaling_prop
+\begin{equation}
+α ∝ \frac{1}{T} \exp\left(-\frac{1}{T}\right).
+\end{equation}
+
+The combination of the inverse relation to $T$ and its negative
+exponential is a monotonically increasing sublinear function (and not
+decreasing as $1/T$ would imply alone) in the relevant parameter
+ranges. This should imply an increase in gas gain instead of the
+apparent decrease we see for increasing temperatures. The kind of
+scaling according to eq. [[eq:calib:townsend_scaling_prop]] was also
+already experimentally measured for GridPix detectors by
+L. Scharenberg in [[cite:&lucianMsc]]. The implications seem to be that
+the assumptions going into the $α$ scaling must have been
+violated. The septemboard detector in its -- essentially open -- gas
+system is a non-trivial thermodynamic system due to the significant
+heating of the Timepix ASICs and very small amplification region of
+$\SI{50}{μm}$ height enclosing a gas mass, where gas flow is
+potentially inhibited.
+
+This is not meant as a definitive statement about the origins of the
+gas gain variations in the Septemboard detector data. /However/, it
+clearly motivates the need for an even more in depth study of the
+behavior of these detectors for different gas temperatures at constant
+pressures (continuing the work of [[cite:&lucianMsc]]). More precise
+logging of temperatures and pressures in future detectors is highly
+encouraged. Further, a significantly improved cooling setup (to more
 closely approach a region where temperature changes have a smaller
 relative impact), or theoretically even a temperature controlled setup
 (to avoid temperature changes in the first place) with known inlet gas
 temperatures might be useful. This behavior is one of the most
 problematic from a data analysis point of view and thus it should be
 taken seriously for future endeavors.
+
+See appendix [[#sec:appendix:detector_time_behavior]] for plots similar to
+fig. [[fig:calib:correlation_ambient_temperature_gasgain_and_spectra]] for
+the other periods of CAST data taking and a scatter plot of the center
+chip gas gains against the ambient temperature directly. 
 
 #+CAPTION: Normalized data for Run-3 of the temperature sensors from the CAST slow control log
 #+CAPTION: files compared to the behavior of the mean peak position in the \cefe pixel spectra
@@ -16753,7 +16752,7 @@ taken seriously for future endeavors.
 #+CAPTION: inversely correlated, providing a possible explanation for the detector behavior.
 #+NAME: fig:calib:correlation_ambient_temperature_gasgain_and_spectra
 #+ATTR_LATEX: :float sideways
-[[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain.pdf]]
+[[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain_period_2018-10-19.pdf]]
 
 [fn:hv_logging] Once again, in hindsight writing a log file of the
 high voltage values would have been valuable, especially as it could
@@ -16782,6 +16781,48 @@ visible in the read out voltage.
     expectation"
   - [ ] Finish / extend section above with adjusted explanation /
     interpretation of our data.
+
+Text section about GridPix 1:
+#+begin_quote
+
+- [ ] *TAKE OUT THIS PART?*
+This behavior was likely less relevant in single GridPix detectors as
+the heat emission of a single GridPix is much lower and thus the
+absolute temperatures are lower. For a fixed change in ambient
+temperature this means a single GridPix detector undergoes temperature
+changes in the amplification region at lower absolute temperatures. As
+the behavior is highly non-linear the effect is likely less evident
+for a single GridPix. In addition the single GridPix detector was
+mostly built from acrylic glass, which is a good insulator potentially
+leading to a more stable temperature.
+- [ ] *MAYBE REWRITE ABOVE*
+
+#+end_quote
+
+Previous text about interpretation:
+#+begin_quote
+
+While an inverse correlation between temperature and gas gain may
+appear counter intuitive, it is sensible when considering the
+amplification region of the GridPix as an ideal gas. The pressure
+controller keeps the pressure inside the gas chamber constant
+independent of the temperature. This implies that an increase in
+temperature results in a decrease in density in the amplification
+region. The mobility of the charge carriers in the region is inversely
+proportional to the density *CITE CITE CITE* (for now PDG chapter
+detectors!, *REF THEORY SEC*) and a higher mobility implies a longer
+mean free path. This in turn leads to _less_ additional ionization
+events for higher temperatures, reducing the full amplification.
+  
+- [ ] *FIND GOOD REFERENCE FOR MOBILITY IN GAS INVERSELY PROP TO
+  DENSITY!*
+  -> Generally better understand this, add section to gaseous detector
+  theory about this, show equation for mean free path based on
+  mobility!
+  Once section in theory there, reference theory instead!
+
+#+end_quote
+
 
 
 About \cefe spectrum peak plot:
@@ -16857,8 +16898,18 @@ in the amplification region (same as the Septemboard temperature
 sensors, but just with a larger offset and lack of detail regarding
 local temperature changes due to water cooling related variations).
 
+**** Further thoughts about variability                         :extended:
 
-**** Further thoughts about variability, Townsend coefficient, mobility :extended:
+What if (/put on my crackpot helmet/):
+At lower temperatures gas diffusion is less efficient. This might lead
+to stronger effects of "over pressure" / less gas cycling between
+below and above the grid. This could increase the pressure below the
+grid as it is further away from an open system in a thermodynamic
+sense. The higher the temperature the more flow via diffusion
+exchanges gas below and above the grid, bringing the detector closer
+to desired 1050 mbar operating window. Yeah right lol.
+
+**** Thoughts about Townsend coefficient & gas gain temperature dependence :extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:calib:behavior_over_time:thoughts_townsend
 :END:
@@ -17055,7 +17106,6 @@ ggplot(df, aes("temps", "αs")) +
 
 #+RESULTS:
 
-
 ***** Simulations with Magboltz
 :PROPERTIES:
 :CUSTOM_ID: sec:calib:behavior_over_time:magboltz_sim
@@ -17080,7 +17130,7 @@ These seem to indicate that the coefficient should increase.
 *Why?*
 -> See above!
 
-**** TODO Note about variability in GridPix 1
+**** TODO Note about variability in GridPix 1                   :extended:
 
 - [ ] *CREATE TEMPERATURE PLOT OF TEMP IN CAST HALL DURING GRIDPIX1
   DATA!*
@@ -17101,6 +17151,7 @@ cut) that this is due to multiple electrons in the same hole instead
 of real changes. Likely a combination of both I assume.
 
 **** Generate plot of \cefe peak position                       :extended:
+
 
 From my zsh history:
 #+begin_src 
@@ -17409,7 +17460,7 @@ to be present in the ~SCLogs~ directory!
   there is less 
 
 #+begin_src nim :tangle code/correlation_ambient_temps_fe55_peaks.nim
-import std / [strutils, sequtils, times]
+import std / [strutils, sequtils, times, stats, strformat]
 import os except FileInfo
 import ggplotnim, nimhdf5
 import ingrid / tos_helpers
@@ -17419,15 +17470,11 @@ type
   FeFileKind = enum
     fePixel, feCharge, feFadc
 
-const Peak = "μ"
-const PeakNorm = "μ/μ_max"
-const TempPeak = "(μ/T) / max"
+let UseTex = getEnv("USE_TEX", "false").parseBool
 
-const TempFile = "/home/basti/CastData/ExternCode/TimepixAnalysis/resources/cast_2017_2018_temperatures.csv"
-const OrgFormat = "'<'yyyy-MM-dd ddd H:mm'>'"
-var dfTemp = toDf(readCsv(TempFile))
-  .filter(f{c"Temp / °" != "-"})
-dfTemp["Timestamp"] = dfTemp["Date"].toTensor(string).map_inline(parseTime(x, OrgFormat, utc()).toUnix)
+const Peak = "μ"
+let PeakNorm = if UseTex: r"$μ/μ_{\text{max}}$" else: "μ/μ_max"
+const TempPeak = "(μ/T) / max"
 
 proc readFePeaks(files: seq[string], feKind: FeFileKind = fePixel): DataFrame =
   const kalphaPix = 10
@@ -17496,69 +17543,216 @@ proc readGasGainSliceData(files: seq[string]): DataFrame =
         result.add gainSlicesDf
     discard h5f.close()
 
-proc plotCorrelation(files: seq[string], kind: FeFileKind, gainDf: DataFrame) =
-  let df = readFePeaks(files, feCharge)
-    .filter(f{`Timestamp` >= 1.54e9})
+const periods = [("2017-10-30", "2017-12-23"),
+                 ("2018-02-15", "2018-04-22"),
+                 ("2018-10-19", "2018-12-21")]
+
+proc toPeriod(x: int): string =
+  let date = x.fromUnix()
+  for p in periods:
+    let t0 = p[0].parseTime("YYYY-MM-dd", utc())
+    let t1 = p[1].parseTime("YYYY-MM-dd", utc())
+    if date >= t0 and date <= t1: return p[0]
+  
+proc mapToPeriod(df: DataFrame, timeCol: string): DataFrame =
+  result = df.mutate(f{int -> string: "RunPeriod" ~ toPeriod(idx(timeCol))})
+    .filter(f{string -> bool: `RunPeriod`.len > 0})
+
+proc readSeptemTemps(): DataFrame =
+  const TempFile = "/home/basti/CastData/ExternCode/TimepixAnalysis/resources/cast_2017_2018_temperatures.csv"
+  const OrgFormat = "'<'yyyy-MM-dd ddd H:mm'>'"
+  result = toDf(readCsv(TempFile))
+    .filter(f{c"Temp / °" != "-"})
+  result["Timestamp"] = result["Date"].toTensor(string).map_inline(parseTime(x, OrgFormat, utc()).toUnix)
+
+proc readCastTemps(): DataFrame =
+  result = readCsv("/tmp/temperatures_cast.csv")
+    #.filter(f{float: `Time` >= t0 and `Time` <= t1})
+    .group_by("Temperature")
+    .mutate(f{"TempNorm" ~ `TempVal` / max(col("TempVal"))})
+    .filter(f{`Temperature` != "T_ext"})
+
+proc toPeriod(v: float): string =
+  result = v.int.fromUnix.format("dd/MM/YYYY")
+
+proc keepEvery(df: DataFrame, num: int): DataFrame =
+  ## Keeps only every `num` row of the data frame
+  result = df
+  result["idxMod"] = toSeq(0 ..< df.len)
+  result = result.filter(f{int -> bool: `idxMod` mod num == 0})
+    
+proc plotCorrelationPerPeriod(df: DataFrame, kind: FeFileKind, gainDf, dfCastTemp, dfTemp: DataFrame,
+                              period, outpath = "/tmp") =
   let t0 = df["Timestamp", float].min
   let t1 = df["Timestamp", float].max
 
+  let dfCastTemp = dfCastTemp
+    .keepEvery(50)
+    .filter(f{float: `Time` >= t0 and `Time` <= t1})  
   let dfTemp = dfTemp
     .filter(f{float: `Timestamp` >= t0 and `Timestamp` <= t1})
   var gainDf = gainDf
     .filter(f{float: `tStart` >= t0 and `tStart` <= t1})
   echo gainDf
-  ggplot(gainDf, aes("tStart", "G")) +
-    geom_point() +
-    ggsave("/t/raw_gas_gain.pdf")
-  let dfCastTemp = readCsv("/tmp/temperatures_cast.csv")
-    .filter(f{float: `Time` >= t0 and `Time` <= t1})
-    .group_by("Temperature")
-    .mutate(f{"TempNorm" ~ `TempVal` / max(col("TempVal"))})
-    .filter(f{`Temperature` != "T_ext"})
 
   ## XXX: combine point like data for legend?
   # let dfC = bind_rows([("Fe55", df), ("SeptemTemp", dfTemp)], "Type")
-
-    
-  ggplot(df, aes("Timestamp", PeakNorm)) +
-    geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}, color = "Chip"), alpha = 0.7, size = 1.5) + 
+  var plt = ggplot(df, aes("Timestamp", PeakNorm)) +
     geom_line(data = dfCastTemp, aes = aes("Time", "TempNorm", color = "Temperature")) +
-    geom_point(data = dfTemp, aes = aes("Timestamp", f{idx("Temp / °") / max(col("Temp / °"))}), color = "blue") +
     geom_point() +
-    ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind & " (black) and gas gains by chip", titleFont = font(11.0)) + 
-    ggsave("/tmp/correlation_" & $kind & "_all_chips_gasgain.pdf", width = 1000, height = 600)
-    
-  gainDf = gainDf.filter(f{`Chip` == 3})
-  ggplot(df, aes("Timestamp", PeakNorm)) +
-    geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}), color = "purple", alpha = 0.7, size = 1.5) + 
-    geom_line(data = dfCastTemp, aes = aes("Time", "TempNorm", color = "Temperature")) +
-    geom_point(data = dfTemp, aes = aes("Timestamp", f{idx("Temp / °") / max(col("Temp / °"))}), color = "blue") +
-    geom_point() +
-    ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind & " (black) and gas gains (chip3) in purple", titleFont = font(11.0)) +     
-    ggsave("/tmp/correlation_" & $kind & ".pdf", width = 1000, height = 600)
-    
+    scale_x_continuous(labels = toPeriod)
 
-proc main(calibFiles: seq[string], dataFiles: seq[string] = @[]) =
+  if dfTemp.len > 0: # only if septemboard data available in this period
+    plt = plt + geom_point(data = dfTemp, aes = aes("Timestamp", f{idx("Temp / °") / max(col("Temp / °"))}), color = "blue")
+
+  block AllChips:
+    plt + geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}, color = "Chip"), alpha = 0.7, size = 1.5) +
+      ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind &
+        " (black) and gas gains by chip", titleFont = font(11.0)) + 
+      ggsave(&"{outpath}/correlation_{kind}_all_chips_gasgain_period_{period}.pdf",
+              width = 1000, height = 600,
+              useTeX = UseTeX, standalone = UseTeX)                                                                              
+
+  block CenterChip:
+    gainDf = gainDf.filter(f{`Chip` == 3})
+    plt + geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}), color = "purple", alpha = 0.7, size = 1.5) + 
+      ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind &
+        " (black) and gas gains (chip3) in purple", titleFont = font(11.0)) +     
+      ggsave(&"{outpath}/correlation_{kind}_period_{period}.pdf", width = 1000, height = 600,
+             useTeX = UseTeX, standalone = UseTeX)                                   
+
+proc plotCorrelation(files: seq[string], kind: FeFileKind, gainDf, dfCastTemp, dfTemp: DataFrame,
+                     outpath = "/tmp") =
+  let df = readFePeaks(files, feCharge)
+    .mapToPeriod("Timestamp")
+
+  for (tup, subDf) in groups(df.group_by("RunPeriod")):
+    plotCorrelationPerPeriod(subDf, kind, gainDf, dfCastTemp, dfTemp, tup[0][1].toStr, outpath)
+
+proc plotTempVsGain(dfCastTemp, gainDf: DataFrame, outpath: string) =    
+  ## Now let's plot the actual gas gain against the temperature in each slice.
+  ## Only for the center chip.
+  ## 1. compute mean temperature within time associated with each gain value
+  # dfCastTemp
+  # gainDf
+  ## NOTE: We do not compute the mean temperature associated with the
+  proc mapGainToTemp(gainDf, dfCastTemp: DataFrame, period: string): DataFrame =
+    let t0G = gainDf["tStart", int].min
+    let t1G = gainDf["tStop", int].max
+    # filter temperature data to relevant range
+    echo dfCastTemp.isNil
+    echo dfCastTemp
+    let dfF = dfCastTemp
+       .filter(f{int: `Time` >= t0G and `Time` <= t1G},
+               f{string -> bool: `Temperature` == "T_amb"})
+      
+    var cT: RunningStat    
+    let ambT = dfF["TempVal", float]
+    let time = dfF["Time", int]    
+  
+    var j = 0
+    let gDf = gainDf.filter(f{int -> bool: `Chip` == 3})
+    var temps = newSeq[float](gDf.len)
+    ## we now walk all temperatures and accumulate them in a `RunningStat` to compute
+    ## the mean within `tStart` and `tStop` (by `tStart` of the next slice).
+    ## First and last are just copied from ambient temperature values.
+    temps[0] = ambT[0]    
+    for i in 1 ..< gDf.high:
+      while time[j] < gDf["tStart", int][i]:
+        cT.push ambT[j]
+        inc j
+      temps[i] = cT.mean
+      cT.clear()
+    temps[gDf.high] = ambT[ambT.len - 1]
+    let gains = gDf["G", float]
+    result = toDf(temps, gains, period)
+
+  var dfGT = newDataFrame()
+  for (tup, subDf) in groups(gainDf.groupBy("RunPeriod")):
+    dfGT.add mapGainToTemp(subDf, dfCastTemp, tup[0][1].toStr)
+  echo dfGT
+  echo dfGT.tail(100)
+  ggplot(dfGT.filter(f{`temps` > 0.0}), aes("temps", "gains", color = "period")) +
+    geom_point() +
+    ggtitle("Gas gain (90 min slices) vs ambient T at CAST (center chip)") +
+    xlab("Temperature [°C]") + ylab("Gas gain") + 
+    ggsave(&"{outpath}/gain_vs_temp_center_chip.pdf",
+           width = 600, height = 360,
+           useTeX = UseTeX, standalone = UseTeX)            
+      
+proc main(calibFiles: seq[string], dataFiles: seq[string] = @[],
+          outpath = "/tmp/") =
   ## NOTE: this file needs the CSV file containing the temperature data from the slow control
   ## CAST log files, which is written running the `cast_log_reader` on the slow control log
   ## directory!
   var gainDf = newDataFrame()
   if dataFiles.len > 0:
     gainDf = readGasGainSliceData(dataFiles)
-  plotCorrelation(calibFiles, fePixel, gainDf)
-  plotCorrelation(calibFiles, feCharge, gainDf)
+      .mapToPeriod("tStart")
+    ## Make a plot of the raw gas gains of all chips
+    ggplot(gainDf, aes("tStart", "G", color = "Chip")) +
+      geom_point(size = 2.0) +
+      ggtitle("Raw gas gain values in 90 min bins for all chips") +
+      ggsave(&"{outpath}/raw_gas_gain.pdf",
+             width = 600, height = 360, 
+             useTeX = UseTeX, standalone = UseTeX)              
+
+  let dfCastTemp = readCastTemps()
+  let dfTemp = readSeptemTemps()
+  plotTempVsGain(dfCastTemp, gainDf, outpath)
+      
+  plotCorrelation(calibFiles, fePixel,  gainDf, dfCastTemp, dfTemp, outpath)
+  plotCorrelation(calibFiles, feCharge, gainDf, dfCastTemp, dfTemp, outpath)
 
 when isMainModule:
   import cligen
   dispatch main
 #+end_src
 
-which generates the following four plots:
+Running the above as:
+#+begin_src sh
+USE_TEX=true WRITE_PLOT_CSV=true code/correlation_ambient_temps_fe55_peaks \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    -d ~/CastData/data/DataRuns2017_Reco.h5 \
+    -d ~/CastData/data/DataRuns2018_Reco.h5 \
+    --outpath ~/phd/Figs/behavior_over_time/
+#+end_src
 
-[[file:Figs/behavior_over_time/correlation_feCharge.pdf]]
-[[file:Figs/behavior_over_time/correlation_fePixel.pdf]]
-file:Figs/behavior_over_time/correlation_feCharge_all_chips_gasgain.pdf
-[[file:Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain.pdf]]
+which generates the following plots:
+- [[~/phd/Figs/behavior_over_time/raw_gas_gain.pdf]]
+- [[~/phd/Figs/behavior_over_time/gain_vs_temp_center_chip.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_fePixel_period_2018-10-19.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_fePixel_period_2018-02-15.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_fePixel_period_2017-10-30.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain_period_2018-10-19.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain_period_2018-02-15.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain_period_2017-10-30.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_feCharge_period_2018-10-19.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_feCharge_period_2018-02-15.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_feCharge_period_2017-10-30.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_feCharge_all_chips_gasgain_period_2018-10-19.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_feCharge_all_chips_gasgain_period_2018-02-15.pdf]]
+- [[~/phd/Figs/behavior_over_time/correlation_feCharge_all_chips_gasgain_period_2017-10-30.pdf]]
+
+of which we insert only one of them (Run 3) correlation of gas gains
+and temperature against the time. That is mainly because in that
+period there was no worry about power supply effects anymore. It
+should be noted that the apparent inverse correlation is not apparent
+in the Run-2 data of 2017. Generally the water cooling was working
+better at those times, which may be relevant. I don't want to
+introduce even more speculation into the main section and as the
+scatter plot of gas gain and temperature clearly shows an inverse
+correlation for a large chunk of the data, the existing text is justified.
+
+Also, we chose to include the ~fePixel~ version and not the ~feCharge~
+version as the link between gas gain of the center chip and the \cefe
+charge spectrum is much more direct, offering less additional information.
+
+***** Initial interpretation upon seeing the correlation plot
+
+Note: this text was written after I created the first version of the
+above plot for the first time.
 
 The first thing that jumps out is that the (normalized) temperature
 recovered from the shift forms of the Septem board sensor is strongly
@@ -17625,7 +17819,7 @@ thus it should be taken seriously for future endeavors!
 - [X] *INSERT THE PIXEL TEMP GASGAIN PLOT INTO THESIS ROTATED FULL
   PAGE?*
 
-- [ ] *ADD VERSION OF PLOTS THAT SHOW FULL DATA WITHOUT CUT TO RUN-3*
+- [X] *ADD VERSION OF PLOTS THAT SHOW FULL DATA WITHOUT CUT TO RUN-3*
 
 - [X] *ADD A SIMILAR PLOT, BUT NOT USING 55FE POSITIONS, BUT GAS GAIN
   SLICES*
@@ -18009,11 +18203,11 @@ versions). We copy over all ridge & interval plots.
 
 With the final choice of time interval for the gas gain binning in
 place, the actual calibration used for further analysis can be
-presented. Fig. \ref{fig:calib:gasgain_vs_energy_calib_comparison}
+presented. Fig. sref:fig:calib:gasgain_vs_energy_calib_comparison
 shows the fits according to the linear relation as explained in
 sec. [[#sec:calibration:energy]] for the two data taking campaigns, Run-2
-in \subref{fig:calib:gasgain_vs_energy_calib_2017} and Run-3 in
-\subref{fig:calib:gasgain_vs_energy_calib_2018}. Each point represents
+in sref:fig:calib:gasgain_vs_energy_calib_2017 and Run-3 in
+sref:fig:calib:gasgain_vs_energy_calib_2018. Each point represents
 one $\SI{90}{min}$ slice of calibration data for which a \cefe
 spectrum was fitted and then the linear energy calibration
 performed. The resulting energy calibration factor is then plotted
@@ -36080,6 +36274,59 @@ related to this in the ~Figs/behavior_over_time~ directory.
 #+CAPTION: binning dependence of the resulting histograms.
 #+NAME: fig:calib:median_energy_ridgeline_Oct2018
 [[~/phd/Figs/behavior_over_time/medianEnergy_kde_ridges_21_10_2018.pdf]]
+
+
+** Correlation of gas gain and ambient CAST temperature
+
+Let's look at the rest of the data not shown in
+sec. [[#sec:calib:causes_variability]]. First in
+fig. [[fig:appendix:correlation_ambient_temperature_gasgain_and_spectra_run2_2017]]
+we see the same plot as
+fig. [[fig:calib:correlation_ambient_temperature_gasgain_and_spectra]],
+but only for Run-2 data from 2017. The anti-correlation is not quite
+visible here, instead in parts it seems like the expected correlation
+of temperature and gas gain is
+visible. Fig. [[fig:appendix:correlation_ambient_temperature_gasgain_and_spectra_run2_2018]]
+is the data for Feb 2018 to Apr 2018. Here there seems to be some of
+the anti correlation, but less than in the Run-3 data presented in the
+main of the discussion. Finally,
+fig. [[fig:appendix:gas_gain_vs_ambient_temp_center]] shows the gas gain
+of the center chip plotted directly against the ambient temperature at
+CAST as a scatter plot. Here the anti correlation becomes very visible
+as a global trend.
+
+
+#+CAPTION: Normalized data for Run-2 (only 2017) of the temperature sensors from the CAST slow control log
+#+CAPTION: files compared to the behavior of the mean peak position in the \cefe pixel spectra
+#+CAPTION: (black points), the recovered temperature values recorded during each solar tracking
+#+CAPTION: (blue points) and the gas gain values computed based on \SI{90}{min} of data for each
+#+CAPTION: chip (smaller points using Viridis color scale). The shift log temperatures nicely
+#+CAPTION: follow the trend of the general temperatures. In this period no real anti-correlation is
+#+CAPTION: visible. Instead in parts it looks like the expected proportionality between temperature
+#+CAPTION: and gas gain appears.
+#+NAME: fig:appendix:correlation_ambient_temperature_gasgain_and_spectra_run2_2017
+#+ATTR_LATEX: :float sideways
+[[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain_period_2017-10-30.pdf]]
+
+#+CAPTION: Normalized data for Run-2 (only Feb. to Apr. of 2018) of the temperature sensors from the CAST slow control log
+#+CAPTION: files compared to the behavior of the mean peak position in the \cefe pixel spectra
+#+CAPTION: (black points), the recovered temperature values recorded during each solar tracking
+#+CAPTION: (blue points) and the gas gain values computed based on \SI{90}{min} of data for each
+#+CAPTION: chip (smaller points using Viridis color scale). The shift log temperatures nicely
+#+CAPTION: follow the trend of the general temperatures. Here the anti correlation seems to
+#+CAPTION: be visible in some parts, but also less extreme than in the end of 2018 Run-3 data,
+#+CAPTION: presented in the main section.
+#+NAME: fig:appendix:correlation_ambient_temperature_gasgain_and_spectra_run2_2018
+#+ATTR_LATEX: :float sideways
+[[~/phd/Figs/behavior_over_time/correlation_fePixel_all_chips_gasgain_period_2018-02-15.pdf]]
+
+#+CAPTION: Gas gains of the center chip (by $\SI{90}{min}$ time slices) against the ambient
+#+CAPTION: temperature at CAST. As a general trend the anti correlation is very visible. Also
+#+CAPTION: visible though is that for the 2017 Run-2 data that effect does not really appear.
+#+NAME: fig:appendix:gas_gain_vs_ambient_temp_center
+[[~/phd/Figs/behavior_over_time/gain_vs_temp_center_chip.pdf]]
+
+
 
 * CAST Detector Lab data                                           :Appendix:
 :PROPERTIES:
