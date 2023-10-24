@@ -16702,7 +16702,8 @@ lines does imply an (imperfect) inverse correlation between the
 temperature and the gas gain.
 
 As discussed in theory sec. [[#sec:theory:gas_gain_polya]] the expectation
-for the gas gain given constant pressure is $G ∝ e^α$ where
+for the gas gain given constant pressure is $G ∝ e^α$ where the first
+Townsend coefficient $α$ scales with temperature by
 
 #+NAME: eq:calib:townsend_scaling_prop
 \begin{equation}
@@ -17837,22 +17838,23 @@ Section: ~Time behavior of logL variables~
 
 Motivated by the strong variation seen over timescales much shorter
 than the typical length of a background run, the gas gain needs to be
-computed in time slices of a fixed length. This is naturally a trade
-off between assigning accurate gas gains to a data slice and acquiring
-enough statistics to compute said gas gain correctly.
+computed in time slices of a fixed length. This is naturally a
+trade-off between assigning accurate gas gains to a time slice and
+acquiring enough statistics to compute said gas gain correctly.
 
 To determine a suitable time window the gas gain was computed for a
 fixed set of different time intervals and figures similar to
 fig. [[fig:calib:total_charge_over_time]] were considered not only for the
 median charge, but also different geometric cluster
-distributions. Further, by applying the energy calibration based on
-each different set of time intervals to the background data, the
-histograms of the median cluster energy in the background data was
-studied. The ideal time interval is one in which the resulting median
-energy distribution has low variance and is unimodal approaching a
-normal distribution (background in all slices is equivalent over large
-enough times) while at the same time provides enough statistics in the
-\cefe spectrum of the slice to perform a good fit.
+distributions. Further, by applying the energy calibration based on each
+different set of time intervals to the background data (as will be
+explained in sec. [[#sec:calib:final_energy_calibration]]), the histograms
+of the median cluster energy in the background data was studied. The
+ideal time interval is one in which the resulting median energy
+distribution has low variance and is unimodal approaching a normal
+distribution, (background in all slices is equivalent over large enough
+times) while at the same time provides enough statistics in the \cefe
+spectrum of the slice to perform a good fit.
 
 Unimodality can be quantitatively checked using different goodness of
 fit tests (Anderson-Darling, Cramér-von Mises,
@@ -17871,13 +17873,7 @@ variance grows significantly below $\SI{90}{min}$.
 #+CAPTION: interval (olive) strikes an acceptable balance between unimodality and
 #+CAPTION: variance. 
 #+NAME: fig:calib:median_energy_ridgeline_30_10_2017
-[[~/phd/Figs/behavior_over_time/medianEnergy_kde_ridges_30_10_2017.pdf]]
-
-- [ ] *REWORD ABOVE DUE TO CHANGE IN PREVIOUS SECTION*
-  -> And in general after a full read probably rephrase the why
-  selection was chosen.
-
-- [X] *INSERT THE PLOT SHOWING THE DIFFERENT DISTRIBUTIONS?*
+[[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_30_10_2017.pdf]]
 
 As the different ways to look at the data are not entirely conclusive,
 the choice was made to choose an interval length that is not too long,
@@ -17889,6 +17885,23 @@ last slice (making it longer than $\SI{90}{min}$) if it is smaller
 than some fixed interval or will be kept as a single shorter
 interval. This is controlled by an additional parameter that is set to
 $\SI{25}{min}$ by default. [fn:configuration_slicing]
+
+[fn:configuration_slicing] Both the gas gain time slicing and the
+minimum length for the last slice in a run to be kept as a shorter
+slice can be configured from the TPA configuration file, via the
+~gasGainInterval~ and ~minimumGasGainInterval~ fields, respectively.
+  
+[fn:optimize_gas_gain_window] The code for this optimization can be
+found here *GITHUB/TPA/Tools/optimizaGasGainSliceTime.nim*. Further see
+the ~statusAndProgress~ notes on this!
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [X] *REWORD ABOVE DUE TO CHANGE IN PREVIOUS SECTION*
+  -> And in general after a full read probably rephrase the why
+  selection was chosen.
+
+- [X] *INSERT THE PLOT SHOWING THE DIFFERENT DISTRIBUTIONS?*
 
 - [X] *INSERT FIG OF MEDIAN ENERGY OF BACKGROUND DATA USING 90 MIN*
   -> Must be in the section that actually explains the energy calibration!
@@ -17910,16 +17923,7 @@ $\SI{25}{min}$ by default. [fn:configuration_slicing]
   minimumGasGainInterval = 25
   #+end_src
 
-[fn:configuration_slicing] Both the gas gain time slicing and the
-minimum length for the last slice in a run to be kept as a shorter
-slice can be configured from the TPA configuration file, via the
-~gasGainInterval~ and ~minimumGasGainInterval~ fields, respectively.
-  
-[fn:optimize_gas_gain_window] The code for this optimization can be
-found here *GITHUB/TPA/Tools/optimizaGasGainSliceTime.nim*. Further see
-the ~statusAndProgress~ notes on this!
-
-*** Generate plot of median cluster energy                       :noexport:
+*** Generate plot of median cluster energy                       :extended:
 
 Let's now generate the plots of the median cluster energy.
 
@@ -18121,7 +18125,7 @@ ggplot(df, aes("timestamp", name, shape = "runType", color = "Data")) +
   ylab("Energy [keV]") + 
   ggtitle(&"Median of cluster energy, binned vs. unbinned. 90 min intervals.") +
   ggsave(&"Figs/behavior_over_time/median_energy_binned_vs_unbinned.pdf",
-          width = 1920, height = 1080)
+         width = 1920, height = 1080)
 #+end_src
 
 which results in
@@ -18157,8 +18161,13 @@ input data file paths; they are hardcoded as of right now)
 This generates CSV files in an ~out~ directory from wherever you
 actually ran the code from.
 
-#+begin_src sh
-./optimizeGasGainSliceTime --path out --plot
+To produce the plots as used in the thesis (and many more), just run:
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/optimizeGasGainSliceTime/
+USE_TEX=true WIDTH=800 HEIGHT=480 LINE_WIDTH=1.0 WRITE_PLOT_CSV=true \
+             ./optimizeGasGainSliceTime \
+             --path out \
+             --plot \
+             --outpath ~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/
 #+end_src
 
 Among others this generates a plot of the scores for different
@@ -18167,10 +18176,8 @@ taking. They all use the mean of the full data and the variance of the
 full data (that's clearly not ideal, but it should be passable to have
 something comparable).
 
-The resulting plot is
-~/tmp/gofs_for_different_binnings.pdf~
-and
-[[~/phd/Figs/gasgain_binning_gofs.pdf]]
+The resulting plot is 
+[[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/gofs_for_different_binnings.pdf]]
 At least for the 2017 data set the 45 minute interval seems to be the
 clear winner. However, in beginning 2018 it's one of the worst at
 least for Anderson-Darling and Cramér-von-Mises (which are probably
@@ -18186,13 +18193,26 @@ At the same time comparing the ridgeline plot / histograms it is also
 evident that the variance itself is quite a bit smaller in the 90 min
 case, which is another important aspect.
 
-Further, it generates
-~/tmp/medianEnergy_ridges_30_10_2017.pdf~ (and the other ridgeline
-versions). We copy over all ridge & interval plots.
-[[file:Figs/behavior_over_time/medianEnergy_intervals.pdf]]
-[[file:Figs/behavior_over_time/medianEnergy_ridges_30_10_2017.pdf]]
-[[file:Figs/behavior_over_time/medianEnergy_ridges_17_02_2018.pdf]]
-[[file:Figs/behavior_over_time/medianEnergy_ridges_21_10_2018.pdf]]
+In addition all these plots for the distribution of properties / the
+energy are created:
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_30.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_45.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_60.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_90.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_120.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_180.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_300.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_intervals.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_ridges_17_02_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_ridges_21_10_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_ridges_30_10_2017.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals_17_02_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals_21_10_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals_30_10_2017.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_17_02_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_21_10_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_30_10_2017.pdf]]
 
 ** Energy calibration dependence on the gas gain [/]
 :PROPERTIES:

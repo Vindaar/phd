@@ -21,4 +21,4 @@ ggplot(df, aes("timestamp", name, shape = "runType", color = "Data")) +
   ylab("Energy [keV]") + 
   ggtitle(&"Median of cluster energy, binned vs. unbinned. 90 min intervals.") +
   ggsave(&"Figs/behavior_over_time/median_energy_binned_vs_unbinned.pdf",
-          width = 1920, height = 1080)
+         width = 1920, height = 1080)
