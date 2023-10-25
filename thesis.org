@@ -18349,12 +18349,26 @@ which results in
 
 [[~/phd/Figs/behavior_over_time/median_energy_binned_vs_unbinned.pdf]]
 
+** FADC
 :PROPERTIES:
+:CUSTOM_ID: sec:calib:fadc
 :END:
 
+As touched on multiple times previously, in particular in
+sec. [[#sec:cast:data_taking_woes]], the FADC suffered from noise. This
+meant multiple changes to the amplifier settings to mitigate this.
 
+We will now go over what the FADC noise looks like and explain our
+noise filter used to determine if an FADC event is noisy (to ignore
+it), in sec. [[sec:calibration:fadc_noise]]. Then we check the impact of
+the different amplification settings on the FADC data and finally
+discuss the impact of the FADC data quality on the rest of the
+detector data in sec. .....
 
+*** TODOs for this section [/]                                   :noexport:
 
+Initial text for this section:
+#+begin_quote
 As described over the course of previous chapters, the FADC serves
 essentially a 4-way purpose. First of all, it is used as a trigger to
 start the readout process of the GridPixes, if the center chip records
@@ -18376,6 +18390,7 @@ are due to physical changes in the gas gain or due to changes in the
 readout electronics. Such a secondary insight is valuable in the
 context of studying the GridPix behavior over time, sec.
 [[#sec:calib:detector_behavior_over_time]]. 
+#+end_quote
 
 - trigger
 - longitudinal shape information -> acting as a veto
@@ -18388,6 +18403,7 @@ context of studying the GridPix behavior over time, sec.
   This is actually an important insight as it allows us to see what
   happened in the cases where pixel information was lost / peak
   position changed drastically. Did gas gain change based on FADC information?
+  -> Used in time dependence of gas gain.
 
 problems:  
 - noise
@@ -18395,9 +18411,293 @@ problems:
 - different shapes due to 50ns 100ns signal integration, 50ns 20ns
   differentiation
 - [ ] *REGARDING 50ns vs 100ns ~fadc_analysis.nim~ CONTAINS CODE TO 
-  CHECK NOISE COMPARED TO 50 vs 100!!*  
+  CHECK NOISE COMPARED TO 50 vs 100!!*
 
-*** FADC spectrum & threshold [0/4]
+
+*** FADC noise example and detection
+:PROPERTIES:
+:CUSTOM_ID: sec:calibration:fadc_noise
+:END:
+
+An example of the most common type of noise events seen in the FADC
+data is shown in fig. [[fig:calib:fadc_noise_example]]. As the FADC
+registers effectively correspond to $\SI{1}{ns}$ time resolution, the
+periodicity of these noise events is about $\SI{150}{ns}$,
+corresponding to roughly $\SI{6.6}{MHz}$ frequency. Other types of
+less common noise events are events with a noise frequency of about
+$\SI{1.5}{MHz}$. [fn:frequencies] A final type of noise events are
+events, in which the FADC input is fully at a low input voltage (in
+the tens of $\si{mV}$ range), but contains no real 'activity'. The values
+though are lower than the threshold in these cases triggering the
+FADC.
+
+#+CAPTION: Example of the most common type of noise example. Noise has a
+#+CAPTION: periodicity of about $\sim\SI{150}{ns}$, or about $\SI{6.6}{MHz}$. 
+#+NAME: fig:calib:fadc_noise_example
+[[~/phd/Figs/FADC/fadcNoise/figs/DataRuns2017_Reco_2023-10-25_15-12-30/fadc_event_run109_event19157_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
+
+For data analysis purposes, in particular when the FADC data is used
+in conjunction with the GridPix data it is important to not
+accidentally use an FADC event, which contains noise. While generally
+noise events are unlikely to be part of physical ionization events on
+the center GridPix it is better to be on the conservative side. The
+noise analysis is kept very simple [fn:implementation]. The FADC
+spectrum consisting of $\num{2560}$ registers is being sliced into
+$\num{150}$ register wide intervals. In each interval we check for the
+minimum of the signal, $m_s$. The slice is adjusted around the found
+minimum to check if the minimum is contained fully in the slice (if
+not it is part of the next slice). If that minimum is below $m_s < B -
+σ$, where $B$ is the signal baseline and $σ$ the standard deviation of
+the full FADC signal (including the peaks!), it will be counted as a
+peak. The noise filter detection is then defined by signals with at
+least $\num{4}$ peaks within slices of $\SI{150}{ns}$. 
+
+[fn:frequencies] The frequencies are on the low end in terms of common
+radio communication frequencies. The leading assumption has always
+been that the source likely points to noise produced by e.g. the
+motors moving the CAST magnet and similar.
+
+[fn:implementation] I started with a simple implementation, intending
+to replace it later. But it worked well enough that I simply kept it
+so far.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [X] *EXAMPLE OF NOISE*
+
+- [ ] Add examples of other types of noise too?
+
+**** Notes on FADC noise analysis                               :extended:
+
+The ~fadc_analysis.nim~ program in ~TimepixAnalysis~ on the one hand
+contains the code to detect noisy events and is used as a library for
+that purpose. But it can also be used to perform a standalone FADC
+noise analysis if compiled on its own.
+
+
+To determine if an event is noisy:
+- check for dips in the signal of width 150 ns
+- if more than 4 dips in one event -> noisy
+
+~fadc_helpers.nim~ -> ~isFadcFileNoisy~ using ~findPeaks~ from
+~NimUtil/helpers/utils.nim~.
+
+Note: the implementation is rather simple. Instead of slicing the FADC
+data into chunks of the desired width it would be smarter to work with
+a running version of the data and see if the running mean crosses some
+lower threshold. The difficulty in that is detecting separate
+peaks. One would need to track the 'last return to baseline' and only
+count more dips if the next minimum had a baseline return (or maybe
+50% of baseline return) in it.
+
+**** Find a good noisy FADC event                               :extended:
+
+Types of noise:
+- O(4) periods in 2560 ns
+- O(16) periods in 2560 ns
+- signal at negative voltage (with no periodicity) over entire range
+-> appendix one example of each? Then again, we also don't show
+examples of all sorts of fun GridPix events. Then again again, those
+don't cause data loss because they are extremely infrequent :)
+
+Run 109 (based on our notes taken during the CAST data taking) was a
+run with serious amounts of noise. We'll find a good FADC event using
+~plotData~ by filtering to ~noisy == 1~ and producing FADC event
+displays.
+
+First let's generate some events:
+#+begin_src sh
+F_LEFT=0.8 \
+    plotData \
+    --h5file ~/CastData/data/DataRuns2017_Reco.h5 \
+    --runType=rtBackground \
+    --cuts '("fadc/noisy", 0.5, 1.5)' \
+    --applyAllCuts \
+    --fadc \
+    --eventDisplay \
+    --runs 109 \
+    --head 50
+#+end_src
+
+Good examples for the three main types of noise we had are:
+High frequency event:
+event #: 19157
+
+Full on negative value event:
+event #: 4147
+
+Low frequency event:
+event #: 9497
+
+For each of these let's generate a prettier version:
+#+begin_src sh :dir ~/phd/Figs/FADC/fadcNoise
+F_LEFT=-0.8 L_MARGIN=2.5 B_MARGIN=1.5 T_MARGIN=1.0 USE_TEX=true WIDTH=600 HEIGHT=420 FONT_SCALE=1.2 \
+    plotData \
+    --h5file ~/CastData/data/DataRuns2017_Reco.h5 \
+    --runType=rtBackground \
+    --cuts '("fadc/noisy", 0.5, 1.5)' \
+    --applyAllCuts \
+    --fadc \
+    --eventDisplay \
+    --runs 109 \
+    --events 19157 --events 4147 --events 9497
+#+end_src
+
+- [[~/phd/Figs/FADC/fadcNoise/figs/DataRuns2017_Reco_2023-10-25_15-12-30/fadc_event_run109_event19157_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
+- [[~/phd/Figs/FADC/fadcNoise/figs/DataRuns2017_Reco_2023-10-25_15-12-30/fadc_event_run109_event4147_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
+- [[~/phd/Figs/FADC/fadcNoise/figs/DataRuns2017_Reco_2023-10-25_15-12-30/fadc_event_run109_event9497_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
+
+*** Amplifier settings impact and activation threshold [0/4]
+
+Now let's look at the impact of the different amplifier settings on
+the FADC data properties. This includes differences in the rise time
+and fall time, but because changing the integration and
+differentiation times on the amplifier has a direct impact on the
+absolute amplification on the signal, we also need to consider the
+change in activation threshold of the signals.
+
+As a short reminder, the FADC settings were changed twice during the
+Run-2 period in 2017. Starting from 2018 the settings were left like
+at the end of 2017. An overview of the setting changes is shown in
+tab. [[tab:calib:fadc_amplifier_settings]]. Note that the Ortec amplifier
+has a coarse and a fine gain. Only the coarse gain was
+changed. [fn:fine_gain] The gain changes were performed to counteract
+the resulting amplification changes due to the integration and
+differentiation setting changes (this is documented as a side effect
+in the FADC manual [[cite:&fadc_manual]]).
+
+#+CAPTION: Overview of the different FADC amplifier settings and the associated run
+#+CAPTION: numbers.
+#+NAME: tab:calib:fadc_amplifier_settings
+#+ATTR_LATEX: :booktabs t
+| Runs      | Integration [$\si{ns}$] | Differentiation [$\si{ns}$] | Coarse gain |
+|-----------+-------------------------+-----------------------------+-------------|
+| 76 - 100  |                      50 |                          50 |          6x |
+| 101 - 120 |                      50 |                          20 |          10 |
+| 121 - 306 |                     100 |                          20 |          10 |
+
+The \cefe calibration spectra come in handy for the FADC data, as they
+also give a known baseline to compare against for this type of
+data. To get an idea of the rise and fall times of the FADC for
+different settings, we can compute a truncated mean of all rise and
+fall times in each calibration run. [fn:trunc_mean] This is done in
+fig. [[fig:fadc:peak_position_55fe_run2_settings]], which shows the mean
+rise time for each run in 2017 with the fall time color coded in each
+point. The shaded region indicate the FADC amplifier
+settings. Changing the differentiation time from $\SI{50}{ns}$ down to
+$\SI{20}{ns}$ decreased the rise time by about $\SI{10}{ns}$. The
+change in the fall time is much more pronounced. The change of the
+integration time from $\SI{50}{ns}$ to $\SI{100}{ns}$ then brings the
+rise time back up by about $\SI{5}{ns}$ with now a drastic extension
+in the fall time from the mid $\SI{200}{ns}$ to over
+$\SI{400}{ns}$. Clearly the fall time is much more determined by the
+amplifier settings.
+
+#+CAPTION: The mean rise time of the FADC signals recorded during the \cefe data
+#+CAPTION: during Run-2 of the FADC. Again, the FADC amplifier settings are visible
+#+CAPTION: as expected.
+#+CAPTION: '∫': integration time, '∂': differentiation time, 'G': coarse gain.
+#+NAME: fig:fadc:mean_rise_times_55fe_fadc_run2
+[[~/phd/Figs/FADC/fadc_mean_riseTime_run2.pdf]]
+
+A direct scatter plot of the rise times against the fall times is
+shown in fig. [[fig:fadc:riseTime_vs_fallTime_55fe_fadc_run2]], where the
+drastic changes to the fall time are even more pronounced. Each point
+once again represents one \cefe calibration run. The different
+settings manifest as separate 'islands' in this space.
+
+#+CAPTION: The mean rise time of the FADC signals recorded during the \cefe data
+#+CAPTION: against the fall time during Run-2 at CAST. One point for each calibration
+#+CAPTION: run.
+#+CAPTION: The different settings create three distinct blobs.
+#+CAPTION: '∫': integration time, '∂': differentiation time, 'G': coarse gain.
+#+NAME: fig:fadc:riseTime_vs_fallTime_55fe_fadc_run2
+[[~/phd/Figs/FADC/fadc_mean_riseTime_vs_fallTime_run2.pdf]]
+
+The FADC pulses contain a measure of the total charge that was induced
+on the grid and therefore an indirect measure of the charge seen on
+the center GridPix. The \cefe calibration runs could be used to fully
+calibrate the FADC signals in charge if desired. Ideally one would
+fully (numerically) integrate the FADC signal for each event to
+compute an effective charge. As we only use the FADC signals in the
+context of this thesis for their sensitivity to longitudinal shape
+information, this is not implemented. For \cefe calibration data the
+amplitude of the FADC pulse is a direct proxy for the charge anyway,
+because the signal shape is (generally) the same for
+X-rays. [fn:shape] For the determination of whether the gas gain
+variations discussed in sec. [[#sec:calib:detector_behavior_over_time]]
+have a physical origin due to changing gas gain or are caused by
+electronic effects, we already included the FADC data in
+fig. [[fig:calib:fe55_peak_pos_charge_pixel_fadc]] of
+sec. [[#sec:calib:causes_variability]]. Computing the histogram of all
+amplitudes of the FADC signals in a \cefe calibration run yields a
+spectrum like for the center GridPix. The fitted position of the
+photopeak in these spectra is then a direct counterpart to those
+computed for the GridPix. Due to its independence and only being
+sensitive to induced charge it acts as a good validator.
+
+In the context of the FADC amplifier settings it is interesting to see
+how the photopeak position changes between runs when computed like
+that. This is shown in
+fig. [[fig:fadc:peak_position_55fe_run2_settings]]. We can see that the
+initial change in differentiation time resulted in a larger gain
+change than the attempt at compensation from 6x to 10x on the coarse
+gain. The final increase in the integration time then caused another
+drop in signal amplitudes, implying an even lower absolute gain. In
+addition though the gain variation within a single setting is very
+visible. 
+
+#+CAPTION: The peak position in \si{V} of the photopeak in the \cefe calibration
+#+CAPTION: runs during Run-2 as seen on the FADC. The different FADC amplifier settings are clearly visible.
+#+CAPTION: '∫': integration time, '∂': differentiation time, 'G': coarse gain.
+#+NAME: fig:fadc:peak_position_55fe_run2_settings
+[[~/phd/Figs/FADC/peak_positions_fadc_run2.pdf]]
+
+Finally, we can look at the activation threshold of the FADC. The
+easiest way to do this is the following: we read the energies of all
+events on the center GridPix, then map them to their FADC
+events. Although not common in calibration data some events may not
+trigger the FADC. By then computing -- for example -- the first
+quantile of the energy data (the absolute lowest value may be some
+outlier) we automatically get the lowest equivalent GridPix energy
+that triggers the FADC. Doing this leads to yet another similar plot
+to the previous,
+fig. [[fig:fadc:activation_threshold_gridpix_55fe_run2_settings]]. With
+the first FADC settings the activation threshold was at a low
+$\sim\SI{1.1}{keV}$. Unfortunately, both amplifier settings moved the
+threshold further up to about $\SI{2.2}{keV}$ with the final
+settings. In hindsight it likely would have been a better idea to try
+to run with a lower activation threshold so that the FADC trigger is
+available for more events at low energies. However, at the time of the
+data taking campaign not all information was available for an educated
+assessment, nor was there enough time to test and implement other
+ideas. Especially because there is a high likelihood that other
+settings might have run back into noise problems. 
+
+#+CAPTION: The activation threshold of the FADC for each calibration run in 2017.
+#+CAPTION: Computed by the first quantile of the corresponding energies recorded
+#+CAPTION: by the GridPix.
+#+CAPTION: '∫': integration time, '∂': differentiation time, 'G': coarse gain.
+#+NAME: fig:fadc:activation_threshold_gridpix_55fe_run2_settings
+[[~/phd/Figs/FADC/activation_threshold_gridpix_energy_fadc_run2.pdf]]
+
+
+
+[fn:trunc_mean] We use a truncated mean of all data within the 5-th
+and 95-h percentile if the rise and fall time values. This is just to
+make the numbers less susceptible to extreme outliers. Alternatively,
+we could of course also look at the median for example.
+
+[fn:fine_gain] At least to my memory and notes, which should otherwise
+contain that.
+
+[fn:shape] As with everything this is only an approximation and
+completely neglects possible nonlinearities in amplitude vs. integral
+and so on. But it works well for its purpose here.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *MAKE SURE TO ADD 50/100 ns DATASETS TO ALL RAW DATA!*
 
 What is it that we actually want from this? Aside from providing an
 *overview* the FADC is barely used for anything. Things that are
@@ -18411,20 +18711,8 @@ important:
   because otherwise we cannot explain why we do / do not use the FADC
   as a veto and why it's not super helpful.
 
-#+CAPTION: The peak position in \si{V} of the photopeak in the \cefe calibration
-#+CAPTION: runs during Run-2. The different FADC amplifier settings are clearly visible. *FIX THE PLOT / PRETTIFY*
-#+NAME: fig:fadc:peak_position_55fe_run2_settings
-[[~/phd/Figs/FADC/peak_positions_fadc_run2.pdf]]
-
-#+CAPTION: The mean rise time of the signals recorded during the \cefe data
-#+CAPTION: during Run-2 of the FADC. Again, the FADC amplifier settings are visible
-#+CAPTION: as expected.
-#+NAME: fig:fadc:mean_rise_times_55fe_fadc_run2
-[[~/phd/Figs/FADC/fadc_mean_riseTime_run2.pdf]]
-
 - [ ] *MOST LIKELY THESE RISE/FALL TIME PLOTS CHANGE SIGNIFICANTLY NOW
   AFTER HAVING CHANGED FADC BASELINE & THRESHOLD CALCS!!!*
-
 
 - [X] show spectra (already one shown in previous chapter!)
 - [ ] show 55Fe spectrum of FADC data
@@ -18461,14 +18749,30 @@ important:
 - [ ] train NN on FADC data and see what we can gain <- this goes
   towards analysis chapter of course!
   Best use a CNN with 1D input data & kernel!
-  
 
-**** Generate plots of FADC fall & rise times and FADC \cefe spectrum [/] :noexport:
+**** Further thoughts on understanding impact of $\SI{50}{ns}$ vs $\SI{100}{ns}$ :extended:
+
+We did actually take a measurement of the FADC in the laboratory at
+some point comparing $\SI{50}{ns}$ integration time with
+$\SI{100}{ns}$ integration time. This was during the course of the
+master thesis of Hendrik Schmick [[cite:&SchmickMaster]].
+
+Unfortunately, the exact values of the amplifier gain and
+differentiation times were not recorded (dummy me!). These two
+datasets may still be valuable (and are part of the raw data hosted at
+Zenodo), but I haven't attempted to use them for a deeper
+understanding in the last years (we looked into them back in 2019 though).
+
+**** Generate plots of FADC fall & rise times and FADC \cefe spectrum [/] :extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:reco:fadc_rise_fall_plots
 :END:
 
 - [ ] *REPLACE THE ORIGIN OF THIS PLOT*
+
+- [ ] *CREATE A NEW FADC \cefe SPECTRUM*
+  -> Follow sec. [[#sec:calib:energy_gen_example_cefe]]
+  -> Use the same run too!
 
 #+begin_src sh :results drawer
 raw_data_manipulation -p ~/CastData/data/2018_2/Run_240_181021-14-54/ \
@@ -18568,7 +18872,7 @@ INFO {96}
 
 #+begin_src nim :results drawer :tangle code/fadc_rise_fall_different_settings.nim
 import nimhdf5, ggplotnim
-import std / [strutils, os, sequtils]
+import std / [strutils, os, sequtils, strformat]
 import ingrid / [tos_helpers]
 import ingrid / calibration / [calib_fitting, calib_plotting]
 import ingrid / calibration 
@@ -18577,22 +18881,91 @@ proc stripPrefix(s, p: string): string =
   result = s
   result.removePrefix(p)
 
-from ginger import transparent    
-proc plotFallTimeRiseTime(df: DataFrame, suffix: string) =
+let useTeX = getEnv("USE_TEX", "false").parseBool
+
+from ginger import transparent
+
+const settings = @["∫: 50 ns, ∂: 50 ns, G: 6x",
+                   "∫: 50 ns, ∂: 20 ns, G: 10x",
+                   "∫: 100 ns, ∂: 20 ns, G: 10x"]
+const runs = @[80, 101, 121]
+
+const riseTimeS = "riseTime [ns]"
+const fallTimeS = "fallTime [ns]"
+
+proc fadcSettings(plt: GgPlot, allRuns: seq[int], hideText: bool, minVal, maxVal, margin: float): GgPlot =
+  ## This is a bit of a mess, but:
+  ## It handles drawing the colored rectangles for the different FADC settings and
+  ## adjusting the margin if any given via the R_MARGIN environment variable.
+  ## The rectangle drawing is a bit ugly to look at, because we use the numbers initially
+  ## intended for the peak position plot, but rescale them to map the completely different
+  ## values for the other plots using min/max value and a potential margin.
+  let mRight = getEnv("R_MARGIN", "6.0").parseFloat
+  let widths = @[101 - 80, 121 - 101, allRuns.max - 121 + 1]
+  let Δ = (maxVal - minVal) 
+  let min = minVal - Δ * margin
+  let ys = @[min, min, min]
+  let heights = @[0.25, 0.25, 0.25].mapIt(it / 0.25 * (Δ * (1 + 2 * margin))) 
+  let textYs = @[0.325, 0.27, 0.22].mapIt((it - 0.1) / (0.35 - 0.1) * Δ + minVal)
+  let dfRects = toDf(settings, ys, textYs, runs, heights, widths)
+  echo dfRects
+  result = plt +
+    geom_tile(data = dfRects, aes = aes(x = "runs", y = "ys", height = "heights", width = "widths", fill = "settings"),
+              alpha = 0.3) +
+    xlim(80, 200) +
+    margin(right = mRight) 
+  if not hideText:
+    result = result + geom_text(data = dfRects, aes = aes(x = f{`runs` + 2}, y = "textYs", text = "settings"), alignKind = taLeft)
+
+proc getSetting(run: int): string =
+  result = settings[lowerBound(runs, run) - 1]
+
+proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hideText: bool) =
   ## Given a full run of FADC data, create the
   ## Note: it may be sensible to compute a truncated mean instead
-  let dfG = df.group_by("runNumber").summarize(f{float: "riseTime" << truncMean(col("riseTime").toSeq1D, 0.05)},
-                                               f{float: "fallTime" << truncMean(col("fallTime").toSeq1D, 0.05)})
-  ggplot(dfG, aes(runNumber, riseTime, color = fallTime)) + 
-    geom_point() +
-    ggtitle("Comparison of FADC signal rise times in ⁵⁵Fe data for all runs in $#" % suffix) +
-    ggsave("Figs/FADC/fadc_mean_riseTime_$#.pdf" % suffix)
-  ggplot(dfG, aes(runNumber, fallTime, color = riseTime)) + 
-    geom_point() +
-    ggtitle("Comparison of FADC signal fall times in ⁵⁵Fe data for all runsin $#" % suffix) +
-    ggsave("Figs/FADC/fadc_mean_fallTime_$#.pdf" % suffix)
+  let dfG = df.group_by("runNumber").summarize(f{float: riseTimeS << truncMean(col("riseTime").toSeq1D, 0.05)},
+                                               f{float: fallTimeS << truncMean(col("fallTime").toSeq1D, 0.05)})
+    .mutate(f{int -> string: "settings" ~ getSetting(`runNumber`)})
 
-proc main(fname: string, year: int) =
+  let width = getEnv("WIDTH_RT", "600").parseFloat
+  let height = getEnv("HEIGHT_RT", "450").parseFloat
+  let mRight = getEnv("R_MARGIN", "4.0").parseFloat
+  let fontScale = getEnv("FONT_SCALE", "1.0").parseFloat
+
+  let (rMin, rMax) = (dfG[riseTimeS, float].min, dfG[riseTimeS, float].max)
+  let perc = 0.025
+  let Δr = (rMax - rMin) * perc
+  var plt = ggplot(dfG, aes(runNumber, riseTimeS)) + 
+    ggtitle("FADC signal rise times in ⁵⁵Fe data for all runs in $#" % suffix) +
+    margin(right = mRight) +
+    theme_font_scale(fontScale) +
+    ylim(rMin - Δr, rMax + Δr)
+  plt = plt.fadcSettings(allRuns, hideText, rMin, rMax, perc)
+  plt + geom_point(aes = aes(color = fallTimeS)) +
+    ggsave("Figs/FADC/fadc_mean_riseTime_$#.pdf" % suffix,
+               width = width, height = height, useTeX = useTeX, standalone = useTeX)
+
+  let (fMin, fMax) = (dfG[fallTimeS, float].min, dfG[fallTimeS, float].max)
+  let Δf = (fMax - fMin) * 1.025
+  var plt2 = ggplot(dfG, aes(runNumber, fallTimeS)) + 
+    margin(right = mRight) +
+    ylim(fMin - Δf, fMax + Δf) + 
+    theme_font_scale(fontScale) +
+    ggtitle("FADC signal fall times in ⁵⁵Fe data for all runsin $#" % suffix)
+  plt2 = plt2.fadcSettings(allRuns, hideText, fMin, fMax, perc)
+  plt2 + geom_point(aes = aes(color = riseTimeS)) +
+    ggsave("Figs/FADC/fadc_mean_fallTime_$#.pdf" % suffix,
+                width = width, height = height, useTeX = useTeX, standalone = useTeX)
+
+  ggplot(dfG, aes(riseTimeS, fallTimeS, color = "settings")) + 
+    geom_point() +
+    ggtitle("FADC signal rise vs fall times for ⁵⁵Fe data in $#" % suffix) +
+    margin(right = mRight) +
+    theme_font_scale(fontScale) + 
+    ggsave("Figs/FADC/fadc_mean_riseTime_vs_fallTime_$#.pdf" % suffix,
+           width = width, height = height, useTeX = useTeX, standalone = useTeX)    
+
+proc fit(fname: string, year: int): (DataFrame, DataFrame) =
   var h5f = H5open(fname, "r")
   let fileInfo = h5f.getFileInfo()
   let is2017 = year == 2017
@@ -18601,6 +18974,7 @@ proc main(fname: string, year: int) =
     raise newException(IOError, "The input file is neither clearly a 2017 nor 2018 calibration file!")
   
   var peakPos = newSeq[float]()
+  var actThr = newSeq[float]()  
   var dfProp = newDataFrame()
   for run in fileInfo.runs:
     var df = h5f.readRunDsets(
@@ -18611,7 +18985,7 @@ proc main(fname: string, year: int) =
                       "fadc/riseTime",                  
                       "fadc/fallStop",
                       "fadc/fallTime",
-                      "fadc/minvals",
+                      "fadc/minVal",
                       "fadc/argMinval"]                 
     )
     df = df.rename(df.getKeys.mapIt(f{it.stripPrefix("fadc/") <- it}))
@@ -18619,26 +18993,40 @@ proc main(fname: string, year: int) =
     let dset = h5f[(recoBase() & $run / "fadc/fadc_data").dset_str]
     let fadcData = dset[float].toTensor.reshape(dset.shape)
 
-    let feSpec = fitFeSpectrumFadc(df["minvals", float].toSeq1D)
+    let feSpec = fitFeSpectrumFadc(df["minVal", float].toSeq1D)
     let ecData = fitEnergyCalib(feSpec, isPixel = false)
     let texts = buildTextForFeSpec(feSpec, ecData)
-    plotFeSpectrum(feSpec, run, 3, texts = texts, pathPrefix = "Figs/FADC/fe55_fits/")
+    plotFeSpectrum(feSpec, run, 3, texts = texts, pathPrefix = "Figs/FADC/fe55_fits/", useTeX = false)
 
     # add fit to peak positions
     peakPos.add feSpec.pRes[feSpec.idx_kalpha]
     
-    
-    ggplot(df, aes("minvals")) +
+    ggplot(df, aes("minVal")) +
       geom_histogram(bins = 300) +
       ggsave("/t/fadc_run_$#_minima.pdf" % $run)
 
+    # Now get the activation threshold as a function of gridpix energy on center
+    # chip. Get GridPix data on center chip...
+    var dfGP = h5f.readRunDsets(
+      run,
+      chipDsets = some((chip: 3, dsets: @["energyFromCharge", "eventNumber"]))
+    )
+    # ...sum all clusters for each event (for multiple clusters, the FADC sees all)...
+    dfGP = dfGP.group_by("eventNumber").summarize(f{float -> float: "energyFromCharge" << sum(col("energyFromCharge"))})
+    # ... join with FADC DF to only have events left with FADC trigger...
+    df = innerJoin(dfGP, df.clone(), "eventNumber")
+    # ...compute activation threshold as 1-th percentile of data
+    actThr.add percentile(df["energyFromCharge", float], 1)
+
     dfProp.add df
+  doAssert h5f.close() >= 0
 
-  let yearToRun = if is2017: 2 else: 3
-  let suffix = "run$#" % $yearToRun
-    
-  plotFallTimeRiseTime(dfProp, suffix) 
+  let df = toDf({ "runs" : fileInfo.runs,
+                  "peaks" : peakPos,
+                  "actThr" : actThr })
+  result = (df, dfProp)
 
+proc main(path: string, year: int, fit = false, hideText = false) =
   ##    - run 101 <2017-11-29 Wed 6:40> was the first with FADC noise
   ##      significant enough to make me change settings:
   ##      - Diff: 50 ns -> 20 ns (one to left)
@@ -18651,46 +19039,51 @@ proc main(fname: string, year: int) =
   ##    - run 121: Jochen set the FADC main amplifier
   ##      integration time from 50 -> 100 ns again, around
   ##      <2017-12-15 Fri 10:20>
-  let df = toDf({ "runs" : fileInfo.runs,
-                  "peaks" : peakPos })
+  
+  let is2017 = year == 2017
+  let yearToRun = if is2017: 2 else: 3
+  let suffix = "run$#" % $yearToRun
+  
+  var dfProp = newDataFrame()
+  var df = newDataFrame()  
+  var peakPos: seq[float]
+  if fit:
+    (df, dfProp) = fit(path, year)
+    dfProp.writeCsv(&"resources/properties_fadc_{suffix}.csv")
+    df.writeCsv(&"resources/peak_positions_fadc_{suffix}.csv")    
+  else:
+    dfProp = readCsv(&"{path}/properties_fadc_{suffix}.csv")
+    df = readCsv(&"{path}/peak_positions_fadc_{suffix}.csv")     
 
-  let outname = "Figs/FADC/peak_positions_fadc_$#.pdf" % $suffix
-  var plt = ggplot(df, aes("runs", "peaks"))
+  let allRuns = df["runs", int].toSeq1D
 
-  if is2017:
-    let settings = @["""Integration: 50 ns\\
-Diff: 50 ns\\
-Gain: 6x""",
-                   """Integration: 50 ns\\
-Diff: 20 ns\\
-Gain: 10x""",
-                   """Integration: 100 ns\\
-Diff: 20 ns\\
-Gain: 10x""" ]
-    let runs = @[80, 101, 121]
-    let widths = @[101 - 80, 121 - 101, fileInfo.runs.max - 121]
-    let ys = @[0.1, 0.1, 0.1]
-    let heights = @[0.25, 0.25, 0.25] # @[0.35, 0.35, 0.35]
-    let textYs = @[0.33, 0.27, 0.22]
-    let dfRects = toDf(settings, ys, textYs, runs, heights, widths)
+  let width = getEnv("WIDTH", "600").parseFloat
+  let height = getEnv("HEIGHT", "450").parseFloat
 
+  plotFallTimeRiseTime(dfProp, suffix, allRuns, hideText)
+
+  block Fe55PeakPos:
+    let outname = "Figs/FADC/peak_positions_fadc_$#.pdf" % $suffix
+    var plt = ggplot(df, aes("runs", "peaks"))
+    if is2017:
+      plt = plt.fadcSettings(allRuns, hideText, 0.1, 0.35, 0.0)
+    plt + geom_point() +
+      ylim(0.1, 0.35) +
+      ylab("⁵⁵Fe peak position [V]") + xlab("Run number") +
+      ggtitle("Peak position of the ⁵⁵Fe runs in the FADC data") + 
+      ggsave(outname, width = width, height = height, useTeX = useTeX, standalone = useTeX)
+  block ActivationThreshold:
+    let outname = "Figs/FADC/activation_threshold_gridpix_energy_fadc_$#.pdf" % $suffix
+    var plt = ggplot(df, aes("runs", "actThr"))
+    if is2017:
+      plt = plt.fadcSettings(allRuns, hideText, 0.9, 2.4, 0.0)
+    plt + geom_point() +
+      ylim(0.9, 2.4) + 
+      ylab("Activation threshold [keV]") + xlab("Run number") +
+      ggtitle("Activation threshold based on center GridPix energy") + 
+      ggsave(outname, width = width, height = height, useTeX = useTeX, standalone = useTeX)
     
-    plt = plt +
-      geom_tile(data = dfRects, aes = aes(x = "runs", y = "ys", height = "heights", width = "widths", fill = "settings"),
-                alpha = 0.3) +
-      geom_text(data = dfRects, aes = aes(x = f{`runs` + 35}, y = "textYs", text = "settings")) +
-      xlim(80, 200)
-  plt + geom_point() +
-    ylim(0.1, 0.35) +
-    ylab("⁵⁵Fe peak position [V]") + xlab("Run number") +
-    ggtitle("Peak position of the ⁵⁵Fe runs in the FADC data") + 
-    ggsave(outname)
 
-  if is2017:
-    writeCsv(df, "resources/peak_positions_fadc_run2.csv")
-  elif is2018:
-    writeCsv(df, "resources/peak_positions_fadc_run3.csv")
-      
 when isMainModule:
   import cligen
   dispatch main
@@ -18704,46 +19097,55 @@ when isMainModule:
   run as a basis
 - [ ] *ALL THESE PLOTS SHOULD REALLY BE GENERATED WHEN RUNNING
   ~reconstruction --only_fadc~! Replace that!*
-- [ ] *GENERATE PLOT OF FADC & GridPix PEAK POSITIONS AGAINST ALL RUNS*  
+  -> Well.. Not today.
+- [X] *GENERATE PLOT OF FADC & GridPix PEAK POSITIONS AGAINST ALL
+  RUNS*
+  -> Done and in previous section (at least for relevant runs)
 
 Run the code for 2017 calibration data to generate the plot of the
 FADC settings (and generate the CSV containing the peak positions by run):
-#+begin_src sh
-./code/fadc_rise_fall_different_settings.nim -f ~/CastData/data/CalibrationRuns2017_Reco.h5 --year 2017
+#+begin_src sh :dir ~/phd
+./code/fadc_rise_fall_different_settings.nim -p ~/CastData/data/CalibrationRuns2017_Reco.h5 --fit --year 2017
 #+end_src
 and now for 2018 to generate the CSV for the peak positions of the run
 3 data:
 #+begin_src sh
-./code/fadc_rise_fall_different_settings.nim -f ~/CastData/data/CalibrationRuns2018_Reco.h5 --year 2018
+./code/fadc_rise_fall_different_settings.nim -p ~/CastData/data/CalibrationRuns2018_Reco.h5 --fit --year 2018
 #+end_src
 
-*** FADC noise & study
-:PROPERTIES:
-:CUSTOM_ID: sec:calibration:fadc_noise
-:END:
+To generate the final plots we use the generated CSV files (in order
+to more quickly change parameters about the size of plots etc):
+#+begin_src sh :dir ~/phd/
+USE_TEX=true FONT_SCALE=1.2 R_MARGIN=7.5 RT_MARGIN=3.0 WIDTH=600 HEIGHT=360 HEIGHT_RT=420 \
+             code/fadc_rise_fall_different_settings \
+             -p resources \
+             --year 2017
+USE_TEX=true FONT_SCALE=1.2 R_MARGIN=7.5 RT_MARGIN=3.0 WIDTH=600 HEIGHT=360 HEIGHT_RT=420 \
+             code/fadc_rise_fall_different_settings \
+             -p resources \
+             --year 2018
+#+end_src
 
-- [ ] *!!!*
+The CSV files are found in:
+- [[~/phd/resources/peak_positions_fadc_run2.csv]]
+- [[~/phd/resources/peak_positions_fadc_run3.csv]]
+- [[~/phd/resources/properties_fadc_run2.csv]]
+- [[~/phd/resources/properties_fadc_run3.csv]]
 
-- [ ] *EXAMPLE OF NOISE*
-- [ ] *??*    
+and the plots we generated are all in:
+[[file:Figs/FADC/]]
+with the \cefe fits in
+[[file:Figs/FADC/fe55_fits/]]
 
+**** Initial study of activation threshold                      :extended:
 
-*** Activation threshold [0/2]
-:PROPERTIES:
-:CUSTOM_ID: sec:fadc:activation_threshold
-:END:
+This section was the ideas and code that I initially wrote when I
+first thought about including something about the activation threshold
+for the FADC. At that point I had never actually tried to quantify
+what the threshold was (I obviously had a pretty good idea based on
+other aspects).
 
-- [ ] What will we write here? Most of the stuff in the noexport
-  subsection doesn't belong in there after all!
-
-
-#+CAPTION: Different activation thresholds of the Run-2 data due to different FADC settings, 
-#+CAPTION: determined based on the 1-th percentile of the data in the \cefe calibration runs.
-#+NAME: fig:fadc:activation_threshold_run2
-file:Figs/FADC/fadc_minima_2017_calibration.pdf
-
-**** Generate plots & determine activation thresholds           :noexport:
-- [ ] how to compute? The fits we perform for the 55 Fe in one of our
+- How to compute? :: The fits we perform for the 55 Fe in one of our
   scripts here ideally should be done for each run again... That way
   we could compute the energy similar to what we do for GridPix
   data. Ideally we could compute it more by using an integral approach
@@ -18752,7 +19154,7 @@ file:Figs/FADC/fadc_minima_2017_calibration.pdf
   FADC event to sum energies of both.
   As an easier approach we can of course compute a lower percentile
   (not the total minimum, but maybe 1% of each run and plot that?).
-
+  
 #+begin_src nim :tangle code/fadc_compute_activation_threshold.nim
 import nimhdf5, ggplotnim
 import std / [strutils, os, sequtils]
@@ -18773,13 +19175,15 @@ proc minimum(h5f: H5File, runNumber: int, percentile: int): (float, float) =
   # sum all energies of all same events to get a combined energy of all
   # clusters on the center chip in each event (to correlate w/ FADC)
   df = df.group_by("eventNumber").summarize(f{float -> float: "energyFromCharge" << sum(col("energyFromCharge"))})
-  var run = h5f.readRecoFadcRun(runNumber)
-  let dfFadc = toDf({ "eventNumber" : run.eventNumber,
-                      "minVals" : run.minVals })
+  var run = h5f.readRecoFadc(runNumber)
+  let fEvs = h5f.readRunDsets(runNumber, fadcDsets = @["eventNumber"])
+  let minVals = run.minVal.toSeq1D
+  let dfFadc = toDf({ "eventNumber" : fEvs["eventNumber", int],
+                      "minVals" : minVals })
   # join both by `eventNumber` (dropping center chip events w/ no FADC)
   df = innerJoin(df, dfFadc, "eventNumber")
   # percentile based on minvals & gridpix energy
-  result = (percentile(run.minvals.mapIt(it.abs), percentile), percentile(df["energyFromCharge", float], percentile))
+  result = (percentile(minVals, 100 - percentile), percentile(df["energyFromCharge", float], percentile))
 
 proc main(fname: string, percentile: int) =
   var h5f = H5open(fname, "r")
@@ -18799,11 +19203,17 @@ proc main(fname: string, percentile: int) =
   let df = toDf(minimaFadc, minimaGP, idxs)
   ggplot(df, aes("minimaFadc", fill = "idxs")) +
     geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
-    ggsave("/t/fadc_minima.pdf")
+    xlab("Pulse amplitude [V]") + ylab("Counts") +
+    ggtitle("Activation threshold by smallest pulses triggering FADC") +
+    theme_font_scale(1.0, family = "serif") +
+    ggsave("~/phd/Figs/FADC/fadc_minima_histo_activation_threshold_mV.pdf")
 
   ggplot(df, aes("minimaGP", fill = "idxs")) +
     geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
-    ggsave("/t/fadc_minima_gridpix_energy.pdf")    
+    xlab("Energy on GridPix [keV]") + ylab("Counts") +
+    ggtitle("Activation threshold by energy recorded on center GridPix") +
+    theme_font_scale(1.0, family = "serif") +
+    ggsave("~/phd/Figs/FADC/fadc_minima_histo_gridpix_energy.pdf")    
 
 when isMainModule:
   import cligen
@@ -18814,12 +19224,31 @@ when isMainModule:
 ./code/fadc_compute_activation_threshold -f ~/CastData/data/CalibrationRuns2017_Reco.h5 --percentile 1
 #+end_src
 
-yields
+The produced fig. [[fig:fadc:activation_threshold_histo_mV_histo_run2]]
+of the largest values found for the activation of the
+FADC shows us the actual activation thresholds for the FADC in
+volt. We can see that generally the threshold remained constant in
+terms of milli volt. That's good to know.
 
-[[file:Figs/FADC/fadc_minima_2017_calibration.pdf]]
+#+CAPTION: Different activation thresholds of the Run-2 data due to different FADC settings, 
+#+CAPTION: determined based on the 1-th percentile of the data in the \cefe calibration runs,
+#+CAPTION: by using the energy of the center GridPix.
+#+NAME: fig:fadc:activation_threshold_histo_mV_histo_run2
+[[~/phd/Figs/FADC/fadc_minima_histo_activation_threshold_mV.pdf]]
 
-showing a _very_ clear difference in the activation threshold in terms
-of voltages.
+The second plot fig. [[fig:fadc:activation_threshold_histo_run2]] shows
+the activation in terms of the sum of all clusters energies (for one
+event number, to take into account multiple clusters) based on the
+GridPix energy. Here we see the 'real' activation energy in keV and
+can see that unfortunately for the later settings the threshold was
+very high. :(
+
+#+CAPTION: Different activation thresholds of the Run-2 data due to different FADC settings, 
+#+CAPTION: determined based on the 1-th percentile of the data in the \cefe calibration runs,
+#+CAPTION: by using the energy of the center GridPix.
+#+NAME: fig:fadc:activation_threshold_histo_run2
+[[~/phd/Figs/FADC/fadc_minima_histo_gridpix_energy.pdf]]
+
 
 Of course this itself does not imply a difference in activation
 threshold of the equivalent physical energy!
@@ -18893,7 +19322,10 @@ https://www.ortec-online.com/-/media/ametekortec/manuals/4/474-mnl.pdf?la=en&rev
 from here:
 https://www.ortec-online.com/products/electronics/amplifiers/474
 
-*** How to compute an effective charge based on FADC signals? [0/1]
+
+*** How to compute an effective charge based on FADC signals? [0/1] :noexport:
+
+- [X] The ideas of this section have been merged into the general FADC section
 
 This section should cover our ideas about how we compute an effective
 charge (in arbitrary units) based on the FADC signals as a measure
