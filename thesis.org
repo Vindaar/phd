@@ -16242,9 +16242,10 @@ spectra. Therefore, all energy calibration factors determined from
 different time intervals should be on a slope depending on the gas
 gain. As such a final fit
 
-\[
+#+NAME: eq:gas_gain_vs_calib_factor
+\begin{equation}
 a(G) = m_g · G + b
-\]
+\end{equation}
 
 is performed to all time intervals of all calibration runs. This
 yields the energy calibration factor $a$ valid for a given gas gain
@@ -16286,6 +16287,9 @@ thus have few pixels, but a lot of energy as determined by the
   - [ ] *UPDATE PLOT*
 
 *** Generate example plot for \cefe spectrum                     :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:energy_gen_example_cefe
+:END:
 
 We use run number 149 (for no important reason) as an example
 calibration run.
@@ -16550,7 +16554,6 @@ the time, leading to a neglect in taking regular calibration runs. (:
 - [X] *EXPLAIN HOW WE ENDED UP AT 90 MIN BINNING! AND HOW SLICING
   WORKS ETC*
   -> Section later.
-  
 
 *** Generate plot for median of charge over time                 :noexport:
 
@@ -16587,7 +16590,6 @@ yielding
 [[~/phd/Figs/behavior_over_time/plotTotalChargeOverTime/background_median_charge_binned_90.0_min_filtered_crSilver.pdf]]
 among other things, with many more related plots to be found in:
 [[file:Figs/behavior_over_time/plotTotalChargeOverTime/]]
-
 
 *** Potential causes for the variability [0/6]
 :PROPERTIES:
@@ -17923,6 +17925,216 @@ the ~statusAndProgress~ notes on this!
   minimumGasGainInterval = 25
   #+end_src
 
+
+**** Ridgeline plot of the median energies                      :extended:
+
+Finally, let's recreate the plot of the histograms of the median
+energies in the time slices as a ridgeline plot to better explain why
+we chose 90 min instead of anything else that we tested.
+
+First, if one is not happy with using the provided CSV files that
+contain the precomputed medians of the cluster energy in the
+~phd/resources/optimize_gas_gain_length~ directory, run the
+~optimizeGasGainSliceTime~ tool:
+#+begin_src sh
+cd $TPA/Tools
+nim c -d:release -d:StartHue=285 optimizeGasGainSliceTime.nim
+./optimizeGasGainSliceTime --path <PathToDataRunsH5> --genCsv
+#+end_src
+Note that this takes some time, as the fitting of all gas gains in
+each time slice is somewhat time consuming (for the 90 min case it
+takes maybe 15 minutes for all data; more for shorter time scales,
+less for longer).
+(It may be necessary to modify the code as I may forget to change the
+input data file paths; they are hardcoded as of right now)
+
+- [ ] *CHANGE CODE TO NOT USE HARDCODED PATHS, THEN ADJUST SCRIPT
+  ABOVE*
+  -> Change code to not point to hardcoded config file!
+
+This generates CSV files in an ~out~ directory from wherever you
+actually ran the code from.
+
+To produce the plots as used in the thesis (and many more), just run:
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/optimizeGasGainSliceTime/
+USE_TEX=true WIDTH=800 HEIGHT=480 LINE_WIDTH=1.0 WRITE_PLOT_CSV=true \
+             ./optimizeGasGainSliceTime \
+             --path out \
+             --plot \
+             --outpath ~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/
+#+end_src
+
+Among others this generates a plot of the scores for different
+goodness of fit tests for each interval setting and period of data
+taking. They all use the mean of the full data and the variance of the
+full data (that's clearly not ideal, but it should be passable to have
+something comparable).
+
+The resulting plot is 
+[[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/gofs_for_different_binnings.pdf]]
+At least for the 2017 data set the 45 minute interval seems to be the
+clear winner. However, in beginning 2018 it's one of the worst at
+least for Anderson-Darling and Cramér-von-Mises (which are probably
+the most interesting tests to look at).
+
+The 90 min result is sort of mostly in the middle. The big advantage
+of it though is that it definitely captures enough statistics, which
+is extremely important for the \cefe spectrum, as the data rate is
+very low there. As much statistics as possible is needed to get a nice
+fit there.
+
+At the same time comparing the ridgeline plot / histograms it is also
+evident that the variance itself is quite a bit smaller in the 90 min
+case, which is another important aspect.
+
+In addition all these plots for the distribution of properties / the
+energy are created:
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_30.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_45.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_60.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_90.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_120.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_180.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_300.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_intervals.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_ridges_17_02_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_ridges_21_10_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_ridges_30_10_2017.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals_17_02_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals_21_10_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals_30_10_2017.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_17_02_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_21_10_2018.pdf]]
+- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_30_10_2017.pdf]]
+
+** Energy calibration dependence on the gas gain [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:final_energy_calibration
+:END:
+
+With the final choice of time interval for the gas gain binning in
+place, the actual calibration used for further analysis can be
+presented. Fig. sref:fig:calib:gasgain_vs_energy_calib_comparison
+shows the fits according to the linear relation as explained in
+sec. [[#sec:calibration:energy]], eq. [[eq:gas_gain_vs_calib_factor]], for the
+two data taking campaigns, Run-2 in
+sref:fig:calib:gasgain_vs_energy_calib_2017 and Run-3 in
+sref:fig:calib:gasgain_vs_energy_calib_2018. Each point represents one
+$\SI{90}{min}$ slice of calibration data for which a \cefe spectrum
+was fitted and then the linear energy calibration performed. The
+resulting energy calibration factor is then plotted against the gas
+gain computed for this time slice. The uncertainty of each point is
+the uncertainty extracted from the fit parameter of the calibration
+factor after error propagation. Calibrations need to be performed
+separately for each data taking campaign as the detector behavior
+changes due to different detector calibrations. These have an impact
+on the ~ToT~ calibration as well as the activation threshold.
+
+To compare the energy calibration using single gas gain values for
+each full run against the method of time slicing them to
+$\SI{90}{min}$ chunks, we will look at the median cluster energy in
+each time slice for background and calibration data. This is the same
+idea as behind fig. [[fig:calib:total_charge_over_time]] previously, just
+for the energy instead of charge. This yields
+fig. [[fig:calib:median_energy_binned_vs_unbinned]]. The points represent
+background and crosses calibration data. Green is the unbinned (full
+run) approach and purple the binned approach using $\SI{90}{min}$
+slices. The effect is a slight, but visible reduction in variance. It
+represents an important aspect of increasing data reliability and
+lowering associated systematic uncertainties.
+
+As such the final energy calibration works by first deducing the gas
+gain at the time of an event, computing the calibration factor
+required for this gas gain and finally using that factor to convert
+the charge into energy.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Run-2") (label "fig:calib:gasgain_vs_energy_calib_2017")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/energyCalibration/Run_2/gasgain_vs_energy_calibration_factors_4316675118229057340.pdf"))
+        (subfigure (linewidth 0.5) (caption "Run-3") (label "fig:calib:gasgain_vs_energy_calib_2018")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/energyCalibration/Run_3/gasgain_vs_energy_calibration_factors_-4542617296427170283.pdf"))
+        (caption
+         "Fit of the gas gain values vs the calculated energy calibration factors
+          for all calibration runs in Run-2 "
+         (subref "fig:calib:gasgain_vs_energy_calib_2017")
+         " and Run-3 "
+         (subref "fig:calib:gasgain_vs_energy_calib_2018")
+         ". Each run was further sliced into " ($ (SI 90 "min")) " parts for the gas
+         gain determination and \\cefe fits.")
+        (label "fig:calib:gasgain_vs_energy_calib_comparison"))
+#+end_src
+
+#+CAPTION: Median of the cluster energy after calibration using two different approaches.
+#+CAPTION: Green corresponds to calculating the energy based on a single gas gain for each
+#+CAPTION: run and purple implies calculation based on $\SI{90}{min}$ time intervals for the
+#+CAPTION: gas gain. Both cases use the same $\SI{90}{min}$ intervals to compute a local, temporal
+#+CAPTION: median of all clusters. Each subplot corresponds to a data taking period with
+#+CAPTION: significant times between for clarity. The energies from unbinned gas gains has a
+#+CAPTION: wider distribution than the binned data. The latter approaches a flat distribution
+#+CAPTION: of the background energies (points) better than the former. The impact for the
+#+CAPTION: calibration data (crosses) is much smaller, as they are not much longer than the
+#+CAPTION: $\SI{90}{min}$ binning anyway.
+#+NAME: fig:calib:median_energy_binned_vs_unbinned
+#+ATTR_LATEX: :width 1\textwidth
+[[~/phd/Figs/behavior_over_time/median_energy_binned_vs_unbinned.pdf]]
+
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [X] *REWRITE ME WITH NEW STRUCTURE IN MIND!*
+- [ ] *ADD TABLE OF ALL PARAMETERS & GAS GAIN SLICE DATA WITH ERRORS
+  TO APPENDIX!*
+- [ ] *HAVE TABLE OF FIT PARAMETERS SOMEWHERE FOR RUN-2 AND RUN-3!*
+  -> Appendix.
+  
+- [X] *INSERT PLOT OF GAS GAIN VS CALIB?*
+- [X] *REPHRASE WORD 'UNDERSTANDING' IN SECTION ABOVE*
+- [X] *MOVE EXPLANATION OF THIS FIT TO AFTER DISCUSSION OF GAS GAIN VARIANCE?*  
+- [ ] *HERE (and related sections) IMPORTANT TO CHECK THAT OUR
+  EXPLANATION OF HOW GAS GAIN CALC'D IS GOOD*
+
+- [X] *Instead of single plot as now, have both plots in a subfig for
+  each of the two run periods!*
+
+- [X] *THINK ABOUT INSTEAD OF EXPLAINING HOW THE CALIBRATION IS DONE*
+  in as much detail as done above, instead just start by saying how
+  the calibration is gas gain dependent and then say that is
+  varying. therefore first study gas gain behavior & discover slicing
+
+- [X] *MENTION IF GAS GAIN VS ENERGY CALIB FITS USE INDIVIDUAL SLICES
+  OR MEAN VALUE!*
+  -> Note that this is somewhat of an internal implementation detail
+  to some extent, but practically the ~gcMean~ approach is not
+  mentioned at all in the thesis. We can't and don't need to explain
+  every possibility of the software after all.
+
+*** Generate plot for the gas gain vs. energy calibration factors :extended:
+
+In principle the plots shown in the section above are produced during
+the regular data reconstruction and calibration, in particular by the
+~reconstruction~ program using the ~--only_gain_fit~ argument.
+
+Let's recreate them in the style we want for the thesis.
+
+#+begin_src sh
+USE_TEX=true WIDTH=600 HEIGHT=360 reconstruction \
+   -i ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+   --only_gain_fit \
+   --plotOutPath ~/phd/Figs/energyCalibration/Run_2/
+USE_TEX=true WIDTH=600 HEIGHT=360 reconstruction \
+   -i ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+   --only_gain_fit \
+   --plotOutPath ~/phd/Figs/energyCalibration/Run_3/
+#+end_src
+
+which produces the plots in:
+- [[~/phd/Figs/energyCalibration/Run_2]]
+- [[~/phd/Figs/energyCalibration/Run_3]]
+
 *** Generate plot of median cluster energy                       :extended:
 
 Let's now generate the plots of the median cluster energy.
@@ -18115,213 +18327,33 @@ proc toPeriod(v: float): string =
 let name = "energyFromChargeMedian"
 ggplot(df, aes("timestamp", name, shape = "runType", color = "Data")) +
   facet_wrap("runPeriods", scales = "free") +
-  facetMargin(1.0, ukCentimeter) +
+  facetMargin(0.5, ukCentimeter) +
+  theme_scale(1.2) +
+  facetHeaderText(font = font(14.0)) + 
   scale_x_continuous(labels = toPeriod) +
-  geom_point(alpha = some(0.8)) +
-  ylim(2, 6.5) +
-  margin(bottom = 1.5, right = 3) +
-  legendPosition(0.92, 0.0) +
-  xlab("Date", rotate = -45, alignTo = "right", margin = 0.0) +
+  geom_point(alpha = some(0.8), size = 2.0) +
+  ylim(2.0, 6.5) +
+  margin(top = 1.5, left = 2.0, bottom = 1.0, right = 2.0) +
+  legendPosition(0.5, 0.175) +
+  xlab("Date", rotate = -20, alignTo = "right", margin = 0.0) +
   ylab("Energy [keV]") + 
-  ggtitle(&"Median of cluster energy, binned vs. unbinned. 90 min intervals.") +
+  ggtitle(&"Median of cluster energy, binned vs. unbinned. 90 min intervals.") +
   ggsave(&"Figs/behavior_over_time/median_energy_binned_vs_unbinned.pdf",
-         width = 1920, height = 1080)
+         width = 1200, height = 800,
+         useTeX = true, standalone = true)
 #+end_src
+
+#+RESULTS:
 
 which results in
 
 [[~/phd/Figs/behavior_over_time/median_energy_binned_vs_unbinned.pdf]]
 
-**** Ridgeline plot of the median energies
-
-Finally, let's recreate the plot of the histograms of the median
-energies in the time slices as a ridgeline plot to better explain why
-we chose 90 min instead of anything else that we tested.
-
-First, if one is not happy with using the provided CSV files that
-contain the precomputed medians of the cluster energy in the
-~phd/resources/optimize_gas_gain_length~ directory, run the
-~optimizeGasGainSliceTime~ tool:
-#+begin_src sh
-cd $TPA/Tools
-nim c -d:release -d:StartHue=285 optimizeGasGainSliceTime.nim
-./optimizeGasGainSliceTime --path <PathToDataRunsH5> --genCsv
-#+end_src
-Note that this takes some time, as the fitting of all gas gains in
-each time slice is somewhat time consuming (for the 90 min case it
-takes maybe 15 minutes for all data; more for shorter time scales,
-less for longer).
-(It may be necessary to modify the code as I may forget to change the
-input data file paths; they are hardcoded as of right now)
-
-- [ ] *CHANGE CODE TO NOT USE HARDCODED PATHS, THEN ADJUST SCRIPT
-  ABOVE*
-  -> Change code to not point to hardcoded config file!
-
-This generates CSV files in an ~out~ directory from wherever you
-actually ran the code from.
-
-To produce the plots as used in the thesis (and many more), just run:
-#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/optimizeGasGainSliceTime/
-USE_TEX=true WIDTH=800 HEIGHT=480 LINE_WIDTH=1.0 WRITE_PLOT_CSV=true \
-             ./optimizeGasGainSliceTime \
-             --path out \
-             --plot \
-             --outpath ~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/
-#+end_src
-
-Among others this generates a plot of the scores for different
-goodness of fit tests for each interval setting and period of data
-taking. They all use the mean of the full data and the variance of the
-full data (that's clearly not ideal, but it should be passable to have
-something comparable).
-
-The resulting plot is 
-[[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/gofs_for_different_binnings.pdf]]
-At least for the 2017 data set the 45 minute interval seems to be the
-clear winner. However, in beginning 2018 it's one of the worst at
-least for Anderson-Darling and Cramér-von-Mises (which are probably
-the most interesting tests to look at).
-
-The 90 min result is sort of mostly in the middle. The big advantage
-of it though is that it definitely captures enough statistics, which
-is extremely important for the \cefe spectrum, as the data rate is
-very low there. As much statistics as possible is needed to get a nice
-fit there.
-
-At the same time comparing the ridgeline plot / histograms it is also
-evident that the variance itself is quite a bit smaller in the 90 min
-case, which is another important aspect.
-
-In addition all these plots for the distribution of properties / the
-energy are created:
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_30.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_45.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_60.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_90.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_120.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_180.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_vs_time_300.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_intervals.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_ridges_17_02_2018.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_ridges_21_10_2018.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_ridges_30_10_2017.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals_17_02_2018.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals_21_10_2018.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_intervals_30_10_2017.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_17_02_2018.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_21_10_2018.pdf]]
-- [[~/phd/Figs/behavior_over_time/optimizeGasGainSliceTime/medianEnergy_kde_ridges_30_10_2017.pdf]]
-
-** Energy calibration dependence on the gas gain [/]
 :PROPERTIES:
-:CUSTOM_ID: sec:calib:final_energy_calibration
 :END:
 
-- [ ] *REWRITE ME WITH NEW STRUCTURE IN MIND!*
-
-With the final choice of time interval for the gas gain binning in
-place, the actual calibration used for further analysis can be
-presented. Fig. sref:fig:calib:gasgain_vs_energy_calib_comparison
-shows the fits according to the linear relation as explained in
-sec. [[#sec:calibration:energy]] for the two data taking campaigns, Run-2
-in sref:fig:calib:gasgain_vs_energy_calib_2017 and Run-3 in
-sref:fig:calib:gasgain_vs_energy_calib_2018. Each point represents
-one $\SI{90}{min}$ slice of calibration data for which a \cefe
-spectrum was fitted and then the linear energy calibration
-performed. The resulting energy calibration factor is then plotted
-against the gas gain computed for this time slice. The uncertainty of
-each point is the uncertainty extracted from the fit parameter of the
-calibration factor after error propagation. Calibrations need to be
-performed separately for each data taking campaign as the detector
-behavior changes due to different detector calibrations. These have an
-impact on the ~ToT~ calibration as well as the activation threshold.
-
-- [ ] *ADD TABLE OF ALL PARAMETERS & GAS GAIN SLICE DATA WITH ERRORS
-  TO APPENDIX!*
-
-When applying this energy calibration to all data background and
-calibration data and comparing the resulting median energy of the
-clusters in the same time intervals used for the calibration with the
-same based on gas gain values using one value for a full run, we get
-fig. [[fig:calib:median_energy_binned_vs_unbinned]]. The points represent
-background and crosses calibration data. Green is the unbinned (full
-run) approach and purple the binned approach using $\SI{90}{min}$
-slices. The effect is a slight, but visible reduction in variation
-away from the global average. It represents an important aspect of
-increasing data reliability and lowering associated systematic uncertainties.
-
-- [X] *INSERT PLOT OF GAS GAIN VS CALIB?*
-- [X] *REPHRASE WORD 'UNDERSTANDING' IN SECTION ABOVE*
-- [X] *MOVE EXPLANATION OF THIS FIT TO AFTER DISCUSSION OF GAS GAIN VARIANCE?*  
-- [ ] *HERE (and related sections) IMPORTANT TO CHECK THAT OUR
-  EXPLANATION OF HOW GAS GAIN CALC'D IS GOOD*
-
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/gasgain_vs_energy_calibration_factors_-5437145575257130897_2017_placeholder.pdf}
-    \caption{Run-2}
-    \label{fig:calib:gasgain_vs_energy_calib_2017}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/gasgain_vs_energy_calibration_factors_201581894213355988_2018_placeholder.pdf}
-    \caption{Run-3}
-    \label{fig:calib:gasgain_vs_energy_calib_2018}
-  \end{subfigure}%
-  \label{fig:calib:gasgain_vs_energy_calib_comparison}
-  \caption{Fit of the gas gain values vs the calculated energy calibration factors
-  for all calibration runs in Run-2 (\subref{fig:calib:gasgain_vs_energy_calib_2017})
-  and Run-3 (\subref{fig:calib:gasgain_vs_energy_calib_2018}). Each run was further sliced into
-  \SI{90}{min} parts for the gas gain determination and fits. *REPLACE BY VERSION WITH FIXED ERRORS AND UNITS + PRETTY*}
-\end{figure}  
-
-#+CAPTION: Median of the cluster energy after calibration using two different approaches.
-#+CAPTION: Green corresponds to calculating the energy based on a single gas gain for each
-#+CAPTION: run and purple implies calculation based on $\SI{90}{min}$ time intervals for the
-#+CAPTION: gas gain. Both cases use the same $\SI{90}{min}$ intervals to compute a local, temporal
-#+CAPTION: median of all clusters. Each subplot corresponds to a data taking period with
-#+CAPTION: significant times between for clarity. The energies from unbinned gas gains has a
-#+CAPTION: wider distribution than the binned data. The latter approaches a flat distribution
-#+CAPTION: of the background energies (points) better than the former. The impact for the
-#+CAPTION: calibration data (crosses) is much smaller, as they are not much longer than the
-#+CAPTION: $\SI{90}{min}$ binning anyway.
-#+NAME: fig:calib:median_energy_binned_vs_unbinned
-[[~/phd/Figs/behavior_over_time/median_energy_binned_vs_unbinned.pdf]]
 
 
-The resulting fit of a linear function with offset for the Run-2 data
-can be seen in fig. \ref{fig:calib:gasgain_vs_energy_calib}.
-
-- [ ] *HAVE TABLE OF FIT PARAMETERS SOMEWHERE FOR RUN-2 AND RUN-3!*
-- [X] *Instead of single plot as now, have both plots in a subfig for
-  each of the two run periods!*
-
-- [X] *THINK ABOUT INSTEAD OF EXPLAINING HOW THE CALIBRATION IS DONE*
-  in as much detail as done above, instead just start by saying how
-  the calibration is gas gain dependent and then say that is
-  varying. therefore first study gas gain behavior & discover slicing
-
-As such the final energy calibration works by first deducing the gas
-gain at the time of an event, computing the calibration factor based
-on this gas gain and the fit between all calibration spectra and
-finally using that factor to convert the charge into energy.
-
-- [X] *MENTION IF GAS GAIN VS ENERGY CALIB FITS USE INDIVIDUAL SLICES
-  OR MEAN VALUE!*
-  -> Note that this is somewhat of an internal implementation detail
-  to some extent, but practically the ~gcMean~ approach is not
-  mentioned at all in the thesis. We can't and don't need to explain
-  every possibility of the software after all.
-
-
-** FADC
-:PROPERTIES:
-:CUSTOM_ID: sec:calib:fadc
-:END:
 
 As described over the course of previous chapters, the FADC serves
 essentially a 4-way purpose. First of all, it is used as a trigger to
