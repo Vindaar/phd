@@ -17,13 +17,15 @@ proc minimum(h5f: H5File, runNumber: int, percentile: int): (float, float) =
   # sum all energies of all same events to get a combined energy of all
   # clusters on the center chip in each event (to correlate w/ FADC)
   df = df.group_by("eventNumber").summarize(f{float -> float: "energyFromCharge" << sum(col("energyFromCharge"))})
-  var run = h5f.readRecoFadcRun(runNumber)
-  let dfFadc = toDf({ "eventNumber" : run.eventNumber,
-                      "minVals" : run.minVals })
+  var run = h5f.readRecoFadc(runNumber)
+  let fEvs = h5f.readRunDsets(runNumber, fadcDsets = @["eventNumber"])
+  let minVals = run.minVal.toSeq1D
+  let dfFadc = toDf({ "eventNumber" : fEvs["eventNumber", int],
+                      "minVals" : minVals })
   # join both by `eventNumber` (dropping center chip events w/ no FADC)
   df = innerJoin(df, dfFadc, "eventNumber")
   # percentile based on minvals & gridpix energy
-  result = (percentile(run.minvals.mapIt(it.abs), percentile), percentile(df["energyFromCharge", float], percentile))
+  result = (percentile(minVals, 100 - percentile), percentile(df["energyFromCharge", float], percentile))
 
 proc main(fname: string, percentile: int) =
   var h5f = H5open(fname, "r")
@@ -43,11 +45,17 @@ proc main(fname: string, percentile: int) =
   let df = toDf(minimaFadc, minimaGP, idxs)
   ggplot(df, aes("minimaFadc", fill = "idxs")) +
     geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
-    ggsave("/t/fadc_minima.pdf")
+    xlab("Pulse amplitude [V]") + ylab("Counts") +
+    ggtitle("Activation threshold by smallest pulses triggering FADC") +
+    theme_font_scale(1.0, family = "serif") +
+    ggsave("~/phd/Figs/FADC/fadc_minima_histo_activation_threshold_mV.pdf")
 
   ggplot(df, aes("minimaGP", fill = "idxs")) +
     geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
-    ggsave("/t/fadc_minima_gridpix_energy.pdf")    
+    xlab("Energy on GridPix [keV]") + ylab("Counts") +
+    ggtitle("Activation threshold by energy recorded on center GridPix") +
+    theme_font_scale(1.0, family = "serif") +
+    ggsave("~/phd/Figs/FADC/fadc_minima_histo_gridpix_energy.pdf")    
 
 when isMainModule:
   import cligen
