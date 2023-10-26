@@ -2893,6 +2893,7 @@ Relevant for telescope (context of BabyIAXO) as well as EPIC filter!
   | position 5          | 21.6          | 22.4         | -            | -             |
   | thick               | Sn            | Al           | PP           | Al            |
   | position 6          | 18            | 28           | 27.5         | 28            |
+  cite:struder2001xmm_pnccd
   #+begin_src latex :tangle references.bib
 @article{struder2001xmm_pnccd,
   title={The European photon imaging camera on XMM-Newton: the pn-CCD camera},
@@ -3986,6 +3987,147 @@ Zioutas},
   url={https://books.google.com/books?id=PNmXAAAAIAAJ&pg=PA78},
 }
   #+end_src
+
+** X-ray fluorescence
+
+*** Lorentzian line shape
+
+Today <2023-10-26 Thu 17:03> I finally tried to find some references
+for the origin of X-ray emission being Lorentzian in shape. Lots of
+fun stuff. Always a rabbit hole and only scratching the surface!
+
+- Seems to be the original paper explaining the expected line shape of emission.
+  #+begin_src latex :tangle references.bib
+@inbook{weisskopf97_lorentzian,
+  DATE_ADDED =   {Thu Oct 26 17:19:18 2023},
+  author =       {V. Weisskopf and E. P. Wigner},
+  booktitle =    {Part I: Particles and Fields. Part II: Foundations
+                  of Quantum Mechanics},
+  doi =          {10.1007/978-3-662-09203-3_3},
+  pages =        {30-49},
+  publisher =    {Springer Berlin Heidelberg},
+  series =       {Part I: Particles and Fields. Part II: Foundations
+                  of Quantum Mechanics},
+  title =        {Berechnung der nat{\"u}rlichen Linienbreite auf
+                  Grund der Diracschen Lichttheorie},
+  url =          {http://dx.doi.org/10.1007/978-3-662-09203-3_3},
+  year =         {1997},
+  File = {~/org/Papers/wigner_1997_collected_works_of_1997.pdf}
+}
+  #+end_src
+
+- The first paper I found that seems relevant: in 1986 they showed
+  that realistic XRF spectra can be fitted well by a convolution of a
+  Gaussian and a Lorentzian, namely the 'pseudo-Voigt function'.
+  Also: apparently these guys were from IBM. Must have been nice
+  times, heh.
+  #+begin_src latex :tangle references.bib
+@article{huang86_profile_xrf,
+  author =       {T. C. Huang and G. Lim},
+  title =        {Profile Analysis of Experimental X‐ray Fluorescence
+                  Spectra},
+  journal =      {X-Ray Spectrometry},
+  volume =       15,
+  number =       4,
+  pages =        {245-250},
+  year =         1986,
+  doi =          {10.1002/xrs.1300150406},
+  url =          {http://dx.doi.org/10.1002/xrs.1300150406},
+  DATE_ADDED =   {Thu Oct 26 17:06:44 2023},
+  File = {~/org/Papers/atomic_physics/huang1986_profile_analysis_xray_fluorescence_spectra.pdf}
+}
+  #+end_src
+
+
+- This paper contains some useful references to about the origin of
+  the Lorentzian shape, in particular cite:heckel87_low_peak_distor
+  and 
+  #+begin_src latex :tangle references.bib
+@article{crawford18_compar_param_integ_approac_x,
+  author =       {Andrew M. Crawford and Nicole J. Sylvain and Huishu
+                  Hou and Mark J. Hackett and M. Jake Pushie and
+                  Ingrid J. Pickering and Graham N. George and Michael
+                  E. Kelly},
+  title =        {A Comparison of Parametric and Integrative
+                  Approaches for X-Ray Fluorescence Analysis Applied
+                  To a Stroke Model},
+  journal =      {Journal of Synchrotron Radiation},
+  volume =       25,
+  number =       6,
+  pages =        {1780-1789},
+  year =         2018,
+  doi =          {10.1107/s1600577518010895},
+  url =          {http://dx.doi.org/10.1107/S1600577518010895},
+  DATE_ADDED =   {Thu Oct 26 17:03:54 2023},
+  File = {~/org/Papers/atomic_physics/crawford18_comparison_parametric_integrative_xray_fluorescence_stroke.pdf}
+}
+  #+end_src
+
+- Another paper, cited in
+  cite:crawford18_compar_param_integ_approac_x, introducing a
+  convolution of a Gaussian with a Lorentzian to describe the spectra
+  to use to fit XRF.
+  #+begin_src latex :tangle references.bib
+@article{heckel87_low_peak_distor,
+  author =       {J. Heckel and W. Scholz},
+  title =        {Description of Low‐energy Peak Distortion Observed
+                  in X‐ray Spectrometry With Si(Li) Detectors},
+  journal =      {X-Ray Spectrometry},
+  volume =       16,
+  number =       4,
+  pages =        {181-185},
+  year =         1987,
+  doi =          {10.1002/xrs.1300160409},
+  url =          {http://dx.doi.org/10.1002/xrs.1300160409},
+  DATE_ADDED =   {Thu Oct 26 17:09:31 2023},
+  File = {~/org/Papers/atomic_physics/heckel1987_description_peak_distortion_xray_spectrometry_si_det.pdf}
+}
+
+  #+end_src
+
+- This paper was also referenced in
+  cite:crawford18_compar_param_integ_approac_x. It seems to introduce
+  a good algorithm in order to perform the fitting of such pseudo
+  Voigt profiles.
+  They cite cite:roberts75_lorentz as the source for the Voigt
+  profile.
+  *Importantly* this one contains the reference to    for the origin
+  of the Lorentzian linewidth!
+  #+begin_src latex :tangle references.bib
+@article{gunnink77_algo_lorentz,
+  author =       {R. Gunnink},
+  title =        {An Algorithm for Fitting Lorentzian-Broadened,
+                  K-Series X-Ray Peaks of the Heavy Elements},
+  journal =      {Nuclear Instruments and Methods},
+  volume =       143,
+  number =       1,
+  pages =        {145-149},
+  year =         1977,
+  doi =          {10.1016/0029-554x(77)90343-3},
+  url =          {http://dx.doi.org/10.1016/0029-554X(77)90343-3},
+  DATE_ADDED =   {Thu Oct 26 17:11:51 2023},
+  File = {~/org/Papers/atomic_physics/gunnink1977_algorithm_fiting_lorentzian_broadened_xray_peaks.pdf}
+}
+  #+end_src
+
+- This paper seems to be the introduction of using the particular
+  Voigt profile for X-ray lines, cited in the above cite:gunnink77_algo_lorentz.
+  #+begin_src latex :tangle references.bib
+@article{roberts75_lorentz,
+  author =       {B.L. Roberts and R.A.J. Riddle and G.T.A. Squier},
+  title =        {Measurement of Lorentzian Linewidths},
+  journal =      {Nuclear Instruments and Methods},
+  volume =       130,
+  number =       2,
+  pages =        {559-563},
+  year =         1975,
+  doi =          {10.1016/0029-554x(75)90058-0},
+  url =          {http://dx.doi.org/10.1016/0029-554X(75)90058-0},
+  DATE_ADDED =   {Thu Oct 26 17:14:20 2023},
+  File = {~/org/Papers/atomic_physics/roberts1975_measurement_lorentzian_linewidths.pdf}
+}
+  #+end_src
+  
   
 ** Misc
 
