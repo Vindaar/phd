@@ -19667,20 +19667,21 @@ applies elsewhere anyway.
 Describe unbinned likelihood method from Nature paper adapted to our
 work. We can plot some funny plots explaining how it works.
 
-* Background rate computation                                      :Analysis:
+* Finding signal and defining background | Background rate computation :Analysis:
 :PROPERTIES:
 :CUSTOM_ID: sec:background
 :END:
 #+LATEX: \minitoc
 
 With the CAST data fully reconstructed and energy calibrated it is
-time to define the method used to derive a background rate from the
-data (sec. [[#sec:background:likelihood_method]]) and introduce the necessary extra
-inputs required (sec. [[#sec:cdl]]). Next apply it to the data
-(sec. [[#sec:background:likelihood_cut]]) and then improve it further using
-additional detector features (sec. *???*). Finally, we compare the
-resulting background rate to other detectors and try to understand the
-remaining background (sec. *???*).
+time to define the methods used to extract axion candidates and derive
+a background rate from the data sec. [[#sec:background:likelihood_method]]
+and sec. [[#sec:background:mlp]]. A few extra inputs are necessary,
+sec. [[#sec:cdl]]. Next apply it to the data
+(sec. [[#sec:background:likelihood_cut]]) and then improve it further
+using additional detector features (sec. *???*). Finally, we compare
+the resulting background rate to other detectors and try to understand
+the remaining background (sec. *???*).
 
 - [ ] *REFER TO CAST DATA SUMMARY TABLE AND PRESENT AN ENERGY SPECTRUM
   WITHOUT ANY CUTS WHATSOEVER*
@@ -19695,7 +19696,7 @@ Likelihood method demands info about X-ray properties, hence:
 The detection principle of the GridPix detector implies physically
 different kinds of events will have different geometrical shapes. An
 example can be seen in
-fig. \ref{fig:background:eccentricity_signal_background}, comparing
+fig. sref:fig:background:eccentricity_signal_background, comparing
 the cluster eccentricity of \cefe calibration events with background
 data. This motivates usage of a geometry based approach to determine
 likely signal-like or background-like clusters. The method to
@@ -19703,7 +19704,6 @@ distinguish the two types of events is a likelihood cut, based on the
 one in cite:krieger2018search. It effectively assigns a single value
 to each cluster for the likelihood that it is a signal-like event. 
 
-- [ ] *REPHRASE SUCH THAT THIS XRAY DATA BECOMES A REQUIREMENT*
 Specifically, this likelihood method is based on three different
 geometric properties:  
 1. the eccentricity $ε$ of the cluster, determined by
@@ -19741,7 +19741,7 @@ dataset, which contains representative signal-like data. The \cefe
 calibration data from CAST contains such representative data, if not
 for one problem: the properties used in the likelihood method are
 energy dependent, as seen in
-fig. \ref{fig:background:eccentricity_photo_escape}, a comparison of
+fig. sref:fig:background:eccentricity_photo_escape, a comparison of
 the eccentricity of X-rays from the photopeak of the \cefe calibration
 source compared to those from the escape peak. The CAST calibration
 data can only characterize two different energies, but the expected
@@ -19753,28 +19753,29 @@ likelihood distributions for X-rays of a range of different
 energies. The details will be discussed in the next section,
 [[#sec:cdl]]. 
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/background/eccentricity_calibration_background.pdf}
-    \caption{Calibration \& background}
-    \label{fig:background:eccentricity_signal_background}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/background/eccentricity_photo_escape_peak.pdf}
-    \caption{Photo \& Escapepeak}
-    \label{fig:background:eccentricity_photo_escape}
-  \end{subfigure}%
-  \label{fig:background:properties_energy_type_dependent}
-  \caption{\subref{fig:background:eccentricity_signal_background} Comparison of the eccentricity of
-  clusters from a calibration and a background run.
-  Background events are clearly much more eccentric on average.
-  \subref{fig:background:eccentricity_photo_escape} The X-ray properties are energy dependent as can
-  be seen in the comparison between the eccentricity of X-rays from the photo peak compared to those
-  from the escape peak. A kernel density estimation is used in both figures.}
-\end{figure}
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Calibration \\& background") (label "fig:background:eccentricity_signal_background")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/background/eccentricity_calibration_background.pdf"))
+        (subfigure (linewidth 0.5) (caption "Photo \\& Escapepeak") (label "fig:background:eccentricity_photo_escape")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/background/eccentricity_photo_escape_peak.pdf"))
+        (caption
+         (subref "fig:background:eccentricity_signal_background")
+          "Comparison of the eccentricity of clusters from a calibration and a background run.
+           Background events are clearly much more eccentric on average. "
+         (subref "fig:background:eccentricity_photo_escape")
+          "The X-ray properties are energy dependent as can be seen in the comparison between
+           the eccentricity of X-rays from the photo peak compared to those from the escape
+           peak. A kernel density estimation is used in both figures.")
+        (label "fig:background:properties_energy_type_dependent"))
+#+end_src
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [X] *REPHRASE SUCH THAT THIS XRAY DATA BECOMES A REQUIREMENT*
+  -> Relates to second paragraph with numbers 
 
 - [X] *REPLACE EVENT FIGURES BY EXAMPLE HISTOGRAM OF DIFFERENT
   PROPERTIES BACKGROUND / CALIBRATION*
@@ -19839,7 +19840,7 @@ proc main(calib, back: string) =
     #               alpha = 0.5,
     #               density = true) +
     geom_density(color = "black", size = 1.0, alpha = 0.7, normalize = true) +
-    ggtitle(r"Comparison of the X-rays from the $^{55}\text{Fe}$ photopeak (5.9 keV) and escapepeak (3 keV)",
+    ggtitle(r"Comparison of the X-rays from the $^{55}\text{Fe}$ photopeak (5.9 keV) and escapepeak (3 keV)",
       titleFont = font(10.0)) + 
     ggsave("Figs/background/eccentricity_photo_escape_peak.pdf", useTeX = true, standalone = true)
     
@@ -19852,20 +19853,6 @@ yielding
 [[~/phd/Figs/background/eccentricity_calibration_background.pdf]]
 and
 [[~/phd/Figs/background/eccentricity_photo_escape_peak.pdf]]
-
-*** Study of interpolation of CDL distributions [/]              :noexport:
-
-The full study and notes about how we ended up at using a linear
-interpolation, can be found in appendix [[#sec:appendix:morphing_cdl_spectra]].
-
-- [X] This is now in the appendix. Good enough? Link
-  
-
-Put here all our studies of how and why we ended up at linear
-interpolation!
-
-The actual linear interpolation results (i.e. reproducing the "middle"
-one will be shown in the actual thesis).
 
 ** CAST Detector Lab [/]
 :PROPERTIES:
@@ -19886,28 +19873,37 @@ interpolation we perform to compute a likelihood distribution at an
 arbitrary energy.
 
 The data presented here was also part of the master thesis of Hendrik
-Schmick cite:SchmickMaster. Further, the selection of lines and approach
-follows the ideas used for the single GridPix detector in
-cite:krieger2018search with some notable differences. For a
-reasoning for one particular difference, see appendix
-[[#sec:appendix:fit_by_run_justification]].
-- [ ] *(RE)WRITE THE FIT BY RUN JUSTIFICATION SECTION AND REFERENCE
-  HERE*
+Schmick cite:SchmickMaster. Further, the selection of lines and
+approach follows the ideas used for the single GridPix detector in
+cite:krieger2018search with some notable differences. For a reasoning
+for one particular difference in terms of data treatment, see appendix
+[[#sec:appendix:fit_by_run_justification]]
 
+#+begin_quote
 Note: in the course of the CDL related sections the terms
 target/filter combination (implicitly including the used high voltage
 setting) is used interchangeably with the main fluorescence line (or
-just 'the fluorescence line') targeted in a specific measurement.
+just 'the fluorescence line') targeted in a specific measurement. Be
+careful while reading about applied high voltages in $\si{kV}$ and
+energies in $\si{keV}$. The produced fluorescence lines typically have
+about 'half' the energy in $\si{keV}$ as the applied voltage in
+$\si{kV}$. See tab. [[tab:cdl:run_overview_tab]] in
+sec. [[#sec:cdl:measurements]] for the precise relation.
+#+end_quote
 
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *(RE)WRITE THE FIT BY RUN JUSTIFICATION SECTION AND REFERENCE
+  HERE*
 
 - [X] *FIND OUT WHAT CHIP CALIBRATION USED FOR CDL*
   -> It was the Run-3 calibration. Checked by comparing the ~fsr~
   files in the CDL TOS run directories with those of the
   ~ChipCalibration~ directory of the TPA resources. The ones from
   Run-3 match and the ones from Run-2 don't.
-- [ ] *REFERENCE HENDRIK MSC FOR CDL*
+- [X] *REFERENCE HENDRIK MSC FOR CDL*
 
-- [ ] *CREATE PLOT SIMILAR TO*:
+- [X] *CREATE PLOT SIMILAR TO*:
   ~/org/Figs/statusAndProgress/cdl_vs_background/eccentricity_ridgeline_XrayReferenceFile2018.h5_2018.pdf~
   but using our custom colors and shown as a KDE similar to the median
   energy cluster KDE plot!
@@ -19932,34 +19928,29 @@ detector from 15-19 Feb 2019.
 :END:
 
 The CAST detector lab provides a vacuum test stand, which contains an
-X-ray tube. A Micromegas like detector can easily be mounted to the
+X-ray tube. A Micromegas-like detector can easily be mounted to the
 rear end of the test stand. An X-ray tube uses a filament to produce
 free electrons, which are then accelerated with a high voltage of the
-order of multiple \si{kV}. The main part of the setup is a rotateable
-wheel inside the vacuum chamber, which contains a set of 18 different
-positions with 8 different target materials, as seen in
+order of multiple $\si{kV}$. The main part of the setup is a
+rotateable wheel inside the vacuum chamber, which contains a set of 18
+different positions with 8 different target materials, as seen in
 tab. [[tab:cdl:targets]]. The highly energetic electrons interacting with
-the target material generates a continuous Bremsstrahlung spectrum
-with characteristic lines depending on the target. A second rotateable
+the target material generate a continuous Bremsstrahlung spectrum with
+characteristic lines depending on the target. A second rotateable
 wheel contains a set of 11 different filters, see
 tab. [[tab:cdl:filters]]. These can be used to filter out undesired parts
 of the generated spectrum by choosing a filter that is opaque in the
-undesired energy ranges. 
-
-- [ ] *CHECK XRAY TUBE EXPLANATION FOR CORRECTNESS!*
-- [ ] *SAY SOMETHING ABOUT TURBO AND SPUTTER ION PUMPS?*  
-- [ ] *CONSIDER ADDING PICTURE OF TARGET AND FILTER WHEEL?* See
-  Hendrik's thesis. He has pictures from Tobi.  
+undesired energy ranges.
 
 As mentioned previously in sec. [[#sec:cast:timeline]] the detector was
 dismounted from CAST in Feb. 2019 and installed in the CAST detector
 lab on <2019-02-14 Thu>. The week from <2019-02-15 Fri> to
 <2019-02-21 Thu> X-ray tube data was taken in the CDL.
 
-Fig. \ref{fig:cdl:cdl_setup} shows the whole vacuum test stand, which
+Fig. sref:fig:cdl:cdl_setup shows the whole vacuum test stand, which
 contains the X-ray tube on the front left end and the Septemboard
 detector installed on the rear right, visible by the red HV cables and
-yellow HDMI cable. In fig. \ref{fig:cdl:detector_setup} we see the
+yellow HDMI cable. In fig. sref:fig:cdl:detector_setup we see the
 whole detector part from above, with the Septemboard detector
 installed to the vacuum test stand on the left side. The water cooling
 system is seen in the bottom right, with the power supply above
@@ -19969,45 +19960,33 @@ shielded LEMO cable to the Septemboard detector. This cable was
 available in the CAST detector lab and proved invaluable for the
 measurements as it essentially removed any noise visible in the FADC
 signals (compared to the significant noise issues encountered at CAST,
-sec. [[#sec:cast:data_taking_woes_2017]]), as to even allow to trigger on
-$\SI{277}{eV}$ $\ce{C}_{Kα}$ X-rays when running with higher gain
-than used at CAST. [fn:shielded_lemo_cable]
+sec. [[#sec:cast:data_taking_woes_2017]]). Given the activation threshold
+of the FADC with CAST amplifier settings (see
+sec. [[#sec:calib:fadc:amplifier_settings]]) at around $\SI{2}{keV}$, the
+amplification needed to be adjusted in the CDL on a per-target
+basis. The shielded cable allowed the FADC to even act as a trigger
+for $\SI{277}{eV}$ $\ce{C}_{Kα}$ X-rays without any noise problems. [fn:shielded_lemo_cable]
 
-- [X] 2 pictures of setup, side by side
-- [X] one paragraph about how X-ray tube works. Bremsstrahlung via HV, hit
-  target & then filter  
-- [X] table of available targets & filters
-- [X] measurement dates (which week)
-- ?
-
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/IMG_20190214_155459.jpg}
-    \caption{Full setup}
-    \label{fig:cdl:cdl_setup}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/IMG_20190214_191752.jpg}
-    \caption{Detector setup}
-    \label{fig:cdl:detector_setup}
-  \end{subfigure}%
-  \label{fig:cdl:cdl}
-  \caption{\subref{fig:cdl:cdl_setup} shows the full vacuum test stand containing the X-ray tube with
-  the Septemboard detector installed at the rear, visible by the red HV and yellow HDMI cables.
-  \subref{fig:cdl:detector_setup} is a view of the detector setup from above. On the left hand side
-  is the detector mounted to the vacuum setup. The water cooling is seen in the bottom right, connected via
-  the blue tubes. The gas supply is in red tubing and the power supply is visible on the right above the
-  water cooling (with a green Phoenix connector). The copper shielded cable is a LEMO cable for the FADC
-  signal going to the pre-amplifier (with the University of Bonn sticker).}
-\end{figure}
-
-- [ ] *CONSIDER MOVING THESE TABLES TO AN APPENDIX!*
-- [ ] *SOMEWHERE HERE ADD REFERENCE TO WHAT EPIC REFERS TO!*
-  -> See the extra info subsection below. Link to a website and we
-  need a link to some XMM Newton paper.
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Full setup") (label "fig:cdl:cdl_setup")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/CDL/IMG_20190214_155459.jpg"))
+        (subfigure (linewidth 0.5) (caption "Detector setup") (label "fig:cdl:detector_setup")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/CDL/IMG_20190214_191752.jpg"))
+        (caption
+         (subref "fig:cdl:cdl_setup")
+         " shows the full vacuum test stand containing the X-ray tube with 
+          the Septemboard detector installed at the rear, visible by the red HV and yellow HDMI cables. "
+         (subref "fig:cdl:detector_setup")
+         " is a view of the detector setup from above. On the left hand side
+           is the detector mounted to the vacuum setup. The water cooling is seen in the bottom right, connected via
+           the blue tubes. The gas supply is in red tubing and the power supply is visible on the right above the
+           water cooling (with a green Phoenix connector). The copper shielded cable is a LEMO cable for the FADC
+           signal going to the pre-amplifier (with the University of Bonn sticker).")
+        (label "fig:cdl:cdl"))
+#+end_src
 
 #+CAPTION: Table of all available target materials in the CAST detector lab and their respective
 #+CAPTION: position on a rotateable wheel.
@@ -20046,6 +20025,28 @@ than used at CAST. [fn:shielded_lemo_cable]
 similarly shielded LEMO cable should have been used for the
 measurements at CAST. Unfortunately, due to lack of experience with
 electromagnetic interference this was not considered before.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *SOMEWHERE HERE ADD REFERENCE TO WHAT EPIC REFERS TO!*
+  -> See the extra info subsection below. Link to a website and we
+  need a link to some XMM Newton paper!!!
+
+
+
+- [ ] *CHECK XRAY TUBE EXPLANATION FOR CORRECTNESS!*
+- [ ] *SAY SOMETHING ABOUT TURBO AND SPUTTER ION PUMPS?*  
+- [ ] *CONSIDER ADDING PICTURE OF TARGET AND FILTER WHEEL?* See
+  Hendrik's thesis. He has pictures from Tobi.  
+
+- [X] 2 pictures of setup, side by side
+- [X] one paragraph about how X-ray tube works. Bremsstrahlung via HV, hit
+  target & then filter  
+- [X] table of available targets & filters
+- [X] measurement dates (which week)
+- ?
+
+- [ ] *CONSIDER MOVING THESE TABLES TO AN APPENDIX!*
   
 *** CDL measurements (from =StatusAndProgress=) [0/9]
 :PROPERTIES:
