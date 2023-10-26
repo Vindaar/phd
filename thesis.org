@@ -20956,10 +20956,12 @@ With the fits to the charge spectra performed on a run-by-run basis,
 they can be utilized to calibrate the energy of each cluster in the
 data. [fn:using_regular_energy_calib] This is done by using the linear
 relationship between charge and energy and therefore using the charge
-of the main fluorescence line as computed from the fit.
-Fig. [[fig:cdl:calibrated_energy_histos]] shows normalized histograms of
-all CDL data after applying basic cuts and performing said energy
-calibrations. 
+of the main fluorescence line as computed from the fit. Each run is
+therefore self-calibrated (in contrast to our normal energy
+calibration approach
+[[#sec:calibration:energy]]). Fig. [[fig:cdl:calibrated_energy_histos]] shows
+normalized histograms of all CDL data after applying basic cuts and
+performing said energy calibrations.
 
 #+CAPTION: Normalized histograms of all CDL data after applying basic cuts
 #+CAPTION: and calibrating the data in energy using the charge of the main fitted line
@@ -20997,23 +20999,24 @@ The desired reference distributions then are simply the normalized
 histograms of the clusters in each of the properties. With 8 targeted
 fluorescence lines and 3 properties this yields a total of 24
 reference distributions. Each histogram is then interpreted as a
-probability density function (PDF) for clusters 'matching' (more on this in
-sec. [[#sec:cdl:cdl_morphing]]) the energy of its fluorescence line. An
-overview of all the reference distributions is shown in
+probability density function (PDF) for clusters 'matching' (more on
+this in sec. [[#sec:cdl:cdl_morphing]]) the energy of its fluorescence
+line. An overview of all the reference distributions is shown in
 fig. [[fig:cdl:reference_distributions_overview_ridgeline]]. We can see
 that all distributions tend to get wider towards lower energies
 (towards the top of the plot). This is expected and due to smaller
 clusters having less primary electrons and therefore statistical
-variations in geometric properties playing a more important role. The
-binning shown in the figure is the exact binning used to define the
-PDF. In case of the fraction of pixels within a transverse RMS radius
-bins with significantly higher counts are observed at low
-energies. This is _not_ a binning artifact, but a result of the
-definition of the variable. The property computes the fraction of
-pixels that lie within a circle of the radius corresponding to the
-transverse RMS of the cluster around the cluster center. At energies
-with few pixels in total, the integer nature of $N$ or $N+1$ primary
-electrons (active pixels) inside the radius becomes apparent.
+variations in geometric properties playing a more important
+role. [fn:diffusion] The binning shown in the figure is the exact
+binning used to define the PDF. In case of the fraction of pixels
+within a transverse RMS radius bins with significantly higher counts
+are observed at low energies. This is _not_ a binning artifact, but a
+result of the definition of the variable. The property computes the
+fraction of pixels that lie within a circle of the radius
+corresponding to the transverse RMS of the cluster around the cluster
+center (see fig. sref:fig:reco:property_explanations). At energies with few
+pixels in total, the integer nature of $N$ or $N+1$ primary electrons
+(active pixels) inside the radius becomes apparent.
 
 The binning in the histograms is chosen by hand such that the binning
 is as fine as possible without leading to significant statistical
@@ -21026,21 +21029,19 @@ fraction in transverse RMS variable.
 
 See appendix [[#sec:appendix:cdl_reference_distributions]] for an overview
 of the distributions with each histogram in a separate plot.
-
-- [ ] *ADD THAT APPENDIX*
+- [ ] *Do we want this?*
 
 The summarized 'recipe' of the approach is therefore:
-1. apply cleaning cuts according to tab. [[tab:cdl:cdl_cleaning_cuts]]
-2. perform fits according to tab. [[tab:cdl:fit_func_charge]]
+1. apply cleaning cuts according to tab. [[tab:cdl:cdl_cleaning_cuts]],
+2. perform fits according to tab. [[tab:cdl:fit_func_charge]],
 3. cut to the $3σ$ region around the main fluorescence line of the
-   performed fit (i.e. the first term in tab. [[tab:cdl:fit_func_charge]])
+   performed fit (i.e. the first term in tab. [[tab:cdl:fit_func_charge]]),
 4. combine all remaining clusters for the same fluorescence line from
-   each run
+   each run,
 5. compute a histogram for each desired cluster property and each
-   fluorescence line, defining the reference distribution.
+   fluorescence line,
+6. normalize the histogram to define the reference distribution.   
 
-- [ ] mention what kind of binning we use
-  
 #+CAPTION: Overview of all reference distributions for each target/filter combination and property.
 #+CAPTION: The binning is the same as used to compute the probabilities. Towards lower energies
 #+CAPTION: (towards the top) the distributions all become wider, as the clusters have fewer electrons
@@ -21050,7 +21051,17 @@ The summarized 'recipe' of the approach is therefore:
 #+NAME: fig:cdl:reference_distributions_overview_ridgeline
 [[~/phd/Figs/CDL/ridgeline_all_properties_side_by_side.pdf]]
 
+[fn:diffusion] Keep in mind that all energies undergo roughly the same
+amount of diffusion (aside from the energy dependent absorption length
+to a lesser extent), so lower energy events are more sparse.
+
 **** TODOs for the above section [/]                            :noexport:
+
+- [ ] mention what kind of binning we use
+  
+- [ ] *ADD THAT APPENDIX*
+  -> Appendix about all the individual histograms
+
 
 - [X] present plot of reference distributions. How?
   -> ridge line of all targets & then show one property?
@@ -21085,20 +21096,18 @@ The summarized 'recipe' of the approach is therefore:
   In some ways the correlation becomes nicer, in others it gets harder
   to see. Interesting!
 
+**** Generate ridgeline plot of all reference distributions     :extended:
+
+- [ ] Does this also fall out of ~cdl_spectrum_creation~ ?
+
 *** Define likelihood distribution and interpolating it [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:cdl:cdl_morphing
 :END:
 
 With our reference distributions defined it is time to look back at
-equation [[eq:background:likelihood_def]]. 
+the equation for the definition of the likelihood, eq. [[eq:background:likelihood_def]].
 
-- [ ] *REWRITE TEXT AROUND SO THAT THIS MAKES SENSE HERE*
-  Maybe we could create a "box" environment that is a side-note of
-  sorts?
-  I think that could work well. Something like this
-  https://tex.stackexchange.com/questions/179197/framed-or-colored-box-with-text-and-margin-notes
-  possibly.
 To avoid numerical issues dealing with very small probabilities, the
 actual relation evaluated numerically is the negative log of the
 likelihood:
