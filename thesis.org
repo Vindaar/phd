@@ -21118,7 +21118,7 @@ likelihood:
 \]
 
 By considering a single fluorescence line the three reference
-distributions makes up the $\mathcal{P}_i(i)$ of the likelihood
+distributions make up the $\mathcal{P}_i(i)$ of the likelihood
 $\mathcal{L}(ε, l, f)$ for that energy. However, the reference
 distributions do not strictly speaking define the likelihood
 distribution. They only represent a PDF to look up a probability-like
@@ -21126,8 +21126,8 @@ value for a given cluster with properties $(ε, l, f)$ for a single
 likelihood value $\mathcal{L}$. For that reason the definition of the
 likelihood distributions for each energy is a two-step process:
 1. compute the reference distributions as described in
-   sec. [[#sec:cdl:derive_probability_density]]
-2. take the raw cluster data (unbinned data that is!) of those
+   sec. [[#sec:cdl:derive_probability_density]],
+2. take the raw cluster data (unbinned data!) of those
    clusters that define the reference distributions and feed each of
    these into eq. [[eq:background:likelihood_def]] for a single likelihood
    value each.
@@ -21170,13 +21170,41 @@ typical software efficiency we aim for is
 $\SI{80}{\percent}$. Classification as X-ray like then is simply any
 cluster with a $\ln\mathcal{L}$ value smaller than the cut value
 $\ln\mathcal{L}'$.
-- [ ] *THINK ABOUT OPTIMIZING CUT EFFICIENCY AGAIN!*
 
 Note that this value $\mathcal{L}'$ has to be determined for _each_
 likelihood distribution.
 
+[fn:logL_instead_of_L] The $-\ln\mathcal{L}$ values in the
+distributions give a good idea of why. Roughly speaking the values go
+from 5 to 20, meaning the actual likelihood values are in the range
+from $e^{-5} \approx \num{7e-3}$ to $e^{-20} \approx \num{2e-9}$!
+While 64-bit floating point numbers nowadays in principle provide
+enough precision for these numbers human readability is improved. But
+32-bit floats would already accrue serious floating point errors due
+to only about 7 decimal digits accuracy. But even with 64 bit floats
+slight differences in the likelihood definition might run into trouble
+as well!
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *REWRITE TEXT AROUND SO THAT THIS MAKES SENSE HERE*
+  Maybe we could create a "box" environment that is a side-note of
+  sorts?
+  I think that could work well. Something like this
+  https://tex.stackexchange.com/questions/179197/framed-or-colored-box-with-text-and-margin-notes
+  possibly.
+  -> related to lnL discussion.
+
+- [ ] *THINK ABOUT OPTIMIZING CUT EFFICIENCY AGAIN!*
+  -> Well, we calc multiple different ones, but optimizing fully is
+  not worth it (would maybe be for MLP though)
+
 - [ ] *INCLUDE THE CUT VALUE INTO THE RIDGELINE PLOT. VERTICAL LINE
   WHERE IT IS FOR EACH TFKIND AND THEN A GEOM_TEXT NEXT WITH THE VALUE!*
+
+- [ ] *BELOW MUST GO TO PART WHERE WE FINISH HOW ALL THIS WORKS WITH
+  CDL DATA, INCL LINEAR INTERPOLATION. ALTERNATIVELY, FINISH THAT
+  EXPLANATION ABOVE BEFORE TALKING ABOUT CDL DETAILS?*
 
 **** Interpolation between lines
 
@@ -21292,17 +21320,6 @@ energies the largest error on the energy is $<\SI{5}{eV}$ anyhow.
   -> Partially done, notes of CDL morphing study added in appendix as :noexport:
 - [X] What about 2D heatmap showing energy ranges?
 
-[fn:logL_instead_of_L] The $-\ln\mathcal{L}$ values in the
-distributions give a good idea of why. Roughly speaking the values go
-from 5 to 20, meaning the actual likelihood values are in the range
-from \num{1e-5} to \num{1e-20} *XXX FIX ME*! While 64-bit floating
-point numbers don't have any issues providing good enough precision
-for these numbers (but you _do_ run into problems for small
-probabilities on the tails earlier!), producing a figure covering such
-a large range is not very nice (obviously requiring a log-plot) and
-importantly would require a histogram with unequal bin widths. That's
-why negative log likelihoods are used in practice.
-
 [fn:why_not_half_energy] It's not half the energy as all the lines are
 not evenly spaced.
 
@@ -21339,9 +21356,21 @@ not evenly spaced.
   using that.
   It still makes me wonder about whether we can get by with an
   unbinned approach somehow.
-  
 
-*** Generate plots of the likelihood and reference distributions  :noexport:
+*** Study of interpolation of CDL distributions [/]              :extended:
+
+The full study and notes about how we ended up at using a linear
+interpolation, can be found in appendix [[#sec:appendix:morphing_cdl_spectra]].
+
+- [X] This is now in the appendix. Good enough? Link
+  
+Put here all our studies of how and why we ended up at linear
+interpolation!
+
+The actual linear interpolation results (i.e. reproducing the "middle"
+one will be shown in the actual thesis).
+
+*** Generate plots of the likelihood and reference distributions  :extended:
 
 In order to generate plots of the reference distributions as well as
 the likelihood distributions, we use the ~plotCdl~ tool:
@@ -37265,9 +37294,9 @@ parameters were fixed.
 \end{figure}
 
 
-* CAST Detector Lab variations and fitting by run                  :noexport:
+* CAST Detector Lab variations and fitting by run                  :Appendix:
 :PROPERTIES:
-:CUSTOM_ID: fig:appendix:fit_by_run_justification
+:CUSTOM_ID: sec:appendix:fit_by_run_justification
 :END:
 
 The main difference between how the CAST detector lab data is treated
