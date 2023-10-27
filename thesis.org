@@ -21673,9 +21673,9 @@ By applying the likelihood cut method introduced in the first part of
 this chapter to the background data of CAST we can extract all
 clusters that are X-ray like and therefore describe the background
 rate. Unless otherwise stated the following plots use a software
-efficiency of $\SI{80}{\percent}$.
+efficiency of $\SI{80}{\percent}$. 
 
-Fig. [[fig:background:cluster_centers_no_vetoes_2017_18]] shows the
+Fig. [[sref:fig:background:cluster_centers_no_vetoes_2017_18]] shows the
 cluster centers and their distribution over the whole center GridPix,
 which highlights the extremely uneven distribution of background. The
 increase towards the edges and in particular the corners is due to
@@ -21691,7 +21691,7 @@ suppression of about a factor \num{15} (compare
 tab. [[tab:cast:data_stats_overview]], $\sim\num{1.5e6}$ events on the
 center chip). In the regions towards the center of the chip, the
 suppression is of course much
-higher. Fig. [[fig:background:background_suppression_tiles_no_vetoes_2017_18]]
+higher. Fig. [[sref:fig:background:background_suppression_tiles_no_vetoes_2017_18]]
 shows what the background suppression looks like locally when
 comparing the number of clusters in a small region of the chip to the
 total number of raw clusters that were detected. Note that this is
@@ -21701,32 +21701,27 @@ occupancy maps of the raw data.
 
 - [ ] *ADD OCCUPANCIES TO APPENDIX!*
 - [ ] *FIX TITLE OF SUPPRESSION PLOT*
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/backgroundClusters/background_cluster_centers_no_vetoes.pdf}
-    \caption{Cluster centers $\ln\mathcal{L}$}
-    \label{fig:background:cluster_centers_no_vetoes_2017_18}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/backgroundClusters/background_suppression_tiles_no_vetoes.pdf}
-    \caption{Background suppression}
-    \label{fig:background:background_suppression_tiles_no_vetoes_2017_18}
-  \end{subfigure}%
-  \label{fig:background:background_no_vetoes_clusters}
-  \caption{\subref{fig:background:background_clusters_no_vetoes}
-  Cluster centers of all X-ray like clusters in the 2017/18 CAST background
-  data. The number of these clusters increases drastically towards the edges
-  and in particular corners, due to geometric effects. Some regions with
-  minor sparking are visible as small yellow points of few pixel sizes.
-  \subref{fig:background:background_suppression_tiles_no_vetoes_2017_18} shows the local
-  background suppression over the total number of raw clusters detected. It assumes a
-  homogeneous background distribution in the raw data. 
-}
-\end{figure}
 
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Cluster centers $\\ln\\mathcal{L}$") (label "fig:background:cluster_centers_no_vetoes_2017_18")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/backgroundClusters/background_cluster_centers_no_vetoes.pdf"))
+        (subfigure (linewidth 0.5) (caption "Background suppression") (label "fig:background:background_suppression_tiles_no_vetoes_2017_18")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/backgroundClusters/background_suppression_tiles_no_vetoes.pdf"))
+        (caption
+         (subref "fig:background:clusters_centers_no_vetoes_2017_18")
+         " Cluster centers of all X-ray like clusters in the 2017/18 CAST background
+           data. The number of these clusters increases drastically towards the edges
+           and in particular corners, due to geometric effects. Some regions with
+           minor sparking are visible as small yellow points of few pixel sizes."
+         (subref "fig:background:background_suppression_tiles_no_vetoes_2017_18")
+         " shows the local background suppression over the total number of raw clusters detected. It assumes a
+           homogeneous background distribution in the raw data.")
+        (label "fig:background:background_no_vetoes_clusters"))
+#+end_src
+  
 - [ ] *REWRITE BELOW TO MAKE A BIT MORE SENSE IN CONTEXT OF ABOVE*
 - [ ] *EXPLAIN THAT THIS USES GOLD REGION!!!*
   -> cluster distribution motivates that!
@@ -21752,40 +21747,47 @@ cluster is considered a signal if its $L$ is smaller than the $L$
 computed for the desired $ε_{\text{eff}}$ at the energy of the
 cluster.
 
-Using this approach for the single GridPix data taken at CAST in
-2014/15, a background rate shown in
-fig. [[fig:background_rate_eff80_only_center]] is achieved.
-
-Note that by applying the exact same method to the CAST data taken
-during the solar tracking time, the dataset containing candidates for
-the solar axion search is extracted. 
+Using this approach for the GridPix data taken at CAST in 2017/18, a
+background rate shown in fig. [[fig:background_rate_eff80_only_center]] is
+achieved. The average background rate between $\SIrange{0}{8}{keV}$ in
+this case is $\SI{2.07e-5}{keV⁻¹.cm⁻².s⁻¹}$.
+#+begin_comment
+Integrated background rate/keV in range: 0.0 .. 8.0: 2.0739e-05 keV⁻¹·cm⁻²·s⁻¹
+#+end_comment
 
 #+begin_center
 #+CAPTION: Background rate achieved based on the $\ln\mathcal{L}$ method at
-#+CAPTION: $ε_{\text{eff}} = \SI{80}{\percent}$ using the GridPix1 CAST 2017/18 data
+#+CAPTION: $ε_{\text{eff}} = \SI{80}{\percent}$ using the CAST 2017/18 data
 #+CAPTION: without the application of any vetoes.
 #+NAME: fig:background_rate_eff80_only_center
 [[~/phd/Figs/background/background_rate_crGold_no_vetoes.pdf]]
 #+end_center
 - [ ] *THINK ABOUT IF EVERYTHING IS CORRECT HERE* (see below)
 
-The background rate presented here uses a comparable technique to one
+The background rate presented here uses a comparable [fn:differences] technique to one
 presented in cite:krieger2018search and shown in
 fig. [[fig:detector:background_rate_2014]] and uses the same detector
-features. As a result the absolute background rate is comparable. The
-Septemboard detector of this thesis however has multiple aspects to
-improve on this. We will now go through the different detector
-features and discuss how they can improve the background rate.
+features. As a result the absolute background rate is comparable. In
+order to improve on this background rate we will now first look at a
+different classification technique using artificial neural
+networks. Afterwards we will go through the different detector
+features and discuss how they can further improve the background rate.
 
-The average background rate between $\SIrange{0}{8}{keV}$ in this case
-is $\SI{2.07e-5}{keV⁻¹.cm⁻².s⁻¹}$. 
-#+begin_comment
-Integrated background rate/keV in range: 0.0 .. 8.0: 2.0739e-05 keV⁻¹·cm⁻²·s⁻¹
-#+end_comment
-
-- [ ] *!!!*
+[fn:differences] The only conceptual difference in the techniques is
+our inclusion of the interpolation between reference distributions in energy.
 
 *** TODOs for above                                              :noexport:
+
+- The following is now part of the introduction of this chapter.
+#+begin_quote
+Note that by applying the exact same method to the CAST data taken
+during the solar tracking time, the dataset containing candidates for
+the solar axion search is extracted. 
+#+end_quote
+
+
+- [ ] *redo the plots*
+- [ ] *INCLUDE GOLD REGION IN CLUSTER PLOT!*
 
 1. show all clusters left over after likelihood cut?
   Introduces discussion of different chip regions. For a pure
