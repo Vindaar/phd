@@ -21382,39 +21382,43 @@ for a single likelihood value $\mathcal{L}$.
   CDL DATA, INCL LINEAR INTERPOLATION. ALTERNATIVELY, FINISH THAT
   EXPLANATION ABOVE BEFORE TALKING ABOUT CDL DETAILS?*
 
-**** Interpolation between lines
+**** Generate plot of likelihood distributions                  :extended:
 
-- [ ] *MAYBE MOVE NEXT PARAGRAPH BACK TO INTRODUCTION OF METHOD*
-Due to the energy dependence eq. [[eq:background:likelihood_def]] needs to
-be understood to be valid in the energy range that defines the
-used likelihood distributions.  
+The ridgeline plot used in the above section is produced using
+~TimepixAnalysis/Plotting/plotCdl~. See
+sec. [[#sec:background:gen_plots_likelihood]] for the exact commands as
+more plots are produced used in other sections.
+
+*** Energy interpolation of likelihood distributions [/]
 
 For the GridPix detector used in 2014/15 similar X-ray tube data was
 taken and each of the 8 X-ray tube energies were assigned an energy
-interval. In that interval the likelihood distributions of the
-associated X-ray tube data were used to compute a likelihood value for
-the given cluster. This leads to discontinuities of the properties at
-the interval boundaries, while the actual properties of the clusters
-change continuously. It can then lead to jumps in the efficiency of
-the background suppression method and thus in the achieved background
-rate. It seems a safe assumption that the reference distributions
-undergo a continuous change for changing energies of the
-X-rays. Therefore, to avoid such issues we perform a linear
-interpolation for each cluster with energy $E_α$ between the closest
-two neighboring X-ray tube energies $E_β$ and $E_γ$ in each
+interval. The likelihood distribution to use for each cluster was
+chosen based on which energy interval the cluster's energy falls
+into. This leads to discontinuities of the properties at the interval
+boundaries, due to the energy dependence of the cluster properties as
+seen in fig. [[sref:fig:background:eccentricity_photo_escape]]. This change is
+of course continuous instead of discrete. It can then lead to jumps in
+the efficiency of the background suppression method and thus in the
+achieved background rate. It seems a safe assumption that the
+reference distributions undergo a continuous change for changing
+energies of the X-rays. Therefore, to avoid discontinuities we perform
+a linear interpolation for each cluster with energy $E_β$ between the
+closest two neighboring X-ray tube energies $E_α$ and $E_γ$ in each
 probability density $\mathcal{P}_i$ at the cluster's properties. With
-$ΔE = E_β - E_γ$ the difference in energy between the closest two
+$ΔE = E_α - E_γ$ the difference in energy between the closest two
 X-ray tube energies, each probability density is then interpolated to:
 
 \[
-\mathcal{P}_i(E_α, x_i) = \left(1 - \frac{|E_α - E_β|}{ΔE}\right) · \mathcal{P}_i(E_β, x_i) +
-  \left( 1 - \frac{|E_α - E_γ|}{ΔE} \right) · \mathcal{P}_i(E_γ, x_i) .
+\mathcal{P}_i(E_β, x_i) = \left(1 - \frac{|E_β - E_α|}{ΔE}\right) · \mathcal{P}_i(E_α, x_i) +
+  \left( 1 - \frac{|E_γ - E_β|}{ΔE} \right) · \mathcal{P}_i(E_γ, x_i) .
 \]
 
 Each probability density of the closest neighbors are evaluated at the
 cluster's property $x_i$ and the linear interpolation weighted by the
 distance to each energy is computed.
 
+- [ ] *FIX REFERENCE TO COLORS AFTER FIXING PLOTS*
 The choice for a linear interpolation was made after different ideas
 were tried. Most importantly, a linear interpolation does not yield
 unphysical results (for example negative bin counts in interpolated
@@ -21422,7 +21426,7 @@ data, which can happen in a spline interpolation) and yields very good
 results in the cases that can be tested, namely reconstructing a known
 likelihood distribution $B$ by doing a linear interpolation between
 the two outer neighbors $A$ and
-$C$. \ref{fig:cdl:cdl_morphing_frac_known_lines} shows this idea using
+$C$. sref:fig:cdl:cdl_morphing_frac_known_lines shows this idea using
 the fraction in transverse RMS variable. This variable is shown here
 as it has the strongest obvious shape differences going from line to
 line. The blue histogram corresponds to interpolated bins based on the
@@ -21432,32 +21436,29 @@ above / below). While the interpolation (blue) sometimes over- or
 undershoots it needs to be kept in mind it covers almost twice the
 energy that is needed when interpolating in the space between two
 lines. To give an idea of what this results in for the interpolation,
-fig. \ref{fig:cdl:cdl_morphing_frac_all_energies} shows a heatmap of
+fig. sref:fig:cdl:cdl_morphing_frac_all_energies shows a heatmap of
 the same variable showing how the interpolation describes the energy
-and fraction in transverse RMS space continuously. 
+and fraction in transverse RMS space continuously.
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/cdlMorphing/fractionInTransverseRms_ridgeline_morph_all_XrayReferenceFile2018.h5_2018.pdf}
-    \caption{Known lines}
-    \label{fig:cdl:cdl_morphing_frac_known_lines}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/cdlMorphing/cdl_as_raster_interpolated_fractionInTransverseRms.pdf}
-    \caption{All energies}
-    \label{fig:cdl:cdl_morphing_frac_all_energies}
-  \end{subfigure}%
-  \label{fig:cdl:cdl_morphing_examples}
-  \caption{\subref{fig:cdl:cdl_morphing_frac_known_lines} shows recovering the known lines (aside from the outer ones)
-  using a binwise linear interpolation from the neighbors. While the interpolation (blue) sometimes over- or undershoots
-  it needs to be kept in mind it covers almost twice the energy that is needed.
-  \subref{fig:cdl:cdl_morphing_frac_all_energies} is a heatmap of the full energy vs. fraction in transverse RMS
-  space interpolated using this binwise linear interpolation.}
-\end{figure}
-- [ ] *REDO THESE TWO PLOTS!* 
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Known lines") (label "fig:cdl:cdl_morphing_frac_known_lines")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                    "~/phd/Figs/CDL/cdlMorphing/fractionInTransverseRms_ridgeline_morph_all_XrayReferenceFile2018.h5_2018.pdf"))
+        (subfigure (linewidth 0.5) (caption "All energies") (label "fig:cdl:cdl_morphing_frac_all_energies")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                    "~/phd/Figs/CDL/cdlMorphing/cdl_as_raster_interpolated_fractionInTransverseRms.pdf"))                
+        (caption
+         (subref "fig:cdl:cdl_morphing_frac_known_lines")
+         " shows recovering the known lines (aside from the outer ones)
+           using a binwise linear interpolation from the neighbors. While the interpolation (blue)
+           sometimes over- or undershoots it needs to be kept in mind it covers almost twice the
+           energy that is needed. "
+         (subref "fig:cdl:cdl_morphing_frac_all_energies")
+         " is a heatmap of the full energy vs. fraction in transverse RMS
+           space interpolated using this binwise linear interpolation.")
+        (label "fig:cdl:cdl_morphing_examples"))
+#+end_src
 
 Given that such an interpolation works as well as it does on
 recovering a known line, implies that a linear interpolation on
@@ -21466,23 +21467,34 @@ yield reasonably realistic distributions, certainly much better than
 allowing a discrete jump at specific boundaries.
 
 See appendix [[#sec:appendix:morphing_cdl_spectra]] for a lot more
-information about the ideas considered and comparisons between the not
-interpolated data. In particular
+information about the ideas considered and comparisons to the approach
+without interpolation. In particular
 fig. [[fig:appendix:cdl_morphing_logL_vs_energy]] which computes the
 $\ln\mathcal{L}$ values for all of the (cleaned, cuts
 tab. [[tab:cdl:cdl_cleaning_cuts]] applied) CDL data comparing the case of
 no interpolation with interpolation showing a clear improvement in the
 smoothness of the point cloud.
 
-The need to define cut values $\mathcal{L}'$ for each likelihood
-distribution to have a variable to cut on is one reason why the
-practical implementation does not use full interpolation to compute
-the reference distributions on the fly each time for every individual
-cluster energy, but instead uses a pre-calculated high resolution mesh
-of \num{1000} interpolated distributions. This allows to compute the
-cut value as well as the distributions before starting to classify all
-clusters, saving significant performance. With a mesh of \num{1000}
-energies the largest error on the energy is $<\SI{5}{eV}$ anyhow. 
+[fn:why_not_half_energy] It's not half the energy as the lines are
+not evenly spaced in energy.
+
+**** TODOs for the above sections                               :noexport:
+
+- [ ] *REDO THESE TWO PLOTS!* 
+
+
+- [ ] *MAYBE MOVE NEXT PARAGRAPH BACK TO INTRODUCTION OF METHOD*
+Due to the energy dependence eq. [[eq:background:likelihood_def]] needs to
+be understood to be valid in the energy range that defines the
+used likelihood distributions.  
+- [X] *REWRITE THIS!!!*
+  -> Referring to introduction of section.
+  -> I'm still not 100% happy with the explanation, but well. Seems a
+  bit redundant in its content.
+
+
+
+
 
 - [X] *EXPAND ON THIS, GIVE AN EQUATION DEFINING WHAT WE MEAN
   INCLUDING THE BINNING!*
@@ -21495,11 +21507,6 @@ energies the largest error on the energy is $<\SI{5}{eV}$ anyhow.
   OF FULL ECCENTRICITY/... BEHAVIOR*
   -> Partially done, notes of CDL morphing study added in appendix as :noexport:
 - [X] What about 2D heatmap showing energy ranges?
-
-[fn:why_not_half_energy] It's not half the energy as all the lines are
-not evenly spaced.
-
-**** TODOs for the above sections                               :noexport:
 
 
 - [X] explain why Inf is a common value
@@ -21532,6 +21539,19 @@ not evenly spaced.
   using that.
   It still makes me wonder about whether we can get by with an
   unbinned approach somehow.
+
+
+**** Practical note about interpolation                         :extended:
+
+The need to define cut values $\mathcal{L}'$ for each likelihood
+distribution to have a variable to cut on is one reason why the
+practical implementation does not use full interpolation to compute
+the reference distributions on the fly each time for every individual
+cluster energy, but instead uses a pre-calculated high resolution mesh
+of $\num{1000}$ interpolated distributions. This allows to compute the
+cut value as well as the distributions before starting to classify all
+clusters, saving significant performance. With a mesh of $\num{1000}$
+energies the largest error on the energy is $<\SI{5}{eV}$ anyhow. 
 
 *** Study of interpolation of CDL distributions [/]              :extended:
 
