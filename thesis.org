@@ -21154,7 +21154,7 @@ The summarized 'recipe' of the approach is therefore:
    each run,
 5. compute a histogram for each desired cluster property and each
    fluorescence line,
-6. normalize the histogram to define the reference distribution.   
+6. normalize the histogram to define the reference distribution, $\mathcal{P}_i$
 
 #+CAPTION: Overview of all reference distributions for each target/filter combination and property.
 #+CAPTION: The binning is the same as used to compute the probabilities. Towards lower energies
@@ -21212,9 +21212,12 @@ to a lesser extent), so lower energy events are more sparse.
 
 **** Generate ridgeline plot of all reference distributions     :extended:
 
-- [ ] Does this also fall out of ~cdl_spectrum_creation~ ?
+The ridgeline plot used in the above section is produced using
+~TimepixAnalysis/Plotting/plotCdl~. See
+sec. [[#sec:background:gen_plots_likelihood]] for the exact commands as
+more plots are produced used in other sections.
 
-*** Define likelihood distribution and interpolating it [/]
+*** Define likelihood distribution [0/2]
 :PROPERTIES:
 :CUSTOM_ID: sec:cdl:cdl_morphing
 :END:
@@ -21222,7 +21225,8 @@ to a lesser extent), so lower energy events are more sparse.
 With our reference distributions defined it is time to look back at
 the equation for the definition of the likelihood, eq. [[eq:background:likelihood_def]].
 
-To avoid numerical issues dealing with very small probabilities, the
+#+begin_quote
+Note: To avoid numerical issues dealing with very small probabilities, the
 actual relation evaluated numerically is the negative log of the
 likelihood:
 
@@ -21230,63 +21234,89 @@ likelihood:
 -\ln \mathcal{L}(ε, f, l) = - \ln \mathcal{P}_ε(ε) -
   \ln \mathcal{P}_f(f) - \ln \mathcal{P}_l(l)
 \]
+#+end_quote
 
 By considering a single fluorescence line the three reference
-distributions make up the $\mathcal{P}_i(i)$ of the likelihood
-$\mathcal{L}(ε, l, f)$ for that energy. However, the reference
-distributions do not strictly speaking define the likelihood
-distribution. They only represent a PDF to look up a probability-like
-value for a given cluster with properties $(ε, l, f)$ for a single
-likelihood value $\mathcal{L}$. For that reason the definition of the
-likelihood distributions for each energy is a two-step process:
-1. compute the reference distributions as described in
-   sec. [[#sec:cdl:derive_probability_density]],
-2. take the raw cluster data (unbinned data!) of those
-   clusters that define the reference distributions and feed each of
-   these into eq. [[eq:background:likelihood_def]] for a single likelihood
-   value each.
-The resulting distribution made up of all those likelihood values is
-the likelihood distribution for that energy. All these distributions
-are shown in fig. [[fig:cdl:likelihood_distributions]] as a negative log
-likelihood. [fn:logL_instead_of_L] Note that due to the usage of
-negative log likelihoods the raw data often contains infinities, which
-are just a side effect of picking up a zero probability from one of
-the reference distributions for a particular cluster. In reality the
-reference distributions should be a continuous distribution that is
-nowhere exactly zero. However, due to limited statistics there is a
-small range of non-zero probabilities (most bins are empty outside the
-main range). For all practical purposes this does not matter, but it
-does explain the rather hard cutoff from 'sensible' likelihood values
-to infinities.
+distributions $\mathcal{P}_i(i)$ make up the likelihood
+$\mathcal{L}(ε, l, f)$ /function/ for that energy; a function of the
+variables $ε, f, l$. In order to use the likelihood function as a
+classifier for X-ray like clusters we need a one dimensional
+expression. This is where the likelihood /distribution/ $\mathfrak{L}$
+comes in. We reuse all the clusters used to define the reference
+distributions $\mathcal{P}_{ε,f,l}$ and compute their likelihood
+values $\{ \mathcal{L}_j \}$, where $j$ is the index of the
+$j\text{-th}$ cluster. By then computing the histogram of the set of
+all these likelihood values, we obtain the likelihood distribution
+
+\[
+\mathfrak{L} = \text{histogram}\left( \{ \mathcal{L}_j \} \right).
+\]
+
+All these distributions are shown in
+fig. [[fig:cdl:likelihood_distributions]] as negative log likelihood
+distributions. [fn:logL_instead_of_L] We see that the distributions
+change slightly in shape and move towards larger $-\ln \mathcal{L}$
+values towards the lower energy target/filter combinations. The shape
+change is most notably due to the significant integer nature of the
+'fraction in transverse RMS' $f$ variable, as seen in
+fig. [[fig:cdl:reference_distributions_overview_ridgeline]]. The shift to
+larger values expresses that the reference distributions
+$\mathcal{P}_i$ become wider and thus each bin has lower probability.
 
 #+CAPTION: $-\ln\mathcal{L}$ distributions for each of the targeted fluorescence lines
 #+CAPTION: and thus target/filter combinations.
 #+NAME: fig:cdl:likelihood_distributions
 [[~/phd/Figs/CDL/logL_ridgeline.pdf]]
 
-- [ ] *BELOW MUST GO TO PART WHERE WE FINISH HOW ALL THIS WORKS WITH
-  CDL DATA, INCL LINEAR INTERPOLATION. ALTERNATIVELY, FINISH THAT
-  EXPLANATION ABOVE BEFORE TALKING ABOUT CDL DETAILS?*
 To finally classify events as signal or background using the
 likelihood distribution, one sets a desired "software efficiency"
 $ε_{\text{eff}}$, which is defined as:
 
 #+NAME: eq:background:lnL:cut_condition
 \begin{equation}
-ε_{\text{eff}} = \frac{∫_0^{\mathcal{L'}} \mathcal{L}(ε, f, l) \, \mathrm{d}L}{∫_0^{∞}\mathcal{L}(ε, f, l) \, \mathrm{d} L}
+ε_{\text{eff}} = \frac{∫_0^{\mathcal{L'}} \mathfrak{L}(\mathcal{L}) \, \mathrm{d}\mathcal{L}}{∫_0^{∞}\mathfrak{L}(\mathcal{L}) \, \mathrm{d} \mathcal{L}}.
 \end{equation}
 
-where $\mathcal{L}'$ denotes a specific $\mathcal{L}$ value, which
-yields the desired $ε_{\text{eff}}$. In practical terms one computes
-the normalized cumulative sum of the log likelihood and searches for
-the point at which the desired $ε_{\text{eff}}$ is reached. The
-typical software efficiency we aim for is
-$\SI{80}{\percent}$. Classification as X-ray like then is simply any
-cluster with a $\ln\mathcal{L}$ value smaller than the cut value
-$\ln\mathcal{L}'$.
+The likelihood /value/ $\mathcal{L}'$ is the value corresponding to
+the $ε_{\text{eff}}\text{-th}$ percentile of the likelihood
+/distribution/ $\mathfrak{L}$. In practical terms one computes the
+normalized cumulative sum of the log likelihood and searches for the
+point at which the desired $ε_{\text{eff}}$ is reached. The typical
+software efficiency we aim for is $\SI{80}{\percent}$. Classification
+as X-ray like then is simply any cluster with a $-\ln\mathcal{L}$
+value smaller than the cut value $-\ln\mathcal{L}'$. Note that this
+value $\mathcal{L}'$ has to be determined for _each_ likelihood
+distribution.
 
-Note that this value $\mathcal{L}'$ has to be determined for _each_
-likelihood distribution.
+To summarize the derivation of the likelihood distribution
+$\mathfrak{L}$ and its usage as a classifier as a 'recipe':
+1. compute the reference distributions $\mathcal{P}_i$ as described in
+   sec. [[#sec:cdl:derive_probability_density]],
+2. take the raw cluster data (unbinned data!) of those clusters that
+   define the $\mathcal{P}_i$ and feed each of these into
+   eq. [[eq:background:likelihood_def]] for a single likelihood /value/
+   $\mathcal{L}_i$ each,
+3. compute the /histogram/ of the set of all these likelihood values
+   $\{ \mathcal{L}_i \}$ to define the likelihood /distribution/ $\mathfrak{L}$.
+4. define a desired 'software efficiency' $ε_{\text{eff}}$ and compute the
+   corresponding likelihood /value/ $\mathcal{L}_c$ using
+   eq. [[eq:background:lnL:cut_condition]],
+5. any cluster with $\mathcal{L}_i \leq \mathcal{L}_c$ is considered
+   X-ray like with efficiency $ε_{\text{eff}}$.
+
+
+- [ ] *REMOVE?*
+Note that due to the usage of negative log likelihoods the
+raw data often contains infinities, which are just a side effect of
+picking up a zero probability from one of the reference distributions
+for a particular cluster. In reality the reference distributions
+should be a continuous distribution that is nowhere exactly
+zero. However, due to limited statistics there is a small range of
+non-zero probabilities (most bins are empty outside the main
+range). For all practical purposes this does not matter, but it does
+explain the rather hard cutoff from 'sensible' likelihood values to
+infinities in the raw data.
+   
 
 [fn:logL_instead_of_L] The $-\ln\mathcal{L}$ values in the
 distributions give a good idea of why. Roughly speaking the values go
@@ -21300,6 +21330,38 @@ slight differences in the likelihood definition might run into trouble
 as well!
 
 **** TODOs for this section [/]                                 :noexport:
+
+- [ ] *TAKE OUT 'NOTE ABOUT INIFNITIES' IN DATA*
+  -> I don't think it is particular enlightening in the context of the
+  section. Probably it will just become an extended note about the raw
+  values. Also the text does not mention that it is partially also due
+  to 64 bit float limits.
+
+- [ ] *REWRITE FOOTNOTE ABOUT 7 DECIMAL DIGITS FOR 32 BIT FLOATS*  
+
+- [X] *Overthink this notation*:
+  -> Distinguish between the *likelihood distribution* over which we
+  integrate and the *likelihood value* that is its argument!
+
+- [X] *Rephrase the above with a clearer mathematical model*
+
+  \[
+  \mathfrak{L} = \text{histogram}\left( \{ \mathcal{L}_i \} \right)
+  \]
+    
+  where $\mathfrak{L}$ is the combined distribution of all the
+  individual $\mathcal{L}$ likelihood values.
+  But clearly there must be better ways to talk about this?
+  -> Well, at least GPT4 told me something that's pretty similar to
+  what I wrote up there. So I guess it stays.
+
+Old text:
+#+begin_quote
+However, the reference distributions do not strictly speaking define
+the likelihood distribution. They only represent a PDF to look up a
+probability-like value for a given cluster with properties $(ε, l, f)$
+for a single likelihood value $\mathcal{L}$.
+#+end_quote
 
 - [ ] *REWRITE TEXT AROUND SO THAT THIS MAKES SENSE HERE*
   Maybe we could create a "box" environment that is a side-note of
