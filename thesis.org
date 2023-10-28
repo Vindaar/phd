@@ -21644,7 +21644,6 @@ Each probability density of the closest neighbors are evaluated at the
 cluster's property $x_i$ and the linear interpolation weighted by the
 distance to each energy is computed.
 
-- [ ] *FIX REFERENCE TO COLORS AFTER FIXING PLOTS*
 The choice for a linear interpolation was made after different ideas
 were tried. Most importantly, a linear interpolation does not yield
 unphysical results (for example negative bin counts in interpolated
@@ -21708,8 +21707,11 @@ not evenly spaced in energy.
 
 **** TODOs for the above sections                               :noexport:
 
-- [ ] *REDO THESE TWO PLOTS!* 
-
+- [ ] *REDO THESE TWO PLOTS!*
+  -> Partially done.
+- [X] *FIX REFERENCE TO COLORS AFTER FIXING PLOTS*
+  -> Done, but plots are still not final. Need to decide on final
+  sizes first.
 
 - [ ] *MAYBE MOVE NEXT PARAGRAPH BACK TO INTRODUCTION OF METHOD*
 Due to the energy dependence eq. [[eq:background:likelihood_def]] needs to
@@ -21719,10 +21721,7 @@ used likelihood distributions.
   -> Referring to introduction of section.
   -> I'm still not 100% happy with the explanation, but well. Seems a
   bit redundant in its content.
-
-
-
-
+  
 
 - [X] *EXPAND ON THIS, GIVE AN EQUATION DEFINING WHAT WE MEAN
   INCLUDING THE BINNING!*
@@ -21747,8 +21746,9 @@ used likelihood distributions.
   (our software efficiency)
 - [ ] potentially rephrase the footnote, in particular after actually
   generating the likeilhood distributions as non-log plot!
-- [ ] *REFERENCE OF 1e-5 to 1e-20 IS NOT TRUE, AS WE USE LN INSTEAD OF LOG10!*
-
+- [X] *REFERENCE OF 1e-5 to 1e-20 IS NOT TRUE, AS WE USE LN INSTEAD OF
+  LOG10!*
+  -> Fixed.
 
 - [ ] Note: an interesting plot could be to compute the likelihood
   distributions for each CDL _run_ separately and produce such a
@@ -21767,7 +21767,6 @@ used likelihood distributions.
   using that.
   It still makes me wonder about whether we can get by with an
   unbinned approach somehow.
-
 
 **** Practical note about interpolation                         :extended:
 
@@ -21882,9 +21881,9 @@ before. In particular in a corner where two sides are cut off
 potentially. This is an aspect the detector vetoes help with, see
 sec. [[#sec:background:septem_veto]]. In addition the plot shows some
 smaller regions of few pixel diameter that have more activity. With
-about \num{95000} clusters left on the center chip, the likelihood cut
-at $\SI{80}{\percent}$ software efficiency represents a background
-suppression of about a factor \num{15} (compare
+about $\num{95000}$ clusters left on the center chip, the likelihood
+cut at $\SI{80}{\percent}$ software efficiency represents a background
+suppression of about a factor $\num{15}$ (compare
 tab. [[tab:cast:data_stats_overview]], $\sim\num{1.5e6}$ events on the
 center chip). In the regions towards the center of the chip, the
 suppression is of course much
@@ -21893,8 +21892,8 @@ shows what the background suppression looks like locally when
 comparing the number of clusters in a small region of the chip to the
 total number of raw clusters that were detected. Note that this is
 based on the assumption that the raw data is homogeneously
-distributed. See appendix [[#sec:appendix:background_occupancy]] for
-occupancy maps of the raw data.
+distributed. See appendix [[#sec:appendix:occupancy]] for occupancy maps
+of the raw data.
 
 #+begin_src subfigure
 (figure ()
@@ -21909,17 +21908,16 @@ occupancy maps of the raw data.
          " Cluster centers of all X-ray like clusters in the 2017/18 CAST background
            data. The number of these clusters increases drastically towards the edges
            and in particular corners, due to geometric effects. Some regions with
-           minor sparking are visible as small yellow points of few pixel sizes."
+           minor sparking are visible as small yellow points of few pixel sizes.
+           The red outline is the 'gold region' in which we quote the background rate.
+           ,\\textbf{*WE MIGHT FILTER OUT SPARKY REGIONS! ADJUST TEXT.*}
+           "
          (subref "fig:background:background_suppression_tiles_no_vetoes_2017_18")
          " shows the local background suppression over the total number of raw clusters detected. It assumes a
            homogeneous background distribution in the raw data.")
         (label "fig:background:background_no_vetoes_clusters"))
 #+end_src
   
-- [ ] *REWRITE BELOW TO MAKE A BIT MORE SENSE IN CONTEXT OF ABOVE*
-- [ ] *EXPLAIN THAT THIS USES GOLD REGION!!!*
-  -> cluster distribution motivates that!
-
 The distribution of the X-ray like clusters in the background data
 motivate on the one hand to consider local background rates for a
 physics analysis and at the same time the selection of a specific
@@ -21927,24 +21925,18 @@ region in which a benchmark background rate can be defined. For this
 purpose cite:krieger2018search defines different detector regions in
 which the background rate is computed and treated as constant. One of
 these, termed the 'gold region' is a square around the center of
-$\SI{5}{mm}$ side length (slightly larger than the 4 center tiles in
+$\SI{5}{mm}$ side length (visible as red square in fig.
+sref:fig:background:cluster_centers_no_vetoes_2017_18 and a bit less
+than 3x3 tiles around center in
 fig. sref:fig:background:background_suppression_tiles_no_vetoes_2017_18). All
 background rate plots unless otherwise specified in the remainder of
 the thesis always refer to this region of low background.
 
-- [ ] *SLIGHTLY LARGER THAN TILES: ACTUALLY CORRECT?*
-
-With the software efficiency defined, the $-\ln\mathcal{L}$ of each
-cluster is simply computed using the linear interpolation of the log
-likelihood distribution determined based on the cluster energy. A
-cluster is considered a signal if its $L$ is smaller than the $L$
-computed for the desired $ε_{\text{eff}}$ at the energy of the
-cluster.
-
-Using this approach for the GridPix data taken at CAST in 2017/18, a
-background rate shown in fig. [[fig:background_rate_eff80_only_center]] is
-achieved. The average background rate between $\SIrange{0}{8}{keV}$ in
-this case is $\SI{2.07e-5}{keV⁻¹.cm⁻².s⁻¹}$.
+Using the $\ln\mathcal{L}$ approach for the GridPix data taken at CAST
+in 2017/18 at a software efficiency of $ε_{\text{eff}} = \SI{80}{\%}$,
+a background rate shown in fig. [[fig:background_rate_eff80_only_center]]
+is achieved. The average background rate between $\SIrange{0}{8}{keV}$
+in this case is $\SI{2.07e-5}{keV⁻¹.cm⁻².s⁻¹}$.
 #+begin_comment
 Integrated background rate/keV in range: 0.0 .. 8.0: 2.0739e-05 keV⁻¹·cm⁻²·s⁻¹
 #+end_comment
@@ -21956,16 +21948,16 @@ Integrated background rate/keV in range: 0.0 .. 8.0: 2.0739e-05 keV⁻¹·cm�
 #+NAME: fig:background_rate_eff80_only_center
 [[~/phd/Figs/background/background_rate_crGold_no_vetoes.pdf]]
 #+end_center
-- [ ] *THINK ABOUT IF EVERYTHING IS CORRECT HERE* (see below)
 
-The background rate presented here uses a comparable [fn:differences] technique to one
-presented in cite:krieger2018search and shown in
-fig. [[fig:detector:background_rate_2014]] and uses the same detector
-features. As a result the absolute background rate is comparable. In
-order to improve on this background rate we will now first look at a
-different classification technique using artificial neural
-networks. Afterwards we will go through the different detector
-features and discuss how they can further improve the background rate.
+This is comparable to the technique presented in
+cite:krieger2018search [fn:differences] shown in
+fig. [[fig:detector:background_rate_2014]], as it uses none of the
+additional detector features of the septemboard detector. As a result
+the absolute background rate is similar. In order to improve on
+this background rate we will first look at a different classification
+technique based on artificial neural networks. Afterwards we will go
+through the different detector features and discuss how they can
+further improve the background rate.
 
 [fn:differences] The only conceptual difference in the techniques is
 our inclusion of the interpolation between reference distributions in energy.
@@ -21979,9 +21971,28 @@ during the solar tracking time, the dataset containing candidates for
 the solar axion search is extracted. 
 #+end_quote
 
+This is not needed anymore.
+#+begin_quote
+With the software efficiency defined, the $-\ln\mathcal{L}$ of each
+cluster is simply computed using the linear interpolation of the log
+likelihood distribution determined based on the cluster energy. A
+cluster is considered a signal if its $L$ is smaller than the $L$
+computed for the desired $ε_{\text{eff}}$ at the energy of the
+cluster.
+#+end_quote
+
 - [ ] *redo the plots*
 - [ ] *INCLUDE GOLD REGION IN CLUSTER PLOT!*
 
+- [X] *SLIGHTLY LARGER THAN TILES: ACTUALLY CORRECT?*
+  -> Yes. Pretty much mid of the next tile.
+
+- [ ] *THINK ABOUT IF EVERYTHING IS CORRECT HERE* 
+  -> Referring to comparison to Christoph I think
+
+- [ ] *REWRITE BELOW TO MAKE A BIT MORE SENSE IN CONTEXT OF ABOVE*
+- [ ] *EXPLAIN THAT THIS USES GOLD REGION!!!*
+  -> cluster distribution motivates that!
 
 - [ ] *ADD OCCUPANCIES TO APPENDIX!*
 - [X] *FIX TITLE OF SUPPRESSION PLOT*
@@ -22380,14 +22391,21 @@ chip!
 ~plots/background_suppression_tile_map.pdf~ which is in
 [[file:Figs/backgroundClusters/background_suppression_tiles_no_vetoes.pdf]].
 
-*** Verification of software efficiency using calibration data [/] 
+*** Verification of software efficiency using calibration data [/] :extended:
 
+- [ ] *WRITE ME*
+  -> Important because systematics.
+- [ ] *MAYBE INSTEAD OF EXTENDED, APPENDIX*
+
+  
 - [ ] *SHOW OUR VERIFICATION USING 55FE DATA*
   -> Check and if not possibly do:
   Using fake energies (by leaving out pixel info) to generate
   arbitrary energies check the efficiency. I think this is what we did
   in that context. Right, that was it:
   [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/determineEffectiveEfficiency.nim]]
+  -> This is "outdated" in the sense that we have good fake generation
+  now. Probably good enough to just discuss efficiency that we use for systematic!
 - [ ] *CREATE PLOT OF THE LOGL CUT VALUES TO ACHIEVE THE USED
   EFFICIENCY!*
   -> essentially take our morphed likelihood distributions and for
