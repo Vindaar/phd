@@ -20107,6 +20107,9 @@ for $\SI{277}{eV}$ $\ce{C}_{Kα}$ X-rays without any noise problems. [fn:shielde
 | Al              |   7 - 11 |
 | Cu              |  12 - 18 |
 
+
+
+
 #+CAPTION: Table of all available filters in the CAST detector lab and their respective
 #+CAPTION: position on a rotateable wheel.
 #+NAME: tab:cdl:filters
@@ -21188,7 +21191,7 @@ to a lesser extent), so lower energy events are more sparse.
   fracRms data (using one as color scale). Should give a nice
   correlation likely!
   (we could also *compute* the correlation, but well)
-  -> Done here:
+  -> Done here, sec. [[#sec:background:correlation_lnL_variables]]
   [[~/phd/Figs/background/correlation_ecc_ldiv_frac.pdf]]
   where we create plot of the logL interpolation based on CDL
   data. This one shows the CDL data after cleaning cut! Clearly strong
@@ -21209,7 +21212,7 @@ to a lesser extent), so lower energy events are more sparse.
 
   In some ways the correlation becomes nicer, in others it gets harder
   to see. Interesting!
-
+  
 **** Generate ridgeline plot of all reference distributions     :extended:
 
 The ridgeline plot used in the above section is produced using
@@ -21652,10 +21655,10 @@ the two outer neighbors $A$ and
 $C$. sref:fig:cdl:cdl_morphing_frac_known_lines shows this idea using
 the fraction in transverse RMS variable. This variable is shown here
 as it has the strongest obvious shape differences going from line to
-line. The blue histogram corresponds to interpolated bins based on the
+line. The green histogram corresponds to interpolated bins based on the
 difference in energy between the line above and below the target
 (hence it is not done for the outer lines, as there is no 'partner'
-above / below). While the interpolation (blue) sometimes over- or
+above / below). While the interpolation (green) sometimes over- or
 undershoots it needs to be kept in mind it covers almost twice the
 energy that is needed when interpolating in the space between two
 lines. To give an idea of what this results in for the interpolation,
@@ -21667,19 +21670,21 @@ and fraction in transverse RMS space continuously.
 (figure ()
         (subfigure (linewidth 0.5) (caption "Known lines") (label "fig:cdl:cdl_morphing_frac_known_lines")
                    (includegraphics (list (cons 'width (linewidth 0.95)))
-                    "~/phd/Figs/CDL/cdlMorphing/fractionInTransverseRms_ridgeline_morph_all_XrayReferenceFile2018.h5_2018.pdf"))
+                    "~/phd/Figs/CDL/cdlMorphing/fractionInTransverseRms_ridgeline_morph_mtLinear_calibration-cdl-2018.h5_2018.pdf"))
         (subfigure (linewidth 0.5) (caption "All energies") (label "fig:cdl:cdl_morphing_frac_all_energies")
                    (includegraphics (list (cons 'width (linewidth 0.95)))
-                    "~/phd/Figs/CDL/cdlMorphing/cdl_as_raster_interpolated_fractionInTransverseRms.pdf"))                
+                    "~/phd/Figs/CDL/cdlMorphing/cdl_as_raster_interpolated_morph_mtNone_fractionInTransverseRms.pdf"))                
         (caption
          (subref "fig:cdl:cdl_morphing_frac_known_lines")
          " shows recovering the known lines (aside from the outer ones)
-           using a binwise linear interpolation from the neighbors. While the interpolation (blue)
+           using a binwise linear interpolation from the neighbors. While the interpolation (green)
            sometimes over- or undershoots it needs to be kept in mind it covers almost twice the
            energy that is needed. "
          (subref "fig:cdl:cdl_morphing_frac_all_energies")
          " is a heatmap of the full energy vs. fraction in transverse RMS
-           space interpolated using this binwise linear interpolation.")
+           space interpolated using this binwise linear interpolation. The energy of the fluorescence
+           lines is indicated on which the interpolation is based.
+           *ADJUST SIZE OF PLOTS!!!*")
         (label "fig:cdl:cdl_morphing_examples"))
 #+end_src
 
@@ -21776,6 +21781,17 @@ cut value as well as the distributions before starting to classify all
 clusters, saving significant performance. With a mesh of $\num{1000}$
 energies the largest error on the energy is $<\SI{5}{eV}$ anyhow. 
 
+
+**** Generate plots for morphing / interpolation                :extended:
+
+The plots are created with ~TimepixAnalysis/Tools/cdlMorphing~:
+
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/cdlMorphing/
+./cdlMorphing \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --outpath ~/phd/Figs/CDL/cdlMorphing/
+#+end_src
+
 *** Study of interpolation of CDL distributions [/]              :extended:
 
 The full study and notes about how we ended up at using a linear
@@ -21850,14 +21866,6 @@ program. See sec. [[#sec:background:gen_plots_cdl_data]] for the commands.
 :CUSTOM_ID: sec:background:likelihood_cut
 :END:
 
-- [ ] This *COULD* become its own chapter after all. That way make the
-  CDL part a likelihood method & stuff chapter and this an apply
-  method for background rate chapter.
-
-- [X] most of it moved to likelihood method section
-- [ ] *REWRITE ME*
-- [ ] *BETTER CLARIFY DISTINCTION BETWEEN BACKGROUND AND TRACKING*  
-
 By applying the likelihood cut method introduced in the first part of
 this chapter to the background data of CAST we can extract all
 clusters that are X-ray like and therefore describe the background
@@ -21887,9 +21895,6 @@ total number of raw clusters that were detected. Note that this is
 based on the assumption that the raw data is homogeneously
 distributed. See appendix [[#sec:appendix:background_occupancy]] for
 occupancy maps of the raw data.
-
-- [ ] *ADD OCCUPANCIES TO APPENDIX!*
-- [ ] *FIX TITLE OF SUPPRESSION PLOT*
 
 #+begin_src subfigure
 (figure ()
@@ -21923,7 +21928,7 @@ purpose cite:krieger2018search defines different detector regions in
 which the background rate is computed and treated as constant. One of
 these, termed the 'gold region' is a square around the center of
 $\SI{5}{mm}$ side length (slightly larger than the 4 center tiles in
-fig. \ref{fig:background:background_suppression_tiles_no_vetoes_2017_18}). All
+fig. sref:fig:background:background_suppression_tiles_no_vetoes_2017_18). All
 background rate plots unless otherwise specified in the remainder of
 the thesis always refer to this region of low background.
 
@@ -21974,9 +21979,21 @@ during the solar tracking time, the dataset containing candidates for
 the solar axion search is extracted. 
 #+end_quote
 
-
 - [ ] *redo the plots*
 - [ ] *INCLUDE GOLD REGION IN CLUSTER PLOT!*
+
+
+- [ ] *ADD OCCUPANCIES TO APPENDIX!*
+- [X] *FIX TITLE OF SUPPRESSION PLOT*
+  
+
+- [ ] This *COULD* become its own chapter after all. That way make the
+  CDL part a likelihood method & stuff chapter and this an apply
+  method for background rate chapter.
+
+- [X] most of it moved to likelihood method section
+- [ ] *REWRITE ME*
+- [X] *BETTER CLARIFY DISTINCTION BETWEEN BACKGROUND AND TRACKING*  
 
 1. show all clusters left over after likelihood cut?
   Introduces discussion of different chip regions. For a pure
