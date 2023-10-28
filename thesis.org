@@ -21576,12 +21576,41 @@ for a single likelihood value $\mathcal{L}$.
   CDL DATA, INCL LINEAR INTERPOLATION. ALTERNATIVELY, FINISH THAT
   EXPLANATION ABOVE BEFORE TALKING ABOUT CDL DETAILS?*
 
-**** Generate plot of likelihood distributions                  :extended:
+**** Generate plots of the likelihood and reference distributions :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:background:gen_plots_likelihood
+:END:
 
-The ridgeline plot used in the above section is produced using
-~TimepixAnalysis/Plotting/plotCdl~. See
-sec. [[#sec:background:gen_plots_likelihood]] for the exact commands as
-more plots are produced used in other sections.
+In order to generate plots of the reference distributions as well as
+the likelihood distributions, we use the ~TimepixAnalysis/Plotting/plotCdl~ tool (adjust the
+path to the ~calibration-cdl-2018.h5~ according to your system):
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Plotting/plotCdl
+./plotCdl \
+    -c ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --outpath ~/phd/Figs/CDL
+#+end_src
+which generates a range of figures in the local ~out~ directory.
+
+Among them:
+- ridgeline plots for each property, as well as facet plots
+- a combined ridgeline plot of all reference distributions side by
+  side as a ridgeline each (used in the above section)
+- plots of the CDL energies using ~energyFromCharge~
+- plots of the likelihood distributions. Both as a outline and
+  ridgeline plot.
+
+Note that this tool can also create comparisons between a background
+dataset and their properties and the reference data!
+
+For now we use:
+- ~out/ridgeline_all_properties_side_by_side.pdf~
+- ~out/eccentricity_facet_calibration-cdl-2018.h5.pdf~
+- ~out/fractionInTransverseRms_facet_calibration-cdl-2018.h5.pdf~
+- ~out/lengthDivRmsTrans_facet_calibration-cdl-2018.h5.pdf~
+- ~out/logL_ridgeline.pdf~
+
+which also all live in ~phd/Figs/CDL~.
+
 
 *** Energy interpolation of likelihood distributions [/]
 
@@ -21759,40 +21788,6 @@ interpolation!
 
 The actual linear interpolation results (i.e. reproducing the "middle"
 one will be shown in the actual thesis).
-
-*** Generate plots of the likelihood and reference distributions  :extended:
-:PROPERTIES:
-:CUSTOM_ID: sec:background:gen_plots_likelihood
-:END:
-
-In order to generate plots of the reference distributions as well as
-the likelihood distributions, we use the ~plotCdl~ tool:
-
-#+begin_src sh
-cd $TPA/Plotting/plotCdl
-./plotCdl
-#+end_src
-which generates a range of figures in the local ~out~ directory.
-
-Among them:
-- ridgeline plots for each property, as well as facet plots
-- a combined ridgeline plot of all reference distributions side by
-  side as a ridgeline each (used in the above section)
-- plots of the CDL energies using ~energyFromCharge~
-- plots of the likelihood distributions. Both as a outline and
-  ridgeline plot.
-
-Note that this tool can also create comparisons between a background
-dataset and their properties and the reference data!
-
-For now we use:
-- ~out/ridgeline_all_properties_side_by_side.pdf~
-- ~out/eccentricity_facet_calibration-cdl-2018.h5.pdf~
-- ~out/fractionInTransverseRms_facet_calibration-cdl-2018.h5.pdf~
-- ~out/lengthDivRmsTrans_facet_calibration-cdl-2018.h5.pdf~
-- ~out/logL_ridgeline.pdf~
-
-which also all live in ~phd/Figs/CDL~.
 
 *** Energy resolution [/]
 :PROPERTIES:
