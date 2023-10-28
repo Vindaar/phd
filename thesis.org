@@ -22418,48 +22418,25 @@ chip!
 
 - [ ] *AFAIR WE STILL COMPUTE LOGL CUT VALUE BASED ON BINNED
   HISTOGRAM. CHANGE THAT TO UNBINNED DATA*  
-  
 
 ** Artificial neural networks as cluster classification [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:background:mlp
 :END:
 
-*THIS WILL STILL BE A DECENTLY LARGE CHAPTER*
-
-- super short introduction to ANNs and MLPs in particular
-- including math of an MLP, effectively just simple matrix math
-- introduced backpropagation, very simply, mention SGD
-- show the MLP layout we use, refer to appendix / extended version for
-  study of different activation functions, layouts etc    
-- Highlight that one of the main points was to use a network that
-  remains relatively small
-
-- describe training input data!
-  - background is fine
-  - X-ray training data: simulated events!
-
-
-- [ ] *THIS IS FINALLY BECOMING A PROPER SECTION!*
-  -> See further above after likelihood cut method
-
-- [ ] *CITE REFERENCE FOR MLP*
-- [ ] *CITE REFERENCE FOR SGD*
-- [ ] *CITE REFERENCE FOR BACKPROPAGATION, AUTOGRAD*?
-
 The likelihood cut based method presented in section
-[[#sec:likelihood_method]] works well, but does not use the full potential
-of the data. It mainly uses length / eccentricity related properties,
-which are hand picked and ignores the possible separation power of all
-other properties.
+[[#sec:limit:method_likelihood]] works well, but does not use the full
+potential of the data. It mainly uses length / eccentricity related
+properties, which are hand picked and ignores the possible separation
+power of all other properties.
 
 Multiple different ways to use all separation power exist. One
 promising approach is the usage of artificial neural networks (ANN). A
-multi-layer perceptron (MLP; (*reference something?*) ) is a simple
-supervised ANN model, which consists of an input and output layer plus
-one or more fully connected hidden layers. By training such a network
-on the already computed geometric properties of the clusters,
-computational requirements remain relatively moderate.
+multi-layer perceptron (MLP) cite:&amari67_mlp [fn:citations] is a
+simple supervised ANN model, which consists of an input and output
+layer plus one or more fully connected hidden layers. By training such
+a network on the already computed geometric properties of the
+clusters, computational requirements remain relatively moderate.
 
 As each neuron on a given layer in an MLP is fully connected to all
 neurons on the previous layer, the output of neuron $k$ on layer $i$
@@ -22509,7 +22486,14 @@ w^{n+1}_{ij} = w^n_{ij} - η \frac{∂ l(\mathbf{y})}{∂ w^n_{ij}}.
 
 where $η$ is the learning rate. This approach to updating the weights
 during training is referred to as
-backpropagation. [fn:reverse_mode_autograd]
+backpropagation. [[cite:&rumelhart86_backprop]] [fn:reverse_mode_autograd]
+
+[fn:citations] Due to the rich and long history of artificial neural
+networks picking "a" or only a few citations is tricky. Amari's work [[cite:&amari67_mlp]]
+was, as far as I'm aware, the first to combine a perceptron with
+non-linear activation functions and using gradient descent for
+training. See Schmidhuber's recent overview for a detailed history
+leading up to modern deep learning [[cite:&schmidhuber22_history]]. 
 
 [fn:loss_of_minibatch] For performance reasons to utilize the
 parallel nature of GPUs, training and inference of NNs is done in
@@ -22534,6 +22518,36 @@ few outputs (scalar loss function!). As such reverse mode autograd is
 the standard way to compute the gradients during NN training. In the
 context it is effectively synonymous with 'backpropagation' (due to
 its output-to-input evaluation of the chain rule).
+
+*** TODOs for this section [/]                                   :noexport:
+
+*THIS WILL STILL BE A DECENTLY LARGE CHAPTER*
+
+- super short introduction to ANNs and MLPs in particular
+- including math of an MLP, effectively just simple matrix math
+- introduced backpropagation, very simply, mention SGD
+- show the MLP layout we use, refer to appendix / extended version for
+  study of different activation functions, layouts etc    
+- Highlight that one of the main points was to use a network that
+  remains relatively small
+
+- describe training input data!
+  - background is fine
+  - X-ray training data: simulated events!
+
+
+- [ ] *THIS IS FINALLY BECOMING A PROPER SECTION!*
+  -> See further above after likelihood cut method
+  
+
+Good references are tricky...
+- [ ] *CITE REFERENCE FOR MLP*
+  -> History of MLPs is tricky, because it spans so many decades from
+  original perceptrons (1958 by Frank Rosenblatt) etc
+  -> The closest reference is maybe
+  Amari, Shun'ichi (1967). "A theory of adaptive pattern classifier". IEEE Transactions. EC (16): 279–307.
+- [ ] *CITE REFERENCE FOR SGD*
+- [ ] *CITE REFERENCE FOR BACKPROPAGATION, AUTOGRAD*?
 
 *** MLP for CAST data
 :PROPERTIES:
