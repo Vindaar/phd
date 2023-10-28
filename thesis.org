@@ -21217,6 +21217,200 @@ The ridgeline plot used in the above section is produced using
 sec. [[#sec:background:gen_plots_likelihood]] for the exact commands as
 more plots are produced used in other sections.
 
+**** Generate plots for interpolated likelihood distribution and logL variable correlations [/] :extended: 
+:PROPERTIES:
+:CUSTOM_ID: sec:background:correlation_lnL_variables
+:END:
+
+In the main text I mentioned that the $\ln\mathcal{L}$ variables are
+all very correlated. Let's create a few plots to look at how
+correlated they actually are. We'll generate scatter plots of the
+three variables against another, using a color scale for the third variable.
+
+- [ ] *WRITE A FEW WORDS ABOUT THE PLOTS!*
+
+- [X] Create a plot of the likelihood distributions interpolated over
+  all energies!
+  Well, it doesn't work in the way I thought, because obviously we cannot just compute
+  the likelihood distributions directly! We can compute *a* likelihood value for a cluster
+  at an arbitrary energy, but to get a likelihood distribution we'd need actual X-ray data
+  at all energies! The closest we have to that is the general CDL data (not just the main
+  peak & using correct energies for each cluster)
+  -> Attempt to use the CDL data with only the cleaning cuts
+  -> Question: Which tool do we add this to? Or separate here using
+  CDL reconstructed data?
+
+  How much statistics do we even have if we end up splitting
+  everything over 1000 energies? Like nothing...
+  Done in:
+  [[~/phd/Figs/background/logL_of_CDL_vs_energy.pdf]]
+  now where we compare the no morphing vs. the linear morphing
+  case. Much more interesting than I would have thought, because one
+  can clearly see the effect of the morphing on the logL values that
+  are computed!
+  This is a pretty nice result to showcase the morphing is actually
+  useful. Will be put into appendix and linked.
+
+- [X] *ADD LINE SHOWING WHERE THE CUT VALUES ARE TO THE PLOT*
+  -> The hard corners in the interpolated data is because the
+  reference distributions are already pre-binned of course! So if by
+  just changing the bins slightly the ε cut value still lies in the
+  same bin, of course we see a 'straight' line in energy. Hence a non
+  smooth curve.
+  We could replace this all:
+  - either by a smooth KDE and interpolate based on
+    that as an alternative. I should really try this, the only
+    questionable issue is the fracRms distribution and its discrete
+    features. *However* we don't actually guarantee in any way that
+    in current approach the bins _actually_ correspond to any fixed
+    integer values. It is quite likely that the bins that show
+    smaller/larger values are too wide/small!
+  - or by keeping everything as is, but then performing a spline
+    interpolation on the *distinct* (logL, energy) pairs such that the
+    result is a smooth logL value. "Better bang for buck" than doing
+    full KDE and avoids the issue of discreteness in the fracRms
+    distribution. Even though the interpolated values probably
+    correspond to something as if the fracRms distribution _had_ been smooth.
+  
+#+begin_src nim :tangle code/generate_interp_likelihood.nim
+import std / [os, strutils]
+import ingrid / ingrid_types
+import ingrid / private / [cdl_utils, cdl_cuts, hdf5_utils, likelihood_utils]
+import pkg / [ggplotnim, nimhdf5]
+
+
+const TpxDir = "/home/basti/CastData/ExternCode/TimepixAnalysis"
+const cdl_runs_file = TpxDir / "resources/cdl_runs_2019.org"
+const fname = "/home/basti/CastData/data/CDL_2019/CDL_2019_Reco.h5"
+const cdlFile = "/home/basti/CastData/data/CDL_2019/calibration-cdl-2018.h5"
+const dsets = @["totalCharge", "eccentricity", "lengthDivRmsTrans", "fractionInTransverseRms"]
+
+proc calcEnergyFromFits(df: DataFrame, fit_μ: float, tfKind: TargetFilterKind): DataFrame =
+  ## Given the fit result of this data type & target/filter combination compute the energy
+  ## of each cluster by using the mean position of the main peak and its known energy
+  result = df
+  result["Target"] = $tfKind
+  let invTab = getInverseXrayRefTable()
+  let energies = getXrayFluorescenceLines()
+  let lineEnergy = energies[invTab[$tfKind]]
+  result = result.mutate(f{float: "energy" ~ `totalCharge` / fit_μ * lineEnergy})
+
+let h5f = H5open(fname, "r")
+var df = newDataFrame()
+for tfKind in TargetFilterKind:
+  for (run, grp) in tfRuns(h5f, tfKind, cdl_runs_file):
+    var dfLoc = newDataFrame()
+    for dset in dsets:
+      if dfLoc.len == 0:
+        dfLoc = toDf({ dset : h5f.readCutCDL(run, 3, dset, tfKind, float64) })
+      else:
+        dfLoc[dset] = h5f.readCutCDL(run, 3, dset, tfKind, float64)
+    dfLoc["runNumber"] = run
+    dfLoc["tfKind"] = $tfKind
+    # calculate energy from fit
+    let fit_μ = grp.attrs["fit_μ", float]
+    dfLoc = dfLoc.calcEnergyFromFits(fit_μ, tfKind)
+    df.add dfLoc
+
+proc calcInterp(ctx: LikelihoodContext, df: DataFrame): DataFrame =
+  # walk all rows
+  # feed ecc, ldiv, frac into logL and return a DF with
+  result = df.mutate(f{float: "logL" ~ ctx.calcLikelihoodForEvent(`energy`,
+                                                            `eccentricity`,
+                                                            `lengthDivRmsTrans`,
+                                                            `fractionInTransverseRms`)
+  })
+
+# first make plots of 3 logL variables to see their correlations  
+ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations") + 
+  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac.pdf")
+
+ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv.pdf")
+
+ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc.pdf")
+
+
+df = df.filter(f{`eccentricity` < 2.5})
+ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac_ecc_smaller_2_5.pdf")
+
+ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv_ecc_smaller_2_5.pdf")
+
+ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
+  geom_point(size = 1.0) +
+  ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
+  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc_ecc_smaller_2_5.pdf")
+
+
+from std/sequtils import concat
+# now generate the plot of the logL values for all cleaned CDL data. We will compare the
+# case of no morphing with the linear morphing case
+proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) = 
+  let ctx = initLikelihoodContext(cdlFile, yr2018, crGold, igEnergyFromCharge, Timepix1, mk)
+  var dfMorph = ctx.calcInterp(df)
+  dfMorph["Morphing?"] = $mk
+  let cutVals = ctx.calcCutValueTab()
+  case cutVals.kind
+  of mkNone:
+    let lineEnergies = getEnergyBinning()
+    let tab = getInverseXrayRefTable()
+    var cuts = newSeq[float]()
+    var energies = @[0.0]
+    var lastCut = Inf
+    var lastE = Inf
+    for k, v in tab:
+      let cut = cutVals[k]
+      if classify(lastCut) != fcInf:
+        cuts.add lastCut
+        energies.add lastE
+      cuts.add cut
+      lastCut = cut
+      let E = lineEnergies[v]
+      energies.add E
+      lastE = E
+    cuts.add cuts[^1] # add last value again to draw line up 
+    echo energies.len, " vs ", cuts.len
+    let dfCuts = toDf({energies, cuts, "Morphing?" : $cutVals.kind})
+    result = (dfCuts, dfMorph)
+  of mkLinear:
+    let energies = concat(@[0.0], cutVals.cutEnergies, @[20.0])
+    let cutsSeq = cutVals.cutValues.toSeq1D
+    let cuts = concat(@[cutVals.cutValues[0]], cutsSeq, @[cutsSeq[^1]])
+    let dfCuts = toDf({"energies" : energies, "cuts" : cuts, "Morphing?" : $cutVals.kind})
+    result = (dfCuts, dfMorph)
+
+var dfMorph = newDataFrame()
+let (dfCutsNone, dfNone) = getLogL(df, mkNone)
+let (dfCutsLinear, dfLinear) = getLogL(df, mkLinear)
+dfMorph.add dfNone
+dfMorph.add dfLinear
+
+var dfCuts = newDataFrame()
+dfCuts.add dfCutsNone
+dfCuts.add dfCutsLinear
+
+ggplot(dfMorph, aes("logL", "energy", color = factor("Target"))) +
+  facet_wrap("Morphing?") +
+  geom_point(size = 1.0) +
+  geom_line(data = dfCuts, aes = aes("cuts", "energies")) + # , color = "Morphing?")) + 
+  ggtitle("lnL values of all (cleaned) CDL data against energy") + 
+  ggsave("/home/basti/phd/Figs/background/logL_of_CDL_vs_energy.pdf", width = 1000, height = 600)
+#+end_src
+
+
 *** Define likelihood distribution [0/2]
 :PROPERTIES:
 :CUSTOM_ID: sec:cdl:cdl_morphing
@@ -21822,189 +22016,6 @@ charge cuts for the reference data.
 I *ASSUME* that this is the reason we get the new results. *However*
 we should somehow maybe perform some check that we're actually doing
 everything correctly?
-
-*** Generate plots for interpolated likelihood distribution and logL variable correlations :noexport:
-
-- [X] Create a plot of the likelihood distributions interpolated over
-  all energies!
-  Well, it doesn't work in the way I thought, because obviously we cannot just compute
-  the likelihood distributions directly! We can compute *a* likelihood value for a cluster
-  at an arbitrary energy, but to get a likelihood distribution we'd need actual X-ray data
-  at all energies! The closest we have to that is the general CDL data (not just the main
-  peak & using correct energies for each cluster)
-  -> Attempt to use the CDL data with only the cleaning cuts
-  -> Question: Which tool do we add this to? Or separate here using
-  CDL reconstructed data?
-
-  How much statistics do we even have if we end up splitting
-  everything over 1000 energies? Like nothing...
-  Done in:
-  [[~/phd/Figs/background/logL_of_CDL_vs_energy.pdf]]
-  now where we compare the no morphing vs. the linear morphing
-  case. Much more interesting than I would have thought, because one
-  can clearly see the effect of the morphing on the logL values that
-  are computed!
-  This is a pretty nice result to showcase the morphing is actually
-  useful. Will be put into appendix and linked.
-
-- [X] *ADD LINE SHOWING WHERE THE CUT VALUES ARE TO THE PLOT*
-  -> The hard corners in the interpolated data is because the
-  reference distributions are already pre-binned of course! So if by
-  just changing the bins slightly the ε cut value still lies in the
-  same bin, of course we see a 'straight' line in energy. Hence a non
-  smooth curve.
-  We could replace this all:
-  - either by a smooth KDE and interpolate based on
-    that as an alternative. I should really try this, the only
-    questionable issue is the fracRms distribution and its discrete
-    features. *However* we don't actually guarantee in any way that
-    in current approach the bins _actually_ correspond to any fixed
-    integer values. It is quite likely that the bins that show
-    smaller/larger values are too wide/small!
-  - or by keeping everything as is, but then performing a spline
-    interpolation on the *distinct* (logL, energy) pairs such that the
-    result is a smooth logL value. "Better bang for buck" than doing
-    full KDE and avoids the issue of discreteness in the fracRms
-    distribution. Even though the interpolated values probably
-    correspond to something as if the fracRms distribution _had_ been smooth.
-  
-#+begin_src nim :tangle code/generate_interp_likelihood.nim
-import std / [os, strutils]
-import ingrid / ingrid_types
-import ingrid / private / [cdl_utils, cdl_cuts, hdf5_utils, likelihood_utils]
-import pkg / [ggplotnim, nimhdf5]
-
-
-const TpxDir = "/home/basti/CastData/ExternCode/TimepixAnalysis"
-const cdl_runs_file = TpxDir / "resources/cdl_runs_2019.org"
-const fname = "/home/basti/CastData/data/CDL_2019/CDL_2019_Reco.h5"
-const cdlFile = "/home/basti/CastData/data/CDL_2019/calibration-cdl-2018.h5"
-const dsets = @["totalCharge", "eccentricity", "lengthDivRmsTrans", "fractionInTransverseRms"]
-
-proc calcEnergyFromFits(df: DataFrame, fit_μ: float, tfKind: TargetFilterKind): DataFrame =
-  ## Given the fit result of this data type & target/filter combination compute the energy
-  ## of each cluster by using the mean position of the main peak and its known energy
-  result = df
-  result["Target"] = $tfKind
-  let invTab = getInverseXrayRefTable()
-  let energies = getXrayFluorescenceLines()
-  let lineEnergy = energies[invTab[$tfKind]]
-  result = result.mutate(f{float: "energy" ~ `totalCharge` / fit_μ * lineEnergy})
-
-let h5f = H5open(fname, "r")
-var df = newDataFrame()
-for tfKind in TargetFilterKind:
-  for (run, grp) in tfRuns(h5f, tfKind, cdl_runs_file):
-    var dfLoc = newDataFrame()
-    for dset in dsets:
-      if dfLoc.len == 0:
-        dfLoc = toDf({ dset : h5f.readCutCDL(run, 3, dset, tfKind, float64) })
-      else:
-        dfLoc[dset] = h5f.readCutCDL(run, 3, dset, tfKind, float64)
-    dfLoc["runNumber"] = run
-    dfLoc["tfKind"] = $tfKind
-    # calculate energy from fit
-    let fit_μ = grp.attrs["fit_μ", float]
-    dfLoc = dfLoc.calcEnergyFromFits(fit_μ, tfKind)
-    df.add dfLoc
-
-proc calcInterp(ctx: LikelihoodContext, df: DataFrame): DataFrame =
-  # walk all rows
-  # feed ecc, ldiv, frac into logL and return a DF with
-  result = df.mutate(f{float: "logL" ~ ctx.calcLikelihoodForEvent(`energy`,
-                                                            `eccentricity`,
-                                                            `lengthDivRmsTrans`,
-                                                            `fractionInTransverseRms`)
-  })
-
-# first make plots of 3 logL variables to see their correlations  
-ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
-  geom_point(size = 1.0) +
-  ggtitle("lnL variables of all (cleaned) CDL data for correlations") + 
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac.pdf")
-
-ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
-  geom_point(size = 1.0) +
-  ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv.pdf")
-
-ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
-  geom_point(size = 1.0) +
-  ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc.pdf")
-
-
-df = df.filter(f{`eccentricity` < 2.5})
-ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
-  geom_point(size = 1.0) +
-  ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac_ecc_smaller_2_5.pdf")
-
-ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
-  geom_point(size = 1.0) +
-  ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv_ecc_smaller_2_5.pdf")
-
-ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
-  geom_point(size = 1.0) +
-  ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc_ecc_smaller_2_5.pdf")
-
-
-from std/sequtils import concat
-# now generate the plot of the logL values for all cleaned CDL data. We will compare the
-# case of no morphing with the linear morphing case
-proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) = 
-  let ctx = initLikelihoodContext(cdlFile, yr2018, crGold, igEnergyFromCharge, Timepix1, mk)
-  var dfMorph = ctx.calcInterp(df)
-  dfMorph["Morphing?"] = $mk
-  let cutVals = ctx.calcCutValueTab()
-  case cutVals.kind
-  of mkNone:
-    let lineEnergies = getEnergyBinning()
-    let tab = getInverseXrayRefTable()
-    var cuts = newSeq[float]()
-    var energies = @[0.0]
-    var lastCut = Inf
-    var lastE = Inf
-    for k, v in tab:
-      let cut = cutVals[k]
-      if classify(lastCut) != fcInf:
-        cuts.add lastCut
-        energies.add lastE
-      cuts.add cut
-      lastCut = cut
-      let E = lineEnergies[v]
-      energies.add E
-      lastE = E
-    cuts.add cuts[^1] # add last value again to draw line up 
-    echo energies.len, " vs ", cuts.len
-    let dfCuts = toDf({energies, cuts, "Morphing?" : $cutVals.kind})
-    result = (dfCuts, dfMorph)
-  of mkLinear:
-    let energies = concat(@[0.0], cutVals.cutEnergies, @[20.0])
-    let cutsSeq = cutVals.cutValues.toSeq1D
-    let cuts = concat(@[cutVals.cutValues[0]], cutsSeq, @[cutsSeq[^1]])
-    let dfCuts = toDf({"energies" : energies, "cuts" : cuts, "Morphing?" : $cutVals.kind})
-    result = (dfCuts, dfMorph)
-
-var dfMorph = newDataFrame()
-let (dfCutsNone, dfNone) = getLogL(df, mkNone)
-let (dfCutsLinear, dfLinear) = getLogL(df, mkLinear)
-dfMorph.add dfNone
-dfMorph.add dfLinear
-
-var dfCuts = newDataFrame()
-dfCuts.add dfCutsNone
-dfCuts.add dfCutsLinear
-
-ggplot(dfMorph, aes("logL", "energy", color = factor("Target"))) +
-  facet_wrap("Morphing?") +
-  geom_point(size = 1.0) +
-  geom_line(data = dfCuts, aes = aes("cuts", "energies")) + # , color = "Morphing?")) + 
-  ggtitle("lnL values of all (cleaned) CDL data against energy") + 
-  ggsave("/home/basti/phd/Figs/background/logL_of_CDL_vs_energy.pdf", width = 1000, height = 600)
-#+end_src
 
 *** Generate background rate and cluster plot [0/2]              :noexport:
 
