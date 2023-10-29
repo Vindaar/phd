@@ -11842,6 +11842,9 @@ thesis is performed.
   -> Below.
 
 ** ~TimepixAnalysis~ and Nim
+:PROPERTIES:
+:CUSTOM_ID: sec:reco:tpa
+:END:
 
 The data reconstruction software handling the processes mentioned in
 the remainder of this chapter is the ~TimepixAnalysis~ cite:TPA [fn:tpa_github]
@@ -22603,18 +22606,25 @@ that is less true.
 :CUSTOM_ID: sec:background:mlp:event_generation
 :END:
 
-To generate simulated events as MLP training input we only use the
-relationships that were introduced in chapter
-[[#sec:theory_detector]]. The idea is to generate events using the
-underlying gaseous detector physics and make as few heuristic
+To generate simulated events we wish to use the least amount of
+inputs, which still yield events that represent the recorded data as well as
+possible. In particular the systematic variations between different
+times and datasets should be reproducible based on these parameters. The
+idea is to generate events using the underlying gaseous detector
+physics (see sec. [[#sec:theory_detector]]) and make as few heuristic
 modifications to better match the observed (imperfect) data as
-possible.
+possible. This lead to an algorithm, which only uses three
+parameters: A target energy for the event (within the typical energy
+resolution). A gas gain to encode the gain variation seen. A gas
+diffusion coefficient to encode variations in the diffusion
+properties (also possibly a result of changing temperatures).
 
-The basic Monte Carlo algorithm will now be described in a series of
-steps. The actual implementation is found at *CITE ME*.
-- [ ] *CITE LINK TO IMPLEMENTATION OF FAKE GENERATION*
-- [ ] *MENTION MARKUS GRIDPIX SIMULATION* -> slower, but more accurate.
+In contrast to approaches that simulate the interactions at
+the particle level, our simulation is based entirely on the emergent
+properties seen as a result of those.
 
+The [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fake_generator.nim][basic Monte Carlo algorithm]] will now be described in a series of
+steps. 
 1. (optional) sample from different fluorescence lines for an element
    given their relative intensities to define a target energy $E$ 
 2. sample from the exponential distribution of the absorption length
@@ -22632,8 +22642,11 @@ steps. The actual implementation is found at *CITE ME*.
    matching normalization & $θ$ constant).  Reject the electron if not
    crossing activation threshold (based on real data).
 7. sample a radial distance from the cluster center based on gas
-   diffusion constant and *INSERT DIFFUSION LAW* and the remaining
-   drift distance to the readout plane.
+   diffusion constant $D_T$ and diffusion after the remaining drift distance
+   to the readout plane $z_{\text{drift}}$ using eq. [[eq:gas_physics:diffusion_after_drift]]. Sample twice
+   from the 1D version using a normal distribution $\mathcal{N}(μ = 0,
+   σ = D_T · \sqrt{z_{\text{drift}}})$ for each dimension. Combined to
+   a radius from center, $r = \sqrt{x² + y²}$.
 8. sample a random angle, uniform in $(0, 2π]$
 9. convert radius and angle to an $(x, y)$ position of the electron,
    add to the cluster.
@@ -22641,7 +22654,7 @@ steps. The actual implementation is found at *CITE ME*.
     neighboring pixels with a slightly reduced gas gain. We never
     activate any neighbors at a charge of $\SI{1000}{e⁻}$ and always
     activate at least one at $\SI{10000}{e⁻}$. Number of activated
-    pixels depends on uniform random number being below one of 4
+    pixels depends on a uniform random number being below one of 4
     different thresholds:
     \[
     N_{\text{neighbor}} = \text{rand}(0, 1) · N < \text{threshold}
@@ -22672,16 +22685,36 @@ that point of view neighboring pixels should see the full gas
 amplification and neighbors other than the direct { up, down, left,
 right } neighbors can be activated (depending on an exponential
 distribution due to possible absorption of the UV photons in the
-gas). See Markus Gruber's master thesis [[cite:&markusMsc]] for a related
+gas). See Markus Gruber's master thesis cite:&markusMsc for a related
 study on this for GridPix detectors. 
 
 Based on the above algorithm fake events can be generated that either
 match the gas gain and gas diffusion of an existing data taking run
-(background or calibration) or any arbitrary combination of parameters
-can be used. The former is important for verification of the validity
+(background or calibration) or any arbitrary combination of
+parameters. The former is important for verification of the validity
 of the generated events as well as to check the MLP cut efficiency
 (more on that in sec. [[#sec:background:mlp:mlp_cut_value]]). The latter
-is used to generate a wide variety of MLP training data.
+is used to generate a wide variety of MLP training data. Event
+production is a very fast process [fn:how_fast] allowing to produce
+large amounts of statistics for MLP training in a reasonable time
+frame.
+
+For other applications that require higher fidelity simulations,
+Degrad [[cite:&biagi1995Degrad]], a sister program to Magboltz
+[[cite:&biagi1995magboltz]], can be used, which simulates the particle
+interactions directly. This is done in a code by M. Gruber
+cite:gruber_xray_sim, which uses Degrad and Garfield++ cite:garfieldpp
+to perform realistic event simulation for GridPix detectors (its data
+can also be analyzed by the software presented in sec. [[#sec:reco:tpa]]).
+
+[fn:how_fast] Generating $\num{100000}$ fake events of the \cefe
+photopeak takes around $\SI{35}{s}$ on a single thread using an AMD
+Ryzen 9 5950X. The code is not exactly optimized either.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *CITE LINK TO IMPLEMENTATION OF FAKE GENERATION*
+- [ ] *MENTION MARKUS GRIDPIX SIMULATION* -> slower, but more accurate.
 
 **** Generate some example and comparison plots :noexport:
 
