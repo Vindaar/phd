@@ -22582,14 +22582,21 @@ dataset must be representative of the wide variety of the real
 data. For background like clusters it can be sourced from the
 extensive non-tracking dataset recorded at CAST. For the signal like
 X-ray data it is more problematic. The only source of X-rays with
-enough statistics are the $\cefe$ datasets from CAST, but these only
-describe X-rays of two energies. The CAST detector lab data from the
-X-ray tube are both limited in statistics as well as suffering from
-systematic differences to the CAST data due to different gas gains.
+enough statistics are the $\cefe$ calibration datasets from CAST, but
+these only describe X-rays of two energies. The CAST detector lab data
+from the X-ray tube are both limited in statistics as well as
+suffering from systematic differences to the CAST data due to
+different gas gains. [fn:problem_mlp_not_lnL]
 
-We will now describe how we generate X-ray clusters for the training
-by simulating them from a target energy, a transverse diffusion and a
-desired gas gain.
+We will now describe how we generate X-ray clusters for MLP training
+by simulating them from a /target energy/, a specific /transverse
+diffusion/ and a desired /gas gain/.
+
+[fn:problem_mlp_not_lnL] The acute reader may wonder why we care less
+about this for the $\ln\mathcal{L}$ method. The reason is simply that
+the effect of gas gain on the three properties used there is
+comparatively small. But if (almost) all properties are to be used,
+that is less true.
 
 *** Generation of simulated X-rays as MLP training input
 :PROPERTIES:
@@ -22664,9 +22671,9 @@ and produce a new electron, which starts an avalanche from there. From
 that point of view neighboring pixels should see the full gas
 amplification and neighbors other than the direct { up, down, left,
 right } neighbors can be activated (depending on an exponential
-distribution due to possible absorption of the UV photons in the gas).
-- [ ] *CITE MARKUS MSC THESIS*
-
+distribution due to possible absorption of the UV photons in the
+gas). See Markus Gruber's master thesis [[cite:&markusMsc]] for a related
+study on this for GridPix detectors. 
 
 Based on the above algorithm fake events can be generated that either
 match the gas gain and gas diffusion of an existing data taking run
