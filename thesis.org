@@ -59,6 +59,7 @@
 # Epigraphs
 #+LATEX_HEADER: \usepackage{epigraph}
 
+#+LATEX_HEADER: \newcommand{\rmst}{$\text{RMS}_T$~}
 
 # With Dejavu Serif a linespacing of 1.2 is too tight. 1.5 looks nice,
 # maybe 1.4 is optimal?
@@ -22628,18 +22629,19 @@ steps.
 1. (optional) sample from different fluorescence lines for an element
    given their relative intensities to define a target energy $E$ 
 2. sample from the exponential distribution of the absorption length
-   for the target photon energy to get the conversion point of the
-   X-ray in the gas (Note: we only sample X-rays that convert, those
-   that would traverse the whole chamber without conversion are ignored)
+   (see sec. [[#sec:theory:xray_matter_gas]]) for the used gas mixture and
+   target photon energy to get the conversion point of the X-ray in
+   the gas (Note: we only sample X-rays that convert, those that would
+   traverse the whole chamber without conversion are ignored)
 3. sample a target charge to achieve for the cluster, based on target energy by sampling from a
    normal distribution with a mean roughly matching detector energy resolution (target energy
    inverted to a charge)
 4. sample center position of the cluster within a uniform radius of
    $\SI{4.5}{mm}$ around the chip center.
 5. begin the sampling of each electron in the cluster
-6. sample a charge in number of electrons (after amplification) for
+6. sample a charge (in number of electrons after amplification) for
    the electron based on a Pòlya distribution of input gas gain (and
-   matching normalization & $θ$ constant).  Reject the electron if not
+   matching normalization & $θ$ constant). Reject the electron if not
    crossing activation threshold (based on real data).
 7. sample a radial distance from the cluster center based on gas
    diffusion constant $D_T$ and diffusion after the remaining drift distance
@@ -22702,7 +22704,7 @@ frame.
 For other applications that require higher fidelity simulations,
 Degrad [[cite:&biagi1995Degrad]], a sister program to Magboltz
 [[cite:&biagi1995magboltz]], can be used, which simulates the particle
-interactions directly. This is done in a code by M. Gruber
+interactions directly. This is utilized in a code by M. Gruber
 cite:gruber_xray_sim, which uses Degrad and Garfield++ cite:garfieldpp
 to perform realistic event simulation for GridPix detectors (its data
 can also be analyzed by the software presented in sec. [[#sec:reco:tpa]]).
@@ -22714,11 +22716,37 @@ Ryzen 9 5950X. The code is not exactly optimized either.
 **** TODOs for this section [/]                                 :noexport:
 
 - [ ] *CITE LINK TO IMPLEMENTATION OF FAKE GENERATION*
-- [ ] *MENTION MARKUS GRIDPIX SIMULATION* -> slower, but more accurate.
+- [ ] *MENTION MARKUS GRIDPIX SIMULATION* -> slower, but more
+  accurate.
 
-**** Generate some example and comparison plots :noexport:
+**** Note on this section and theory                            :extended:
 
-- [ ] Comparison of the different properties as a ridgeline plot?
+The explanation above and the implementation of the fake event
+generation is the main motivator for a good chunk of the included
+gaseous detector theory fundamentals:
+
+- the X-ray matter interaction section is needed to calculate the
+  absorption length (implemented in
+  [[cite:&Schmidt_xrayAttenuation_2022]]). Understanding the theory is
+  needed both to understand how to sample in the first place and how
+  to calculate the absorption length for the gas mixture (and
+  pressure, temperature etc) of the used detector gas
+- Dalton's law is crucial to correctly take into account the behavior
+  of the gas mixtures and how the percentages given for gas mixtures
+  are applied to the calculation
+- Diffusion, how it relates to a random walk, its dimensionality
+  dependence and interpretation as sampling from a normal distribution
+  for the resulting diffusion after a certain drift is required for
+  the sampling of each electron.
+- the discussion of the \cefe spectrum is required to understand that
+  an escape photon is not equivalent to a real $\SI{3}{keV}$ X-ray
+  (more on that in the next sections)
+- gas gain understanding is (here also) needed to sample the gain for
+  each electron
+
+**** Generate some example and comparison plots [/]             :noexport:
+
+- [X] Comparison of the different properties as a ridgeline plot?
   -> similar to plots in appendix
   [[#sec:appendix:fit_by_run:gas_gain_var_cluster_prop]]
   like
@@ -22760,7 +22788,8 @@ can be found here [[file:~/CastData/ExternCode/TimepixAnalysis/Plotting/plotDset
 plotDatasetGgplot \
     -f /mnt/1TB/CAST/2018_2/CalibrationRuns2018_Reco.h5 \
     -f /t/test_fakegen_run241.h5 \
-    --run 241
+    --run 241 \
+    --plotPath ~/phd/Figs/fakeEventSimulation/runComparisons
 #+end_src
 
 Let's automate this quickly for all \cefe calibration runs.
@@ -22814,6 +22843,7 @@ for (year, fYear) in zip(years, yearFile):
 which yields all the plots in:
 [[file:Figs/fakeEventSimulation/runComparisons/]]
 
+- [ ] *RERUN WITH CSV OUTPUT!*
 
 *** Determination of gas diffusion
 :PROPERTIES:
@@ -22827,7 +22857,7 @@ of the gas gain is a well defined procedure, explained in sections
 [[#sec:daq:polya_distribution_threshold]] and
 [[#sec:calib:gas_gain_time_binning]]. The target energy is a matter of the
 purpose the generated data is for. The gas diffusion however is more
-complicated.
+complicated and requires explanation.
 
 In theory the gas diffusion is a fixed parameter for a specific gas
 mixture at fixed temperature, pressure and electromagnetic fields and
@@ -22835,7 +22865,7 @@ can be computed using Monte Carlo tools as mentioned already in
 sec. [[#sec:theory:gas_diffusion]]. However, in practice MC tools suffer
 from significant uncertainty (in particular in the form of run-by-run
 RNG variation) especially at common numbers of MC samples. More
-importantly though, real detectors neither have perfectly stable and
+importantly though, real detectors do not have perfectly stable and
 known temperatures, pressures and electromagnetic fields (for example
 the field inhomogeneity of the drift field in the 7-GridPix detector
 is not perfectly known), leading to important differences and
@@ -22847,23 +22877,21 @@ constant $D_t(z)$ (introduced in sec. [[#sec:theory:gas_diffusion]])
 describes the standard deviation of the transverse distance from the
 initial center after drifting a distance $z$ along a homogeneous
 electric field. This parameter is one of our geometric properties, in
-the form of the transverse standard deviation $σ_T$ (historically
-still named 'transverse RMS' though) and thus it can be used to
+the form of the transverse RMS \rmst (which is actually the transverse
+standard distribution of the electron positions [fn:rms_symbol]) and thus it can be used to
 determine the gas diffusion coefficient. [fn:longitudinal_rms] As it
 is a statistical process and $D_t$ is the standard deviation of the
 population a large ensemble of events is needed.
 
-- [ ] *MOVE DOWN*
-This is available
-both for calibration data as well as background data. In both cases it
-is important to apply minor cuts to remove the majority of events in
-which $σ_T$ contains contributions that are not due to gas diffusion
-(e.g. a double X-ray event which was not separated by the cluster
-finder). For calibration data the cuts should filter to single X-rays,
-whereas for background events clean muon tracks are the target.
+This is possible both for calibration data as well as background
+data. In both cases it is important to apply minor cuts to remove the
+majority of events in which \rmst contains contributions that are not
+due to gas diffusion (e.g. a double X-ray event which was not
+separated by the cluster finder). For calibration data the cuts should
+filter to single X-rays, whereas for background events clean muon
+tracks are the target.
 
-
-In theory one could determine it by way of a fit to the $σ_T$
+In theory one could determine it by way of a fit to the \rmst
 distribution of all clusters in a data taking run as was done in
 cite:krieger2018energy. This approach is problematic in practice due
 to the large variation in possible X-ray conversion points - and
@@ -22878,22 +22906,26 @@ undergoing statistically large amount of diffusion).
 Instead of performing an analytical convolution of the exponential
 distribution and gas diffusion distributions to determine the correct
 fit, a Monte Carlo approach is used here as well. The idea here is to
-generate (simplified [fn:simplified_events]) fake events for a
-starting gas diffusion coefficient, compare it to the real $σ_T$
-distribution of the target run based on a test statistics, compute the
-derivative of the test statistics as a form of loss function and
-adjust the diffusion coefficient accordingly. Over a number of
-iterations the distribution of the simulated $σ_T$ distribution will
-converge to the real $σ_T$ distribution, if the choice of test
-statistics is suitable.
+use a reasonable [fn:reasonable] gas diffusion constant to 
+generate (simplified [fn:simplified_events]) fake events. Compute the
+\rmst distribution of this fake data and compare to the real \rmst
+distribution of the target run based on a test statistic. Next one computes the
+derivative of the test statistic as a form of loss function and
+adjusts the diffusion coefficient accordingly. Over a number of
+iterations the distribution of the simulated \rmst distribution will
+converge to the real \rmst distribution, if the choice of test
+statistic is suitable. In other words we use gradient descent to find
+that diffusion constant $D_T$, which best reproduces the \rmst
+distribution of our target run.
 
 One important point with regards to computing it for background data
-is the realization for muons the equivalent 'conversion point' is a
-uniform distribution over all distances from the detector window to
-the readout as they enter typically from above. For X-rays it is just
-based on the energy dependent attenuation length in the detector gas.
+is the following: when generating fake events for the background
+dataset, the equivalent 'conversion point' for muons is a uniform
+distribution over all distances from the detector window to the
+readout. For X-rays it is given by the energy dependent attenuation
+length in the detector gas.
 
-The test statistics chosen in practice for this purpose is the
+The test statistic chosen in practice for this purpose is the
 Cramér-von-Mises criterion, defined by cite:cramer28_gof,mises36_gof:
 
 \[
@@ -22914,51 +22946,54 @@ with $U$:
 U = N \sum_{i=1}^N \left( r_i - i \right)² + M \sum_{j = 1}^M \left( s_j - j \right)²
 \]
 
-In contrast to for example the Kolmogorov-Smirnov test it includes the
-entire (E)CDF into the statistics instead of just the largest
-deviation, which is a useful property to protect against outliers.
+In contrast to -- for example -- the Kolmogorov-Smirnov test it
+includes the entire (E)CDF into the statistic instead of just the
+largest deviation, which is a useful property to protect against
+outliers.
 
-The iterative optimization process is effectively gradient descent,
-
-- [ ] *REWRITE. WE ACTUALLY RETURN $σ_T$ AND NOT $D_T$!*
-- [ ] *GENERALLY CLARIFY BETTER DISTINCTION BETWEEN PARAMETER $σ_T$
-  AND OUR 'transverse RMS' NUMBER*  
+The iterative optimization process is therefore
 
 \[
 D_{T,i+1} = D_{T,i} - η \frac{∂ f(D_T)}{∂ D_T}
 \]
 
 where $f(D_T)$ is the Monte Carlo algorithm, which computes the test
-statistics for a given $D_T$ and $η$ is the step size (a 'learning
-rate'). The derivative is computed using finite
+statistic for a given $D_T$ and $η$ is the step size along the
+gradient (a 'learning rate'). The derivative is computed using finite
 differences. [fn:derivatives_optimization]
 
 Fig. [[fig:background:mlp:gas_diffusion_values]] shows the values of the
-transverse gas diffusion coefficient $σ_T$ as they have been determined for all
+transverse gas diffusion constant $D_T$ as they have been determined for all
 runs. The color scale is the value of the Cramér-von-Mises test
 criterion and indicates a measure of the uncertainty of the obtained
 parameter. We can see that for the CDL datasets (runs above 305) the
-uncertainty is larger. This is because reproducing the $σ_T$
+uncertainty is larger. This is because reproducing the \rmst
 distribution for these datasets is more problematic than for the CAST
 \cefe datasets (due to more data impurity caused by X-ray backgrounds
 of energies other than the target fluorescence line). Generally we can
 see variation in the range from about
 $\SIrange{620}{660}{μm.cm^{-1/2}}$ for the CAST data and larger
 variation for the CDL data. The theoretical value we expect is about
-$\SI{670}{μm.cm^{-1/2}}$, motivating the empirical deduction.
+$\SI{670}{μm.cm^{-1/2}}$, implying the approach yields reasonable values.
 
-#+CAPTION: Transverse gas diffusion coefficient $σ_T$ as determined empirical based on an
-#+CAPTION: iterative method attempting to reproduce the transverse RMS using simulated X-ray events
-#+CAPTION: using the Cramér-von-Mises test criterion and gradient descent. All runs above run 305
+#+CAPTION: Transverse gas diffusion constant $D_T$ as determined based on an
+#+CAPTION: iterative method attempting to reproduce the transverse RMS distribution using simulated X-ray events,
+#+CAPTION: the Cramér-von-Mises test criterion and gradient descent. All runs above run 305
 #+CAPTION: are CDL calibration runs. The color scale is the CvM test score.
+#+CAPTION: Background runs are marked by crosses.
 #+NAME: fig:background:mlp:gas_diffusion_values
-#+ATTR_LATEX: :width 0.7\textwidth
 [[~/phd/Figs/σT_per_run.pdf]]
 
-Because this iterative calculation is not computationally cheap, the
-resulting $D_T$ parameters for each run are cached in an HDF5 file.
+Because this iterative calculation is not computationally negligible, the
+resulting $D_T$ parameters for each run are cached in an HDF5 file. [fn:determine_D_T_time]
 
-- [ ] *INTRODUCE PLOT* showing the simulated vs real data after CvM optimization?
+[fn:rms_symbol] $σ_T$ would be more appropriate, but conflicts with
+the gas diffusion coefficient (sec. [[#sec:theory:gas_diffusion]]). While
+directly related we should differentiate the two!  
+
+[fn:reasonable] For example a number provided by Magboltz for the used
+gas mixture at normal temperature and used chamber pressure. For the
+CAST gas mixture and settings we start with $D_T = \SI{660}{μm.cm^{-1/2}}$.
 
 [fn:longitudinal_rms] Note that it is important to consider the
 _transverse_ standard deviation and not the longitudinal one. Even for
@@ -22972,9 +23007,9 @@ the diffusion process.
 [fn:simplified_events] In principle the event generation is the same
 algorithm as explained previously, but it does not sample from a Pólya
 for the gas gain, nor compute any cluster properties. Only the
-conversion point and number of target electrons based on target energy
-is simulated. From these electron positions the long and short axes
-are determined and $σ_T$ returned.
+conversion point, number of target electrons based on target energy
+and their positions is simulated. From these electron positions the
+long and short axes are determined and $σ_T$ returned.
 
 [fn:derivatives_optimization] Initially I tried to compute the
 gradient using automatic differentiation using dual numbers for the
@@ -22984,47 +23019,118 @@ calculation of the ECDF. As such the derivative information is lost. I
 didn't manage to come up with a way to compute Cramér-von-Mises based
 on the actual input numbers directly in a timely manner. :')
 
+[fn:determine_D_T_time] One optimization takes on the order of
+$<\SI{30}{s}$ for most runs. But the diffusion parameters are used
+many times.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [X] *REWRITE. WE ACTUALLY RETURN $σ_T$ AND NOT $D_T$!*
+  -> No. We *do* return $D_T$. We just call the field of ~FakeDesc~
+  ~σ_T~, which is a bit confusing in its own right. But that parameter
+  is the one going into the gaussian call with ~fakeDesc.σT * sqrt(zDist)~!
+- [X] *GENERALLY CLARIFY BETTER DISTINCTION BETWEEN PARAMETER $σ_T$
+  AND OUR 'transverse RMS' NUMBER*
+  -> Done that now by introducing an \rmst macro that expands to
+  $\text{RMS}_T$
+
+- [ ] *INTRODUCE PLOT* showing the simulated vs real data after CvM
+  optimization?
+  -> For the main thesis I don't think this is important enough. We
+  should mention that all the plots for the 'best cases' are generated
+  during the optimization process.
+
+- [ ] *INSERT PLOT OF RUN 169 INTO APPENDIX*  
+
 **** Cramér-von-Mises references [/]                            :noexport:
 
-- [ ] *CITE CRAMER-VON-MISES*
+- [X] *CITE CRAMER-VON-MISES*
   - https://doi.org/10.1080%2F03461238.1928.10416862
     Cramér, H. (1928). "On the Composition of Elementary Errors". Scandinavian Actuarial Journal. 1928 (1): 13–74
   - von Mises, R. E. (1928). Wahrscheinlichkeit, Statistik und Wahrheit. Julius Springer.
-- [ ] *CITE TWO SAMPLE FORM*
+- [X] *CITE TWO SAMPLE FORM*
   - https://doi.org/10.1214%2Faoms%2F1177704477 Anderson,
     T. W. (1962). "On the Distribution of the Two-Sample Cramer–von
     Mises Criterion" (PDF). Annals of Mathematical
     Statistics. Institute of Mathematical Statistics. 33 (3):
     1148–1159.
 
-*** Comparison of simulated events and real data
+**** Note on handling background runs                           :extended:
 
-- [ ] Show ridgeline plot of comparison of simulated and real for a
-  given event
-- [ ] Note that in both cases we filter to the main peak, photopeak in
-  \cefe !
+When determining the diffusion constant for background runs, the value
+we actually determine is about $\SI{40}{μm.cm^{-1/2}}$ too large when
+compared to \cefe calibration runs of the same time period (and thus
+likely similar parameters). For this reason we simply subtract this
+empirical difference as a constant offset. This is already done in the
+plot of fig. [[fig:background:mlp:gas_diffusion_values]].
+
+The reason is almost certainly that the background data still contains
+more events that are not very suitable to use for their transverse
+RMS. But because it is a stable offset, we simply subtract it globally
+for all background deduced values.
+
+This guarantees that the cut values we actually produce for the MLP
+matches those that would be valid for equivalent real X-ray data. If
+we didn't do that we would likely get completely wrong cut values. The
+idea is to only have a reference for the diffusion in the background
+runs, which seems to be working correctly for its purpose.
+
+A figure of the diffusion without the offset is (this plot is from
+development), fig. [[fig:background:diffusion_per_run_raw_background]]. As
+one can see the offset is very stable and thus removing it manually
+should be fine.
+
+#+CAPTION: Development figure of the diffusion constant $D_T$ (disregard the usage of $σ_T$ in the figure)
+#+CAPTION: which shows the raw background values.
+#+NAME: fig:background:diffusion_per_run_raw_background
+[[~/phd/Figs/gasGainAndNeighbors/σT_per_run_more_precise.pdf]]
+
+**** Generate plot of diffusion constants for all runs [/]      :extended:
+
+The ~TimepixAnalysis/Tools/determineDiffusion~ module can be compiled
+as a standalone program and then run on an input HDF5 file. It will
+perform the gradient descent optimization for every run in the file
+and then create the figure of the section above.
+
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/determineDiffusion/
+./determineDiffusion \
+    ~/CastData/data/DataRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/DataRuns2018_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
+    --plotPath ~/phd/Figs/determineDiffusion/ \
+    --histoPlotPath ~/phd/Figs/determineDiffusion/histograms \
+    --useTeX
+#+end_src
+
+- [ ] *RERUN THIS WITH TEX AND CSV FILES!*
+
+All the histograms created during the optimization process are stored
+in the ~histogram~ subdirectory. It is one histogram with the \rmst
+distribution and a fit similar to [[cite:&krieger2018energy]] and
+(possibly multiple) comparison plots of the real and simulated data.
+
+*** Comparison of simulated events and real data
 
 Fig. [[fig:background:mlp:ridgeline_simulated_vs_real_run241]] shows the
 comparison of all cluster properties of simulated and real data for
-one \cefe calibration run, number 241. The data is normalized to fit
-into a single plot, each ridge shows a kernel density estimation of
-the data. Gas gain and gas diffusion are extracted from the data as
-explained in previous sections. 
+one \cefe calibration run, number 241. The data is cut to the
+photopeak and normalized to fit into a single plot, each ridge shows a
+kernel density estimation of the data. Gas gain and gas diffusion are
+extracted from the data as explained in previous sections.
 
-All distributions outside the number of hits, energy and
-total charge agree extremely well. These three are expected to not
-perfectly match. Only the total charge is used as an input to the
-MLP and it matches pretty well on its own. The reason is the
-neighboring activation logic in the MC algorithm, which is empirically
-modified such that it produces correct _geometric_ behavior at the
-cost of slightly over- or underestimating the energy and number of
-hits. The Pólya sampling and general neighboring logic is too
-simple to properly reproduce both aspects at the same time. Other runs
-show slightly worse agreement in some distributions, but overall the
-agreement is good. Plots for all runs like this can be found in
-*WHERE???*.
-
-- [ ] *DECIDE WHERE TO SHOW ALL PLOTS. APPENDIX IS TOO LONG!*
+All distributions outside the number of hits, energy and total charge
+agree extremely well. These three are expected to not perfectly
+match. Only the total charge is used as an input to the MLP and it
+matches pretty well on its own. The reason is the neighboring
+activation logic in the MC algorithm, which is empirically modified
+such that it produces correct _geometric_ behavior at the cost of
+slightly over- or underestimating the energy and number of hits. The
+Pólya sampling and general neighboring logic is too simplistic to
+properly reproduce both aspects at the same time. Other runs show
+similar agreement. Plots for all runs like this can be found in the
+extended version of the thesis.
 
 #+CAPTION: Comparison of all geometric properties of simulated and real data of the
 #+CAPTION: \cefe photopeak clusters of run 241 in a ridgeline plot. Each ridge shows
@@ -23034,6 +23140,23 @@ agreement is good. Plots for all runs like this can be found in
 #+CAPTION: energy and total charge. 
 #+NAME: fig:background:mlp:ridgeline_simulated_vs_real_run241
 [[~/phd/Figs/fakeEventSimulation/runComparisons/ingrid_properties_run_241_ridgeline_kde_by_run.pdf]]
+
+**** TODOs for this section                                     :noexport:
+
+
+- [X] Show ridgeline plot of comparison of simulated and real for a
+  given run
+- [ ] Note that in both cases we filter to the main peak, photopeak in
+  \cefe !
+
+- [X] *DECIDE WHERE TO SHOW ALL PLOTS. APPENDIX IS TOO LONG!*
+
+**** All plots of the simulated and real data comparisons       :extended:
+
+As it would also blow up the length of the extended thesis
+unnecessarily, all the figures are simply found in
+
+[[file:Figs/fakeEventSimulation/runComparisons/]]
 
 *** Overview of the best performing MLP [/]
 
