@@ -22428,17 +22428,18 @@ chip!
 
 The likelihood cut based method presented in section
 [[#sec:limit:method_likelihood]] works well, but does not use the full
-potential of the data. It mainly uses length / eccentricity related
+potential of the data. It mainly uses length and eccentricity related
 properties, which are hand picked and ignores the possible separation
-power of all other properties.
+power of other properties.
 
 Multiple different ways to use all separation power exist. One
-promising approach is the usage of artificial neural networks (ANN). A
+promising approach is the usage of artificial neural networks (ANNs). A
 multi-layer perceptron (MLP) cite:&amari67_mlp [fn:citations] is a
 simple supervised ANN model, which consists of an input and output
 layer plus one or more fully connected hidden layers. By training such
 a network on the already computed geometric properties of the
-clusters, computational requirements remain relatively moderate.
+clusters, computational requirements remain relatively moderate
+compared to approaches using -- for example -- the raw data as inputs.
 
 As each neuron on a given layer in an MLP is fully connected to all
 neurons on the previous layer, the output of neuron $k$ on layer $i$
@@ -22480,7 +22481,7 @@ $\frac{∂ l(\mathbf{y})}{∂ w_{ij}}$. Effectively the chain rule is used to ex
 these partial derivatives using the intermediate steps of the
 calculation. This leads to an iterative equation for the weights
 further up the network (towards the input
-layer). Each weight is updated according to
+layer). Each weight is updated from iteration $n$ to $n+1$ according to
 
 \[
 w^{n+1}_{ij} = w^n_{ij} - η \frac{∂ l(\mathbf{y})}{∂ w^n_{ij}}.
@@ -22488,7 +22489,7 @@ w^{n+1}_{ij} = w^n_{ij} - η \frac{∂ l(\mathbf{y})}{∂ w^n_{ij}}.
 
 where $η$ is the learning rate. This approach to updating the weights
 during training is referred to as
-backpropagation. [[cite:&rumelhart86_backprop]] [fn:reverse_mode_autograd]
+backpropagation. cite:&rumelhart86_backprop [fn:reverse_mode_autograd]
 
 [fn:citations] Due to the rich and long history of artificial neural
 networks picking "a" or only a few citations is tricky. Amari's work [[cite:&amari67_mlp]]
@@ -22543,13 +22544,15 @@ its output-to-input evaluation of the chain rule).
   
 
 Good references are tricky...
-- [ ] *CITE REFERENCE FOR MLP*
+- [X] *CITE REFERENCE FOR MLP*
   -> History of MLPs is tricky, because it spans so many decades from
   original perceptrons (1958 by Frank Rosenblatt) etc
   -> The closest reference is maybe
   Amari, Shun'ichi (1967). "A theory of adaptive pattern classifier". IEEE Transactions. EC (16): 279–307.
-- [ ] *CITE REFERENCE FOR SGD*
-- [ ] *CITE REFERENCE FOR BACKPROPAGATION, AUTOGRAD*?
+- [X] *CITE REFERENCE FOR SGD*
+- [X] *CITE REFERENCE FOR BACKPROPAGATION*
+- [ ] *CITE REFERENCE FOR AUTOGRAD*?
+  -> Hmm, maybe?
 
 *** MLP for CAST data
 :PROPERTIES:
