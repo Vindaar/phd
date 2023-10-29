@@ -23169,17 +23169,14 @@ wrapper for [[https://pytorch.org/][libtorch]], using the following parameters:
 - Hidden layers: 2
 - Neurons on hidden layer: 300
 - Output neurons: 2
-- Activation function: $\tanh$ or $\text{ReLU}$ (Rectified linear unit) (*ref?*)
-- Gradient algorithm: Stochastic Gradient Descent (SGD) (*ref?*)
-- Learning rate: \num{7e-4}
+- Activation function: $\tanh$ 
+- Gradient algorithm: Stochastic Gradient Descent (SGD)
 - Momentum: 0.2
+- Learning rate: $\num{7e-4}$
 - Batch size: 8192
-- Training data: \num{250000} simulated X-rays and \num{250000} real
-  background events *NOTE: NOT EXACTLY, NO?*, same number for
-  validation
-- Training epochs: \num{500000}  
-
-- [ ] *Verify NUMBER OF USED INPUTS*
+- Training data: $\num{250 000}$ simulated X-rays and $\num{288 000}$ real
+  background events, same number for validation [fn:number_of_events]
+- Training epochs: $\num{500 000}$
 
 The 14 input neurons were fed with all geometric properties that do
 not scale directly with the energy (no number of active pixels or
@@ -23188,14 +23185,14 @@ towards the center).
 
 This is considered a "reference" implementation, as it is essentially
 the simplest ANN layout possible. As a comparison to the likelihood
-method the receiver operating characteristic (ROC) curves (*REFERENCE
-SOMETHING*) for the different
-X-ray reference datasets is used. The signal and background data used
-for each case (likelihood and MLP) is the test dataset used to test
-the MLP performance after training. Fig. [[fig:roc_curves_logl_mlp]] shows
-these ROC curves with the line style indicating the method and the
-color corresponding to the different targets and thus different
-fluorescence lines. The improvement in background rejection at a fixed signal efficiency
+method the receiver operating characteristic (ROC) curves for the
+different X-ray reference datasets is used. The signal and background
+data used for each case (likelihood and MLP) is the test dataset used
+to test the MLP performance after
+training. Fig. [[fig:roc_curves_logl_mlp]] shows these ROC curves with the
+line style indicating the method and the color corresponding to the
+different targets and thus different fluorescence lines. The
+improvement in background rejection at a fixed signal efficiency
 exceeds $\SI{10}{\percent}$ at multiple energies.
 
 The usage of such neural networks is plainly a replacement for the
@@ -23207,21 +23204,17 @@ validation becomes much more complicated if all chips were to be used,
 due to the random coincidence problem mentioned in a previous
 section).
 
-- [ ] CNN as an alternative idea, add footnote and show github link to
-  our work, say this has been looked into already during MSc thesis
-
-
 During the training process of $\num{500 000}$ epochs every
 $\num{5000}$ epochs the accuracy and loss are evaluated based on the
 test sample and a model checkpoint is stored. The evolution of the
 loss function for this network are shown in
-fig. \ref{fig:background:mlp:training_loss}. As desired the loss
+fig. sref:fig:background:mlp:training_loss. As desired the loss
 decreases during the training, but spikes somewhere between $\num{485
 000}$ and $\num{490 000}$ epochs. It does recover, but does not reach
 the minima found earlier. The accuracy also decreases slightly, but
 not to the extent potentially expected based on the loss. Regardless,
-the checkpoint after \num{485 000} epochs is used as the final MLP
-model. Fig. \ref{fig:background:mlp:validation_output} shows the
+the checkpoint after $\num{485 000}$ epochs is used as the final MLP
+model. Fig. sref:fig:background:mlp:validation_output shows the
 output of neuron 0 (neuron 1 is a mirror image) for the test sample,
 with signal like data towards 1 and background like data
 towards 0. The separation is almost perfect, but small contributions
@@ -23229,28 +23222,24 @@ of the opposite type can be seen near the extrema. This is expected
 due to the presence of real X-rays in the background dataset and
 extreme statistical outliers in the X-ray dataset.
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/neuralNetworks/10_05_23_sgd_tanh300_mse/loss.pdf}
-    \caption{Training loss}
-    \label{fig:background:mlp:training_loss}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/neuralNetworks/10_05_23_sgd_tanh300_mse/validation_output.pdf}
-    \caption{MLP prediction}
-    \label{fig:background:mlp:validation_output}
-  \end{subfigure}%
-  \label{fig:background:mlp:training_plots}
-  \caption{\subref{fig:background:mlp:training_loss} Loss over the training progress, evaluated every \num{5000}
-  epochs. A small spike in loss is seen after checkpoint \num{485000}, which is not fully recovered from. 
-  \subref{fig:background:mlp:validation_output} Output of the validation data sample for neuron 0.
-  Almost perfect signal and background separation.}
-\end{figure}
-- [ ] *REDO PREDICTION PLOT AS A LOG Y PLOT!*
-
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Training loss") (label "fig:background:mlp:training_loss")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/neuralNetworks/10_05_23_sgd_tanh300_mse/loss.pdf"))
+        (subfigure (linewidth 0.5) (caption "MLP prediction") (label "fig:background:mlp:validation_output")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/neuralNetworks/10_05_23_sgd_tanh300_mse/validation_output.pdf"))
+        (caption
+         (subref "fig:background:mlp:training_loss")
+         " Loss over the training progress, evaluated every " ($ "\\num{5000}") 
+         " epochs. A small spike in loss is seen after checkpoint " ($ "\\num{485000}") 
+         ", which is not fully recovered from. "
+         (subref "fig:background:mlp:validation_output")
+         " Output of the validation data sample for neuron 0. Almost perfect signal
+           and background separation.")
+        (label "fig:background:mlp:training_plots"))
+#+end_src        
 
 #+begin_center
 #+CAPTION: ROC curves for the comparison of the likelihood cut method (solid lines) to the
@@ -23264,7 +23253,51 @@ extreme statistical outliers in the X-ray dataset.
 [[~/org/Figs/statusAndProgress/neuralNetworks/roc_curve_mlp_vs_likelihood_split_by_target_1000_epochs_no_energy_hits.pdf]]
 #+end_center
 
-*** Training call for best performing MLP                        :noexport:
+[fn:number_of_events] For training X-rays a total of $\num{500 000}$
+events are simulated. For background $\num{6 000}$ events are randomly
+selected from the background runs, totaling $\num{576 000}$
+events. Training and validation is split 50-50.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] CNN as an alternative idea, add footnote and show github link to
+  our work, say this has been looked into already during MSc thesis
+
+- [X] *Verify NUMBER OF USED INPUTS*
+- [ ] *VERIFY NUMBER OF TRAINING EVENTS*  
+
+- [ ] *REDO PREDICTION PLOT AS A LOG Y PLOT!*
+
+- [ ] References for SGD and ReLU
+  -> We don't actually use ReLU in the final network.
+
+**** Thoughts on number of background training events           :extended:
+
+The total number of background events is almost a third of all
+background clusters on the center chip. Hmm.
+
+We should probably select 1000 from each chip instead of 6000 from the
+center chip only.
+Better even use _only_ outer chip data.
+
+  
+*** Training call for best performing MLP                        :extended:
+
+The MLP described above uses the following datasets as inputs:
+- eccentricity
+- skewnessLongitudinal
+- skewnessTransverse
+- kurtosisLongitudinal
+- kurtosisTransverse
+- length
+- width
+- rmsLongitudinal
+- rmsTransverse
+- lengthDivRmsTrans
+- rotationAngle
+- fractionInTransverseRms
+- totalCharge
+- σT (<- this is actually $D_T$)
 
 The following is the training call that produced the MLP with the best
 performance (the one used for all plots and limit calculations):
@@ -23309,7 +23342,7 @@ Reference: ~journal.org~ entry on <2023-05-10 Wed 14:24>.
 seed for the ~shuffle~ procedure which reorders the background and
 simulated data into training and validation samples!
 
-**** Plots of the loss, accuracy and output                     :noexport:
+**** Plots of the loss, accuracy and output                     :extended:
 
 The plots generated during the training call are also found in
 
@@ -23326,6 +23359,29 @@ above.
   The model file we use is:
   [[~/org/resources/nn_devel_mixing/10_05_23_sgd_gauss_diffusion_tanh300_mse_loss/mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.pt]]
 
+**** Other networks trained
+
+In the course of developing the MLP presented in the thesis, we
+trained a large number of different networks.
+
+We varied:
+- learning rates
+- optimizers (SGD, Adam, AdaGrad)
+  - optimizer settings (momentum etc)
+- activation functions ($\tanh$, ReLU, GeLU, softmax, eLU)
+- loss functions (MSE, L1, ...)
+- linear output layer or non linear output layer
+- number of hidden layers
+- number of neurons on hidden layer
+- input neurons (including / excluding individual variables)
+
+As usual when training machine learning models, it's all a bit hit and
+miss. :)
+
+I may upload all the models, plots (in addition to the notes) to a
+repository / Zenodo, but there is not _that_ much of interest there I imagine.
+
+- [ ] *UPLOAD ALL MODELS*
 
 *** Combination of NN w/ vetoes                                  :noexport: 
 
