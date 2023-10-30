@@ -23160,10 +23160,12 @@ unnecessarily, all the figures are simply found in
 
 *** Overview of the best performing MLP [/]
 
-As a reference an MLP was trained (implementation [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Tools/NN_playground/train_ingrid.nim][here]]) on a mix of
-X-ray reference data (as signal-like training data) and a subset of
-the CAST background data. The implementation was done using [[https://github.com/scinim/flambeau][Flambeu]], a
-wrapper for [[https://pytorch.org/][libtorch]], using the following parameters:
+As a reference an MLP was trained (implementation
+[[https://github.com/Vindaar/TimepixAnalysis/blob/master/Tools/NN_playground/train_ingrid.nim][here]]) on a mix of simulated X-rays and a subset
+of the CAST background data. The implementation was done using
+[[https://github.com/scinim/flambeau][Flambeau]] [[cite:&flambeau]], a wrapper for [[https://pytorch.org/][libtorch]]
+[[cite:&Paszke_PyTorch_An_Imperative_2019]] [fn:libtorch], using the
+following parameters:
 
 - Input neurons: 14 (12 geometric, 2 non-geometric)
 - Hidden layers: 2
@@ -23253,6 +23255,8 @@ extreme statistical outliers in the X-ray dataset.
 [[~/org/Figs/statusAndProgress/neuralNetworks/roc_curve_mlp_vs_likelihood_split_by_target_1000_epochs_no_energy_hits.pdf]]
 #+end_center
 
+[fn:libtorch] ~libtorch~ is the C++ library PyTorch is built on.
+
 [fn:number_of_events] For training X-rays a total of $\num{500 000}$
 events are simulated. For background $\num{6 000}$ events are randomly
 selected from the background runs, totaling $\num{576 000}$
@@ -23335,7 +23339,8 @@ Reference: ~journal.org~ entry on <2023-05-10 Wed 14:24>.
     --learningRate 7e-4 \
     --simulatedData \
     --backgroundRegion crAll \
-    --nFake 250_000
+    --nFake 250_000 \
+    --subsetPerRun 6000
 #+end_src
 
 *NOTE*: The command up there was still run with the default Nim RNG
@@ -23382,6 +23387,95 @@ I may upload all the models, plots (in addition to the notes) to a
 repository / Zenodo, but there is not _that_ much of interest there I imagine.
 
 - [ ] *UPLOAD ALL MODELS*
+
+
+**** Train an MLP on outer chip background data only
+
+Started the training run <2023-10-30 Mon 14:45>:
+#+begin_src sh
+./train_ingrid \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --back ~/CastData/data/DataRuns2017_Reco.h5 \
+    --back ~/CastData/data/DataRuns2018_Reco.h5 \
+    --modelOutpath ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh300_mse.pt \
+    --plotPath ~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/ \
+    --datasets eccentricity \
+    --datasets skewnessLongitudinal \
+    --datasets skewnessTransverse \
+    --datasets kurtosisLongitudinal \
+    --datasets kurtosisTransverse \
+    --datasets length \
+    --datasets width \
+    --datasets rmsLongitudinal \
+    --datasets rmsTransverse \
+    --datasets lengthDivRmsTrans \
+    --datasets rotationAngle \
+    --datasets fractionInTransverseRms \
+    --datasets totalCharge \
+    --datasets σT \
+    --numHidden 300 \
+    --numHidden 300 \
+    --activation tanh \
+    --outputActivation sigmoid \
+    --lossFunction MSE \
+    --optimizer SGD \
+    --learningRate 7e-4 \
+    --simulatedData \
+    --backgroundRegion crAll \
+    --nFake 250_000 \
+    --backgroundChips 0 \
+    --backgroundChips 1 \
+    --backgroundChips 2 \
+    --backgroundChips 4 \
+    --backgroundChips 5 \
+    --backgroundChips 6
+#+end_src
+Training of the first 100k epochs finished <2023-10-30 Mon 16:10>.
+
+Continue for another 200k now <2023-10-30 Mon 16:15>:
+#+begin_src sh
+./train_ingrid \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --back ~/CastData/data/DataRuns2017_Reco.h5 \
+    --back ~/CastData/data/DataRuns2018_Reco.h5 \
+    --modelOutpath ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh300_mse.pt \
+    --plotPath ~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/ \
+    --numHidden 300 \
+    --numHidden 300 \
+    --activation tanh \
+    --outputActivation sigmoid \
+    --lossFunction MSE \
+    --optimizer SGD \
+    --learningRate 7e-4 \
+    --simulatedData \
+    --backgroundRegion crAll \
+    --nFake 250_000 \
+    --backgroundChips 0 \
+    --backgroundChips 1 \
+    --backgroundChips 2 \
+    --backgroundChips 4 \
+    --backgroundChips 5 \
+    --backgroundChips 6 \
+    --epochs 200000 \
+    --continueAfterEpoch 100000
+#+end_src
+
+
+In order for this to work as intended, the following changes were
+made:
+- ~subsetPerRun~ now is taken literal. No more hardcoded factors for
+  background data or anything like that
+- ~backgroundChips~ added to read background data for each of these
+  chips, allowing us to explicitly _exclude_ the center chip. We will
+  have to see whether that causes us to interpret too many center chip
+  clusters as X-rays because the diffusion and gas gain of the
+  training data better matches the center chip for X-rays
+- ~shuffle~ now uses the MLPDesc random number seed
+- added more fields to the MLPDesc HDF5 file about how many elements
+  were used for training and for validation as well as how many
+  elements were read for background in total.
 
 *** Combination of NN w/ vetoes                                  :noexport: 
 
