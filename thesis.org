@@ -25559,59 +25559,41 @@ when isMainModule:
   related parts, concluding in the explicit code using the gas
   property CSV to compute the expected values explicitly.
 
-  
 
 *** Outer GridPix as veto - 'septem veto'
 :PROPERTIES:
 :CUSTOM_ID: sec:background:septem_veto
 :END:
 
-The final hardware feature that is used to improve the background
-rate is the outer ring of GridPixes. The size of large clusters is a
+The final hardware feature that is used to improve the background rate
+is the outer ring of GridPixes. The size of large clusters is a
 significant fraction of a single GridPix. This means that depending on
 the cluster center position, parts of the cluster may very well be
 outside of the chip. While the most important area of the chip is the
 center area (due to the X-ray optics focusing the axion induced
 X-rays), misalignment and the extended nature of the 'axion image'
 mean that a significant portion of the chip should be as low in
-background as possible.
+background as
+possible. Fig. sref:fig:background:cluster_centers_no_vetoes_2017_18
+as we saw in sec. [[#sec:background:likelihood_cut]] shows a significant
+increase in cluster counts towards the edges and corners of the center
+GridPix. The GridPix ring can help us reduce this.
 
-Fig. [[fig:background_clusters_no_septem_veto]] shows the cluster centers
-based on the background data taken at CAST in 2017 and 2018 remaining
-after the likelihood cut. Evidently, the cluster density is
-significantly lower in the center area than towards the edges and in
-particular the corners. The closer the cluster center is to the edges,
-the higher the chance that parts of it are cut off. In particular,
-cutting of from a track like cluster most likely *reduces* the length
-and thus makes the cluster *more* spherical.
-- [ ] *REFER TO THE IMAGE OF CLUSTER CENTERS FIRST INTRODUCED IN LNL STUFF*
-
-#+begin_center
-#+CAPTION: Each point represents the cluster center of a single cluster that passes
-#+CAPTION: the likelihood cut. The color scale in addition represents whether multiple
-#+CAPTION: cluster centers were on the same pixel. The data is the full 2017/18 background
-#+CAPTION: data. It is very evident that the gold region (marked as a square) has the
-#+CAPTION: lowest background. From there towards the edges and in particular the corners
-#+CAPTION: the background increases significantly. This is mostly a geometric effect,
-#+CAPTION: for which an example can be seen in fig. [[fig:example_clusters_septem_veto]].
-#+CAPTION: *TODO ADD THE GOLD REGION OUTLINE*
-#+NAME: fig:background_clusters_no_septem_veto
-#+end_center
-
-Normally the individual chips are treated as separate in the analysis
+Normally the individual chips are treated separately in the analysis
 chain. The 'septem veto' is the name for an additional veto step,
 which can be optionally applied to the center chip. With it, each
-cluster that is considered signal-like based on the likelihood cut,
-will be analyzed in a second step. The full event is reconstructed
-again from the beginning, but this time as an event covering *all 7*
-chips. This allows the cluster finding algorithm to detect clusters
-beyond the center chip boundaries. After finding all clusters, the
-normal cluster reconstruction to compute all properties is done
-again. Finally, for each cluster in the event the likelihood value is
-computed and compared with the likelihood cut. If now all clusters
-whose center is on the central chip are considered background-like,
-the event is vetoed, because the initial signal-like cluster turned
-out to be part of a larger cluster. 
+cluster that is considered signal-like based on the likelihood cut (or
+MLP), will be analyzed in a second step. The full event is
+reconstructed again from the beginning, but this time as an event
+covering /all 7/ chips. This allows the cluster finding algorithm to
+detect clusters beyond the center chip boundaries. After finding all
+clusters, the normal cluster reconstruction to compute all properties
+is done again. Finally, for each cluster in the event the likelihood
+value is computed and compared with the likelihood cut or MLP
+prediction performed. If now all clusters whose center is on the
+central chip are considered background-like, the event is vetoed,
+because the initial signal-like cluster turned out to be part of a
+larger cluster.
 
 There is a slight complication here. The layout of the septemboard
 includes spacing, which is required to mount the chips. This spacing,
@@ -25622,7 +25604,7 @@ algorithms, as the spacing might extend the distance over the cutoff
 criterion. For this reason the cluster finding algorithm is actually
 performed on a 'tight layout' where the spacing has been reduced to
 zero. For the calculation of the geometric properties of all found
-clusters however, the found clusters are transformed into the real
+clusters however, the clusters are transformed into the real
 septemboard coordinates including spacing. [fn:spacing_impact_rms]
 
 
@@ -25692,7 +25674,34 @@ cluster passing the $\ln\mathcal{L}$ cut before being added to a
 larger cluster almost certainly won't pass it afterwards. The slight
 bias in the RMS won't change that.
 
-**** Generate plot for background rate including septem veto    :noexport:
+**** TODOs for this section [/]                                 :noexport:
+
+This was previous text.
+#+begin_quote
+shows the cluster centers
+based on the background data taken at CAST in 2017 and 2018 remaining
+after the likelihood cut. Evidently, the cluster density is
+significantly lower in the center area than towards the edges and in
+particular the corners. The closer the cluster center is to the edges,
+the higher the chance that parts of it are cut off. In particular,
+cutting of from a track like cluster most likely *reduces* the length
+and thus makes the cluster *more* spherical.
+- [ ] *REFER TO THE IMAGE OF CLUSTER CENTERS FIRST INTRODUCED IN LNL STUFF*
+
+#+begin_center
+#+CAPTION: Each point represents the cluster center of a single cluster that passes
+#+CAPTION: the likelihood cut. The color scale in addition represents whether multiple
+#+CAPTION: cluster centers were on the same pixel. The data is the full 2017/18 background
+#+CAPTION: data. It is very evident that the gold region (marked as a square) has the
+#+CAPTION: lowest background. From there towards the edges and in particular the corners
+#+CAPTION: the background increases significantly. This is mostly a geometric effect,
+#+CAPTION: for which an example can be seen in fig. [[fig:example_clusters_septem_veto]].
+#+CAPTION: *TODO ADD THE GOLD REGION OUTLINE*
+#+NAME: fig:background_clusters_no_septem_veto
+#+end_center
+#+end_quote
+
+**** Generate plot for background rate including septem veto    :extended:
 
 Let's generate the plot:
 
@@ -25837,7 +25846,29 @@ plotBackgroundRate \
 shellCmd: command -v xelatex
 :end:
 
-*** 'Line veto' 
+**** Generate example plot of vetoed septemboard event          :extended:
+
+The septemboard event is generated as a byproduct of the ~likelihood~
+program, if it is being run with ~--plotSeptem~ as a command line
+argument.
+
+#+begin_src sh
+PLOT_SEPTEM_E_CUTOFF=1.0 PLOT_SEPTEM_EVENT_NUMBER=80301 \
+    likelihood \
+    -f ~/CastData/data/DataRuns2017_Reco.h5 \
+    --run 162 \
+    --h5out /tmp/dummy.h5 \
+    --region crAll --cdlYear 2018 \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --lnL \
+    --signalEfficiency 0.8 \
+    --septemveto \
+    --plotSeptem 
+#+end_src
+-> Works (just produces too many plots!)
+-> Add an "event index" filter for the plotSeptem. Done.
+
+*** 'Line veto'
 :PROPERTIES:
 :CUSTOM_ID: sec:background:line_veto
 :END:
@@ -27382,6 +27413,8 @@ would be $ε_\text{total} = 0.8 · 0.6868 = 0.5494$, so about 55%.
 
 *** Veto setups of interest [/]
 
+- [ ] *TABLE OF FEATURE, EFFICIENCY, BACKGROUND RATE*
+  -> That table essentially motivates looking at different veto setups.
 
 - [ ] Write a section about a) the motivation behind looking at
   different setups to begin with and b) show the kind of setups we
@@ -37568,9 +37601,10 @@ in fig. [[cdl_logL_no_interp]].
 - [ ] *PUT IN THE RAW OCCUPANCIES OF ALL CHIPS IN BACKGROUND OF EACH
   RUN PERIOD*  
 
-* Background rates                                                 :Appendix:
+
+* FADC rise time additions                                         :Appendix:
 :PROPERTIES:
-:CUSTOM_ID: sec:appendix:background_rates
+:CUSTOM_ID: sec:appendix:fadc
 :END:
 
 ** FADC veto [/]
@@ -37581,6 +37615,21 @@ in fig. [[cdl_logL_no_interp]].
 - [ ] INSERT PLOTS OF RISE TIME, FALL TIME, BY RUN, BY SETTING,
   SKEWNESS VS RISE TIME AND MORE!
 
+** FADC 
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:fadc_veto_empirical_cluster_length
+:END:
+
+- [ ] Include the plot about empirical length of clusters
+  -> What plot is that?
+  -> I guess a plot of the transverse RMS?
+
+* Background rate and vetoes                                       :Appendix:
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:background_rates
+:END:
+
+- [ ] Possibly more background rate plots?
 
 * Solar tracking candidates [/]                                    :Appendix:
 :PROPERTIES:
