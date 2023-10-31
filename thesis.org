@@ -23951,49 +23951,51 @@ trigger and the time of activity recorded with the GridPix is small
 enough, the two are likely to be in real coincidence. 
 
 In the setup used at CAST with a $\SI{42}{\cm}$ times $\SI{82}{\cm}$
-scintillator paddle sitting about $\sim\SI{30}{cm}$ away from the
-detector center and a $\cos²(θ)$ distribution for muons a significant
-fraction of muons should be tagged. Similarly, the second scintillator
-on the Septemboard detector, the small SiPM behind the readout area
-should trigger precisely in those cases where a muon traverses the
-detector from the front or back such that the muon track is orthogonal
-to the readout plane.
+scintillator paddle (see sec. [[#sec:detector:scintillators]]), about
+$\sim\SI{30}{cm}$ above the detector center -- and a $\cos²(θ)$
+distribution for muons -- a significant fraction of muons should be
+tagged. Similarly, the second scintillator on the Septemboard
+detector, the small SiPM behind the readout area should trigger
+precisely in those cases where a muon traverses the detector from the
+front or back such that the muon track is orthogonal to the readout
+plane.
 
 The term 'non trivial trigger' in the following indicates events in
 which a scintillator triggered and the number of clock cycles to the
-GridPix readout was larger than \num{0} (scintillator had a trigger in
-the first place) and smaller than \num{300}. The latter cut is
-somewhat arbitrary, as the idea is on two things: 1. no clock cycles
-of \num{4095} (indicates clock ran over) and 2. the physics involved
+GridPix readout was larger than $\num{0}$ (scintillator had a trigger in
+the first place) and smaller than $\num{300}$. The latter cut is
+somewhat arbitrary, as the idea is two things: 1. no clock cycles
+of $\num{4095}$ (indicates clock ran over) and 2. the physics involved
 leading to coincidences typically takes place on time scales shorter
 than $\SI{100}{clock\;cycles} = \SI{2.5}{μs}$ (see
 sec. [[#sec:detector:scintillators]]). Anything above should just be a
-random coincidence. \num{300} is therefore just chosen to have a
+random coincidence. $\num{300}$ is therefore just chosen to have a
 buffer to where physical clock cycles start.
 
-During the Run-3 data taking period a total of \num{69243} non trivial
-veto paddle triggers were recorded. [fn:estimation_of_tagged_muons]
-The distribution of the clock cycles after which the GridPix readout
-happened is shown in fig. [[fig:background:scintillator_clock_cycles]] on
-the right. The narrow peak at $\SI{255}{clock;cycles}$ seems to be
-some kind of artifact, potentially a firmware bug. The data was looked
-at and there is nothing unusual about it (neither cluster properties
-nor individual events). The source therefore remains unclear, but a
-physical origin is extremely unlikely as the peak is exactly one clock
-cycle wide (unrealistic for a physical process in this context) and
-coincidentally exactly \num{255} (~0xFF~ in hexadecimal), hinting
-towards a counting issue in the firmware. The actual distribution
-looks as expected, being a more or less flat distribution
-corresponding to muons traversing at different distances to the
-readout. The real distribution does not start at exactly
-$\SI{0}{clock;cycles}$ due to inherent processing delays and even
+During the Run-3 data taking period a total of $\num{69243}$ non
+trivial veto paddle triggers were
+recorded. [fn:estimation_of_tagged_muons] The distribution of the
+clock cycles after which the GridPix readout happened is shown in
+fig. [[fig:background:scintillator_clock_cycles]] on the right. The narrow
+peak at $\SI{255}{clock\;cycles}$ seems to be some kind of artifact,
+potentially a firmware bug. The corresponding GridPix data was
+investigated and there is nothing unusual about it (neither cluster
+properties nor individual events). The source therefore remains
+unclear, but a physical origin is extremely unlikely as the peak is
+exactly one clock cycle wide (unrealistic for a physical process in
+this context) and coincidentally exactly \num{255} (~0xFF~ in
+hexadecimal), hinting towards a counting issue in the firmware. The
+actual distribution looks as expected, being a more or less flat
+distribution corresponding to muons traversing at different distances
+to the readout. The real distribution does not start at exactly
+$\SI{0}{clock\;cycles}$ due to inherent processing delays and even
 close tracks requiring some time to drift to the readout and
 activating the FADC. Further, geometric effects play a role as very
 close to the grid only perfectly parallel tracks can achieve low clock
 cycles, but the further away different angles contribute to the same
 times.
 
-The SiPM recorded \num{4298} non trivial triggers in the same time,
+The SiPM recorded $\num{4298}$ non trivial triggers in the same time,
 which are shown in fig. [[fig:background:scintillator_clock_cycles]] on
 the left. [fn:estimation_of_tagged_muons_sipm] Also this distribution
 looks more or less as expected, showing a peak towards low clock
@@ -24004,24 +24006,24 @@ is visible corresponding to the full $\SI{3}{cm}$ of drift time.
 
 Both of these distributions and the physically motivated cutoffs in
 clock cycles motivate a scintillator veto at clock cycles somewhere
-above $\SIrange{60}{70}{clock;cycles}$. To be on the conservative side
+above $\SIrange{60}{70}{clock\;cycles}$. To be on the conservative side
 and because random coincidences are very unlikely (on the time scales
 of several clock cycles; picking a value slightly larger implies a
 negligible dead time), a scintillator veto cut of
-$\SI{150}{clock;cycles}$ was chosen.
+$\SI{150}{clock\;cycles}$ was chosen.
 
 The resulting improvement of the background rate is shown in
-fig. [[fig:background_rate_scinti_veto]], albeit only for the end of 2018
-data as the scintillator trigger was not working correctly (as
-mentioned in sec. [[#sec:cast:data_taking_woes]]). The biggest
-improvements can be seen in the $\SI{3}{keV}$ and $\SI{8}{keV}$ peaks,
-both of which are likely X-ray fluorescence ($\ce{Ar}_{Kα}$
-$\SI{3}{keV}$ & $\ce{Cu}_{Kα}$ $\SI{8}{keV}$ and orthogonal muons
-($>\SI{8}{keV}$). Arguably the improvements could be bigger, but the
-efficiency of the scintillator was not ideal, resulting in some likely
-muon induced X-rays to remain untagged. Lastly, the coverage of the
-scintillators is leaving large angular areas without a possibility to
-be tagged. 
+fig. [[fig:background:background_rate_scinti_veto]], albeit only for the
+end of 2018 (Run-3) data as the scintillator trigger was not working
+correctly in Run-2 (as mentioned in
+sec. [[#sec:cast:data_taking_woes]]). The biggest improvements can be seen
+in the $\SI{3}{keV}$ and $\SI{8}{keV}$ peaks, both of which are likely
+X-ray fluorescence ($\ce{Ar}_{Kα}$ $\SI{3}{keV}$ & $\ce{Cu}_{Kα}$
+$\SI{8}{keV}$ and orthogonal muons ($>\SI{8}{keV}$). Arguably the
+improvements could be bigger, but the efficiency of the scintillator
+was not ideal, resulting in some likely muon induced X-rays to remain
+untagged. Lastly, the coverage of the scintillators is leaving large
+angular areas without a possibility to be tagged.
 
 For a future detector an almost $4π$ scintillator setup and correctly
 calibrated and tested scintillators are an extremely valuable upgrade.
@@ -24035,9 +24037,8 @@ calibrated and tested scintillators are an extremely valuable upgrade.
 #+NAME: fig:background:scintillator_clock_cycles
 [[~/phd/Figs/scintillators/scintillators_facet_main_2018.pdf]]
 
-- [ ] *UPDATE PLOT OF SCINTILLATOR VETO*
 #+CAPTION: Background rate based on the Run-3 CAST data achieved by the addition of a scintillator cut veto
-#+CAPTION: of $\SI{10}{μs}$ for any cluster that initially passes the log likelihood
+#+CAPTION: of $\SI{7.5}{μs}$ for any cluster that initially passes the log likelihood
 #+CAPTION: cut. The biggest improvements can be seen in the $\SI{3}{keV}$ and $\SI{8}{keV}$
 #+CAPTION: peaks, both of which are likely X-ray fluorescence (Cu & Ar; both energies) and orthogonal
 #+CAPTION: muons ($>\SI{8}{keV}$).
@@ -24061,7 +24062,7 @@ of about $\SI{35}{°}$ around the zenith. Assuming $\cos²(θ)$ muons it
 covers about $\SI{68}{\%}$ of muons in that axis. With a rate of
 $\sim\SI{1}{cm⁻².min⁻¹}$, $\SI{1125}{h}$ of data with scintillator and
 $\SI{4.2}{cm²}$ of active area in front of center GridPix roughly
-\num{194000} muons are expected. About \num{70000} non trivial
+$\num{194000}$ muons are expected. About $\num{70000}$ non trivial
 triggers were recorded. Efficiency of $\sim\SI{35}{\%}$.
 
 [fn:estimation_of_tagged_muons_sipm] Estimating the number of expected
@@ -24078,8 +24079,11 @@ atmospheric pressures and the related energy loss per distance.
 - [ ] *ADD SECTION ABOUT EXPECTATIONS OF THE VETOS. USING THE PLOTS
   HENDRIK ALREADY SHOWED IN HIS THESIS ABOUT IONIZATION*
   -> They are in the introduction of the detector chapter,
-  sec. [[#sec:detector:scintillators]] in fig. [[fig:detector:fadc_scintillators_explanation]]
+  sec. [[#sec:detector:scintillators]] in
+  fig. [[fig:detector:fadc_scintillators_explanation]]
 
+- [ ] *UPDATE PLOT OF SCINTILLATOR VETO*
+  
 *TODO*: rewrite this paragraph in context of full chapter (first paragraph)
   -> in particular references to GridPix1 & language that is more
   theoretical than actually referring to the setup of the Septemboard
@@ -24092,16 +24096,23 @@ atmospheric pressures and the related energy loss per distance.
   -> take some of the explanations and language from here to
   sec. [[#sec:detector:scintillators]]!
 
-- [ ] Show the clock cycle histograms here? Or before in a section?
+- [X] Show the clock cycle histograms here? Or before in a section?
+  -> here. Done.
 
 - [ ] *PUT SCINTI CUT OFF INTO CONFIG.TOML*
 - [ ] *CHECK THE BACKGROUND RATE USING 60, 100, 150, 300 CLOCK
   CYCLES*
   -> if everything from 100 looks the same, choose 100.
 
+- [X] *INVESTIGATE THE >250 PEAK IN VETO PADDLE DATA BY CHECKING
+  EVENTS THAT HAVE SUCH VALUES. DISPLAY AND PROPERTIES!*
+  -> Done, see the extra section about it.
 
+- [X] *WHY IS THE FADC POST TRIGGER NOT VISIBLE IN THE DATA?*
+  -> because post trig is unrelated to when the *trigger is sent*  
+  
 
-**** Generate background rate plot with scintillator vetoes     :noexport:
+**** Generate background rate plot with scintillator vetoes     :extended:
 
 Let's generate the plot, first for all data (effect of scinti only
 visible in 2018 though!):
