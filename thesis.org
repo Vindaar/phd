@@ -23597,14 +23597,20 @@ yields
 :END:
 
 Based on the output distributions of the MLP,
-fig. \ref{fig:background:mlp:validation_output}, it can be used to act
-as a cluster discriminator in the same way as for the $\ln\mathcal{L}$
-method, following eq. [[eq:background:lnL:cut_condition]]. In practice
-again the empirical distribution function of the signal-like output
-data is computed and the quantile of the target software efficiency
-$ε_{\text{eff}}$ is determined. Similarly to the likelihood cut method
-this is done for \num{8} different energy ranges corresponding to the
-CDL fluorescence lines. However, no interpolation is performed because
+fig. sref:fig:background:mlp:validation_output, it can be used to act
+as a cluster discriminator in the same way as for the likelihood cut
+method, following eq. [[eq:background:lnL:cut_condition]]. The likelihood
+distribution is replaced by the MLP prediction via either of the two
+output neurons. For example as seen for one output neuron in
+fig. sref:fig:background:mlp:validation_output the software efficiency
+would be determined based on the 'prediction' value along the x-axis
+such that the desired software efficiency is above the cut value. Any
+cluster below would be removed. In practice again the empirical
+distribution function of the signal-like output data is computed and
+the quantile of the target software efficiency $ε_{\text{eff}}$ is
+determined. Similarly to the likelihood cut method this is done for
+$\num{8}$ different energy ranges corresponding to the CDL
+fluorescence lines. However, no interpolation is performed because
 only the single output distribution is known. [fn:interpolation]
 
 Due to the significant differences in gas gain between the CDL dataset
@@ -23622,10 +23628,12 @@ simulate X-rays following each X-ray fluorescence line measured in the
 CDL dataset, yielding 8 different simulated datasets for each
 run. Based on these we compute one cut value on the MLP output
 each. The so deduced cut value is applied as the MLP cut to that run
-in the valid energy range.
+in the valid energy range. The same approach is used for calibration
+runs as well as for background runs.
 
-The same approach is used for calibration runs as well as for
-background runs.
+This means /both/ the MLP training as well as determination of cut
+values is /entirely/ based on synthetic data, only using aggregate
+parameters of the real data. 
 
 [fn:interpolation] One could of course interpolate on the cut values
 itself, but that is less well motivated and harder to
@@ -23650,7 +23658,7 @@ these to those same runs and compute the effective efficiency as
 where $N_{\text{cut}}$ is the clusters remaining after applying the
 MLP cut and $N_{\text{total}}$ is the total number of clusters after
 application of the standard cleaning cuts applied for the \cefe
-spectrum fit and the CDL fluorescence line fits.
+spectrum fit and the CDL fluorescence line fits. 
 
 The resulting efficiency is the effective efficiency the MLP
 produces. A close match with the target software efficiency implies
@@ -23692,7 +23700,7 @@ the systematics later used for the limit calculation.
 #+ATTR_LATEX: :width 0.7\textwidth
 [[~/phd/Figs/neuralNetworks/effective_efficiency_at_0.95_mlp_mse_300tanh.pdf]]
 
-**** Generate effective efficiency plot                         :noexport:
+**** Generate effective efficiency plot                         :extended:
 
 Before we can compute the effective efficiencies we need the cache
 table. In principle we have it already for the data and calibration
@@ -23723,6 +23731,28 @@ Now we compute the effective efficiencies:
     --plotPath ~/Sync/10_05_23_sgd_tanh300_mse/effective_efficiencies
   #+end_src
 
+***** TODOs for this section                                   :noexport:
+
+- [ ] *CHANGE THE SIZE OF THE PLOT TO FIT GAIN COMPLETELY*
+
+- [X] *IT SEEMS TO ME LIKE THE ~DataType~ FIELD SHOULD GIVE DIFFERENT
+  NAMES*
+  -> In the effective efficiency code the ~DataType~ column of the DF
+  we plot for the effective efficiency contains the data
+  information. But to me it seems that the name should be different
+  than in the plot.
+  -> Fixed it. For some reason the ~$E~ variant here caused the
+  ~8.03999999~. Using ~strformat~ now.
+  #+begin_src nim
+import ingrid / [ingrid_types, tos_helpers]
+import std / strformat
+for tfKind in TargetFilterKind:
+  let E = toXrayLineEnergy(tfKind)
+  echo E
+  echo $E
+  echo &"{E:g}"
+  #+end_src
+  
 *** Background rate using MLP 
 
 Applying the MLP cut as explained leads to background rates as
@@ -23753,7 +23783,7 @@ b_{\text{MLP} @ \SI{91}{\%}} &= \SI{1.62e-05}{keV^{-1}.cm^{-2}.s^{-1}}
 #+ATTR_LATEX: :width 0.7\textwidth
 [[~/phd/Figs/background/background_rate_gold_mlp_0.95_0.8_lnL.pdf]]
 
-**** Generate background rate plot for MLP [/]                  :noexport:
+**** Generate background rate plot for MLP [/]                  :extended:
 
 Let's generate the background rate plot for the MLP.
 
@@ -23891,6 +23921,8 @@ sec. [[#sec:background:fadc_veto]]. Finally, we consider the outer GridPix
 ring as further geometric vetoes in sec. [[#sec:background:septem_veto]]
 and sec. [[#sec:background:line_veto]] in the form of the 'septem veto'
 and the 'line veto'.
+
+*** TODOs for this section [/]                                   :noexport:
 
 - [ ] *ADD INTRODUCTION TO SECTION ABOUT VETOES*
   -> Make sure to properly get a 'split' from the likelihood cut
