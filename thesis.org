@@ -24365,7 +24365,7 @@ echo "Fraction of total flux *in this dimension* = ", integrate(-35.0.degToRad, 
 So assuming a 2D case it already covers about 68% of the expected muon
 flux, assuming a perfect trigger efficiency of the scintillator.
 
-**** Estimate expected number of muons in data taking           :noexport:
+**** Estimate expected number of muons in data taking           :extended:
 
 The detection volume of relevance for the center chip can be roughly
 said to be $\SI{4.2}{cm²}$ (1.4 cm wide chip, 3 cm height orthogonal
@@ -24399,7 +24399,7 @@ $\sim\SI{35.8}{\%}$. Not great, but also not horrible. Given that we
 know our threshold was likely a bit high, this seems to be a possible
 ball park estimate.
 
-**** Generate plots of scintillator data                        :noexport:
+**** Generate plots of scintillator data, study of 255 peak     :extended:
 
 The tool we use to plot the scintillator data is ~Tools/scintiInfo~.
 
@@ -24592,8 +24592,6 @@ event displays of these events.
 #+NAME: fig:scintillators:peak_at_255_cluster_properties
 [[~/phd/Figs/scintillators/peakAt255/cluster_properties.pdf]]
 
-
-
 -> Conclusion regarding regular veto paddle plots and events:
 The plots look pretty much like what we expect here, namely mainly 14
 mm long tracks in the histogram
@@ -24652,29 +24650,17 @@ actually be _an_ explanation.
 #+NAME: fig:scintillators:sipm_cluster_properties
 [[~/phd/Figs/scintillators/sipm/cluster_properties_sipm_less200.pdf]]
 
-**** Muon calculations for expected SiPM rates                  :noexport:
-Place our calcs here as no export?
+**** Muon calculations for expected SiPM rates                  :extended:
+
+- [ ] Place our calcs here as no export?
+  -> Refers to calculations of muon rates etc that partially are
+  mentioned in the theory section!
+  -> Yes, put here!
 
 *** FADC / ToA as veto [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:background:fadc_veto
 :END:
-
-- [ ] *PUT THE IDEAS FROM THIS SECTION INTO AN 'OUTLOOK FOR BACKGROUND
-  IMPROVEMENTS' SECTION?*
-  -> This could be a useful section to extend the ideas and provide
-
-- [ ] create an appendix for FADC veto information? Could put stuff
-  like
-  - rise time vs skewness
-  - rise time KDE, fall time KDE
-  - explanation of noise stuff?
-
-- [ ] *REALLY MAKE SURE ALL THE POINTS MENTIONED HERE ARE ACTUALLY
-  EXPLAINED PROPERLY BEFORE FOR EXAMPLE*.
-
-- [ ] *MAKE SURE Chosen 99-th percentile AS VETO IS MENTIONED*
-  -> Mention others were also tried, but improvements too small.
 
 As previously mentioned in [[#sec:detector:fadc]] the FADC not only serves
 as a trigger for the readout and reference time for the scintillator
@@ -24741,11 +24727,10 @@ perform a cut on the rise time and utilize it as an additional
 veto. The \cefe data allows us to define a cut based on a known and
 desired signal efficiency. This is done by identifying a desired
 percentile on both ends of the distribution of a cleaned X-ray
-dataset. Different percentiles (and associated efficiencies) will be
-tested for their impact on the expected axion limit. It is important
-to note that the cut values need to be determined for each of the used
-FADC amplifier settings separately. This is done automatically based
-on the known runs corresponding to each setting.
+dataset. It is important to note that the cut values need to be
+determined for each of the used FADC amplifier settings
+separately. This is done automatically based on the known runs
+corresponding to each setting.
 
 #+CAPTION: KDE of the rise time of the FADC signals in the \cefe and background data
 #+CAPTION: of the CAST Run-3 dataset. The X-ray data is a single peak with a mean of
@@ -24753,19 +24738,18 @@ on the known runs corresponding to each setting.
 #+CAPTION: motivating a veto based on this data.
 #+NAME: fig:background:fadc_rise_time
 [[~/phd/Figs/FADC/fadc_riseTime_kde_signal_vs_background_run3.pdf]]
-- [ ] *OLD PLOT*
 
 For the signal decay time we do a simpler cut, with less of a physical
 motivation. As the decay time is highly dependent on the resistance
-and capacitance properties of the grid, high voltage and FADC readout
-chain, we simply introduce a conservative cut in such a range as to
-avoid cutting away any range that contains X-ray data. Any background
-removed is just a bonus.
+and capacitance properties of the grid, high voltage and FADC
+amplifier settings, we simply introduce a conservative cut in such a
+range as to avoid cutting away any X-rays. Any background removed is
+just a bonus.
 
 Finally, the FADC is only used as a veto if the individual spectrum is
 not considered noisy. This is determined by 4 local dominant peaks
 based on a peak finding algorithm and in addition a general skewnees
-of the total signal larger than \num{-0.4}. The skewness is an
+of the total signal larger than $\num{-0.4}$. The skewness is an
 empirical cutoff as good FADC signals typically lie at larger negative
 skewness values (due to them having a signal towards negative
 values). See appendix [[#sec:appendix:background:fadc]] for a scatter plot of
@@ -24777,19 +24761,26 @@ Applying the FADC veto with a target quantile of 1 from both the lower
 and upper end ($1^{\text{st}}$ and $99^{\text{th}}$ percentiles; thus
 a $\SI{98}{\%}$ signal efficiency) in addition to the scintillator
 veto presented in the previous section results in a background rate as
-seen in fig. [[fig:background:background_rate_fadc_veto]]. The achieved
-background rate of the methods already leads to a background rate of
-$\SI{8.8e-6}{keV⁻¹.cm⁻².s⁻¹}$ in the energy range
+seen in fig. [[fig:background:background_rate_fadc_veto]]. Different
+percentiles (and associated efficiencies) were be tested for their
+impact on the expected axion limit. Lower percentiles than 99 did not
+yield a significant improvement in the background suppression over the
+resulting signal efficiency loss. This is visible due to the sharp
+edge of the rise time for X-rays (green) in
+fig. [[fig:background:fadc_rise_time]] when comparing to its overlap with
+background (purple).
+
+The achieved background rate of the methods already leads to a
+background rate of $\SI{8.8e-6}{keV⁻¹.cm⁻².s⁻¹}$ in the energy range
 $\SIrange{2}{8}{keV}$. And between $\SIrange{4}{8}{keV}$ even
 $\SI{4.2e-6}{keV⁻¹.cm⁻².s⁻¹}$. The veto brings improvements across the
 whole energy range, in which the FADC triggers. Interestingly, in some
-cases even below that range. The events removed from the second bin
-are events with a spark on the upper right GridPix, which induced an
-X-ray like low energy cluster on the central chip and triggered the
+cases even below that range. The events removed in the first two bin
+are events with a big spark on the upper right GridPix, which induced
+an X-ray like low energy cluster on the central chip and triggered the
 FADC. In the range at around $\SI{8}{keV}$ likely candidates for
 removed events are cases of orthogonal muons that did not trigger the
-SiPM.  
-- [ ] *MENTION SOMETHING ABOUT 3 KEV COPPER OR ORTHOGONAL MUONS?*
+SiPM.
 
 #+CAPTION: Comparison of pure $\ln\mathcal{L}$ cuts, additional scintillator veto and
 #+CAPTION: finally also FADC veto at an efficiency of $\SI{98}{\%}$. In the range
@@ -24803,9 +24794,7 @@ the FADC data (rise time, fall time, ...), how the different FADC
 settings affect these, what the run-to-run variation looks like and more.
 
 
-
-
-
+**** Thoughts on the FADC as a ToA tool for orthognal muons     :extended:
 
 - [ ] *THIS STUFF HAS ALREADY BEEN MENTIONED IN CONTEXT OF
   SCINTILLATORS!*
@@ -24878,19 +24867,20 @@ information yields a more certain result than a large scintillator
 might, which (even if to a small degree) does introduce random
 coincidences.
 
-- [ ] *FINISH EXPLANATION AND WHAT WE DO WITH FADC REGARDING VETO
-  WHEN SEEN 2018 DATA*
-
-- [ ] *FIX LINK IN FOOTNOTE!!*    
+[fn:percentiles] Lower percentiles than 99 did not yield a significant
+improvement in the background suppression over the resulting signal
+efficiency loss. This is visible due to the sharp edge of the 
 
 [fn:shielding_magnet_other_end] Of course a properly calibrated
 scintillator behind the magnet should detect any muons traversing
-orthogonally and a detector with good time resolution can also detect
-such events in principle. Despite this, it might be a decent idea to
-include some lead shielding on the opposite end of future helioscopes
-to provide some shielding against muons coming from such a
-direction. In particular a future experiment that tracks the Sun to much higher
-altitudes will see such muon background significantly more ($\cos²(θ)$!).
+orthogonally. However, it is likely a $4π$ veto system would be used
+in a coincidence setup between opposite scintillators. A detector with
+good time resolution can also detect such events in principle. Despite
+this, it might be a decent idea to include some lead shielding on the
+opposite end of future helioscopes to provide some shielding against
+muons coming from such a direction. In particular a future experiment
+that tracks the Sun to much higher altitudes will see such muon
+background significantly more ($\cos²(θ)$!).
 
 [fn:gas_properties_pyboltz] The properties were calculated with
 ~PyBoltz~, a Cython conversion of Magboltz. The code can be found
@@ -24898,9 +24888,36 @@ here:
 https://github.com/Vindaar/TimepixAnalysis/Tools/septemboardCastGasPyboltz
 Further the numbers used here are for a temperature of $\SI{26}{°C}$,
 slightly above room temperature due to the heating of the Septemboard
-itself into the gas.
+itself into the gas. *UPDATE CODE TO USE NIMBOLTZ*
 
 **** TODOs for above section [/] :noexport:
+
+- [ ] *PUT THE IDEAS FROM THIS SECTION INTO AN 'OUTLOOK FOR BACKGROUND
+  IMPROVEMENTS' SECTION?*
+  -> This could be a useful section to extend the ideas and provide
+  motivation for 
+
+- [ ] create an appendix for FADC veto information? Could put stuff
+  like
+  - rise time vs skewness
+  - rise time KDE, fall time KDE
+  - explanation of noise stuff?
+
+- [ ] *REALLY MAKE SURE ALL THE POINTS MENTIONED HERE ARE ACTUALLY
+  EXPLAINED PROPERLY BEFORE FOR EXAMPLE*.
+
+- [X] *MAKE SURE Chosen 99-th percentile AS VETO IS MENTIONED*
+  -> Mention others were also tried, but improvements too small vs
+  signal loss.
+
+- [X] *FINISH EXPLANATION AND WHAT WE DO WITH FADC REGARDING VETO
+  WHEN SEEN 2018 DATA*
+
+- [ ] *FIX LINK IN FOOTNOTE!!*
+  -> More importantly, fix the code to not use PyBoltz anymore!
+
+- [X] *MENTION SOMETHING ABOUT 3 KEV COPPER OR ORTHOGONAL MUONS?*
+  -> In terms of plot.
 
 - [X] *FOUND A HUGE BUG IN THE FADC VETO CODE*
   -> The veto did not exclude anything *ABOVE* a cut... The comparison
@@ -24913,7 +24930,7 @@ itself into the gas.
   clusters* are _slightly_ wider, but that is quite possibly just a
   side effect of having worse data.
 
-- [ ] Investigate FADC rise and fall time now that it is fixed based
+- [X] Investigate FADC rise and fall time now that it is fixed based
   on:
   - [ ] FADC settings in Run-2
     -> There seems to be a pretty small effect generally as the
@@ -24925,7 +24942,8 @@ itself into the gas.
 - [ ] *INSERT SKEWNESS PLOT INTO APPENDIX*
   -> In ~statusAndProgress~ sec. [[#sec:fadc:noisy_events_and_fadc_veto]]
 
-- [ ] *INSERT FADC RISE TIME EXAMPLE*
+- [X] *INSERT FADC RISE TIME EXAMPLE*
+  - [ ] *UPDATE THAT PLOT*
 
 - [ ] *GET THE CORRECT NUMBERS FROM SIMULATION*
   -> In particular provide a few more words about how it compares to
@@ -24939,7 +24957,7 @@ itself into the gas.
   kind of background rate can we achieve then?
 
 
-**** About FADC rise time from theory and reality [/]           :noexport:
+**** About FADC rise time from theory and reality [/]           :extended:
 
 The theoretical numbers of about 100 ns do not really match very well
 with our experimental numbers anymore after the recent
@@ -24969,7 +24987,19 @@ the gas gain leading to a fixed amount of induction. Would be
 interesting.
 - [ ] Do this!
 
-**** Generate plot for background rate including FADC           :noexport:
+**** Note on events being removed below FADC trigger            :extended:
+
+See sec. [[file:~/org/Doc/StatusAndProgress.org::#sec:fadc:removed_events_lower_than_fadc_threshold]]
+in ~statusAndProgress~. There we look at precisely those events that
+are removed despite in theory having no reason to be removed.
+
+**** Further notes about FADC                                   :extended:
+
+For more detailed notes about the FADC discussed above, see my
+development notes about the FADC here [[file:~/org/Doc/StatusAndProgress.org::#sec:fadc]].
+
+
+**** Generate plot for background rate including FADC           :extended:
 
 Let's generate the plot:
 
@@ -25092,7 +25122,7 @@ shell 3833> /home/basti/texlive/2022/bin/x86_64-linux/xelatex
 shellCmd: xelatex -output-directory /home/basti/phd/Figs/background /home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc.tex
 :end:
 
-**** Generate plots of rise/fall time for CDL data :noexport:
+**** Generate plots of rise/fall time for CDL data :extended:
 
 #+begin_src nim :results drawer :tangle /tmp/fadc_rise_fall_signal_vs_background.nim
 import nimhdf5, ggplotnim
@@ -25521,6 +25551,7 @@ when isMainModule:
   The "dead" register causes our fall / rise time calculation to
   break! This leads to a 'background' of homogeneous rise / fall times
   -> THIS NEEDS TO BE FIXED FIRST!!
+  -> Has been fixed since.
 
 **** Calculate expected cluster sizes and rise times [/]        :noexport:
 
