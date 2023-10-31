@@ -23442,6 +23442,20 @@ Started the training run <2023-10-30 Mon 14:45>:
 #+end_src
 Training of the first 100k epochs finished <2023-10-30 Mon 16:10>.
 
+In order for this to work as intended, the following changes were
+made:
+- ~subsetPerRun~ now is taken literal. No more hardcoded factors for
+  background data or anything like that
+- ~backgroundChips~ added to read background data for each of these
+  chips, allowing us to explicitly _exclude_ the center chip. We will
+  have to see whether that causes us to interpret too many center chip
+  clusters as X-rays because the diffusion and gas gain of the
+  training data better matches the center chip for X-rays
+- ~shuffle~ now uses the MLPDesc random number seed
+- added more fields to the MLPDesc HDF5 file about how many elements
+  were used for training and for validation as well as how many
+  elements were read for background in total.
+
 Continue for another 200k now <2023-10-30 Mon 16:15>:
 #+begin_src sh
 ./train_ingrid \
@@ -23470,23 +23484,93 @@ Continue for another 200k now <2023-10-30 Mon 16:15>:
     --epochs 200000 \
     --continueAfterEpoch 100000
 #+end_src
+It finished some time around 19:00 to 20:00.
+
+I've now modified the ~train_ingrid~ code a bit more to:
+- allow handing an input model file via ~--model~ instead of
+  ~--modelOutpath~
+- the user should not include the final checkpoint name anymore in the
+  initial training call ~--modelOutpath~. That will be generated based
+  on the model layout
+- continuing training does not require the ~--continueAfterEpoch~
+  argument anymore. If further training is to be skipped use ~--skipTraining~    
+- paths can be changed
+- learning rates can be changed. The old learning rates will be stored
+  in ~--pastLearningRates~
+
+Continue further from 300k now, around <2023-10-31 Tue 10:00>:
+#+begin_src sh
+./train_ingrid \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --back ~/CastData/data/DataRuns2017_Reco.h5 \
+    --back ~/CastData/data/DataRuns2018_Reco.h5 \
+    --model ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh300_mse.pt \
+    --plotPath ~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/ \
+    --numHidden 300 \
+    --numHidden 300 \
+    --activation tanh \
+    --outputActivation sigmoid \
+    --lossFunction MSE \
+    --optimizer SGD \
+    --learningRate 7e-4 \
+    --simulatedData \
+    --backgroundRegion crAll \
+    --nFake 250_000 \
+    --backgroundChips 0 \
+    --backgroundChips 1 \
+    --backgroundChips 2 \
+    --backgroundChips 4 \
+    --backgroundChips 5 \
+    --backgroundChips 6 \
+    --epochs 100000
+#+end_src
+
+Finished <2023-10-31 Tue 11:27>.
+
+Continue for another 100k (slightly different command, because we now
+want to use the auto generated model. In the future the same command
+will work of course) <2023-10-31 Tue 11:28>:
+#+begin_src sh
+./train_ingrid \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --back ~/CastData/data/DataRuns2017_Reco.h5 \
+    --back ~/CastData/data/DataRuns2018_Reco.h5 \
+    --model ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh_sigmoid_MSE_SGD_300_2.pt \
+    --plotPath ~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/ \
+    --numHidden 300 \
+    --numHidden 300 \
+    --activation tanh \
+    --outputActivation sigmoid \
+    --lossFunction MSE \
+    --optimizer SGD \
+    --learningRate 7e-4 \
+    --simulatedData \
+    --backgroundRegion crAll \
+    --nFake 250_000 \
+    --backgroundChips 0 \
+    --backgroundChips 1 \
+    --backgroundChips 2 \
+    --backgroundChips 4 \
+    --backgroundChips 5 \
+    --backgroundChips 6 \
+    --epochs 100000
+#+end_src
+Finished around <2023-10-31 Tue 13:00>.
+
+Won't start another run for now, due to meeting at 2 pm.
+-> Meeting canceled, starting now <2023-10-31 Tue 14:17>.
+-> Finished <2023-10-31 Tue 15:43>.
+
+Start another 100k at <2023-10-31 Tue 15:43>.
+Finished sometime while I was out.
+
+Start another 100k, because there is an intriguing looking dip at the
+very end with a steeper slope! <2023-10-31 Tue 17:39>
 
 
-In order for this to work as intended, the following changes were
-made:
-- ~subsetPerRun~ now is taken literal. No more hardcoded factors for
-  background data or anything like that
-- ~backgroundChips~ added to read background data for each of these
-  chips, allowing us to explicitly _exclude_ the center chip. We will
-  have to see whether that causes us to interpret too many center chip
-  clusters as X-rays because the diffusion and gas gain of the
-  training data better matches the center chip for X-rays
-- ~shuffle~ now uses the MLPDesc random number seed
-- added more fields to the MLPDesc HDF5 file about how many elements
-  were used for training and for validation as well as how many
-  elements were read for background in total.
-
-*** Combination of NN w/ vetoes                                  :noexport: 
+**** Combination of NN w/ vetoes                                :noexport: 
 
 - [ ] *I THINK THIS CAN BE DELETED*
 
