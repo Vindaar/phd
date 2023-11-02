@@ -26199,19 +26199,34 @@ PLOT_SEPTEM_E_CUTOFF=1.0 PLOT_SEPTEM_EVENT_NUMBER=80301 \
 :CUSTOM_ID: sec:background:line_veto
 :END:
 
-There is one more further optional step, dubbed the 'line veto', which
-checks whether there are clusters whose long axis "points at" the
-cluster that passed the log likelihood cut. The idea being that there
-is a high chance that such clusters are correlated, especially because
-ionization is an inherently statistical process. It starts from the
-clusters identified in the previous septem veto. Only clusters whose
-eccentricity is larger than some cutoff $ε_{\text{cut}}$ are
-considered. The value of this cutoff impacts the efficiency but also
-the expected random coincidence rate of the veto.
+There is one more further optional veto, dubbed the 'line veto'. It
+checks whether there are clusters whose long axis "points at" clusters
+on the center chip, which passed the likelihood or MLP cut. The idea
+being that there is a high chance that such clusters are correlated,
+especially because ionization is an inherently statistical process. It
+can be used in addition to the 'septem veto' or standalone. The
+approach uses the same general approach as the septem veto by
+reconstructing the full events as 'septemboard events' again. The
+difference to the septem veto is that it is not reliant on the cluster
+finding search radius.
 
-An example of an
-event being vetoed by the 'line veto' is shown in
-fig. [[fig:background:example_clusters_line_veto]].
+The center cluster that initially passed the likelihood or MLP cut
+will be rejected if the long axis cuts within $3·(\frac{\text{RMS}_T +
+\text{RMS}_L}{2})$. In other words within $3 σ$ of the mean (along
+long and short axis) standard distribution of the pixels [fn:roughly_radius].
+
+If desired not every outer chip cluster is considered for the 'line
+veto'. An $ε_{\text{cut}}$ parameter can be adjusted to only allow
+those clusters to contribute with an eccentricity larger than
+$ε_{\text{cut}}$. The value of this cutoff impacts the efficiency, but
+also the expected random coincidence rate of the veto. More on that in
+sec. [[#sec:background:estimate_veto_efficiency]].
+
+An example of an event being vetoed by the 'line veto' is shown in
+fig. [[fig:background:example_clusters_line_veto]]. The black circle
+around the center chip cluster indicates the radius in which the green
+line (extension of the long axis of the cyan cluster) needs to cut the
+center cluster. The red points are the cluster centers
 
 #+CAPTION: Example event, which highlights the use case of the 'line veto'. The
 #+CAPTION: blue cluster in the upper chip is eccentric and its long axis 'points'
@@ -26275,7 +26290,8 @@ background rate.
 #+NAME: fig:background:background_rate_line_veto
 [[~/phd/Figs/background/background_rate_crGold_scinti_fadc_septem_line.pdf]]
 
-
+[fn:roughly_radius] This is roughly the radius of the cluster going by
+most extended active pixels of the cluster.
 
 **** Possible eccentricity cutoff [/]
 :PROPERTIES:
