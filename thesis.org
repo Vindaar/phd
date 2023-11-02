@@ -23753,7 +23753,126 @@ The question will be (tomorrow) as to how well this model generalizes
 to the center chip. But I'm not worried really.
 
 - [ ] Create effective efficiency plot
-- [ ] Create background cluster plot for Run-2 and Run-3 data.  
+- [ ] Create background cluster plot for Run-2 and Run-3 data.
+
+***** Effective efficiency of newly trained MLP
+
+Let's create the effective efficiency plot using
+~TimepixAnalysis/Tools/NN_playground/effective_eff_55_fe.nim~:
+
+#+begin_src sh
+./effective_eff_55fe \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --model ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh_sigmoid_MSE_SGD_300_2.pt \
+    --ε 0.95 \
+    --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
+    --evaluateFit \
+    --plotDatasets \
+    --plotPath ~/Sync/run2_run3_30_10_23_tanh300_effective_eff
+#+end_src
+
+which yields
+
+[[~/Sync/run2_run3_30_10_23_tanh300_effective_eff/efficiency_based_on_fake_data_per_run_cut_val.pdf]]
+
+which looks very good! Actually even a little bit better than
+fig. [[fig:background:mlp:effective_efficiencies]].
+
+If now the network also produces a number of clusters as good or
+better than the old network that'd be splendid.
+
+***** Apply MLP to data
+
+#+begin_src sh
+./createAllLikelihoodCombinations \
+    --f2017 ~/CastData/data/DataRuns2017_Reco.h5 \
+    --f2018 ~/CastData/data/DataRuns2018_Reco.h5 \
+    --c2017 ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    --c2018 ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --regions crAll \
+    --vetoSets "{fkMLP, +fkFadc, +fkScinti, +fkSeptem, fkLineVeto, fkExclusiveLineVeto}" \
+    --mlpPath ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh_sigmoid_MSE_SGD_300_2.pt \
+    --fadcVetoPercentile 0.99 \
+    --signalEfficiency 0.85 --signalEfficiency 0.9 --signalEfficiency 0.95 \
+    --out ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/ \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --multiprocessing \
+    --jobs 4 \
+    --dryRun
+#+end_src
+
+***** Background clusters of new MLP
+
+#+begin_src sh
+plotBackgroundClusters \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
+    --zMax 30 \
+    --title "X-ray like clusters of CAST data MLP@80%" \
+    --outpath /tmp/ \
+    --filterNoisyPixels \
+    --energyMin 0.2 --energyMax 12.0 \
+    --suffix "_mlp_85" \
+    --backgroundSuppression
+#+end_src
+
+#+begin_src sh
+plotBackgroundClusters \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
+    --zMax 30 \
+    --title "X-ray like clusters of CAST data MLP@80%" \
+    --outpath /tmp/ \
+    --filterNoisyPixels \
+    --energyMin 0.2 --energyMax 12.0 \
+    --suffix "_mlp_85_vetoes" \
+    --backgroundSuppression    
+#+end_src
+
+
+#+begin_src sh
+plotBackgroundRate \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
+    --centerChip 3 \
+    --names "MLP@0.8" --names "MLP@0.8" \
+    --names "MLP@0.8+V" --names "MLP@0.8+V" \
+    --title "Background rate in center 5·5 mm², MLP@80%" \
+    --showNumClusters \
+    --region crGold \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --energyMin 0.2 \
+    --outfile background_rate_gold_mlp_0.8_plus_vetoes.pdf \
+    --outpath /tmp \
+    --quiet
+#+end_src
+
+#+begin_src sh
+plotBackgroundRate \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
+    --centerChip 3 \
+    --names "MLP@0.9" --names "MLP@0.9" \
+    --names "MLP@0.9+V" --names "MLP@0.9+V" \
+    --title "Background rate in center 5·5 mm², MLP@90%" \
+    --showNumClusters \
+    --region crGold \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --energyMin 0.2 \
+    --outfile background_rate_gold_mlp_0.9_plus_vetoes.pdf \
+    --outpath /tmp \
+    --quiet
+#+end_src
+
 
 **** Combination of NN w/ vetoes                                :noexport: 
 
