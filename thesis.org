@@ -25896,27 +25896,37 @@ covering /all 7/ chips. This allows the cluster finding algorithm to
 detect clusters beyond the center chip boundaries. After finding all
 clusters, the normal cluster reconstruction to compute all properties
 is done again. Finally, for each cluster in the event the likelihood
-value is computed and compared with the likelihood cut or MLP
-prediction performed. If now all clusters whose center is on the
+method or MLP is applied. If now all clusters whose center is on the
 central chip are considered background-like, the event is vetoed,
 because the initial signal-like cluster turned out to be part of a
-larger cluster.
+larger cluster covering more than one chip.
 
 There is a slight complication here. The layout of the septemboard
-includes spacing, which is required to mount the chips. This spacing,
-in addition to dropping efficiency towards the edges of a GridPix mean
-significant information is lost. When reconstructing the full
-'septemboard events' this spacing would break the cluster finding
-algorithms, as the spacing might extend the distance over the cutoff
-criterion. For this reason the cluster finding algorithm is actually
-performed on a 'tight layout' where the spacing has been reduced to
-zero. For the calculation of the geometric properties of all found
-clusters however, the clusters are transformed into the real
+includes spacing (see for example
+fig. [[fig:detector:occupancy_sparking_run_241]] or
+[[fig:reco:fadc_reco_example]] for the layout), which is required to mount
+the chips. This spacing, in addition to general lower efficiency
+towards the edges of a GridPix, mean significant information is
+lost. When reconstructing the full 'septemboard events' this spacing
+would break the cluster finding algorithms, as the spacing might
+extend the distance over the cutoff
+criterion [fn:alternative_fill]. For this reason the cluster finding
+algorithm is actually performed on a 'tight layout' where the spacing
+has been reduced to zero. For the calculation of the geometric
+properties however, the clusters are transformed into the real
 septemboard coordinates including spacing. [fn:spacing_impact_rms]
 
+In contrast to the regular single chip analysis performed before,
+which uses a simple, bespoke clustering algorithm (see
+sec. [[#sec:reco:cluster_finding]], 'Default'), the full 'septemboard
+reconstruction' uses the DBSCAN clustering algorithm. The equivalent
+search radius is extended a bit over the normal default (65 pixels
+compared to 50, unless changed in configuration). DBSCAN produces
+better results in terms of likely related clusters (over chip
+boundaries). [fn:downside]
 
 An example that shows two clusters on the center chip, one of which
-was initially interpreted as a signal like event before being vetoed
+was initially interpreted as a signal-like event before being vetoed
 by the 'septem veto', is shown in
 fig. [[fig:example_clusters_septem_veto]]. The colors indicate the
 clusters each pixel belongs to according to the cluster finding
@@ -25932,8 +25942,6 @@ rejected.
 It is a good example, as it shows a cluster that is still relatively
 close to the center, and yet still 'connects' to another chip.
 
-- [ ] *POSSIBLY REPLACE THIS EVENT, CERTAINLY REPLACE PLOT*
-  -> Show an event that uses real septem layout!
 #+CAPTION: An example event showing all 7 GridPix of the CAST GridPix1 detector.
 #+CAPTION: The outlines are the boundaries of each chip (without the real spacing between
 #+CAPTION: them) and the color of each point indicates the cluster which it is part of
@@ -25944,6 +25952,7 @@ close to the center, and yet still 'connects' to another chip.
 #+CAPTION: The cyan cluster in the bottom left of the center chip is in addition a good example of
 #+CAPTION: how in particular cutting a track in the corners leads to a much more spherical
 #+CAPTION: cluster.
+#+CAPTION: *UPDATE ME*
 #+NAME: fig:example_clusters_septem_veto
 [[~/org/Figs/statusAndProgress/exampleEvents/background_septem_vetoed.pdf]]
 
@@ -25953,22 +25962,26 @@ improvement is in the lower energy range $< \SI{2}{keV}$. This is the
 most important region for the solar axion flux for the axion-electron
 coupling. Looking at the mean background rate in intervals of
 interest, between $\SIrange{2}{8}{keV}$ it is
-\SI{7.3385e-06}{keV⁻¹.cm⁻².s⁻¹} and $\SIrange{4}{8}{keV} =
+$\SI{7.3385e-06}{keV⁻¹.cm⁻².s⁻¹}$ and $\SIrange{4}{8}{keV} =
 \SI{3.5158e-06}{keV⁻¹.cm⁻².s⁻¹}$. And even in the full range down to
 $\SI{0}{keV}$ the mean is in the $10⁻⁶$ range. 
 
-#+begin_center
 #+CAPTION: Background rate achieved based on the 'septem veto' (in addition to the
 #+CAPTION: scintillator cut & FADC veto) for the full 2017/18 dataset within the center
 #+CAPTION: $\SI[parse-numbers=false]{5 \times 5}{mm²}$. Significant improvement in the
 #+CAPTION: $< \SI{2}{keV}$ range, which is most important for axion-electron coupling solar
 #+CAPTION: flux.
-#+CAPTION: The background rate between $\SIrange{2}{8}{keV}$ is \SI{7.3385e-06}{keV⁻¹.cm⁻².s⁻¹} and
+#+CAPTION: The background rate between $\SIrange{2}{8}{keV}$ is $\SI{7.3385e-06}{keV⁻¹.cm⁻².s⁻¹}$ and
 #+CAPTION: $\SIrange{4}{8}{keV} = \SI{3.5158e-06}{keV⁻¹.cm⁻².s⁻¹}$. And even in the full range
 #+CAPTION: down to $\SI{0}{keV}$ the mean is in the $10⁻⁶$ range.
 #+NAME: fig:background:background_rate_septem_veto
 [[~/phd/Figs/background/background_rate_crGold_scinti_fadc_septem.pdf]]
-#+end_center
+
+[fn:alternative_fill] An alternative could be to attempt to fill in
+the area between the chips with simulated data based on what is seen
+at the chip edges. But that is a complex problem. A fun (but possibly
+questionable) idea would be to train a diffusion model (generative AI)
+to predict missing data between chips.
 
 [fn:spacing_impact_rms] In principle this has a small impact on the
 calculation of the RMS of the cluster, if there is now a large gap
@@ -25979,7 +25992,17 @@ cluster passing the $\ln\mathcal{L}$ cut before being added to a
 larger cluster almost certainly won't pass it afterwards. The slight
 bias in the RMS won't change that.
 
+[fn:downside] The downside is that DBSCAN is _significantly_ slower,
+which is part of the reason it is not utilized for the initial reconstruction.
+
 **** TODOs for this section [/]                                 :noexport:
+
+- [ ] *POSSIBLY REPLACE THIS EVENT, CERTAINLY REPLACE PLOT*
+  -> Show an event that uses real septem layout!
+  - [X] Layout is changed
+  - [ ] Need to finalize the text settings for the thesis before
+    producing final version.
+
 
 This was previous text.
 #+begin_quote
