@@ -21,13 +21,18 @@ const riseTimeS = "riseTime [ns]"
 const fallTimeS = "fallTime [ns]"
 
 proc fadcSettings(plt: GgPlot, allRuns: seq[int], hideText: bool, minVal, maxVal, margin: float): GgPlot =
+  ## This is a bit of a mess, but:
+  ## It handles drawing the colored rectangles for the different FADC settings and
+  ## adjusting the margin if any given via the R_MARGIN environment variable.
+  ## The rectangle drawing is a bit ugly to look at, because we use the numbers initially
+  ## intended for the peak position plot, but rescale them to map the completely different
+  ## values for the other plots using min/max value and a potential margin.
   let mRight = getEnv("R_MARGIN", "6.0").parseFloat
   let widths = @[101 - 80, 121 - 101, allRuns.max - 121 + 1]
   let Δ = (maxVal - minVal) 
   let min = minVal - Δ * margin
   let ys = @[min, min, min]
-  let heights = @[0.25, 0.25, 0.25].mapIt(it / 0.25 * (Δ * (1 + 2 * margin))) # @[0.35, 0.35, 0.35]
-  echo "HEGIHTS: ", heights
+  let heights = @[0.25, 0.25, 0.25].mapIt(it / 0.25 * (Δ * (1 + 2 * margin))) 
   let textYs = @[0.325, 0.27, 0.22].mapIt((it - 0.1) / (0.35 - 0.1) * Δ + minVal)
   let dfRects = toDf(settings, ys, textYs, runs, heights, widths)
   echo dfRects
@@ -200,7 +205,6 @@ proc main(path: string, year: int, fit = false, hideText = false) =
     if is2017:
       plt = plt.fadcSettings(allRuns, hideText, 0.9, 2.4, 0.0)
     plt + geom_point() +
-      #ylim(0.1, 0.35) +
       ylim(0.9, 2.4) + 
       ylab("Activation threshold [keV]") + xlab("Run number") +
       ggtitle("Activation threshold based on center GridPix energy") + 

@@ -46,7 +46,7 @@ proc main(calib, back: string) =
     #               alpha = 0.5,
     #               density = true) +
     geom_density(color = "black", size = 1.0, alpha = 0.7, normalize = true) +
-    ggtitle(r"Comparison of the X-rays from the $^{55}\text{Fe}$ photopeak (5.9 keV) and escapepeak (3 keV)",
+    ggtitle(r"Comparison of the X-rays from the $^{55}\text{Fe}$ photopeak (5.9 keV) and escapepeak (3 keV)",
       titleFont = font(10.0)) + 
     ggsave("Figs/background/eccentricity_photo_escape_peak.pdf", useTeX = true, standalone = true)
     

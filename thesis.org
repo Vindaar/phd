@@ -16442,10 +16442,10 @@ fig. [[sref:fig:calib:fe55_example_fit_spectrum]].
 #+begin_src subfigure
 (figure ()
         (subfigure (linewidth 0.5) (caption "\\cefe spectrum") (label "fig:calib:fe55_example_fit_spectrum")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
                                     "~/phd/Figs/energyCalibration/run_149/fe_spec_run_149_chip_3_charge.pdf"))
         (subfigure (linewidth 0.5) (caption "Energy calibration") (label "fig:calib:fe55_example_energy_calib")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
                                     "~/phd/Figs/energyCalibration/run_149/energy_calib_run_149_charge.pdf"))
         (caption
          (subref "fig:calib:fe55_example_fit_spectrum")
@@ -23144,7 +23144,9 @@ resulting $D_T$ parameters for each run are cached in an HDF5 file. [fn:determin
 
 [fn:rms_symbol] $σ_T$ would be more appropriate, but conflicts with
 the gas diffusion coefficient (sec. [[#sec:theory:gas_diffusion]]). While
-directly related we should differentiate the two!  
+directly related we should differentiate the two!
+-> THIS IS NOT TRUE. $σ_T$ *IS* the measure of the final diffusion and
+*NOT* the coefficient!!!
 
 [fn:reasonable] For example a number provided by Magboltz for the used
 gas mixture at normal temperature and used chamber pressure. For the
@@ -23183,7 +23185,9 @@ many times.
 - [X] *REWRITE. WE ACTUALLY RETURN $σ_T$ AND NOT $D_T$!*
   -> No. We *do* return $D_T$. We just call the field of ~FakeDesc~
   ~σ_T~, which is a bit confusing in its own right. But that parameter
-  is the one going into the gaussian call with ~fakeDesc.σT * sqrt(zDist)~!
+  is the one going into the gaussian call with ~fakeDesc.σT *
+  sqrt(zDist)~!
+  - [ ] *RENAME σT FIELD OF FAKEDESC*
 - [X] *GENERALLY CLARIFY BETTER DISTINCTION BETWEEN PARAMETER $σ_T$
   AND OUR 'transverse RMS' NUMBER*
   -> Done that now by introducing an \rmst macro that expands to
@@ -23195,7 +23199,10 @@ many times.
   should mention that all the plots for the 'best cases' are generated
   during the optimization process.
 
-- [ ] *INSERT PLOT OF RUN 169 INTO APPENDIX*  
+- [ ] *INSERT PLOT OF RUN 169 INTO APPENDIX*
+
+- [ ] *IN EXTENDED SECTION SHOW THAT THE DERIVED VALUE FROM THE FIT
+  DOES NOT MATCH THE ITERATIVE VALUE*  
 
 **** Cramér-von-Mises references [/]                            :noexport:
 
@@ -26293,7 +26300,7 @@ background rate.
 [fn:roughly_radius] This is roughly the radius of the cluster going by
 most extended active pixels of the cluster.
 
-**** Possible eccentricity cutoff [/]
+**** Possible eccentricity cutoff  [/]                          :extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:background:line_veto:eccentricity_cutoff
 :END:
@@ -26301,6 +26308,16 @@ most extended active pixels of the cluster.
 - [ ] *DISCUSS THE ECCENTRICITY CUTOFF IN LITTLE MORE DETAIL, SHOW THE
   EFFICIENCIES AS DESCRIBED IN SUBSECTION BELOW SOMEWHERE!*
 
+- [ ] This should be *after* we talk about random coincidence and
+  efficiency etc etc  
+
+-> The plot shows that the efficiency scaling is much steeper for real
+data than for fake data (purple vs green). This implies that we gain
+more in efficiency for real data than we lose in signal efficiency due
+to random coincidence.
+
+For the final usage in the thesis we ended up allowing all clusters to
+participate in the line veto. While the 
 
 Fig. [[fig:background:fraction_passing_line_veto_ecc_cut]] shows the
 behavior of the line veto efficiency for real data and fake
