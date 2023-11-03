@@ -26556,240 +26556,89 @@ shell 7659> /home/basti/texlive/2022/bin/x86_64-linux/xelatex
 shellCmd: xelatex -output-directory /home/basti/phd/Figs/backgroundClusters /home/basti/phd/Figs/backgroundClusters/background_suppression_tile_map.tex
 :end:
 
-
-*** Hough transformation as a cluster finding helper             :noexport:
-
-At some point we considered whether a Hough transformation could be a
-useful tool in the application of the outer GridPix ring as a
-veto. The notes about this are here for completeness, as it showcases
-an interesting idea leading to a dead end. To avoid others investing
-time in it, we include it. Or rather, if you have plenty of experience
-with Hough transformations and know what to make of this, then feel
-free and use it as a starting inspiration!
-
-- [X] Add our notes about attempts to use hough transformations.
-
-**** Hough transformation for cluster finding                    :noexport:
-
-I started a Hough trafo playground in
-[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/houghTrafoPlayground/houghTrafoPlayground.nim]].
-
-Reading up on Hough transformations is a bit confusing, but what we
-are doing for the moment:
-- compute connecting lines between *each* point pair in a septem event
-  (so for N hits, that's N² lines)
-- for each line compute the slope and intersect
-
-From this information we can look at different things:
-1. the plots of all lines. Very messy, but gives an idea if the lines
-   are correct.
-2. a histogram of all found slopes
-3. a histogram of all found intersects
-4. a scatter plot of slopes vs. intersects
-
-The "algorithm" to compute the Hough transformation is pretty dumb at
-the moment:
-#+begin_src nim
-var xs = newSeqOfCap[int](x.len * x.len)
-var ys = newSeqOfCap[int](x.len * x.len)
-var ids = newSeqOfCap[string](x.len * x.len)
-var slopes = newSeqOfCap[float](x.len * x.len)
-var intersects = newSeqOfCap[float](x.len * x.len)
-echo x
-for i in 0 ..< x.len:
-  for j in 0 ..< x.len:
-    if i != j:                   # don't look at same point
-      xs.add x[j]
-      ys.add y[j]
-      xs.add x[i]
-      ys.add y[i]
-      ids.add $i & "/" & $j
-      ids.add $i & "/" & $j
-      if xs[^1] - xs[^2] > 0:    # if same x, slope is inf
-        let slope = (ys[^1] - ys[^2]).float / (xs[^1] - xs[^2]).float
-        slopes.add slope
-        # make sure both points yield same intercept
-        doAssert abs(
-          (y[j].float - slope * x[j].float) - (y[i].float - slope * x[i].float)
-        ) < 1e-4 
-        intersects.add (y[j].float - slope * x[j].float)
-#+end_src
-
-Let's look at a couple of examples:
-
-***** Example 0 =septemEvent_run_272_event_95288.csv=
-
-#+begin_center
-#+CAPTION: The corresponding septem event.
-#+NAME: fig_hough_septem_example_0
-[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_272_event_95288.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: All connecting lines between the pixel pairs.
-#+NAME: fig_hough_lines_example_0
-[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_272_event_95288.png]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all slopes
-#+NAME: fig_hough_histo_slopes_example_0
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_272_event_95288.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all intersects
-#+NAME: fig_hough_histo_intersects_example_0
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_272_event_95288.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Scatter plot of slopes vs intersects.
-#+NAME: fig_hough_slope_vs_intersects_example_0
-[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_272_event_95288.png]]
-#+end_center
-
-***** Example 1 =septemEvent_run_265_event_1662.csv=
-
-#+begin_center
-#+CAPTION: The corresponding septem event.
-#+NAME: fig_hough_septem_example_1
-[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_265_event_1662.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: All connecting lines between the pixel pairs.
-#+NAME: fig_hough_lines_example_1
-[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_265_event_1662.png]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all slopes
-#+NAME: fig_hough_histo_slopes_example_1
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_265_event_1662.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all intersects
-#+NAME: fig_hough_histo_intersects_example_1
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_265_event_1662.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Scatter plot of slopes vs intersects.
-#+NAME: fig_hough_slope_vs_intersects_example_1
-[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_265_event_1662.png]]
-#+end_center
-
-***** Example 2 =septemEvent_run_261_event_809.csv=
-
-#+begin_center
-#+CAPTION: The corresponding septem event.
-#+NAME: fig_hough_septem_example_2
-[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_261_event_809.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: All connecting lines between the pixel pairs.
-#+NAME: fig_hough_lines_example_2
-[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_261_event_809.png]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all slopes
-#+NAME: fig_hough_histo_slopes_example_2
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_261_event_809.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all intersects
-#+NAME: fig_hough_histo_intersects_example_2
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_261_event_809.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Scatter plot of slopes vs intersects.
-#+NAME: fig_hough_slope_vs_intersects_example_2
-[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_261_event_809.png]]
-#+end_center
-
-***** Example 3 =septemEvent_run_291_event_31480.csv=
-
-#+begin_center
-#+CAPTION: The corresponding septem event.
-#+NAME: fig_hough_septem_example_3
-[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_291_event_31480.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: All connecting lines between the pixel pairs.
-#+NAME: fig_hough_lines_example_3
-[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_291_event_31480.png]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all slopes
-#+NAME: fig_hough_histo_slopes_example_3
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_291_event_31480.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all intersects
-#+NAME: fig_hough_histo_intersects_example_3
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_291_event_31480.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Scatter plot of slopes vs intersects.
-#+NAME: fig_hough_slope_vs_intersects_example_3
-[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_291_event_31480.png]]
-#+end_center
-
-***** Example 4 =septemEvent_run_306_event_4340.csv=
-
-#+begin_center
-#+CAPTION: The corresponding septem event.
-#+NAME: fig_hough_septem_example_4
-[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_306_event_4340.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: All connecting lines between the pixel pairs.
-#+NAME: fig_hough_lines_example_4
-[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_306_event_4340.png]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all slopes
-#+NAME: fig_hough_histo_slopes_example_4
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_306_event_4340.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Histogram of all intersects
-#+NAME: fig_hough_histo_intersects_example_4
-[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_306_event_4340.pdf]]
-#+end_center
-
-#+begin_center
-#+CAPTION: Scatter plot of slopes vs intersects.
-#+NAME: fig_hough_slope_vs_intersects_example_4
-[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_306_event_4340.png]]
-#+end_center
-
-***** Conclusion
-
-The hough transformation produces too much data that is too hard to
-interpret in the context of our goal. It doesn't actually help us a
-lot here, so we'll drop the pursuit of that.
-
-
-
 *** Estimating the random coincidence rate of the septem & line veto [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:background:estimate_veto_efficiency
 :END:
 
+One potential issue with the septem and line veto is that the shutter
+times we ran with at CAST are very long ($> \SI{2}{s}$), but only the
+center chip is triggered by the FADC. This means that the outer chips
+can record cluster data not correlated to what the center chip
+sees. When applying one of these two vetoes the chance for random
+coincidence might be non negligible. This random coincidence rate
+needs to be treated as a dead time for the detector, reducing the
+effective solar tracking time available.
+
+In order to estimate this we bootstrap fake events with guaranteed
+random coincidence. For each data taking run, we take events with
+clusters on the center chip, which pass the likelihood or MLP cuts and
+combine these with data from the outer chips from different
+events. The outer GridPix ring data is sampled from /all/ events in
+that run, including empty events as otherwise we would bias the
+coincidence rate. The vetoes (either only septem veto, only line veto or
+both) are then applied to this bootstrapped dataset. The fraction of
+rejected events due to the veto is the random coincidence rate,
+because there is no physical correlation between center cluster and
+outer GridPix ring clusters.
+
+By default $\num{2000}$ such events are generated for each run. The
+random coincidence rate is the mean of all obtained values. Further,
+this can be used to study the effectiveness of the eccentricity cutoff
+$ε_{\text{cut}}$ mentioned for the line veto. It is expected that a
+stricter eccentricity cut should yield less random coincidences. We
+can then compare the obtained random coincidence rates to the real
+fractions of events removed by the same veto setup. The ratio of real
+effectiveness to random coincidence rate is a measure of the potency
+of the veto setup.
+
+Combining different options of the line veto and the eccentricity cut
+for the line veto, as well as applying both the septem and the line
+veto for real data as well as fake bootstrapped data we can make an
+informed decision about the settings to use. At the same time get an
+understanding for the real dead time we
+introduce. Fig. [[fig:background:fraction_passing_line_veto_ecc_cut]]
+shows precisely such data. We can see that the fraction that passes
+the veto setups (y axis) drops the further we go towards a low
+eccentricity cut (x axis). For the real data (~Real~ suffix in the
+legend) the drop is _faster_ than for fake boostrapped data (~Fake~ suffix
+in the legend) however, which means that we can use the lowest
+eccentricity cut as we like (effectively disabling the cut at
+$ε_\text{cut} = 1.0$). The exact choice between the purple / green
+pair (line veto including all clusters, even the one containing the
+original cluster) and the turquoise / blue pair (septem veto + line
+veto with only those clusters that do not contain the original; those
+are covered by the septem veto) is not entirely clear. Both will be
+investigated for their effect on the expected limit. The important
+point is that the fake data allows us to estimate the random
+coincidence rate, which needs to be treated as an additional dead time
+during background _and_ solar tracking time. A lower background may or
+may not be beneficial, compared to a higher dead time.
+
+#+CAPTION: Fraction of events in Run-3 data (green), which pass (i.e. not rejected) the line
+#+CAPTION: veto depending on the eccentricity cut used, which decides how eccentric a
+#+CAPTION: cluster needs to be in order to be used for the veto. The purple points are
+#+CAPTION: using fake bootstrapped data from real clusters passing the $\ln\mathcal{L}$ cut
+#+CAPTION: together with real outer GridPix data from *other* events. The fraction of events
+#+CAPTION: being vetoed in the latter is a measure for the random coincidence rate. 
+#+NAME: fig:background:fraction_passing_line_veto_ecc_cut
+[[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf]]
+
+#+CAPTION: Overview of the random coincidence rate ('Fake') and real efficiency ('Real')
+#+CAPTION: of the line veto and septem veto setup combinations (y = activated, n = not activated).
+| Septem veto | Line veto | Fake [%]         | Real [%] |
+|-------------+-----------+------------------+----------|
+| y           | n         | $\SI{78.41}{\%}$ |          |
+| n           | y         | $\SI{86.02}{\%}$ |          |
+| y           | y         | $\SI{73.25}{\%}$ |          |
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *RECREATE THE ABOVE PLOT*
+  -> Can be recreated with code further down using existing CSV file!
+  -> Remove the different line veto kinds. Only leave line veto
+  regular fake + line veto regular real, + septem veto, line + septem,
+  eccentricity cutoff
 
 - [ ] *NEED to explain that eccentricity line veto cutoff is not used,
   but tested. Also NEED to obviously give the numbers for both setups.*
@@ -26808,17 +26657,122 @@ lot here, so we'll drop the pursuit of that.
   that. This part should become :noexport:, but a shortened simpler
   version of this should remain.
 
+**** Calculate random coincidence rates and real efficiencies of veto setups :extended:
 
-One potential issue with the septem and line veto is that the shutter
-times we ran with at CAST are very long ($> \SI{2}{s}$), but only the
-center chip is triggered by the FADC. This means that the outer chips
-can record cluster data that is not correlated to what the center chip
-sees. When applying one of these two vetoes the chance for random
-coincidence might be non negligible.
+The following code snippet runs the
+~TimepixAnalysis/Analysis/ingrid/likelihood.nim~ program with
+different arguments in order to compute the real efficiency and random
+coincidence rate for different veto setups. For the line veto, the
+different eccentricity cutoffs are studied.
 
-In order to estimate this we can create fake events from real clusters
-on the center chip and clusters for the outer chips using different
-events. This way we bootstrap a larger number of events than otherwise
+#+begin_src nim :tangle code/analyze_random_coinc_and_efficiency_vetoes.nim
+import shell, strutils, os, sequtils, times
+
+# for multiprocessing
+import cligen / [procpool, mslice, osUt]
+
+type
+  Veto = enum
+    Septem, Line
+
+  RealOrFake = enum
+    Real, Fake
+
+## Ecc = 1.0 is not in `eccs` because by default we run `ε = 1.0`.
+const eccStudy = @[1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0]
+## Line veto kind is not needed anymore. We select the correct kind in `likelihood`
+## -> lvRegular for line veto without septem
+## -> lvRegularNoHLC for line veto with septem
+## UseRealLayout is also set accordingly.
+const cmd = """
+ECC_LINE_VETO_CUT=$# \
+    likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 \
+    --h5out $#/lhood_2018_crAll_80eff_septem_line_ecc_cutoff_$#_$#.h5 \
+    --region crAll --cdlYear 2018 --readOnly --lnL --signalEfficiency 0.8 \
+    --septemLineVetoEfficiencyFile $# \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 $#
+"""
+const nJobs = 4
+proc toName(rf: RealOrFake): string =
+  if rf == Real: "" else: "fake_events"
+proc toName(vetoes: set[Veto], rf: RealOrFake): string = (toSeq(vetoes).mapIt($it).join("_") & "_" & toName(rf)).strip(chars = {'_'})
+proc toCommand(rf: RealOrFake): string =
+  if rf == Real: "" else: "--estimateRandomCoinc"
+proc toCommand(veto: Veto): string =
+  case veto
+  of Septem: "--septemveto"
+  of Line: "--lineveto"
+proc toCommand(vetoes: set[Veto], rf: RealOrFake): string = (toSeq(vetoes).mapIt(toCommand it).join(" ") & " " & toCommand(rf)).strip
+proc toEffFile(vetoes: set[Veto], rf: RealOrFake, ecc: float, outpath: string): string =
+  result = &"{outpath}/septem_veto_before_after_septem_line_ecc_cutoff_{ecc}_{toName(vetoes, rf)}.txt"
+
+## `flatBuffers` to copy objects containing string to `procpool`
+import flatBuffers
+type
+  Command = object
+    cmd: string
+    outputFile: string
+
+proc runCommand(r, w: cint) =
+  let o = open(w, fmWrite)  
+  for cmdBuf in getLenPfx[int](r.open):
+    let cmdObjs = fromFlat[Command](fromString(cmdBuf))
+    doAssert cmdObjs.len == 1, "Got more than one command: " & $cmdObjs
+    let cmdObj = cmdObjs[0]
+    let cmdStr = cmdObj.cmd
+    let (res, err) = shellVerbose:
+      one:
+        cd /tmp
+        ($cmdStr)
+    # write the program output as a logfile
+    writeFile(cmdObj.outputFile, res)
+    o.urite "Processing done for: " & $cmdObj
+
+proc main(septem = false,
+          line = false,
+          septemLine = false,
+          eccs = false,
+          dryRun = false,
+          outpath = "/tmp/") =
+  var vetoSetups: seq[set[Veto]]
+  if septem:     vetoSetups.add {Septem}
+  if line:       vetoSetups.add {Line}
+  if septemLine: vetoSetups.add {Septem, Line}                            
+  # First run individual at `ε = 1.0`
+  var cmds = newSeq[Command]()
+  var eccVals = @[1.0]
+  if eccs:
+    eccVals.add eccStudy
+  for rf in RealOrFake:
+    for ecc in eccVals:    
+      for vetoes in vetoSetups:
+        if Line in vetoes or ecc == 1.0: ## If only septem veto do not perform eccentricity study!
+          let final = cmd % [ $ecc, outpath, $ecc, toName(vetoes, rf), toEffFile(vetoes, rf, ecc, outpath), toCommand(vetoes, rf) ]
+          let outputFile = &"{outpath}/logL_output_septem_line_ecc_cutoff_$#_$#.txt" % [$ecc, toName(vetoes, rf)]
+          cmds.add Command(cmd: final, outputFile: outputFile)
+  echo "Commands to run:"
+  for cmd in cmds:
+    echo "\tCommand:  ", cmd.cmd
+    echo "\t\tOutput: ", cmd.outputFile
+  # now run if desired
+  if not dryRun:
+    # 1. fill the channel completely (so workers simply work until channel empty, then stop
+    let t0 = epochTime()
+    let cmdBufs = cmds.mapIt(copyFlat(it).toString())
+    var pp = initProcPool(runCommand, framesLenPfx, nJobs)
+    var readRes = proc(s: MSlice) = echo $s
+    pp.evalLenPfx cmdBufs, readRes
+    echo "Running all commands took: ", epochTime() - t0, " s"
+
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+
+**** Initial thoughts and explanations                          :extended: 
+
+This way we bootstrap a larger number of events than otherwise
 available and knowing that the geometric data cannot be
 correlated. Any vetoing in these cases therefore *must* be a random
 coincidence.
@@ -26941,40 +26895,7 @@ These events are here:
 [[file:Figs/background/estimateSeptemVetoRandomCoinc/fake_events_fixed_cluster_septem_line_veto_all_outer_events.pdf]]
 
 
-Combining different options of the line veto and the eccentricity cut
-for the line veto, as well as applying both the septem and the line
-veto for real data as well as fake bootstrapped data we can make an
-informed decision about the settings to use. At the same time get an
-understanding for the real dead time we
-introduce. Fig. [[fig:background:fraction_passing_line_veto_ecc_cut]]
-shows precisely such data. We can see that the fraction that passes
-the veto setups (y axis) drops the further we go towards a low
-eccentricity cut (x axis). For the real data (~Real~ suffix in the
-legend) the drop is _faster_ than for fake boostrapped data (~Fake~ suffix
-in the legend) however, which means that we can use the lowest
-eccentricity cut as we like (effectively disabling the cut at
-$ε_\text{cut} = 1.0$). The exact choice between the purple / green
-pair (line veto including all clusters, even the one containing the
-original cluster) and the turquoise / blue pair (septem veto + line
-veto with only those clusters that do not contain the original; those
-are covered by the septem veto) is not entirely clear. Both will be
-investigated for their effect on the expected limit. The important
-point is that the fake data allows us to estimate the random
-coincidence rate, which needs to be treated as an additional dead time
-during background _and_ solar tracking time. A lower background may or
-may not be beneficial, compared to a higher dead time.
-
-#+CAPTION: Fraction of events in Run-3 data (green), which pass (i.e. not rejected) the line
-#+CAPTION: veto depending on the eccentricity cut used, which decides how eccentric a
-#+CAPTION: cluster needs to be in order to be used for the veto. The purple points are
-#+CAPTION: using fake bootstrapped data from real clusters passing the $\ln\mathcal{L}$ cut
-#+CAPTION: together with real outer GridPix data from *other* events. The fraction of events
-#+CAPTION: being vetoed in the latter is a measure for the random coincidence rate. 
-#+NAME: fig:background:fraction_passing_line_veto_ecc_cut
-[[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf]]
-
-
-**** TODO Rewrite the whole estimation to a proper program [/]
+**** TODO Rewrite the whole estimation to a proper program [/]  :extended:
 
 *IMPORTANT*
 
@@ -26992,13 +26913,13 @@ Anyhow, then rewrite the code snippet in the section below that prints
 the information about the random coincidence rates and creates the
 plot.
 
-
-
-**** Run a whole bunch more cases
+**** Run a whole bunch more cases                               :extended:
 
 The below is running now <2023-02-10 Fri 01:43>.
 Still running as of <2023-02-10 Fri 11:55>, damn this is slow.
 - [X] *INVESTIGATE PERFORMANCE AFTER IT'S DONE*
+- [ ] We should be able to run ~4 (depending on choice even more) in
+  parallel, no?  
 
 #+begin_src nim :tangle code/analyze_line_veto_different_ecc_cutoff.nim
 import shell, strutils, os
@@ -27047,9 +26968,13 @@ with the ~septem_veto_befor_after_*~ files.
 See the code in one of the next sections for the 'analysis' of this
 dataset.
 
+**** TODOs for this section [/]                                 :noexport:
+
 - [X] *RERUN THE ABOVE AFTER LINE VETO BUGFIX & PERF IMPROVEMENTS*
 
-**** Number of events removed in real usage
+- [ ] Rerun everything in check for thesis final.
+
+**** Number of events removed in real usage                     :extended:
 
 - [ ] *MAYBE EXTEND CODE SNIPPET ABOVE TO ALLOW CHOOSING BETWEEN ε_cut
   ANALYSIS AND REAL FRACTIONS*
@@ -27557,12 +27482,11 @@ LINE_VETO_KIND=lvRegular \
     --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 --lineveto --estimateRandomCoinc
 #+end_src
 
-
 -> As it turns out this was a bug in our logic that decides which
 cluster is of interest to the line veto. We accidentally always deemed
 it interesting, if the original cluster was on its own... Fixed now.
 
-*** On the line veto without septem veto
+*** On the line veto without septem veto                         :extended:
 
 When dealing with the line veto without the septem veto there are
 multiple questions that come up of course.
@@ -27657,7 +27581,6 @@ certainly never pass any lnL cuts anyhow.
 (More plots: [[file:~/org/Figs/statusAndProgress/estimateSeptemVetoRandomCoinc/septem_events_only_line_veto_check_hlc_fixed_check.pdf]])
 
 
-
 The following is a broken event. THe purple cluster is not used for
 line veto. Why?
 /t/problem_event_12435_run_297.pdf
@@ -27668,22 +27591,25 @@ line veto. Why?
   via an environment variable (~ECC_LINE_VETO_CUT~). A good value is
   around the 1.4 - 1.6 range I think (anything that rules out most
   X-ray like clusters!)
-  
-- [X] *UNRELATED TO HERE, BUT STILL IMPORTANT*
-  [[~/org/Figs/statusAndProgress/exampleEvents/example_line_veto_needs_chip_spacing.pdf]]
-  is an example event that shows we need to introduce the correct chip
-  spacing *for the line veto*. For the septem veto it's not very
-  important, because the distance is way more important than the angle
-  of how things match up. But for the line veto it's essential, as can
-  be seen in that example (note that it uses ~lvRegularNoHLC~ and no
-  septem veto, i.e. that's why the veto is false, despite the purple HLC of
-  course "hitting" the original cluster)
-  -> This has been implemented now. Activated (for now) via an
-  environment variable ~USE_REAL_LAYOUT~.
-  An example event for the spacing & the eccentricity cutoff is:
-  [[file:~/org/Figs/statusAndProgress/exampleEvents/example_event_with_line_spacing_and_ecc_cutoff.pdf]]
-  which was generated using:
-  #+begin_src sh
+
+**** Note on real septemboard spacing being important           :extended:
+
+[[~/org/Figs/statusAndProgress/exampleEvents/example_line_veto_needs_chip_spacing.pdf]]
+
+is an example event that shows we need to introduce the correct chip
+spacing *for the line veto*. For the septem veto it's not very
+important, because the distance is way more important than the angle
+of how things match up. But for the line veto it's essential, as can
+be seen in that example (note that it uses ~lvRegularNoHLC~ and no
+septem veto, i.e. that's why the veto is false, despite the purple HLC of
+course "hitting" the original cluster)
+-> This has been implemented now. Activated (for now) via an
+environment variable ~USE_REAL_LAYOUT~.
+An example event for the spacing & the eccentricity cutoff is:
+file:~/org/Figs/statusAndProgress/exampleEvents/example_event_with_line_spacing_and_ecc_cutoff.pdf
+which was generated using:
+
+#+begin_src sh
 LINE_VETO_KIND=lvRegularNoHLC \
     ECC_LINE_VETO_CUT=1.6 \
     USE_REAL_LAYOUT=true \
@@ -27692,11 +27618,12 @@ LINE_VETO_KIND=lvRegularNoHLC \
     --region crAll --cdlYear 2018 \
     --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
     --lineveto --plotseptem
-  #+end_src
-  and then just extract it from the ~/plots/septemEvents~
-  directory. Note the definition of the environment variables like this!
+#+end_src
+
+and then just extract it from the ~/plots/septemEvents~
+directory. Note the definition of the environment variables like this!
   
-**** Outdated: Estimation using subset of outer ring events
+**** Outdated: Estimation using subset of outer ring events      :extended:
 
 The text here was written when we were still bootstrapping events only
 from the subset of *event numbers* that actually have a cluster that
@@ -27746,8 +27673,7 @@ running the vetoes on our bootstrapped fake events. Combining it with
 a software efficiency of ε = 80% the total combined efficiency then
 would be $ε_\text{total} = 0.8 · 0.6868 = 0.5494$, so about 55%.
 
-
-*** Veto setups of interest [/]
+*** Veto setups of interest [/]                                  :extended:
 
 - [ ] *TABLE OF FEATURE, EFFICIENCY, BACKGROUND RATE*
   -> That table essentially motivates looking at different veto setups.
@@ -27818,11 +27744,19 @@ Let's compute the total efficiencies of all the setups we look at.
 - [ ] Have a table with the setups, their background rates (full
   range) and their efficiencies!
 
-*** Final background rate using all vetoes [/]
+*** Background rates of combined vetoes and efficiencies 
 :PROPERTIES:
 :CUSTOM_ID: sec:background:all_vetoes_combined
 :END:
 
+- [ ] Best case of MLP + all vetoes, LnL + all vetoes
+- [ ] Plot of all clusters over entire chip
+- [ ] Plot of background suppression (side-by-side)
+- [ ] (Maybe) Efficiency adjusted background rates? Multiply total
+  time by combined efficiency to take dead time into account?  
+- [ ] Table of mean background rates of different setups, including
+  combined efficiency      
+  -> This motivates the "different setups to consider"
 
 - [ ] *ADD MLP in addition!*
 
@@ -27925,6 +27859,235 @@ StatusAndProgress. Maybe shortened version will make it.
   -> so that we have a total number of muons we should have detected
   e.g. orthogonally in the CAST data, e.g. to compare with SiPM
   trigger rates etc.
+
+** Hough transformation as a cluster finding helper              :noexport:
+
+At some point we considered whether a Hough transformation could be a
+useful tool in the application of the outer GridPix ring as a
+veto. The notes about this are here for completeness, as it showcases
+an interesting idea leading to a dead end. To avoid others investing
+time in it, we include it. Or rather, if you have plenty of experience
+with Hough transformations and know what to make of this, then feel
+free and use it as a starting inspiration!
+
+- [X] Add our notes about attempts to use hough transformations.
+
+*** Hough transformation for cluster finding                    :noexport:
+
+I started a Hough trafo playground in
+[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/houghTrafoPlayground/houghTrafoPlayground.nim]].
+
+Reading up on Hough transformations is a bit confusing, but what we
+are doing for the moment:
+- compute connecting lines between *each* point pair in a septem event
+  (so for N hits, that's N² lines)
+- for each line compute the slope and intersect
+
+From this information we can look at different things:
+1. the plots of all lines. Very messy, but gives an idea if the lines
+   are correct.
+2. a histogram of all found slopes
+3. a histogram of all found intersects
+4. a scatter plot of slopes vs. intersects
+
+The "algorithm" to compute the Hough transformation is pretty dumb at
+the moment:
+#+begin_src nim
+var xs = newSeqOfCap[int](x.len * x.len)
+var ys = newSeqOfCap[int](x.len * x.len)
+var ids = newSeqOfCap[string](x.len * x.len)
+var slopes = newSeqOfCap[float](x.len * x.len)
+var intersects = newSeqOfCap[float](x.len * x.len)
+echo x
+for i in 0 ..< x.len:
+  for j in 0 ..< x.len:
+    if i != j:                   # don't look at same point
+      xs.add x[j]
+      ys.add y[j]
+      xs.add x[i]
+      ys.add y[i]
+      ids.add $i & "/" & $j
+      ids.add $i & "/" & $j
+      if xs[^1] - xs[^2] > 0:    # if same x, slope is inf
+        let slope = (ys[^1] - ys[^2]).float / (xs[^1] - xs[^2]).float
+        slopes.add slope
+        # make sure both points yield same intercept
+        doAssert abs(
+          (y[j].float - slope * x[j].float) - (y[i].float - slope * x[i].float)
+        ) < 1e-4 
+        intersects.add (y[j].float - slope * x[j].float)
+#+end_src
+
+Let's look at a couple of examples:
+
+**** Example 0 =septemEvent_run_272_event_95288.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_272_event_95288.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_272_event_95288.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_272_event_95288.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_272_event_95288.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_0
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_272_event_95288.png]]
+#+end_center
+
+**** Example 1 =septemEvent_run_265_event_1662.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_265_event_1662.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_265_event_1662.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_265_event_1662.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_265_event_1662.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_1
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_265_event_1662.png]]
+#+end_center
+
+**** Example 2 =septemEvent_run_261_event_809.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_261_event_809.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_261_event_809.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_261_event_809.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_261_event_809.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_2
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_261_event_809.png]]
+#+end_center
+
+**** Example 3 =septemEvent_run_291_event_31480.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_291_event_31480.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_291_event_31480.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_291_event_31480.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_291_event_31480.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_3
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_291_event_31480.png]]
+#+end_center
+
+**** Example 4 =septemEvent_run_306_event_4340.csv=
+
+#+begin_center
+#+CAPTION: The corresponding septem event.
+#+NAME: fig_hough_septem_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/plot_septem_run_306_event_4340.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: All connecting lines between the pixel pairs.
+#+NAME: fig_hough_lines_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/lines_run_306_event_4340.png]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all slopes
+#+NAME: fig_hough_histo_slopes_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_slopes_run_306_event_4340.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Histogram of all intersects
+#+NAME: fig_hough_histo_intersects_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/histo_intersects_run_306_event_4340.pdf]]
+#+end_center
+
+#+begin_center
+#+CAPTION: Scatter plot of slopes vs intersects.
+#+NAME: fig_hough_slope_vs_intersects_example_4
+[[~/org/Figs/statusAndProgress/houghTrafo/slope_vs_intersects_run_306_event_4340.png]]
+#+end_center
+
+**** Conclusion
+
+The hough transformation produces too much data that is too hard to
+interpret in the context of our goal. It doesn't actually help us a
+lot here, so we'll drop the pursuit of that.
+
+
+  
 
 * Limit calculation                                                :Analysis:
 :PROPERTIES:
