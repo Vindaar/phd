@@ -23850,7 +23850,9 @@ plotBackgroundClusters \
     --backgroundSuppression    
 #+end_src
 
+***** Background rates (alone & compare to old best MLP)
 
+First background rates on its own:
 #+begin_src sh
 plotBackgroundRate \
     ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
@@ -23892,6 +23894,40 @@ plotBackgroundRate \
     --outpath /tmp \
     --quiet
 #+end_src
+
+And now comparisons to the previously best model:
+#+begin_src sh
+plotBackgroundRate \
+    ~/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R2_crAll_sEff_0.95_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.h5 \
+    ~/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.h5 \
+    ~/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933_vQ_0.99.h5 \
+    ~/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
+    --names "MLP@91" --names "MLP@91" \
+    --names "MLP9 +V" --names "MLP9 +V" \
+    --names "MLP@91 NEW" --names "MLP@91 NEW" \
+    --names "MLP9 NEW+V" --names "MLP9 NEW+V" \
+    --centerChip 3 \
+    --title "Background rate from CAST data" \
+    --showNumClusters \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --outfile background_rate_crGold_scinti_fadc_septem_line.pdf \
+    --outpath /tmp \
+    --useTeX \
+    --region crGold \
+    --energyMin 0.2 \
+    --quiet
+#    --hideErrors \
+#    --hidePoints \
+#
+#    --applyEfficiencyNormalization \
+#+end_src
+
 
 
 **** Combination of NN w/ vetoes                                :noexport: 
