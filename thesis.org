@@ -38265,6 +38265,130 @@ reconstruction ~/CastData/data/DataRuns2018_Reco_withFadc.h5 --only_fadc
 :END:
 #+LATEX: \minitoc
 
+In this appendix we will introduce the concept of raytracing, present
+our raytracer in sec. [[#sec:appendix:raytracing:traxer]], show
+comparisons to PANTER measurements of the LLNL CAST telescope,
+sec. [[#sec:appendix:raytracing:panter]] and finally use it to compute the
+axion image expected for CAST behind the LLNL telescope,
+sec. [[#sec:appendix:raytracing:axion_image]]. 
+
+Raytracing is a technique for the rendering of computationally
+generated images [fn:history]. The classical raytracing algorithm goes back to a
+paper by Turner Whitted in 1979 [[cite:&whitted79]]. It is essentially a
+recursive algorithm, which shoots rays ("photons") from a camera into
+a scene of 3D objects. Interactions with the objects follows
+geometrical optics. The ray equation
+
+\[
+\vec{r}(t) = \vec{o} + t \vec{d}
+\]
+
+describes the ray vector $\vec{r}$, how it propagates from its origin
+$\vec{o}$ along the direction $\vec{d}$ as a function of the parameter
+$t$ (it is no coincidence that $t$ evokes the notion of
+time). Ray-object intersections tests are performed based on the ray
+equation and parametrizations of scene objects (either analytical
+parametrizations for geometric primitives like spheres, cones and the
+like, or complex objects made up of a large number of triangles). Each
+ray is traced until a certain 'depth', defined by the maximum number
+of reflections a ray may undergo, is reached and the recursion is
+stopped.
+
+Building on this more sophisticated methods were invented, in
+particular the 'path tracing' algorithm and the introduction of the
+'rendering equation' cite:kajiya86,immel86. Here the geometrical
+optics approximation is replaced by the concepts of radiometry (power,
+irradiance, radiance, spectral radiance and so on) embedding the
+concept in more robust physical terms. At the heart of it, the
+rendering equation is a statement of conservation of energy. To
+generate images of a scene, the most interesting quantity is the
+exitant radiance $L_o$ at a point on a surface. It is the sum of the
+emitted radiance $L_e$ and the scattered radiance $L_{o,s}$,
+
+\[
+L_o = L_e + L_{o,s}.
+\]
+
+In the context of rendering, the emitted radiance $L_e$ is commonly a
+property of the materials in the scene. $L_{o,s}$ needs to be computed
+via the scattering equation
+
+\[
+L_{o,s}(\vec{x}, ω_o) = ∫_{S²} L_i(\vec{x}, ω_i) f_s(\vec{x}, ω_i ↦
+ω_o) \sin ϑ \: \mathrm{d}\sin ϑ \, \mathrm{d}ϕ.
+\]
+
+$L_i$ is the incident radiance at point $\vec{x}$ and direction $ω_i$
+(do not confuse it with an energy). $f_s$ is the bidirectional
+scattering distribution function (BSDF) and describes the scattering
+properties of a material surface. In the context of an equilibrium in
+radiance (the light description does not change over time in the
+scene) the incident radiance can be expressed as
+
+\[
+L_i(\vec{x}, ω) = L_o(\mathbf{x}_{\mathcal{M}}(\vec{x}, ω), -ω).
+\]
+
+Here $\mathbf{x}_{\mathcal{M}}(\vec{x}, ω)$ is the 'ray-casting
+function', which yields the closest point on the set of surfaces
+$\mathcal{M}$ of the scene visible from $\vec{x}$ in direction $ω$.
+These expressions can be combined into a form independent of $L_i$ to 
+
+\[
+L_o(\vec{x}, ω_o) = L_e(\vec{x}, ω_o) +
+  ∫_{S²} L_o(\mathbf{x}_{\mathcal{M}}(\vec{x}, ω_i), -ω_i)
+    f_s(\vec{x}, ω_i ↦ ω_o) \sin ϑ \: \mathrm{d}\sin ϑ \, \mathrm{d}ϕ,
+\]
+
+which is the 'light transport equation', commonly used nowadays in
+path tracing based computer graphics.
+
+The fundamental problem with raytracing, and path tracing based on the
+light transport equation in particular, is the extreme computational
+cost. Monte Carlo based approaches to sample only relevant directions
+and space partitioning data structures are employed to reduce this
+cost. One of the seminal documents of modern Monte Carlo based
+rendering is Eric Veach's PhD thesis [[cite:&veach1998robust]], which the
+notation used above is based on. If you are interested in the topic I
+highly recommend at least a cursory look at it.
+
+Movies have made the transition from rasterization based computer
+graphics in /Toy Story/ (1995) over the course of 15 to 20
+years [fn:monster_house] to full path tracing graphics commonly used
+today. The use of offline rendering utilizing many compute hours per
+frame of the final movie allowed movies to introduce path tracing at
+the end of the 90s (/Bunny/, an animated short released in 1998). In
+recent years the idea of real time path tracing has become tangible,
+in big parts due to the -- at the time bold -- bet by Nvidia. They
+dedicated specific parts of their 'Turing' architecture of graphics
+processing units (GPUs) in 2018 to accelerate raytracing. Starting
+with path traced versions of old video games, like /Quake II RTX/
+running in real time on 'Turing' GPUs, in 2023 we have path traced
+versions of modern high budget ("AAA") video games like /Cyberpunk
+2077/ and /Alan Wake 2/ [fn:other_raytracing]. This is in parts due to the general increase
+in compute performance, partially due to specific hardware features
+and a large part due to usage of machine learning (to denoise and
+upsample images and further reconstruct missing rays using ML). For an
+overview of the developments in the movie industry to its adoption of
+path tracing, have a look at [[cite:&christensen16path]]. To understand
+how path tracing is implemented in video games on modern GPUs, see the
+'Raytracing Gems' series
+cite:raytracingGemsHaines2019,raytracingGemsIIMarrs2021.
+
+[fn:history] The history of raytracing goes back much further than its
+application to computer graphics.
+
+[fn:monster_house] The first feature length movie entirely rendered using
+path tracing was /Monster House/ (2006).
+
+[fn:other_raytracing] There were of course previous experiments in interactive
+real time raytracing.
+
+** TODOs for this section                                         :noexport:
+
+- [ ] *CAN WE* get this appendix to be Appendix R in the final thesis?
+  That would be too fun, haha.
+
 *UPDATE*: <2023-01-17 Tue 19:55> For length reasons of the thesis this
 will remain a pretty short appendix after all. While writing a longer
 intro to raytracing would be really neat, it's just going to make the
@@ -38284,39 +38408,17 @@ Whitted algorithm + Path tracing algorithm + solving the light
 ... equation)
 
 
+- [X] Whitted raytracing algorithm!
+- [X] Mention the Path Tracing algorithm
+- [X] Mention Eric Veach's thesis
 
-- [ ] Whitted raytracing algorithm!
-- [ ] Reference modern real time raytracing features & support on GPUs
-- [ ] Mention the Path Tracing algorithm
+- [X] Reference modern real time raytracing features & support on GPUs
 
-
-*Signal hypothesis - raytracing from Sun to detector*
-
-(It can be a reasonably long section, I think that's fair)
-
-An interactive raytracer for the applications of solar axion fluxes, which allows to investigate the
-scene (geometry of objects) in 'visible light' as well as serve as an
-X-ray raytracer is in development.
-+For time reasons that development is somewhat on hold unfortunately.+
-+https://github.com/Vindaar/rayTracingInOneWeekend/tree/interactiveRayTracer+
-https://github.com/Vindaar/TrAXer
--> Done.
-
-
-Ray tracing through the detector. Put this before limit calculation stuff?
-
-The whole theoretical side needs to be described in the theory chapter
-in [[Axion-electron flux]]. Then here we can just describe how one
-implements this (in particular in the noexport section).
-
-Raytracing in a Weekend: cite:Shirley2020RTW1
-
-For an in depth guide to raytracing, from theoretical principles to a
-pretty sophisticated raytracer, see the amazing 'Physically based
-rendering' cite:pharr2016physically. 
-
-- [ ] *INTRODUCE CONCEPT OF RAYTRACING*
+- [X] *INTRODUCE CONCEPT OF RAYTRACING*
+- [ ] *INTRODUCE LIGHT TRANSPORT EQUATION*
+  
 - [X] *CITE PBR*
+
 - [ ] *MAYBE SHOW RAYTRACING IN A WEEKEND PICTURE AS EXAMPLE*
   -> Could of course mention fancy realtime raytracing possible nowadays.
 
@@ -38341,13 +38443,65 @@ rendering' cite:pharr2016physically.
   - Wolter equation with correct radius to use
   - the multilayer recipes used  
 
+** TrAXer - An interactive axion raytracer
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:raytracing:traxer
+:END:
 
-** Related to explicit axion image [/]
+*Signal hypothesis - raytracing from Sun to detector*
+
+(It can be a reasonably long section, I think that's fair)
+
+An interactive raytracer for the applications of solar axion fluxes, which allows to investigate the
+scene (geometry of objects) in 'visible light' as well as serve as an
+X-ray raytracer is in development.
++For time reasons that development is somewhat on hold unfortunately.+
++https://github.com/Vindaar/rayTracingInOneWeekend/tree/interactiveRayTracer+
+https://github.com/Vindaar/TrAXer
+-> Done.
+
+
+Ray tracing through the detector. Put this before limit calculation stuff?
+
+The whole theoretical side needs to be described in the theory chapter
+in [[Axion-electron flux]]. Then here we can just describe how one
+implements this (in particular in the noexport section).
+
+Raytracing in a Weekend: cite:Shirley2020RTW1
+
+For an in depth guide to raytracing, from theoretical principles to a
+pretty sophisticated raytracer, see the amazing 'Physically based
+rendering' cite:pharr2016physically.
+
+** Comparison of TrAXer results with PANTER measurements
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:raytracing:panter
+:END:
+
+*** A few more details on the LLNL telescope
+
+- [ ] Explain the layout, *cones*, table of the shells (*final
+  shells!!*) and length of mirrors, angles, $x_{\text{sep}}$ and all
+  that jazz
+
+[fn:table_llnl] The data in the table was sent to me in personal
+communication by Jaime Rúz. *IS WRITTEN CORRECT?*
+
+*** PANTER measurements of HPD, focal length for point source etc
+
+** Computing an axion image with TrAXer
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:raytracing:axion_image
+:END:
+
+*** TODOs for this section [/]                                   :noexport:
+
+Related to explicit axion image 
 
 - [ ] *SHOW PLOTS CHARACTERIZING USED SOLAR MODEL*
 - [ ] *REFERENCE SOLAR MODEL*
 
-** TODO Can we finish our interactive ray tracer?
+** DONE Can we finish our interactive ray tracer?                 :noexport:
 
 Need:
 - light sources (4h of work at most)
@@ -38358,6 +38512,19 @@ Need:
 In theory this *should* be possible as an extensive weekend project!
 I'd say this is definitely worth it.
 
+<2023-11-02 Thu 19:11>, damn I cannot stress how good it felt to just
+turn the old TODO there into a DONE! When I wrote the above lines, I
+didn't think I'd end up finishing that raytracer, to be honest. At the
+same time I also didn't think the thesis would still be worked on at
+the end of 2023!
+"Extensive weekend project" -- yeah. I mean my estimates weren't that
+far off (within π I guess), but the additional work to get everything
+working correctly, implementing the actual X-ray raytracer on top of
+the visible light based raytracer using spectral radiance and not an
+RGB based approach, thinking and implementing how to essentially have
+2 raytracers in one with ImageSensors as a replacement for the camera
+for X-rays etc. In the end it was a good 4 weeks of work I guess
+instead of a weekend. :) 
 
 ** Computation of atomic processes :noexport:
 
