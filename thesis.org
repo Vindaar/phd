@@ -26256,20 +26256,21 @@ PLOT_SEPTEM_E_CUTOFF=1.0 PLOT_SEPTEM_EVENT_NUMBER=80301 \
 :END:
 
 There is one more further optional veto, dubbed the 'line veto'. It
-checks whether there are clusters whose long axis "points at" clusters
-on the center chip, which passed the likelihood or MLP cut. The idea
-being that there is a high chance that such clusters are correlated,
-especially because ionization is an inherently statistical process. It
-can be used in addition to the 'septem veto' or standalone. The
-approach uses the same general approach as the septem veto by
-reconstructing the full events as 'septemboard events' again. The
-difference to the septem veto is that it is not reliant on the cluster
-finding search radius.
+checks whether there are clusters on the outer chips whose long axis
+"points at" clusters on the center chip (passing the likelihood or MLP
+cut). The idea being that there is a high chance that such clusters
+are correlated, especially because ionization is an inherently
+statistical process. It can be used in addition to the 'septem veto'
+or standalone. The approach uses the same general approach as the
+septem veto by reconstructing the full events as 'septemboard events'
+again. The difference to the septem veto is that it is not reliant on
+the cluster finding search radius.
 
 The center cluster that initially passed the likelihood or MLP cut
-will be rejected if the long axis cuts within $3·(\frac{\text{RMS}_T +
-\text{RMS}_L}{2})$. In other words within $3 σ$ of the mean (along
-long and short axis) standard distribution of the pixels [fn:roughly_radius].
+will be rejected if the long axis of the outer chip cluster cuts
+within $3·(\frac{\text{RMS}_T + \text{RMS}_L}{2})$. In other words
+within $3 σ$ of the mean (along long and short axis) standard
+distribution of the pixels [fn:roughly_radius].
 
 If desired not every outer chip cluster is considered for the 'line
 veto'. An $ε_{\text{cut}}$ parameter can be adjusted to only allow
@@ -26282,7 +26283,7 @@ An example of an event being vetoed by the 'line veto' is shown in
 fig. [[fig:background:example_clusters_line_veto]]. The black circle
 around the center chip cluster indicates the radius in which the green
 line (extension of the long axis of the cyan cluster) needs to cut the
-center cluster. The red points are the cluster centers
+center cluster. 
 
 #+CAPTION: Example event, which highlights the use case of the 'line veto'. The
 #+CAPTION: blue cluster in the upper chip is eccentric and its long axis 'points'
@@ -26292,51 +26293,14 @@ center cluster. The red points are the cluster centers
 #+NAME: fig:background:example_clusters_line_veto
 [[~/org/Figs/statusAndProgress/exampleEvents/background_event_vetoed_by_lineveto.pdf]]
 
-- [ ] *EXTEND THIS ON THE NOTION OF THE ECCENTRICITY LINE CUTOFF!*
-
-- [ ] *MOVE MOST OF THIS DOWN TO sec. [[#sec:background:all_vetoes_combined]]*
-
-Applying this veto to the full center chip improves the amount of
-background significantly over the background seen in
-fig. [[fig:background_clusters_no_septem_veto]]. The equivalent plot using
-the septem veto is seen in fig. [[fig:background:background_clusters_septem_line_veto]].
-
-#+CAPTION: The equivalent figure to fig. [[fig:background_clusters_no_septem_veto]] but including
-#+CAPTION: the 'septem veto'. The main improvement happens towards the corners. In total the
-#+CAPTION: number of background clusters drops by a factor of 4, from $\sim\num{43000}$ to
-#+CAPTION: $\sim\num{9600}$.
-#+CAPTION: *TODO THIS INCLUDES THE LINE VETO. COMPARISON SHOULD BE SHOWN LATER!!!!*
-#+NAME: fig:background:background_clusters_septem_line_veto
-[[~/phd/Figs/backgroundClusters/background_cluster_centers_all_vetoes.pdf]]
-
-In total all vetoes together have achieved a background reduction of a
-factor of about 10 over the regular $\ln\mathcal{L}$ method. But also
-the center most region (a square of the center \SI{25}{mm²}) sees
-an improvement, especially at low
-energies. Fig. [[fig:background:background_suppression_all_vetoes]]
-highlights the massive improvement over the pure $\ln\mathcal{L}$
-method when compared to
-fig. sref:fig:background:background_suppression_tiles_no_vetoes_2017_18. In
-the corners the improvements reach up to a factor of 30 (top left),
-but even in the center improvements of about a factor of 2 are achieved.
-
-- [ ] *SHOULD THIS BE SIDE BY SIDE WITH OTHER PLOT?*
-  -> I think this should be in the "fun combine all vetoes" subsection!
-#+CAPTION: Local background suppression using all vetoes in the 2017/18 CAST
-#+CAPTION: data. Compared to fig. \ref{fig:background:background_suppression_tiles_no_vetoes_2017_18} massive
-#+CAPTION: improvements, up to a factor of 30 are visible. Even the center region
-#+CAPTION: improves by a factor of 2.
-#+NAME: fig:background:background_suppression_all_vetoes
-[[~/phd/Figs/backgroundClusters/background_suppression_tile_map_all_vetoes.pdf]]
-
-The achieved background rate goes well into the $10⁻⁶$ range with this
-veto over the whole energy range, as the influence is largest at low
-energies. The rate comes out to $\SI{7.3245e-06}{keV⁻¹.cm⁻².s⁻¹}$ over
-the whole range up to $\SI{8}{keV}$ with
-$\SI{6.7804e-06}{keV⁻¹.cm⁻².s⁻¹}$ starting from $\SI{2}{keV}$ and
-$\SI{3.0972e-06}{keV⁻¹.cm⁻².s⁻¹}$ if starting from
-$\SI{4}{keV}$. Fig. [[fig:background:background_rate_line_veto]] shows the
-background rate.
+The achieved background rate, see
+fig. [[fig:background:background_rate_line_veto]], goes well into the
+$10⁻⁶$ range with this veto over the whole energy range, as the
+influence is largest at low energies. The rate comes out to
+$\SI{7.3245e-06}{keV⁻¹.cm⁻².s⁻¹}$ over the whole range up to
+$\SI{8}{keV}$ with $\SI{6.7804e-06}{keV⁻¹.cm⁻².s⁻¹}$ starting from
+$\SI{2}{keV}$ and $\SI{3.0972e-06}{keV⁻¹.cm⁻².s⁻¹}$ if starting from
+$\SI{4}{keV}$.
 
 #+CAPTION: Background rate of all CAST 2017/18 data in the center
 #+CAPTION: $\SI[parse-numbers=false]{5 \times 5}{mm²}$ using all vetoes including the
@@ -26348,6 +26312,27 @@ background rate.
 
 [fn:roughly_radius] This is roughly the radius of the cluster going by
 most extended active pixels of the cluster.
+
+**** TODOs for section above [/]                                :noexport:
+
+- [ ] *EXTEND THIS ON THE NOTION OF THE ECCENTRICITY LINE CUTOFF!*
+
+- [ ] *MOVE MOST OF THIS DOWN TO sec. [[#sec:background:all_vetoes_combined]]*
+
+
+
+- [X] Not really a TODO, but interestingly the # of background
+  clusters on the whole chip with all vetoes increased from 9500
+  (ref. IAXO TDR plots) to ~10400 or so. But the number in the gold
+  region dropped significantly from ~500 to ~350! The changes are many
+  that were made in the mean time. All aspects of the method underwent
+  changes and fixes, so this is not really a surprise.
+-> *UPDATE*: <2023-03-10 Fri 09:41> Ohhh, I think I understand what's
+  going on and why we have more total clusters...
+  It's the fact that in this case we're running without the tracking
+  information in the file, ergo we use all of the data and therefore
+  have more clusters in total!
+
 
 **** Possible eccentricity cutoff  [/]                          :extended:
 :PROPERTIES:
