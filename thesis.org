@@ -27044,36 +27044,46 @@ fractions of events removed by the same veto setup. The ratio of real
 effectiveness to random coincidence rate is a measure of the potency
 of the veto setup.
 
-Fig. [[fig:background:fraction_passing_line_veto_ecc_cut]] shows precisely
-such data. We can see that the fraction that passes the veto setups (y
+Fig. [[fig:background:fraction_passing_line_veto_ecc_cut]] shows how the
+fraction of passing events changes for the line veto as a function of
+the eccentricity cluster cutoff. The cases of line veto only for fake
+and real data as well as septem veto plus line veto for the same are
+shown. We can see that the fraction that passes the veto setups (y
 axis) drops the further we go towards a low eccentricity cut (x
 axis). For the real data (~Real~ suffix in the legend) the drop is
 _faster_ than for fake boostrapped data (~Fake~ suffix in the legend)
 however, which means that we can use the lowest eccentricity cut
-possible (effectively disabling the cut at $ε_\text{cut} = 1.0$). The
-exact choice between the purple / green pair (line veto including all
-clusters, even the one containing the original cluster) and the
-turquoise / blue pair (septem veto + line veto with only those
-clusters that do not contain the original; those are covered by the
-septem veto) is not entirely clear. Both will be investigated for
-their effect on the expected limit. The important point is that the
-fake data allows us to estimate the random coincidence rate, which
-needs to be treated as an additional dead time during background _and_
-solar tracking time. A lower background may or may not be beneficial,
-compared to a higher dead time.
+possible (effectively disabling the cut at $ε_\text{cut} = 1.0$). 
 
-Table [[tab:background:veto_random_coinc_rate]] shows the
-..................................................................
-*WRITE ME*
+Table [[tab:background:veto_random_coinc_rate]] shows the percentages of
+clusters left over after the line veto (at $ε_\text{cut} = 1.0$) and
+septem veto setups, both for real data (column 'Real') and
+bootstrapped fake data (column 'Fake'). For fake data this corresponds
+to the random coincidence rate of the veto setup (strictly speaking
+$1 - x$ of course). For real data it is the real percentage of
+clusters left, meaning the vetoes achieve reduction to $\frac{1}{5}$
+of background, depending on setup. The random coincidence rates are
+between $\SI{73}{\%}$ in case both outer GridPix vetoes are used,
+$\SI{78}{\%}$ for the septem veto and $\SI{86}{\%}$ for the line veto
+only. By itself the line veto is more efficient than the septem veto
+on its own ($\SI{23}{\%}$ real events left for septem and
+$\SI{22}{\%}$ for line veto). This means if only one veto out of the
+two is used, the line veto is far superior. Combined they do achieve
+another good improvement, but at the cost of a significant signal
+efficiency penalty.
 
-#+CAPTION: Fraction of events in Run-3 data (green), which pass (i.e. not rejected) the line
+This effect on the signal efficiency is one of the major reasons the
+choice of vetoes is not finalized outside the context of a limit
+calculation.
+
+#+CAPTION: Fraction of events in Run-3 data, which pass (i.e. not rejected) the line
 #+CAPTION: veto depending on the eccentricity cut used, which decides how eccentric a
-#+CAPTION: cluster needs to be in order to be used for the veto. The purple points are
-#+CAPTION: using fake bootstrapped data from real clusters passing the $\ln\mathcal{L}$ cut
-#+CAPTION: together with real outer GridPix data from *other* events. The fraction of events
-#+CAPTION: being vetoed in the latter is a measure for the random coincidence rate. 
+#+CAPTION: cluster needs to be in order to be used for the veto. 'Real' and 'Fake' suffixes
+#+CAPTION: refer to application of the vetoes to the bootstrapped fake data discussed or
+#+CAPTION: real data. For fake data the percentage corresponds to the random coincidence rate.
+#+CAPTION: 
 #+NAME: fig:background:fraction_passing_line_veto_ecc_cut
-[[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf]]
+[[~/phd/Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf]]
 
 #+CAPTION: Overview of the percentages of clusters left after the line veto and 
 #+CAPTION: and septem veto setup combinations (y = activated, n = not activated) for
@@ -27088,6 +27098,20 @@ Table [[tab:background:veto_random_coinc_rate]] shows the
 | y           | y         | $\num{73.25}$ | $\num{13.68}$ |
 
 **** TODOs for this section [/]                                 :noexport:
+
+Old text about the eccentricity cutoff fraction plot:
+#+begin_quote
+The exact choice between the purple / red pair (line veto including
+all clusters, even the one containing the original cluster) and the
+turquoise / blue pair (septem veto + line veto with only those
+clusters that do not contain the original; those are covered by the
+septem veto) is not entirely clear. Both will be investigated for
+their effect on the expected limit. The important point is that the
+fake data allows us to estimate the random coincidence rate, which
+needs to be treated as an additional dead time during background _and_
+solar tracking time. A lower background may or may not be beneficial,
+compared to a higher dead time.
+#+end_quote
 
 Old text starting the last paragraph, when structure was different.
 #+begin_quote
@@ -27235,6 +27259,10 @@ when isMainModule:
   dispatch main
 #+end_src
 
+#+RESULTS:
+| Commands | to  | run:     |       |                       |   |
+| Running  | all | commands | took: | 0.0008711814880371094 | s |
+
 To run it:
 #+begin_src sh :dir ~/phd/
 code/analyze_random_coinc_and_efficiency_vetoes  \
@@ -27322,16 +27350,22 @@ for f in walkFiles(path / "septem_veto_before_after*.txt"):
 echo df.spread("Fake", "FractionPass").drop(["ε_cut", "Type"]).toOrgTable()
 
 # And finally create the plots and output CSV file
+if false:
+  df.writeCsv("/home/basti/phd/resources/septem_line_random_coincidences_ecc_cut.csv", precision = 8)  
 
-#df.writeCsv("/home/basti/phd/resources/septem_line_random_coincidences_ecc_cut.csv", precision = 8)  
-#ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
-#  geom_point() +
-#  ggtitle("Fraction of events passing line veto based on ε cutoff") +
-#  margin(right = 9) + 
-#  ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut.pdf",
-#         width = 800, height = 480)
-#  #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf", width = 800, height = 480)
-#
+block PlotFromCsv:
+  let df = readCsv("/home/basti/org/resources/septem_line_random_coincidences_ecc_cut.csv")
+    .filter(f{`Type` notin ["LinelvRegularNoHLCReal", "LinelvRegularNoHLCFake"]})
+    .mutate(f{string: "Type" ~ `Type`.replace("lvRegular", "").replace("NoHLC", "")})
+  ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
+    geom_point() +
+    ggtitle("Fraction of events passing line veto based on ε cutoff") +
+    #margin(right = 9) + 
+    ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
+           width = 600, height = 420, useTeX = true, standalone = true)
+            
+    #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf", width = 800, height = 480)
+  
 ## XXX: we probably don't need the following plot for the real data, as the eccentricity
 ## cut does not cause anything to get worse at lower values. Real improvement better than
 ## fake coincidence rate.
@@ -27375,6 +27409,10 @@ File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_sep
 |true|false|0.2314653|0.72551471|
 |true|true|0.13681106|0.77626471|
 
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory Figs/background/estimateSeptemVetoRandomCoinc Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.tex
+Generated: Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf
 :end:
 
 
