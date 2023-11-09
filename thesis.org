@@ -39306,11 +39306,12 @@ reconstruction ~/CastData/data/DataRuns2018_Reco_withFadc.h5 --only_fadc
 #+LATEX: \minitoc
 
 In this appendix we will introduce the concept of raytracing, present
-our raytracer in sec. [[#sec:appendix:raytracing:traxer]], show
-comparisons to PANTER measurements of the LLNL CAST telescope,
-sec. [[#sec:appendix:raytracing:panter]] and finally use it to compute the
-axion image expected for CAST behind the LLNL telescope,
-sec. [[#sec:appendix:raytracing:axion_image]]. 
+our raytracer in sec. [[#sec:appendix:raytracing:traxer]], give a more
+technical overview of the LLNL telescope in
+sec. [[#sec:appendix:raytracing:llnl_telescope]], show comparisons of our
+raytracer to PANTER measurements, sec. [[#sec:appendix:raytracing:panter]]
+and finally compute the axion image expected for CAST behind the LLNL
+telescope, sec. [[#sec:appendix:raytracing:axion_image]].
 
 Raytracing is a technique for the rendering of computationally
 generated images [fn:history]. The classical raytracing algorithm goes back to a
@@ -39488,6 +39489,160 @@ Whitted algorithm + Path tracing algorithm + solving the light
 :CUSTOM_ID: sec:appendix:raytracing:traxer
 :END:
 
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.525) (caption "RTOW spheres example") (label "fig:appendix:raytracing:riow_example")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "/home/basti/phd/Figs/raytracing/raytracing_in_one_weekend.png"))
+        (subfigure (linewidth 0.475) (caption "CAST setup") (label "fig:appendix:raytracing:cast_setup_example")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "/home/basti/phd/Figs/raytracing/traxer_cast_llnl_setup_sun.png"))
+        (caption
+         (subref "fig:appendix:raytracing:riow_example")
+         " is the reproduction of the final result of the book 'Ray Tracing in One Weekend' (RTOW) "
+         (cite "Shirley2020RTW1")
+         " I originally followed. "
+         (subref "fig:appendix:raytracing:cast_setup_example")
+         " is a very narrow angle of view on the CAST setup. In the bottom left is the image sensor
+          with the size of a GridPix. In the middle with a reddish color is the LLNL telescope sitting
+          in front of the CAST magnet bore. On the right is the Sun.
+          Note that only the essential parts are simulated floating in the air. The angle and view from
+          above makes the image sensor look a bit odd.")
+        (label "fig:appendix:raytracing:example_screenshots"))
+#+end_src
+
+The simulation of light based on physical principles as done in path
+tracing algorithms combined with the performance of modern computers
+make it an interesting solution to light propagation problems, which
+are difficult if not impossible to solve numerically. Calculation of
+the expected image produced by the X-ray telescope for a realistic
+X-ray telescope and solar axion emission is one such problem. In
+[[cite:&krieger2018search]] Christoph Krieger already wrote a basic
+hardcoded [fn:hardcoded] raytracer for the 2014/15 data taking behind
+the ABRIXAS telescope. He approximated the ABRIXAS telescope as a
+simple lens.
+
+For the data taking with the detector of this thesis behind the LLNL
+telescope, a more precise solution was desired. As such Johanna von Oy
+wrote a new raytracer for this purpose as part of her master thesis
+[[cite:&vonOy_MSc]]. However, although this code [[cite:&JvO_axionElectron]]
+correctly simulates the LLNL (and as a matter of fact also other
+telescopes) based on their correct layer descriptions, it still uses a
+similar hardcoded [fn:hardcoded] approach, making it inflexible for
+different scenes. More importantly it makes understanding and
+verifying the code for correctness very difficult. 
+
+What started mainly as a toy project I wrote out of curiosity
+following the popular 'Ray Tracing in One Weekend' (RTOW)
+[[cite:&Shirley2020RTW1]] book [fn:literal_weekend], anyhow made me
+appreciate the advantage of a generic raytracer (see
+fig. sref:fig:appendix:raytracing:riow_example for the final result of
+that book, created by this project). Generic meaning that the scene to
+be rendered is described by objects placed in simulated 3D world
+space. This reduces the amount of code that needs to be checked for
+correctness by orders of magnitude (reflection for one material type
+is a few line function, instead of having lines of code for every
+single reflection in a hardcoded raytracer). It also makes the program
+much more flexible to support different setups. In particular though,
+the concept of a camera independent of the scene geometry allows to
+visualize the scene (obviously the entire purpose of a normal
+raytracer!).
+
+As a personal addition to the RTOW project, I implemented rendering to
+an SDL2 cite:SDL2 window and handling mouse and keyboard inputs to
+produce an interactive real-time raytracer (this was early 2021). This
+sparked the idea to use the same approach for our axion raytracer. I
+pitched the idea to Johanna, but did not manage to convince
+her [fn:not_criticism]. While working on finalizing the axion image
+and X-ray finger simulations for this thesis, several big
+discrepancies between our raytracing results and those used for the
+CAST Nature paper in 2017 [[cite:&cast_nature]] were noticed. The latter
+were done by Michael Pivovaroff at LLNL using a private in-house
+raytracer [fn:my_belief]. The need to better verify the correctness of
+our own raytracing simulation lead me down the path of finishing the
+project of turning the RTOW based raytracer into an axion X-ray
+raytracer. This way verifying correctness was easier. Some additional
+features of the second book of the ROTW series were added (light
+sources among others) and other aspects were inspired by Physically
+Based Rendering [[cite:&pharr2016physically]] (in particular the idea of
+propagating multiple energies in each ray).
+
+The result is ~TrAXer~ cite:traxer, an interactive real-time visible
+light and X-ray raytracer. In essence it is two raytracers in
+one. First, a 'normal' visible light raytracer, which the camera
+uses. Secondly, an X-ray raytracer. Both use the same raytracing
+logic, but they differ in sampling. For visible light we emit rays
+from the camera into the scene, while for X-rays we emit from an X-ray
+source. Both of these run in parallel. Scenes are defined by placing
+geometric primitives with different materials into the scene.
+
+The X-ray raytracer is used by choosing X-ray emitting
+materials. There is further a specific X-ray material kind, which
+behaves as expected when hit by an X-ray, calculated using
+[[cite:&Schmidt_xrayAttenuation_2022]]. Behavior is described by the
+reflectivity computed via the Fresnell equations as discussed in
+sec. [[#sec:theory:xray_reflectivity]]. To simulate reflectivity of the
+LLNL telescope, the depth graded multilayers of the different layers
+are taken into account. X-ray transmission is currently not
+implemented, but only because there is no need for us. The addition
+would be easy based on mass attenuation coefficients and the Fresnell
+equations for transmission.
+
+In order to detect and read out results from the X-ray raytracing, we
+place "image sensors" into the scene. They use a special material
+kind, which accumulates X-rays hitting them, split into spatial
+pixels. For visible light they simply emit the current values stored
+in each pixel of the image sensor, mapped to the Viridis color scale.
+
+These things are visible in the example screenshot showing the "CAST"
+scene in fig. [[sref:fig:appendix:raytracing:cast_setup_example]]. The view is
+seen from behind and above the setup with a narrow field of view
+(like a telephoto lens). Only relevant pieces of the setup are placed
+into the scene (partially for performance, although bounding volume
+hierarchies help there, mostly for simplicity). The Sun is visible on
+the right side, emitting a yellow hue for the visible rays and an
+invisible X-ray spectrum following the expected solar axion flux
+(with correct radial emission). The long blueish tube is the inner
+bore of the CAST magnet. Then, with red hues (in visible light) we
+have the LLNL telescope. In the bottom left is the image sensor, which
+has the same physical size as the center GridPix of the Septemboard
+detector and is placed in the focal point of the telescope. As every
+object of the scene is floating above the earth, combined with the
+telephoto like view, the sensor looks a bit odd. [fn:sensor_sun]
+
+[fn:hardcoded] By 'hardcoded' in this context I mean that the scene
+geometry is entirely embedded in imperative code. Each reflection is
+calculated manually. Thus, the raytracer is not generic.
+
+[fn:literal_weekend] The nice thing about the first book is that it
+can literally be implemented in a single weekend!
+
+[fn:not_criticism] Some people may just be better at judging which
+efforts are worth it, than I am.
+
+[fn:my_belief] At least that is my understanding. There are two public
+X-ray raytracing packages I am aware of, ~McXtrace~ cite:mc_xtrace and
+~MT_RAYOR~ cite:mt_rayor. There is a chance ~MT_RAYOR~ may have been
+used, because it is written in an interpreted programming language,
+'Yorick' cite:yorick, developed at LLNL. And it was used for NuSTAR
+raytracing simulations in the past cite:nustar_dtu_phd.
+
+[fn:sensor_sun] You may wonder why there is nothing shielding the
+image sensor from direct illumination by the Sun. The reason is that
+the X-rays emitted from the Sun are only sampled into the entrance of
+the magnet bore. This way we save compute and do not need a mask to
+shield the sensor. 
+
+*** Discrepancies raytracer and LLNL raytracer                   :extended:
+
+- [ ] LINK TO DOCUMENT ANSWER TO IGOR!
+  -> For that we need to host the document somewhere first!
+
+*** TODOs for this section                                       :noexport:
+
+Old text:
+#+begin_quote
+
 *Signal hypothesis - raytracing from Sun to detector*
 
 (It can be a reasonably long section, I think that's fair)
@@ -39499,7 +39654,6 @@ X-ray raytracer is in development.
 +https://github.com/Vindaar/rayTracingInOneWeekend/tree/interactiveRayTracer+
 https://github.com/Vindaar/TrAXer
 -> Done.
-
 
 Ray tracing through the detector. Put this before limit calculation stuff?
 
@@ -39513,19 +39667,895 @@ For an in depth guide to raytracing, from theoretical principles to a
 pretty sophisticated raytracer, see the amazing 'Physically based
 rendering' cite:pharr2016physically.
 
+#+end_quote
+
+*** Produce screenshots of TrAXer                                :extended:
+
+This is simply a manual matter of running ~TrAXer~ with the desired
+scene and taking screenshots manually. In theory we can save the frame
+buffers using ~F5~ and then produce an image from the raw data, but
+there's not much point really.
+
+The main question is what we really want to showcase.
+
+For example to produce an example screenshot showcasing the original
+'Raytracing in One Weekend' final image, we can do:
+#+begin_src sh
+./raytracer --width 1200 --speed 10.0 --nJobs 32 --maxDepth 10 --spheres
+#+end_src
+and take a screenshot from:
+#+begin_src
+Now looking at: (Point: [-4.278876423185614, 1.499472514352247, -5.283379080542512])
+from : (Point: [-4.825481106391748, 1.938486638958975, -5.996463871218145]), yaw = 5.366388980384832, pitch = -0.4545011087932843
+#+end_src
+
+(we currently don't have a way to specify the starting location and
+point we look at. You see the current values printed to the
+terminal. Note that the movement speed can be adjusted using page up /
+page down).
+
+- [ ] Or use the original raytracing in one weekend screenshot we
+  created? We are not using any depth of field in the current camera
+  setup.
+  -> I also get the impression that something about our image
+  integration is not entirely working in the current raytracing
+  code. The code has been running quite a while now (given that it's
+  28 threads), but the noise does not really get better.
+  -> Well, our color code was simpler in the past. Just adding colors
+  then dividing by num samples & gamma correcting. But it did not
+  include yet how to integrate.
+
+This way we took:
+
+<<INSERT>>
+
+Let's place this screenshot next to one that showcases something more
+CAST related?
+
+- [ ] CAST screenshot. Maybe image sensor, magnet, telescope sun?
+
+For example to simulate the 'realistic'
+#+begin_src sh
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 \
+    --llnl --focalPoint --sourceKind skSun \
+    --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe.csv \
+    --rayAt 1.0 \
+    --sensorKind sSum \
+    --usePerfectMirror=false \
+    --ignoreWindow
+#+end_src
+
+from
+#+begin_quote
+[INFO] Current position (lookFrom) = (Point: [-207.533615402934, 75.77234678496751, -2003.522751711818])
+at (lookAt) (Point: [-207.4532559830788, 75.71290478850352, -2002.527759745671])
+#+end_quote
+
+[[~/phd/Figs/raytracing/traxer_cast_llnl_setup_sun.png]]
+
+** A few more details about the LLNL telescope
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:raytracing:llnl_telescope
+:END:
+
+The Lawrence Livermore National Laboratory, introduced in
+sec. [[#sec:helioscopes:llnl_telescope]], is the X-ray telescope of
+interest for us. Let us now first get an overview of the telescope and
+its construction itself, before we move on to comparing the TrAXer
+simulations with PANTER measurements and raytracing simulations from
+Michael Pivovaroff from LLNL.
+
+Its design follows the technology developed for the NuSTAR mission
+cite:Harrison_2013,Harrison2006,nustar_design_performance,nustar_fabrication,nustar_overview_status.
+This means it is not a true Wolter optic (meaning parabolic and
+hyperbolic mirrors), but instead uses a cone approximation
+cite:Petre:85, which are easier to produce and in particular for CAST
+provide more than enough angular resolution.
+
+It consists of two sets of 13 layers. Each mirror has a physical
+length of $\SI{225}{mm}$ and thickness of $d_{\text{glass}} =
+\SI{0.21}{mm}$. These mirrors are made of glass, which are
+thermally-formed ("slumped") into the conical shapes. Production of
+the mirrors happened at the National Space Institute at the Technical
+University of Denmark (DTU Space) as part of the PhD thesis of Anders
+Jakobsen cite:anders_phd. The first sets of layers $i$ describe
+truncated coni with a remaining height of $\SI{225}{mm}$, an arc angle
+of $\SI{30}{°}$, a radius on the opening end [fn:opening_end] of
+$R_{1,i}$ and a cone angle of $α_i$. That is for each layer a
+non-truncated cone would have a total height of $h = R_{1,i} /
+\tan{α_i}$. The second set of 13 layers only differs by their radii,
+$R_{4,i}$ on the opening end and an angle of $3 α_i$. In the
+horizontal direction along the optical axis of the telescope, there is
+a spacing of $x_{\text{sep}} = \SI{4}{mm}$ between each set of
+layers. Due to the tilted angle the physical distance between each set
+is minutely larger. Combined the telescope thus has a length of
+roughly $\SI{454}{mm}$.
+
+One can define additional helpful radii, $R_{2,i}$ the minimum radius
+of the first set of cones, $R_{4,i}$ the maximum radii of the opening
+end of the second set of mirrors and finally $R_{3,i}$, the radius at
+the mid point where the hypothetical extension of the first layer and
+last layer would touch at $x = \SI{2}{mm}$ from each set of
+mirrors. Equations [[eq:llnl_rest:radii_eqs]] specify how these numbers
+are related with $l$ the length of the mirrors. 
+
+#+NAME: eq:llnl_rest:radii_eqs
+\begin{align}
+R_{2,i} &= R_{3,i} + 0.5 x_{\text{sep}} \tan(α_i) \\
+R_{1,i} &= R_{2,i} + l \sin(α_i) \\
+R_{4,i} &= R_{3,i} - 0.5 x_{\text{sep}} \tan(3α_i) \\
+R_{5,i} &= R_{4,i} - l \sin(3α_i) 
+\end{align}
+which we can rewrite to compute everything from $R_{1,i}$ by:
+\begin{align*}
+R_{2,i} &= R_{1,i} - l \sin(α_i) \\
+R_{3,i} &= R_{2,i} - 0.5 x_{\text{sep}} \tan(α_i) \\
+R_{4,i} &= R_{3,i} - 0.5 x_{\text{sep}} \tan(3α_i) \\
+R_{5,i} &= R_{4,i} - l \sin(3α_i) 
+\end{align*}
+
+I emphasize this, because this conical nature describes the /entire
+telescope/ as long as the radii $R_{1,i}$, $R_{4,i}$ and angle $α_i$
+are known. [fn:alternative]
+
+Alternatively, this can also be used to /construct/ an optimal conical
+telescope from a starting radius $R_{1,0}$ (typically called the
+"Mandrel"), if the iterative condition $R_{3,i+1} = R_{1,i} +
+d_{\text{glass}}$ is employed (in this case some target parameters are
+needed of course, like focal length, $x_{\text{sep}}$ and a few more).
+
+To calculate the focal length $f$ of an X-ray telescope of the Wolter
+type, we can use the Wolter equation,
+
+\[
+\tan(4α_i) = \frac{R_{3,i,\text{virtual}}}{f} 
+\]
+
+where $α_i$ is the angle of the $i^{\text{th}}$ layer and
+$R_{3,i,\text{virtual}}$ is the radius corresponding to the virtual
+reflection point. Due to the double reflection inherent to a
+Wolter telescope, the incoming ray picks up a total angle of $4α$ ($0$
+to $2α$ after first reflection of the shell with angle $α$, then $2α$ to $4α$ after reflecting from
+second shell of angle $3α$). The virtual radius is the radius at the
+point if one extends the incoming ray through the first set of mirrors
+and reflects at a single virtual mirror of an angle $4α$ precisely at
+the midpoint of the telescope. This is illustrated in
+fig. [[fig:appendix:llnl_schematic_explanation]], which is an adapted
+version of fig. 4.6 from A. Jakobsen's PhD thesis [[cite:&anders_phd]] to
+better illustrate this.
+
+In addition to the PhD thesis mentioned, there is a paper
+cite:llnl_telescope_first_cast_results about the telescope for CAST
+and initial results. *Note though*, that /both/ the PhD thesis and the
+paper contain contradicting and wrong information about the details of
+the telescope design. Neither (nor combined do they) describe the real
+telescope. [fn:whats_wrong] [fn:clarify] Thanks to the help of and personal
+communication with Jaime Ruz and Julia Vogel we were able to both
+clear up confusions and find the original numbers of the telescope
+that were actually built. Table [[tab:appendix:llnl_overview]] gives an
+overview of the telescope design. It is adapted from
+cite:llnl_telescope_first_cast_results, but modified to use the
+correct numbers. Then in tab. [[tab:appendix:llnl_as_built]] is the list
+of all layers and their corresponding radii in detail as given to me
+by Jaime Ruz. 
+
+#+CAPTION: Properties of the LLNL telescope. Adapted from [[cite:&llnl_telescope_first_cast_results]]
+#+CAPTION: and modified to match the numbers actually built.
+#+NAME: tab:appendix:llnl_overview
+#+ATTR_LATEX: :booktabs t
+| Property                                    | Value                         |
+|---------------------------------------------+-------------------------------|
+| Mirror substrates                           | glass, Schott D263            |
+| Substrate thickness                         | $\SI{0.21}{mm}$               |
+| $l$, length of upper and lower mirrors      | $\SI{225}{mm}$                |
+| Overall telescope length                    | $\sim\SI{454}{mm}$            |
+| $f$ , focal length                          | $\SI{1500}{mm}$               |
+| Layers                                      | 13                            |
+| Total number of individual mirrors in optic | 26                            |
+| $R_{1,i}$ , range of maximum radii          | $\SIrange{63.24}{102.38}{mm}$ |
+| $R_{3,i}$ , range of mid-point radii        | $\SIrange{62.07}{100.5}{mm}$  |
+| $R_{5,i}$ , range of minimum radii          | $\SIrange{53.88}{87.19}{mm}$  |
+| $α$, range of graze angles                  | $\SIrange{0.592}{0.958}{°}$   |
+| Azimuthal extent                            | $\sim\SI{30}{°}$              |
+
+#+CAPTION: Overview of the relevant numbers as the telescope was actually built. Based on a data file
+#+CAPTION: sent to me by Jaime Ruz. The values for $R_3$ and the angles $α$, $3α$ were calculated from
+#+CAPTION: the values for $R_1, R_2$ and $R_4, R_5$ based on equations [[eq:llnl_rest:radii_eqs]].
+#+NAME: tab:appendix:llnl_as_built
+#+ATTR_LATEX: :booktabs t
+|  i | $R_1$ [$\si{mm}$] | $R_2$ [$\si{mm}$] | $R_3$ [$\si{mm}$] | $R_4$ [$\si{mm}$] | $R_5$ [$\si{mm}$] | α [$\si{°}$] | 3α [$\si{°}$] |
+|----+-------------------+-------------------+-------------------+-------------------+-------------------+--------------+---------------|
+|  1 |           63.2384 |           60.9121 |           60.8914 |           60.8632 |           53.8823 |       0.5924 |        1.7780 |
+|  2 |           65.8700 |           63.4470 |           63.4255 |           63.3197 |           56.0483 |       0.6170 |        1.8520 |
+|  3 |           68.6059 |           66.0824 |           66.0600 |           65.9637 |           58.3908 |       0.6426 |        1.9288 |
+|  4 |           71.4175 |           68.7898 |           68.7664 |           68.6794 |           60.7934 |       0.6692 |        2.0086 |
+|  5 |           74.4006 |           71.6647 |           71.6404 |           71.5582 |           63.3473 |       0.6967 |        2.0913 |
+|  6 |           77.4496 |           74.6014 |           74.5761 |           74.4997 |           65.9515 |       0.7253 |        2.1773 |
+|  7 |           80.6099 |           77.6452 |           77.6188 |           77.5496 |           68.6513 |       0.7550 |        2.2665 |
+|  8 |           83.9198 |           80.8341 |           80.8067 |           80.7305 |           71.4688 |       0.7858 |        2.3591 |
+|  9 |           87.3402 |           84.1290 |           84.1005 |           84.0137 |           74.3748 |       0.8178 |        2.4553 |
+| 10 |           90.8910 |           87.5495 |           87.5198 |           87.4316 |           77.4012 |       0.8510 |        2.5551 |
+| 11 |           94.5780 |           91.1013 |           91.0704 |           90.9865 |           80.5497 |       0.8850 |        2.6587 |
+| 12 |           98.3908 |           94.7737 |           94.7415 |           94.6549 |           83.7962 |       0.9211 |        2.7662 |
+| 13 |           102.381 |           98.6187 |           98.5853 |           98.4879 |           87.1914 |       0.9581 |        2.8778 |
+
+#+CAPTION: Schematic of the reflection of an X-ray on a single layer of the telescope.
+#+CAPTION: Angles are exaggerated ($α = \SI{5}{°}$ here). The virtual reflection point is
+#+CAPTION: the relevant point to consider when calculating the focal length.
+#+NAME: fig:appendix:llnl_schematic_explanation
+#+ATTR_LATEX: :width 1\textwidth
+[[~/org/Figs/llnlExplanation/llnl_layers_explanation.pdf]]
+
+Having discussed the physical /layout/ of the telescope, let us
+quickly talk about the telescope coatings. In contrast to telescope
+like the ABRIXAS or XMM-Newton optics, which use a single layer gold
+coating, the NuSTAR design uses a depth graded multilayer coating as
+introduced in sec. [[#sec:theory:xray_reflectivity]]. There are four
+different 'recipes', used for different layers. All recipes are a
+depth graded multilayer of different number of Pt/C layers.
+
+#+begin_quote
+Note that in this terminology the high $Z$ material (platinum) is
+actually /below/ the low $Z$ material (carbon) contrary to what Pt/C
+might imply!
+#+end_quote
+
+Table [[tab:appendix:llnl_recipes]] gives an overview of which recipes are
+used for which layer and how they differ. $d_{\text{min}}$ is the
+minimum thickness of one multilayer and $d_{\text{max}}$ the maximum
+thickness. The top most multilayer is the thickest. $Γ$ is the ratio
+of the top to bottom material in each multilayer.
+
+For example recipe 1 has a top multilayer of carbon of a thickness $Γ
+· d_{\text{max}} = \SI{10.125}{nm}$ on top of $(1 - Γ) ·
+d_{\text{max}} = \SI{12.375}{nm}$ of platinum. Because recipe 1 only
+has 2 such multilayers, the bottom Pt/C layer has a combined thickness
+of $d_{\text{min}}$.
+
+To reiterate the equations that describe the layer thicknesses for $N$
+layers as given in sec. [[#sec:theory:xray_reflectivity]], a depth-graded
+multilayer is described by the equation:
+
+#+NAME: eq:appendix:depth_graded_multilayer
+\begin{equation}
+d_i = \frac{a}{(b + i)^c}
+\end{equation}
+
+where $d_i$ is the depth of layer $i$ (out of $N$ layers),
+
+\[
+a = d_{\text{min}} (b + N)^c
+\]
+
+and
+
+\[
+b = \frac{1 - N k}{k - 1}
+\]
+
+with
+
+\[
+k = \left(\frac{d_{\text{min}}}{d_{\text{max}}}\right)^{\frac{1}{c}}.
+\]
+
+In all four recipes used for the LLNL telescope the parameter $c$ is
+set to 1.
+
+#+CAPTION: Overview of the different depth graded multilayer coatings used for
+#+CAPTION: the table. Adapted from fig. 4.11 of [[cite:&anders_phd]] with the correct
+#+CAPTION: numbers finally built. Parameter $c$ of equation [[eq:appendix:depth_graded_multilayer]] is
+#+CAPTION: set to 1 in all layers.
+#+NAME: tab:appendix:llnl_recipes
+| Recipe | # of layers | $d_{\text{min}}$ [$\si{nm}$] | $d_{\text{max}}$  [$\si{nm}$] |    Γ |
+|--------+-------------+------------------+------------------+------|
+|      1 |           2 |             11.5 |             22.5 | 0.45 |
+|      2 |           4 |              7.0 |             19.0 | 0.45 |
+|      3 |           4 |              5.5 |             16.0 |  0.4 |
+|      4 |           2 |              5.0 |             14.0 |  0.4 |
+
+Calculation of the reflectivity follows the equations also mentioned
+in the theory section. The reflectivities of each layer are calculated
+with [[cite:&Schmidt_xrayAttenuation_2022]], which is used as part of the
+material description in ~TrAXer~.
+
+[fn:opening_end] By 'opening end' I talk about the side of a truncated
+cone with the larger radius. For an ice cream cone it would simply be
+the radius at the top.
+
+[fn:alternative] An alternative, equivalent description replaces the
+angle by the minimum radii of the coni.
+
+[fn:whats_wrong] Anders' thesis contains numbers for a telescope
+design with a focal length of $\SI{1530}{mm}$ instead of
+$\SI{1500}{mm}$, possibly due to a typo in a form of the Wolter
+equation. The paper contains schematics with factually wrong
+annotations and more wrong (or outdated?) numbers.
+
+[fn:clarify] Let me be very clear: by no means I am trying to demean
+Anders work! These things happen. It is just a shame to then also have
+a paper with more wrong information, for which no errata is ever published.
+
+*** TODOs for this section                                       :noexport:
+
+- [X] Explain the layout, *cones*, table of the shells (*final
+  shells!!*) and length of mirrors, angles, $x_{\text{sep}}$ and all
+  that jazz
+
+- [ ] Mention the recipes used for each set of layers and which layers
+  are affected by each
+
+- [ ] Mention calculation with xrayAttenuation of those.
+
+- [ ] Calculate correct radii and angles, update ρ mid
+
+- [ ] Make updated schematic like Anders for the angles  
+
+[fn:table_llnl] The data in the table was sent to me in personal
+communication by Jaime Rúz. *IS WRITTEN CORRECT?*
+
+*** Calculate angles and focal length based on Wolter equation for telescope data files :extended:
+
+The following, initially adapted from
+[[file:~/org/Mails/llnlAxionImage/llnl_axion_image.org::#sec:expected_focal_length]]
+and found in
+[[file:~/org/Doc/LLNL_TrAXer_comparison/llnl_traxer_raytracing_comparison.org::#sec:llnl_traxer:focal_length_wolter_eq]]
+and [[file:~/org/journal.org::#sec:journal:llnl_focal_length_wolter_eq]] 
+computes the expected focal length based on the Wolter equation:
+
+\[
+\tanh(4α) = \frac{R}{f}
+\]
+
+where the radius $R$ is the radius of the virtual reflection point of
+the combined telescope system.
+
+The data files are
+[[file:~/org/resources/LLNL_telescope/cast20l4_f1500mm_asBuilt.txt]] and
+[[file:~/org/resources/LLNL_telescope/cast20l4_f1500mm_asDesigned.txt]].
+
+What we can see below is that the numbers from Anders' PhD thesis
+yield a telescope with focal length of $\SI{1530}{mm}$ instead of the
+target. Also it computes the angles for all layers based on the radii.
+
+The data file 'as built' is the one of main interest! The angles
+printed in the table below for that case are the ones shown in the
+main section above.
+
+#+begin_src nim :results raw
+import math, sequtils, datamancer
+const lMirror = 225.0
+const xSep = 4.0
+
+proc calcAngle(r1, r2: float): float =
+  result = arcsin(abs(r1 - r2) / lMirror)
+
+proc calcR3(r1, lMirror: float, α: float): float =
+  let r2 = r1 - lMirror * sin(α)
+  result = r2 - 0.5 * xSep * tan(α)
+
+proc printTab(R1s, R2s, R4s, R5s: openArray[float]) =
+  var df = newDataFrame()
+  for i in 0 ..< R1s.len:
+    let r1 = R1s[i]
+    let r2 = R2s[i]
+    let α = calcAngle(r1, r2)
+    let r3 = calcR3(r1, lMirror, α)
+    let r1minus = r1 - sin(α) * lMirror/2
+    let fr3 = r3 / tan(4 * α)
+    let fr1m = r1minus / tan(4 * α)
+    df.add (i: i+1, f_R3: fr3.float, f_R1m: fr1m.float, α: α.radToDeg, R3: r3)
+  echo df.toOrgTable
+
+proc printBuiltTab(R1s, R2s, R4s, R5s: openArray[float]) =
+  var df = newDataFrame()
+  for i in 0 ..< R1s.len:
+    let r1 = R1s[i]
+    let r2 = R2s[i]
+    let r4 = R4s[i]
+    let r5 = R5s[i]
+    let α = calcAngle(r1, r2)
+    let α3 = calcAngle(r4, r5)    
+    let r3 = calcR3(r1, lMirror, α)
+    df.add (i: i+1, R1: r1, R2: r2, R3: r3, R4: r4, R5: r5, α: α.radToDeg, α3: α3.radToDeg)
+  echo df.rename(f{"3α" <- "α3"}).toOrgTable(precision = 6)
+
+block AndersPhD:
+  let R1s = @[63.006, 65.606, 68.305, 71.105, 74.011, 77.027, 80.157,
+              83.405, 86.775, 90.272, 93.902, 97.668, 101.576, 105.632]
+  let αs = @[0.579, 0.603, 0.628, 0.654, 0.680, 0.708, 0.737, 0.767,
+             0.798, 0.830, 0.863, 0.898, 0.933, 0.970]
+  proc calcR2(r1, α: float): float = r1 - sin(α.degToRad) * lMirror
+  let R2s = toSeq(0 ..< R1s.len).mapIt(calcR2(R1s[it], αs[it]))
+  echo "Using values from Anders PhD thesis"
+  printTab(R1s, R2s, [], [])
+  
+block AsDesigned: # `cast20l4_f1500mm_asDesigned.txt`
+  let R1s = [ 63.2412, 65.8741, 68.6075, 71.4450, 74.3908, 77.4488, 80.6233,
+              83.9188, 87.3398, 90.8911, 94.5775, 98.4043, 102.377 ]
+  let R2s = [ 60.9149, 63.4511, 66.0840, 68.8173, 71.6549, 74.6006, 77.6586,
+              80.8331, 84.1286, 87.5496, 91.1008, 94.7872, 98.6139 ]
+  let R4s = [ 60.8322, 63.3650, 65.9942, 68.7239, 71.5576, 74.4993, 77.5532,
+              80.7234, 84.0144, 87.4307, 90.9771, 94.6586, 98.4801 ]
+  let R5s = [ 53.8513, 56.0936, 58.4213, 60.8379, 63.3467, 65.9511, 68.6549,
+              71.4617, 74.3755, 77.4003, 80.5403, 83.7999, 87.1836 ]
+  let diffs = [ 10.3390, 10.7690, 11.2150, 11.6780, 12.1590, 12.6580, 13.1760,
+                13.7130, 14.2710, 14.8500, 15.4510, 16.0740, 16.7210 ]
+  echo "Using values from .txt file 'as designed'"
+  printTab(R1s, R2s, R4s, R5s)
+
+block AsBuilt: # `cast20l4_f1500mm_asBuilt.txt`
+  # These are the numbers from the "as built" text file
+  let R1s = [ 63.2384, 65.8700, 68.6059, 71.4175, 74.4006, 77.4496, 80.6099, 
+              83.9198, 87.3402, 90.8910, 94.5780, 98.3908, 102.381 ]
+  let R2s = [ 60.9121, 63.4470, 66.0824, 68.7898, 71.6647, 74.6014, 77.6452,
+              80.8341, 84.1290, 87.5495, 91.1013, 94.7737, 98.6187 ]
+  let R4s = [ 60.8632, 63.3197, 65.9637, 68.6794, 71.5582, 74.4997, 77.5496,
+              80.7305, 84.0137, 87.4316, 90.9865, 94.6549, 98.4879 ]
+  let R5s = [ 53.8823, 56.0483, 58.3908, 60.7934, 63.3473, 65.9515, 68.6513,
+              71.4688, 74.3748, 77.4012, 80.5497, 83.7962, 87.1914 ]
+              # this last one should be the difference between R5 and R1
+  let diffs = [ 10.339, 10.769, 11.216, 11.679, 12.160, 12.659, 13.176,
+                13.714, 14.272, 14.851, 15.452, 16.076, 16.725  ]
+  echo "Using values from .txt file 'as built'"
+  printTab(R1s, R2s, R4s, R5s)
+
+  # And now print the table to use in thesis
+  echo "Overview of radii and angles of telescope was built:"
+  printBuiltTab(R1s, R2s, R4s, R5s)
+#+end_src
+
+#+RESULTS:
+Using values from Anders PhD thesis
+|  i |      f_R3 |     f_R1m |     α |        R3 |
+|----+-----------+-----------+-------+-----------|
+|  0 | 1501.1452 | 1529.7542 | 0.579 | 60.712099 |
+|  1 | 1500.7995 | 1529.4071 | 0.603 | 63.217019 |
+|  2 | 1500.2462 | 1528.8523 | 0.628 | 65.816977 |
+|  3 |  1499.554 | 1528.1586 | 0.654 | 68.513974 |
+|  4 | 1501.1365 | 1529.7394 |  0.68 | 71.316971 |
+|  5 | 1500.4047 | 1529.0057 | 0.708 | 74.222046 |
+|  6 |  1499.816 | 1528.4149 | 0.737 |  77.23716 |
+|  7 | 1499.4292 |  1528.026 | 0.767 | 80.366313 |
+|  8 | 1499.2931 | 1527.8876 | 0.798 | 83.613505 |
+|  9 | 1499.4644 | 1528.0564 |  0.83 | 86.983737 |
+| 10 | 1500.0058 | 1528.5952 | 0.863 | 90.483008 |
+| 11 | 1499.1816 |  1527.768 | 0.898 | 94.110358 |
+| 12 |  1500.579 | 1529.1623 | 0.933 | 97.879709 |
+| 13 | 1500.8171 |  1529.397 |  0.97 | 101.78914 |
+
+Using values from .txt file 'as designed'
+|  i |      f_R3 |     f_R1m |          α |        R3 |
+|----+-----------+-----------+------------+-----------|
+|  0 | 1471.5582 | 1500.1664 | 0.59239799 | 60.894221 |
+|  1 | 1471.5794 | 1500.1861 | 0.61702381 | 63.429561 |
+|  2 | 1471.5244 | 1500.1297 | 0.64261747 | 66.061567 |
+|  3 | 1471.5363 | 1500.1398 | 0.66915352 | 68.793941 |
+|  4 | 1471.5242 | 1500.1259 | 0.69670838 | 71.630579 |
+|  5 | 1471.5125 | 1500.1123 | 0.72530755 | 74.575281 |
+|  6 | 1471.5293 |  1500.127 |  0.7549765 | 77.632245 |
+|  7 | 1471.5027 | 1500.0982 | 0.78579169 | 80.805669 |
+|  8 | 1471.5144 | 1500.1074 | 0.81775313 | 84.100053 |
+|  9 |  1471.501 | 1500.0913 | 0.85093727 | 87.519895 |
+| 10 | 1471.4966 | 1500.0841 | 0.88536962 | 91.069892 |
+| 11 |  1471.453 | 1500.0374 | 0.92112663 | 94.755044 |
+| 12 | 1471.2913 | 1499.8723 | 0.95831023 | 98.580446 |
+
+Using values from .txt file 'as built'
+|  i |      f_R3 |     f_R1m |          α |        R3 |
+|----+-----------+-----------+------------+-----------|
+|  0 | 1471.4905 | 1500.0987 | 0.59239799 | 60.891421 |
+|  1 | 1471.4842 |  1500.091 | 0.61702381 | 63.425461 |
+|  2 | 1471.4888 |  1500.094 | 0.64261747 | 66.059967 |
+|  3 |  1470.948 | 1499.5516 | 0.66915352 | 68.766441 |
+|  4 | 1471.7255 | 1500.3272 | 0.69670838 | 71.640379 |
+|  5 | 1471.5282 |  1500.128 | 0.72530755 | 74.576081 |
+|  6 | 1471.2753 |  1499.873 |  0.7549765 | 77.618845 |
+|  7 | 1471.5209 | 1500.1164 | 0.78579169 | 80.806669 |
+|  8 | 1471.5214 | 1500.1144 | 0.81775313 | 84.100453 |
+|  9 | 1471.4993 | 1500.0896 | 0.85093727 | 87.519795 |
+| 10 | 1471.5047 | 1500.0922 | 0.88536962 | 91.070392 |
+| 11 | 1471.2434 | 1499.8278 | 0.92112663 | 94.741544 |
+| 12 | 1471.6768 | 1500.2579 | 0.95810648 | 98.585253 |
+
+Overview of radii and angles of telescope was built:
+|  i |      R1 |      R2 |      R3 |      R4 |      R5 |        α |      3α |
+|----+---------+---------+---------+---------+---------+----------+---------|
+|  0 | 63.2384 | 60.9121 | 60.8914 | 60.8632 | 53.8823 | 0.592398 | 1.77796 |
+|  1 |   65.87 |  63.447 | 63.4255 | 63.3197 | 56.0483 | 0.617024 | 1.85197 |
+|  2 | 68.6059 | 66.0824 |   66.06 | 65.9637 | 58.3908 | 0.642617 | 1.92879 |
+|  3 | 71.4175 | 68.7898 | 68.7664 | 68.6794 | 60.7934 | 0.669154 | 2.00856 |
+|  4 | 74.4006 | 71.6647 | 71.6404 | 71.5582 | 63.3473 | 0.696708 | 2.09135 |
+|  5 | 77.4496 | 74.6014 | 74.5761 | 74.4997 | 65.9515 | 0.725308 | 2.17731 |
+|  6 | 80.6099 | 77.6452 | 77.6188 | 77.5496 | 68.6513 | 0.754977 | 2.26652 |
+|  7 | 83.9198 | 80.8341 | 80.8067 | 80.7305 | 71.4688 | 0.785792 | 2.35914 |
+|  8 | 87.3402 |  84.129 | 84.1005 | 84.0137 | 74.3748 | 0.817753 | 2.45528 |
+|  9 |  90.891 | 87.5495 | 87.5198 | 87.4316 | 77.4012 | 0.850937 | 2.55507 |
+| 10 |  94.578 | 91.1013 | 91.0704 | 90.9865 | 80.5497 |  0.88537 | 2.65866 |
+| 11 | 98.3908 | 94.7737 | 94.7415 | 94.6549 | 83.7962 | 0.921127 | 2.76622 |
+| 12 | 102.381 | 98.6187 | 98.5853 | 98.4879 | 87.1914 | 0.958106 | 2.87784 |
+
+:shocked_face: :exploding_head:
+
+
+
+*** Create the schematic of the layers                           :noexport:
+
+The final schematic included above is:
+[[~/org/Figs/llnlExplanation/llnl_layers_explanation.pdf]]
+The same directory contains the Inkscape SVG as well.
+
+For the schematic we want a few annotations.
+
+x separation:
+#+begin_src nim :results none
+import latexdsl
+let body = r"$x_{\text{sep}} = \SI{4}{mm}$"
+compile("/tmp/xsep.tex", body)
+#+end_src
+
+mirror length:
+
+#+begin_src nim :results none
+import latexdsl
+let body = r"$l = \SI{225}{mm}$"
+compile("/tmp/mirror_length.tex", body)
+#+end_src
+
+#+begin_src nim :results none
+import latexdsl
+let body = r"$l_{\text{tel}} = \SI{454}{mm}$"
+compile("/tmp/telescope_length.tex", body)
+#+end_src
+
+#+begin_src nim :results none
+import latexdsl
+let body = r"$α$"
+compile("/tmp/alpha.tex", body)
+let body2 = r"$3α$"
+compile("/tmp/3alpha.tex", body2)
+#+end_src
+
+#+begin_src nim :results none
+import latexdsl
+let r1 = r"$R_1$"
+compile("/tmp/r1.tex", r1)
+let r2 = r"$R_2$"
+compile("/tmp/r2.tex", r2)
+let r3 = r"$R_3$"
+compile("/tmp/r3.tex", r3)
+let r4 = r"$R_4$"
+compile("/tmp/r4.tex", r4)
+let r5 = r"$R_5$"
+compile("/tmp/r5.tex", r5)
+let r3v = r"$R_{3,\text{virtual}}$"
+compile("/tmp/r3v.tex", r3v)
+#+end_src
+
+Wolter equation:
+#+begin_src nim :results none
+import latexdsl
+let wolter = r"$\tan(4α) = \frac{R_{3,\text{virtual}}}{f}$"
+compile("/tmp/wolter.tex", wolter)
+#+end_src
+
+Focal length
+#+begin_src nim :results none
+import latexdsl
+let focal = r"$f = \SI{1500}{mm}$"
+compile("/tmp/focal.tex", focal)
+#+end_src
+
 ** Comparison of TrAXer results with PANTER measurements
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:raytracing:panter
 :END:
 
-*** A few more details on the LLNL telescope
+The LLNL telescope was tested and characterized at the PANTER X-ray test facility in
+Munich in July 2016. It was reported on these tests during the
+$62^{\text{nd}}$ CAST collaboration meeting (CCM) on <2016-09-26 Mon> and
+again in the CCM on <2017-01-23 Mon>. [fn:slides] These results are
+valuable to us, because they can be used as a cross-check to verify
+our ~TrAXer~ based raytracing simulations.
 
-- [ ] Explain the layout, *cones*, table of the shells (*final
-  shells!!*) and length of mirrors, angles, $x_{\text{sep}}$ and all
-  that jazz
+At the PANTER facility the X-ray source sits $\SI{130.297}{m}$ away
+from the center of the telescope (the plane of the virtual
+reflection). It can be approximated as a source of radius
+$\SI{0.42}{mm}$. The detector used to measure at PANTER is installed
+on the optical axis (i.e. directly 'in front of' the source). The
+telescope itself is offset by the radius of its shells, such that its
+optical axis aligns with the optical axis defined by the X-ray beam
+(instead of aligning the telescope entrance with the beam axis and the
+detector offset from it!). In this way the light entering the
+telescope does not enter perpendicular to the opening, but under an
+angle. 
 
-[fn:table_llnl] The data in the table was sent to me in personal
-communication by Jaime Rúz. *IS WRITTEN CORRECT?*
+The setup of having such an effective point source implies that the
+best focal point will not be in the physical focal spot defined by the
+focal length, but slightly behind. At PANTER this was measured to be
+at $\SI{1519}{mm}$ instead of $\SI{1500}{mm}$ and provides a first
+check of our raytracer. When reproducing the same setup in TrAXer we
+find the smallest, most symmetric spot around the
+$\SIrange{1519}{1520}{mm}$ mark as well. [fn:precise]
+
+In this setup three different X-ray fluorescence lines were
+measured. $\ce{Al} Kα$ ($\SI{1.49}{keV}$), $\ce{Ti} Kα$
+($\SI{4.51}{keV}$) and $\ce{Fe} Kα$ ($\SI{6.41}{keV}$). We can compare
+the images between measurements and simulations as well as compute the
+'half power diameter' (HPD). The HPD is the radius around the image
+center (based on the weighted mean center) in which $\SI{50}{\%}$ of
+the flux is contained. This is computed based on the encircled energy
+function (EEF): integrate the flux in radial slices around the center,
+compute a radial cumulative distribution function and find the radius
+corresponding to $\SI{50}{\%}$.
+
+Let's consider the aluminum $Kα$
+lines. Fig. sref:fig:appendix:raytracing:comparison_alKalpha compares
+the PANTER data, with the LLNL raytracing result and our raytracing
+result. All three plots show the inner $\num{3}·\SI{3}{mm²}$ of the
+image. Generally, the agreement is quite good. The "bow tie" shape can
+be seen in all three figures. If anything it appears
+that our simulation uses a too large figure error (but more on that
+below).
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.3) (caption "PANTER data") (label "fig:appendix:raytracing:panter_data_alK")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "/home/basti/phd/Figs/raytracing/llnlPanter/PANTER_LLNL_CCM_slide_11_cropped_panter_data.pdf"))
+        (subfigure (linewidth 0.3) (caption "LLNL simulation") (label "fig:appendix:raytracing:simulation_alK")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "/home/basti/phd/Figs/raytracing/llnlPanter/PANTER_LLNL_CCM_slide_11_cropped_simulation.pdf"))
+        (subfigure (linewidth 0.39) (caption "TrAXer") (label "fig:appendix:raytracing:traxer_sim_alK")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm.pdf"))
+        (caption
+         (subref "fig:appendix:raytracing:panter_data_alK")
+         ": Data of the telescope taken at PANTER. "
+         (subref "fig:appendix:raytracing:simulation_alK")
+         ": Raytracing simulation performed by M. Pivovaroff at LLNL. Both of these are taken from
+          the CCM in Jan 2017, slide 11. "
+         (subref "fig:appendix:raytracing:traxer_sim_alK")
+         ": Simulation performed with TrAXer. All three plots show the inner " ($ "\\num{3}·\\SI{3}{mm²}")
+         " of the image. If anything the TrAXer simulation is slightly too wide.")
+        (label "fig:appendix:raytracing:comparison_alKalpha"))
+#+end_src
+
+Computing the encircled energy function yields a figure as shown in
+fig. [[fig:appendix:raytracing:traxer_encircled_energy_function]]. We see
+the HPD shown as the red line at a radius of $r_{\text{HPD}} \approx \SI{0.68}{mm}$. This
+is converted to an HPD in arc seconds via
+
+\[
+α_{\text{HPD}} = \arctan\left( \frac{r_{\text{HPD}}}{f} \right)
+\]
+
+where $f$ is the focal length of the optic. This leads to an HPD of
+$\SI{186.45}{\arcsecond}$, which is between the LLNL raytracing
+simulation without a figure error and the real data and LLNL
+simulation with a figure error. Doing this for all three fluorescence
+lines, we get the numbers shown in
+tab. [[tab:llnl_panter_eef_hpd_measurements]]. We see the same behavior in
+each of the three lines. 
+
+#+CAPTION: Encircled energy function of the aluminum $Kα$ line, corresponding to the data
+#+CAPTION: of fig. sref:fig:appendix:raytracing:traxer_sim_alK. The HPD comes out to
+#+CAPTION: $\SI{186.45}{\arcsecond}$.
+#+NAME: fig:appendix:raytracing:traxer_encircled_energy_function
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.pdf]]
+
+What our simulation struggles with is how the figure error affects the
+encircled energy function, especially visible in the table for the
+$\SI{90}{\%}$ circles. This is likely due to mishandling how a figure
+error should be simulated. The current ~TrAXer~ implementation for
+figure errors takes the reflected ray from a mirror surface and adds
+another small vector to the reflected ray. The small vector is sampled
+from a 3D normal distribution with a standard deviation such that it
+best reproduces the PANTER measurements (without figure errors, the
+image in fig. sref:fig:appendix:raytracing:traxer_sim_alK is very
+sharply defined). However, it seems that it does not handle possible
+scattering to very large deviations correctly. In a realistic
+simulation one would use a map of the real surface roughness of each
+mirror shell (as done in [[cite:&nustar_dtu_phd]] for the NuSTAR telescope
+using ~MT_RAYOR~). As mentioned previously, based on the visual
+difference between our simulation and the real PANTER data it may
+appear as if the figure error is /too large/. But what seems to be
+happening is that our figure error causes a /radial/ enlargement,
+whereas the real figure error enlarges the data more along one axis
+than the other, increasing the HPD in size.
+
+#+CAPTION: Measurements and simulation results given on slides 18-20 of the
+#+CAPTION: CCM slides Jan 2017. Our raytracing results are the TrAXer rows.
+#+NAME: tab:llnl_panter_eef_hpd_measurements
+#+ATTR_LATEX: :booktabs t
+|--------------------------------+------------+------------+------------|
+| Al Kα (1.49 keV)               |            |            |            |
+|--------------------------------+------------+------------+------------|
+|                                |  50% (HPD) | 80% circle | 90% circle |
+|--------------------------------+------------+------------+------------|
+| Point source (perfect mirrors) | 168 arcsec | 270 arcsec | 313 arcsec |
+| Point source (figure errors)   |        206 |        387 |        568 |
+| PANTER data                    |        206 |        397 |        549 |
+| PANTER model                   |        211 |        391 |        559 |
+| TrAXer (perfect mirrors)       |     178.76 |            |            |
+| TrAXer (figure errors)         |     178.76 |            |            |
+|--------------------------------+------------+------------+------------|
+| Ti Kα (4.51 keV)               |            |            |            |
+|--------------------------------+------------+------------+------------|
+|                                |  50% (HPD) | 80% circle | 90% circle |
+| Point source (perfect mirrors) |        161 |        259 |        301 |
+| Point source (figure errors)   |        202 |        382 |        566 |
+| PANTER data                    |        196 |        380 |        511 |
+| PANTER model                   |        206 |        380 |        559 |
+| TrAXer (perfect mirrors)       |     170.51 |            |            |
+| TrAXer (figure errors)         |     170.51 |            |            |
+|--------------------------------+------------+------------+------------|
+| Fe Kα (6.41 keV)               |            |            |            |
+|--------------------------------+------------+------------+------------|
+|                                |  50% (HPD) | 80% circle | 90% circle |
+| Point source (perfect mirrors) |        144 |        233 |        265 |
+| Point source (figure errors)   |        184 |        350 |        541 |
+| PANTER data                    |        196 |        364 |        483 |
+| PANTER model                   |        185 |        348 |        516 |
+| TrAXer (perfect mirrors)       |     156.76 |            |            |
+| TrAXer (figure errors)         |     156.76 |            |            |
+|--------------------------------+------------+------------+------------|
+
+
+[fn:slides] I mention the exact dates, because if you have access to
+the indico page of all the CAST collaboration meetings, this should
+make it easy to find the slides.
+
+[fn:precise] The differences on the order of $\SI{1}{mm}$ are very
+small. I haven't implemented an optimization routine to find the
+absolute smallest value precisely. This is by eye.
+
+*** TODOs for this section                                       :noexport:
+
+- [ ] *UPDATE NUMBERS IN TABLE!*
+- [ ] *ADD 80% AND 90% VALUES.*
+
+#+begin_src nim
+import math
+echo arctan(1.3 / 1500.0).radToDeg * 3600.0 * 2.0
+echo arctan(1.3559  / 1500.0).radToDeg * 3600.0 * 2.0
+#+end_src
+
+#+RESULTS:
+| 357.5255746478411 |
+| 372.8991661558662 |
+
+- [ ] *TRY TO RERUN RAYTRACER WITH DIFFERENT FIGURE ERROR VALUES AND
+  SEE WHAT HAPPENS*
+
+*** Half-power diameter definition / calculation                 :extended:
+
+The slides from the $62^{\text{nd}}$ CCM contain the following
+explanation about how the HPD should be calculated on slide 10:
+#+begin_quote
+- Actually, more useful to consider the encircled energy function (EEF)
+  - Draw a circle around the PSF, integrate the flux, record the value
+  - Repeat process, building up cumulative distribution as a function of radius; normalize to unity
+    - It’s the  integral of the PSF
+  - The half-power diameter (HPD) is just diameter where the EEF = 50%
+#+end_quote
+
+The slide in the CCM from Jan 2017 showing their EEFs is slide 17,
+fig. [[fig:appendix:raytracing:lln_traxer_compare:radial_cdfs_eef_slide17]].
+
+#+CAPTION: Radial cumulative distribution functions of the signal, in other words
+#+CAPTION: 'energy encircled function' (EEF) for the three fluorescence lines.
+#+NAME: fig:appendix:raytracing:lln_traxer_compare:radial_cdfs_eef_slide17
+[[~/org/Figs/statusAndProgress/LLNL_telescope/PANTER_LLNL_CCM_slide_17.pdf]]
+
+*** Comparison of slices along short axis                        :extended:
+
+The CCM presentation from Jan 2017 contains also plots that sum the
+signal along each axis in the data. These can be used for a more
+precise determination of whether our signal is too wide (due to too
+large figure error) or not.
+
+See slide 12,
+
+[[~/org/Figs/statusAndProgress/LLNL_telescope/PANTER_LLNL_CCM_slide_12.pdf]],
+
+namely the plot in the bottom right. It is quite hard to get precise
+numbers from it, but the 50% amplitude is roughly near the
+$\SI{0.1}{mm}$ mark. Reproducing a similar plot with our data, yields
+fig. [[fig:appendix:raytracing:traxer_alKalpha_short_axis_sum]]. We see
+that the $\SI{50}{\%}$ mark here is at $\SI{0.13}{mm}$. Maybe this is
+a slight indication for a somewhat too wide result. But well. The
+actual problem with the HPD as mentioned in the main text still remains.
+
+#+CAPTION: Cut along the short axis, summing the long axis for each bin for aluminium
+#+CAPTION: $Kα$. This yields a $\SI{50}{\%}$ amplitude width of about $\SI{0.13}{mm}$.
+#+NAME: fig:appendix:raytracing:traxer_alKalpha_short_axis_sum
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_x.pdf]]
+
+*** More on figure errors                                        :extended:
+
+One of the main issues with figure errors -- aside from not being very
+well defined -- is that they are usually quoted as a number for the
+entire X-ray optic. This is problematic when implementing it in a
+raytracer however, because the figure error is a property of the
+material surface. And because an X-ray optic works by a /double/
+reflection, the uncertainty is squared (in a non-trivial
+way). Therefore, it is not straightforward to simply compute a correct
+number to apply to the uncertainty of the scattering on the mirror
+surfaces from a real measurement.
+
+(Hey, if you do know how to do it, let me know!)
+
+*** Produce $\ce{Al}Kα$ plot from ~TrAXer~ data                  :extended:
+
+(We define a simple helper script to extract the last bits of output
+from the raytracing program
+#+NAME: nim-head
+#+begin_src nim :var data="" :var lines=5 :exports code
+import strutils
+for l in data.len - lines ..< data.len:
+  echo data[l].join(" ")
+#+end_src
+)
+
+In order to generate the data file needed for the HPD calculation and
+plot used above, we run the raytracer as follows:
+
+#+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
+    --llnl --focalPoint \
+    --sourceKind skXrayFinger \
+    --rayAt 1.013 \
+    --sensorKind sSum \
+    --energyMin 1.48 --energyMax 1.49 \
+    --usePerfectMirror=false \
+    --ignoreWindow \
+    --sourceDistance 130.297.m \
+    --sourceRadius 0.42.mm \
+    --telescopeRotation 90.0 \
+    --sourceOnOpticalAxis
+#+end_src
+
+Once you deem that enough statistics has been accumulated, press ~F5~
+on your keyboard to save all buffers to binary files. The output
+filenames will be printed to the terminal. 
+
+And then with the produced binary files we can plot them and compute
+the HPDs:
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-10-04T19:52:31+02:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm.pdf \
+    --inPixels=false \
+    --title "Al Kα, 1.49 keV, 3x3 mm, figure errors, source optical axis" \
+    --xrange 1.5
+#+end_src
+
+#+RESULTS:
+| INFO:            | using |            default | height             | of                |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO:            | using |            default | width              | of                |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO:            | using |            default | height             | of                |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO:            | using |            default | width              | of                |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD              | along |                 x: | 0.2660000000000009 | as                | angle: | 35.86041693394151 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD              | along |                 y: | 2.66               | as                | angle: | 358.6038116476873 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD              | :     |  187.0134115195901 |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum              | below |               0.68 | :                  | 185289919.0919408 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum              | above |               0.68 | :                  | 181632082.7368222 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD              | :     |  186.4538533718186 |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum              | below | 0.6779653887424952 | :                  | 183531205.6942491 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum              | above | 0.6779653887424952 | :                  | 183390796.1345164 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| KeyUp            |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
 
 *** PANTER measurements of HPD, focal length for point source etc
 
