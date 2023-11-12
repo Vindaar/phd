@@ -35440,6 +35440,112 @@ mcmc_limit_calculation sanity --limitKind lkMCMC
 
 - [ ] *FURTHER INVESTIGATE* the missing time!
 
+
+*** Determine correct rotation for candidates                    :extended:
+
+We know we need to apply a rotation to the candidates, because the
+Septemboard detector is rotated in relation to the native 'readout'
+direction. In principle the detector is rotated by $\SI{90}{°}$.  See
+fig. [[fig:detector:full_septemboard_exploded]], the larger spacing
+between the middle and bottom row is parallel to the high voltage
+bracket. The HV bracket was installed such that it leads the cables
+outside the lead housing.
+
+Reminder about the Septemboard layout: (why did I not just do it in
+inkscape?)
+#+begin_src
+Coordinate system for chips *5* and *6*, each!
+    256         0
+256  +----------> x
+     |
+     |
+     |           =================         Legend:
+  0  v           +-------+-------+         ======= <- chip bonding area
+     y           |       |       |        
+                 |   6   |   5   |         
+                 |       |       |
+             +---+---+---+---+---+---+  
+             |       |       |       |  
+             |   2   |   3   |   4   |  
+             |       |       |       |
+             +-------+-------+-------+  
+             =========================
+  
+256  y           +-------+-------+      
+     ^           |       |       |     
+     |           |   0   |   1   |
+     |           |       |       |
+     |           +-------+-------+
+     |           =================
+     |  
+     |  
+     |
+   0 +---------------------> x   
+     0                    256
+
+  ^--- Coordinates of chips 0, 1, 2, 3, 4 *each*
+#+end_src
+Note that chips 5 and 6 are "inverted" in their ordering /
+numbering. Also note the inversion of the coordinate systems for chips
+5 and 6 due to being installed upside down compared to the other
+chips.
+
+Keep this in mind for the explanation below:
+
+This /should/ imply that seen *from the front* (i.e. looking from the
+telescope onto the septemboard):
+- the top row is on the right hand side vertically, so that chip 6 is
+  in the top right, chip 5 in the bottom right.
+- the center row is vertically in the center. Chip 2 is in the top
+  middle, chip 3 (== center chip) obviously in the middle and chip 4
+  in the bottom middle
+- the bottom row is on the left vertically. Chip 0 is in the top left
+  and chip 1 in the bottom left.
+
+In this way the schematic above should be rotated by $\SI{90}{°}$
+/clockwise/.
+
+Kind of like this:
+#+begin_src
+                                         Legend:
+               ‖+-------+                  ‖      
+               ‖|       |                  ‖
+  ‖+-------+   ‖|   2   +-------+‖         ‖
+  ‖|       |   ‖|       |       |‖         ‖
+  ‖|   0   |   ‖+-------+   6   |‖         ‖
+  ‖|       |   ‖|       |       |‖         ^-- chip bonding area 
+  ‖+-------+   ‖|   3   |-------+‖        
+  ‖|       |   ‖|       |       |‖       
+  ‖|   1   |   ‖+-------+   5   |‖
+  ‖|       |   ‖|       |       |‖
+  ‖+-------+   ‖|   4   +-------+‖
+               ‖|       |
+               ‖+-------+
+#+end_src
+That should be the view from the front.
+
+From here we can cross check with the X-ray finger run, run 189, see
+fig. sref:fig:cast:xray_finger_centers generated in
+sec. [[#sec:cast:alignment:xray_finger_plots]].
+
+In the plotting code in that section we implement the rotation by
+exchanging the X by the Y center data. This should be correct. A
+transposition like that should yield a clock wise rotation.
+
+A lot of talk for very little new information, but some clarification
+I hope.
+
+This means for our limit calculation: perform the same X ⇔ Y
+replacement to get the correct rotation. Furthermore, let's look at an
+X-ray finger run using ~TrAXer~ (read appendix
+[[#sec:appendix:raytracing]] first) to reproduce the X-ray finger run of
+run 189.
+
+
+
+
+
+
 ** Observed limits
 
 With the data fully unblinded and the solar tracking candidates known,
