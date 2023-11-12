@@ -40298,11 +40298,9 @@ corresponding to $\SI{50}{\%}$.
 Let's consider the aluminum $Kα$
 lines. Fig. sref:fig:appendix:raytracing:comparison_alKalpha compares
 the PANTER data, with the LLNL raytracing result and our raytracing
-result. All three plots show the inner $\num{3}·\SI{3}{mm²}$ of the
-image. Generally, the agreement is quite good. The "bow tie" shape can
-be seen in all three figures. If anything it appears
-that our simulation uses a too large figure error (but more on that
-below).
+result. [fn:scene_panter] All three plots show the inner $\num{3}·\SI{3}{mm²}$ of the
+image. Generally, the agreement is very good. The "bow tie" shape can
+be seen in all three figures. 
 
 #+begin_src subfigure
 (figure ()
@@ -40329,7 +40327,7 @@ below).
 
 Computing the encircled energy function yields a figure as shown in
 fig. [[fig:appendix:raytracing:traxer_encircled_energy_function]]. We see
-the HPD shown as the red line at a radius of $r_{\text{HPD}} \approx \SI{0.68}{mm}$. This
+the HPD shown as the red line at a radius of $r_{\text{HPD}} \approx \SI{0.79}{mm}$. This
 is converted to an HPD in arc seconds via
 
 \[
@@ -40337,12 +40335,18 @@ is converted to an HPD in arc seconds via
 \]
 
 where $f$ is the focal length of the optic. This leads to an HPD of
-$\SI{186.45}{\arcsecond}$, which is between the LLNL raytracing
-simulation without a figure error and the real data and LLNL
-simulation with a figure error. Doing this for all three fluorescence
-lines, we get the numbers shown in
-tab. [[tab:llnl_panter_eef_hpd_measurements]]. We see the same behavior in
-each of the three lines. 
+$\SI{216.38}{\arcsecond}$, which is slightly above both the LLNL
+raytracing simulation (PANTER model) and the PANTER data. Doing this
+for all three fluorescence lines, we get the numbers shown in
+tab. [[tab:appendix:llnl_panter_eef_hpd_measurements]], where the
+differences are even smaller. Therefore, our implementation of the
+raytracer including figure errors yields very compatible results to
+the LLNL model developed for PANTER. The usage of TrAXer as the tool
+of choice for the calculation of the axion image seems justified.
+
+See sec. [[#sec:appendix:raytracing:figure_error_model]] below for more
+details on how the figure error is introduced and its parameters
+determined.
 
 #+CAPTION: Encircled energy function of the aluminum $Kα$ line, corresponding to the data
 #+CAPTION: of fig. sref:fig:appendix:raytracing:traxer_sim_alK. The HPD comes out to
@@ -40350,6 +40354,91 @@ each of the three lines.
 #+NAME: fig:appendix:raytracing:traxer_encircled_energy_function
 [[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.pdf]]
 
+#+CAPTION: Measurements and simulation results given on slides 18-20 of the
+#+CAPTION: CCM slides Jan 2017. 'Point source' refers to LLNL raytracing simulations.
+#+CAPTION: PANTER model is an LLNL raytracing model adjusted to best match the
+#+CAPTION: PANTER data.
+#+CAPTION: Our raytracing results are the TrAXer rows.
+#+CAPTION: TrAXer generally overestimates the HPD by about $\SI{20}{\arcsecond}$
+#+CAPTION: compared to the perfectc mirror LLNL raytracing results. However,
+#+CAPTION: our handling of the figure error does not achieve the desired effect
+#+CAPTION: in the HPD, despite resulting in a large difference in the total
+#+CAPTION: image size.
+#+NAME: tab:appendix:llnl_panter_eef_hpd_measurements
+#+ATTR_LATEX: :booktabs t
+|--------------------------------+------------+------------+------------|
+| Al Kα (1.49 keV)               |            |            |            |
+|--------------------------------+------------+------------+------------|
+|                                |  50% (HPD) | 80% circle | 90% circle |
+|--------------------------------+------------+------------+------------|
+| Point source (perfect mirrors) | 168 arcsec | 270 arcsec | 313 arcsec |
+| Point source (figure errors)   |        206 |        387 |        568 |
+| PANTER data                    |        206 |        397 |        549 |
+| PANTER model                   |        211 |        391 |        559 |
+| TrAXer (perfect mirrors)       |     183.19 |     304.61 |     351.54 |
+| TrAXer (figure errors)         |     216.38 |     389.72 |     559.79 |
+|--------------------------------+------------+------------+------------|
+|--------------------------------+------------+------------+------------|
+| Ti Kα (4.51 keV)               |            |            |            |
+|--------------------------------+------------+------------+------------|
+|                                |  50% (HPD) | 80% circle | 90% circle |
+| Point source (perfect mirrors) |        161 |        259 |        301 |
+| Point source (figure errors)   |        202 |        382 |        566 |
+| PANTER data                    |        196 |        380 |        511 |
+| PANTER model                   |        206 |        380 |        559 |
+| TrAXer (perfect mirrors)       |     174.84 |     288.54 |     333.75 |
+| TrAXer (figure errors)         |     207.43 |     378.16 |     552.55 |
+|--------------------------------+------------+------------+------------|
+|--------------------------------+------------+------------+------------|
+| Fe Kα (6.41 keV)               |            |            |            |
+|--------------------------------+------------+------------+------------|
+|                                |  50% (HPD) | 80% circle | 90% circle |
+| Point source (perfect mirrors) |        144 |        233 |        265 |
+| Point source (figure errors)   |        184 |        350 |        541 |
+| PANTER data                    |        196 |        364 |        483 |
+| PANTER model                   |        185 |        348 |        516 |
+| TrAXer (perfect mirrors)       |     160.38 |     257.79 |     296.79 |
+| TrAXer (figure errors)         |     189.75 |     345.20 |     518.51 |
+|--------------------------------+------------+------------+------------|
+
+[fn:slides] I mention the exact dates, because if you have access to
+the indico page of all the CAST collaboration meetings, this should
+make it easy to find the slides.
+
+[fn:precise] The differences on the order of $\SI{1}{mm}$ are very
+small. I haven't implemented an optimization routine to find the
+absolute smallest value precisely. This is by eye.
+
+[fn:scene_panter] I don't show a screenshot of the scene, because the
+source is obviously tiny and far away. The telescope and sensor are
+the same as in the CAST scene shown earlier. The CAST magnet bore is
+not included.
+
+*** TODOs for this section                                       :noexport:
+
+- [ ] *TRY TO RERUN RAYTRACER WITH DIFFERENT FIGURE ERROR VALUES AND
+  SEE WHAT HAPPENS*
+- [ ] *TRY RUNNING AGAIN WITH A HOMOGENEOUS FIGURE ERROR*
+  -> i.e. not sampling from a normal distribution
+
+
+- [X] *UPDATE NUMBERS IN TABLE!*
+- [X] *ADD 80% AND 90% VALUES.*
+
+#+begin_src nim
+import math
+echo arctan(1.3559 / 2.0 / 1519.0).radToDeg * 3600.0 * 2.0
+echo arctan(1.3 / 1500.0).radToDeg * 3600.0 * 2.0
+echo arctan(1.3559  / 1500.0).radToDeg * 3600.0 * 2.0
+#+end_src
+
+#+RESULTS:
+|  184.117466899582 |
+| 357.5255746478411 |
+| 372.8991661558662 |
+
+Old paragraph:
+#+begin_quote
 What our simulation struggles with is how the figure error affects the
 encircled energy function, especially visible in the table for the
 $\SI{90}{\%}$ circles. This is likely due to mishandling how a figure
@@ -40369,70 +40458,136 @@ appear as if the figure error is /too large/. But what seems to be
 happening is that our figure error causes a /radial/ enlargement,
 whereas the real figure error enlarges the data more along one axis
 than the other, increasing the HPD in size.
-
-#+CAPTION: Measurements and simulation results given on slides 18-20 of the
-#+CAPTION: CCM slides Jan 2017. Our raytracing results are the TrAXer rows.
-#+NAME: tab:llnl_panter_eef_hpd_measurements
-#+ATTR_LATEX: :booktabs t
-|--------------------------------+------------+------------+------------|
-| Al Kα (1.49 keV)               |            |            |            |
-|--------------------------------+------------+------------+------------|
-|                                |  50% (HPD) | 80% circle | 90% circle |
-|--------------------------------+------------+------------+------------|
-| Point source (perfect mirrors) | 168 arcsec | 270 arcsec | 313 arcsec |
-| Point source (figure errors)   |        206 |        387 |        568 |
-| PANTER data                    |        206 |        397 |        549 |
-| PANTER model                   |        211 |        391 |        559 |
-| TrAXer (perfect mirrors)       |     178.76 |            |            |
-| TrAXer (figure errors)         |     178.76 |            |            |
-|--------------------------------+------------+------------+------------|
-| Ti Kα (4.51 keV)               |            |            |            |
-|--------------------------------+------------+------------+------------|
-|                                |  50% (HPD) | 80% circle | 90% circle |
-| Point source (perfect mirrors) |        161 |        259 |        301 |
-| Point source (figure errors)   |        202 |        382 |        566 |
-| PANTER data                    |        196 |        380 |        511 |
-| PANTER model                   |        206 |        380 |        559 |
-| TrAXer (perfect mirrors)       |     170.51 |            |            |
-| TrAXer (figure errors)         |     170.51 |            |            |
-|--------------------------------+------------+------------+------------|
-| Fe Kα (6.41 keV)               |            |            |            |
-|--------------------------------+------------+------------+------------|
-|                                |  50% (HPD) | 80% circle | 90% circle |
-| Point source (perfect mirrors) |        144 |        233 |        265 |
-| Point source (figure errors)   |        184 |        350 |        541 |
-| PANTER data                    |        196 |        364 |        483 |
-| PANTER model                   |        185 |        348 |        516 |
-| TrAXer (perfect mirrors)       |     156.76 |            |            |
-| TrAXer (figure errors)         |     156.76 |            |            |
-|--------------------------------+------------+------------+------------|
+#+end_quote
 
 
-[fn:slides] I mention the exact dates, because if you have access to
-the indico page of all the CAST collaboration meetings, this should
-make it easy to find the slides.
+*** Definition of the figure error and parameter determination
 
-[fn:precise] The differences on the order of $\SI{1}{mm}$ are very
-small. I haven't implemented an optimization routine to find the
-absolute smallest value precisely. This is by eye.
+The figure error implementation has multiple free
+parameters. Generally speaking upon reflection on a mirror surface,
+the reflected direction is slightly modified. Let $\vec{r}_i$ be the
+incoming ray, $\vec{n}$ the surface normal on which the ray reflects
+and $\vec{r}_r$ the reflected ray. Reflection happens in the plane
+defined by $\vec{n}$ and $\vec{r}_{i,r}$. For a realistic figure error
+we wish to mainly vary the reflected direction in this plane around
+$\vec{r}_r$, but still allow for smaller amounts in directions
+orthogonal. The vector orthogonal to this plane is
 
-*** TODOs for this section                                       :noexport:
+\[
+\vec{n}_{\perp} = \vec{n} \times \vec{r}_r.
+\]
 
-- [ ] *UPDATE NUMBERS IN TABLE!*
-- [ ] *ADD 80% AND 90% VALUES.*
+This orthogonal vector $\vec{n}_{\perp}$ allow us further to construct
+a vector that is orthogonal to $\vec{r}_r$ but in the plane of the
+incoming and outgoing ray,
 
-#+begin_src nim
-import math
-echo arctan(1.3 / 1500.0).radToDeg * 3600.0 * 2.0
-echo arctan(1.3559  / 1500.0).radToDeg * 3600.0 * 2.0
+
+\[
+\vec{s} = \vec{n}_{\perp} \times \vec{r}_r.
+\]
+
+Based on two fuzzing parameters $f_{\parallel}$ and $f_{\perp}$ we can
+then define the real reflected ray to be:
+
+\[
+\vec{r}_{\text{fuzzed}} = \vec{p}_{\text{hit}} + \vec{r}_r + f_{\parallel} · \vec{s} + f_{\perp} · \vec{n}_{\perp}
+\]
+
+where $\vec{p}_{\text{hit}}$ is the point at which the ray hit a
+mirror shell. Generally $f_{\parallel}$ and $f_{\perp}$  are
+parameters sampled from a normal distribution. In practice only
+$f_{\perp}$ is directly sampled from a single normal distribution,
+while $f_{\parallel}$ is -- effectively -- a mix of a narrow and a
+wide normal distribution. In total there are $\num{5}$ input
+parameters, which define the final figure error model.
+
+In order to find the best matching parameters, we perform non-linear
+optimization using a global derivative-free algorithm [fn:nlopt]. This
+optimization calls the raytracer with a set of parameters in batch
+mode [fn:batch_mode] up to a fixed set of rays, computes the HPD and radii containing
+$\SI{80}{\%}$ and $\SI{90}{\%}$ of the flux and finally computes the
+mean squared error of the target parameters given and the current
+values.
+
+Ideally of course, one would use a map of the real surface roughness
+of each mirror shell (as done in [[cite:&nustar_dtu_phd]] for the NuSTAR
+telescope using ~MT_RAYOR~) and use that as the basis for more
+accurate reflection on the surface.
+
+See
+fig. sref:fig:appendix:raytracing:comparison_traxer_perfect_imperfect
+for a comparison of the image without any figure error (assuming
+perfect mirrors) and the final figure errors (which are the ones used
+in the table and plots of the previous section). The right plot shows
+the same data as seen in
+fig. sref:fig:appendix:raytracing:traxer_sim_alK above. The difference
+is massive in the sharpness of the data.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Perfect mirrors") (label "fig:appendix:raytracing:traxer_alK_perfect")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm.pdf"))
+        (subfigure (linewidth 0.5) (caption "Imperfect mirrors") (label "fig:appendix:raytracing:traxer_alK_imperfect")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm.pdf"))
+        (caption
+         (subref "fig:appendix:raytracing:traxer_alK_perfect")
+         ": TrAXer simulation for Al Kα without any figure error. The resulting image is
+          extremely well defined. "
+         (subref "fig:appendix:raytracing:traxer_alK_imperfect")
+         ": TrAXer simulation of Al Kα including a figure error. This is the same image as shown in "
+         (subref "fig:appendix:raytracing:traxer_sim_alK") ".")
+        (label "fig:appendix:raytracing:comparison_traxer_perfect_imperfect"))
 #+end_src
 
-#+RESULTS:
-| 357.5255746478411 |
-| 372.8991661558662 |
 
-- [ ] *TRY TO RERUN RAYTRACER WITH DIFFERENT FIGURE ERROR VALUES AND
-  SEE WHAT HAPPENS*
+[fn:nlopt] To be precise the ~NLOPT_GN_DIRECT_L~ algorithm of the
+NLopt cite:NLopt library, an implementation of the locally biased
+'DIviding RECTangles' algorithm
+cite:jones93_direct,gablonsky01_direct_L. The algorithm performs a
+hyperrectangle search of the bounded parameters pace. Note that many
+other algorithms would work fine too, but we want a global search
+algorithm, as there are possibly different local minima in how the
+parameters are chosen. Derivative-free is an advantage, as each
+iteration is expensive, having to run the entire raytracer to
+accumulate enough statistics ($\mathcal{O}(\SI{10}{s})$).
+
+[fn:batch_mode] Batch mode just refers to only running the X-ray
+raytracer without interactivity, graphical interface or the visible
+light raytracer running.
+
+**** Determining the optimal parameters                         :extended:
+
+The optimal parameters that we use nowadays, are determined by
+starting with the Al Kα line.
+
+The program performing the optimization is ~optimize_figure_error.nim~
+in the TrAXer repository [[cite:&traxer]].
+
+#+begin_src sh
+./optimize_figure_error \
+    --hpd 206 --c80 397 --c90 568 \
+    --bufOutdir out_GN_DIRECT_L \
+    --shmFile /dev/shm/image_sensor_GN_DIRECT_L.dat
+#+end_src
+which calls the raytracer with a set of fuzzing parameters, computes
+the EEF for the HPD, c80 and c90 radii and comparing them to the given
+arguments (these are the target values for the PANTER data of the Al
+Kα line, see tab. [[tab:appendix:llnl_panter_eef_hpd_measurements]]).
+
+See the NLopt documentation about the algorithm here:
+https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/#direct-and-direct-l
+
+To run the program you need to first compile the raytracer,
+#+begin_src sh
+nim c -d:ThreadPoolSize=32 -d:danger raytracer.nim
+#+end_src
+and the ~calc_eef~ helper:
+#+begin_src sh
+nim c -d:danger calc_eef.nim
+#+end_src
+after checking out the repository.
 
 *** More notes                                                   :extended:
 
@@ -40522,8 +40677,16 @@ for l in data.len - lines ..< data.len:
 )
 
 In order to generate the data file needed for the HPD calculation and
-plot used above, we run the raytracer as follows:
+plot used above, we need to first run the raytracer to produce the
+binary data files and then use ~plotBinary~ to produce the
+plots. Let's produce all three targets now.
 
+The HPD values are extracted from the output of ~plotBinary~ or from
+the ~*_hpd_via_eef.pdf~ plot annotations.
+
+**** Al Kα
+
+Run the ~raytracer~, note the ~energyMin~ and ~energyMax~.
 #+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
 ./raytracer \
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
@@ -40531,14 +40694,22 @@ plot used above, we run the raytracer as follows:
     --sourceKind skXrayFinger \
     --rayAt 1.013 \
     --sensorKind sSum \
-    --energyMin 1.48 --energyMax 1.49 \
+    --energyMin 1.48 --energyMax 1.50 \
     --usePerfectMirror=false \
     --ignoreWindow \
     --sourceDistance 130.297.m \
     --sourceRadius 0.42.mm \
     --telescopeRotation 90.0 \
-    --sourceOnOpticalAxis
+    --sourceOnOpticalAxis \
+    --ignoreMagnet \
+    --targetRadius 40.mm
 #+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-12T12:56:26+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-12T12:56:26+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-12T12:56:26+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
 
 Once you deem that enough statistics has been accumulated, press ~F5~
 on your keyboard to save all buffers to binary files. The output
@@ -40549,7 +40720,7 @@ the HPDs:
 #+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
 ./plotBinary \
     --dtype float \
-    -f out/image_sensor_0_2023-10-04T19:52:31+02:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    -f out/image_sensor_0_2023-11-12T12:56:26+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
     --invertY \
     --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm.pdf \
     --inPixels=false \
@@ -40558,25 +40729,367 @@ the HPDs:
 #+end_src
 
 #+RESULTS:
-| INFO:            | using |            default | height             | of                |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
-| INFO:            | using |            default | width              | of                |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
-| INFO:            | using |            default | height             | of                |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
-| INFO:            | using |            default | width              | of                |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
-| HPD              | along |                 x: | 0.2660000000000009 | as                | angle: | 35.86041693394151 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| HPD              | along |                 y: | 2.66               | as                | angle: | 358.6038116476873 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| HPD              | :     |  187.0134115195901 |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| Sum              | below |               0.68 | :                  | 185289919.0919408 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| Sum              | above |               0.68 | :                  | 181632082.7368222 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| HPD              | :     |  186.4538533718186 |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| Sum              | below | 0.6779653887424952 | :                  | 183531205.6942491 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| Sum              | above | 0.6779653887424952 | :                  | 183390796.1345164 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| AudioDeviceAdded |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
-| KeyUp            |       |                    |                    |                   |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| INFO: | using | default | height             | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width              | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height             | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width              | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 0.1959999999999997 | as | angle: | 26.42346523090174 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 2.688000000000001  | as | angle: | 362.3785808854751 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+#+CAPTION: Our result Al Kα as 3x3 mm with imperfect mirrors
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm.pdf]]
+
+#+CAPTION: Our result Al Kα as 3x3 mm with imperfect mirrors, log10
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_log10.pdf]]
+
+#+CAPTION: HPD in X for imperfect mirrors of Al Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_x.pdf]]
+
+#+CAPTION: HPD in Y for imperfect mirrors of Al Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_y.pdf]]
+
+#+CAPTION: HPD of Al Kα computed from the EEF (radial cumulative distribution function, encircled energy) 
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.pdf]]
+
+***** Perfect mirrors 
+
+Perfect mirror:
+#+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
+    --llnl --focalPoint \
+    --sourceKind skXrayFinger \
+    --rayAt 1.013 \
+    --sensorKind sSum \
+    --energyMin 1.48 --energyMax 1.49 \
+    --usePerfectMirror=true \
+    --ignoreWindow \
+    --sourceDistance 130.297.m \
+    --sourceRadius 0.42.mm \
+    --telescopeRotation 90.0 \
+    --sourceOnOpticalAxis \
+    --ignoreMagnet \
+    --targetRadius 40.mm
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-11T09:31:09+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-11T09:31:09+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-11T09:31:09+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+Create the plots (only in 3x3 mm):
+#+Begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-11T09:31:09+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm.pdf \
+    --inPixels=false \
+    --title "Al Kα, 1.49 keV, 3x3 mm, source optical axis" \
+    --xrange 1.5
+#+end_src
+
+#+RESULTS:
+| INFO: | using |            default | height             |                of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using |            default | width              |                of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using |            default | height             |                of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using |            default | width              |                of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along |                 x: | 0.1400000000000006 |                as | angle: | 18.87390378692756 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along |                 y: | 2.618              |                as | angle: | 352.941657341418 ''  |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Val   | at:   |                0.9 | =                  | 351.5354019605708 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | below |  1.278219101380229 | :                  | 215505260.1427205 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | above |  1.278219101380229 | :                  | 23943483.16359809 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Val   | at:   |                0.8 | =                  | 304.6164587588692 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | below |  1.107616901540538 | :                  | 191568517.2606231 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | above |  1.107616901540538 | :                  | 47880226.04569627 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Val   | at:   |                0.5 | =                  | 183.1855614136018 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | below | 0.6660815414431028 | :                  | 119737938.6530822 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | above | 0.6660815414431028 | :                  | 119710804.6532382 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+Produces the following figures:
+
+#+CAPTION: Our result Al Kα as 3x3 mm with perfect mirrors
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm.pdf]]
+
+#+CAPTION: Our result Al Kα as 3x3 mm with perfect mirrors, log10
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_log10.pdf]]
+
+#+CAPTION: HPD in X for perfect mirrors of Al Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_hpd_x.pdf]]
+
+#+CAPTION: HPD in Y for perfect mirrors of Al Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_hpd_y.pdf]]
+
+#+CAPTION: HPD of Al Kα computed from the EEF (radial cumulative distribution function, encircled energy) 
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_hpd_via_eef_50.pdf]]
+
+**** Ti Kα
+
+Run the ~raytracer~, note the ~energyMin~ and ~energyMax~.
+#+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
+    --llnl --focalPoint \
+    --sourceKind skXrayFinger \
+    --rayAt 1.013 \
+    --sensorKind sSum \
+    --energyMin 4.50 --energyMax 4.52 \
+    --usePerfectMirror=false \
+    --ignoreWindow \
+    --sourceDistance 130.297.m \
+    --sourceRadius 0.42.mm \
+    --telescopeRotation 90.0 \
+    --sourceOnOpticalAxis \
+    --ignoreMagnet \
+    --targetRadius 40.mm
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-12T12:58:39+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-12T12:58:39+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-12T12:58:39+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-12T12:58:39+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm.pdf \
+    --inPixels=false \
+    --title "Ti Kα, 4.51 keV, 3x3 mm, figure errors, source optical axis" \
+    --xrange 1.5
+#+end_src
+
+#+RESULTS:
+| INFO: | using | default | height             | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width              | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height             | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width              | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 0.1959999999999997 | as | angle: | 26.42346523090174 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 2.534000000000001  | as | angle: | 341.617347141652 ''  |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+#+CAPTION: Our result Ti Kα as 3x3 mm with imperfect mirrors
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm.pdf]]
+
+#+CAPTION: Our result Ti Kα as 3x3 mm with imperfect mirrors, log10
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_log10.pdf]]
+
+#+CAPTION: HPD in X for imperfect mirrors of Ti Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_hpd_x.pdf]]
+
+#+CAPTION: HPD in Y for imperfect mirrors of Ti Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_hpd_y.pdf]]
+
+#+CAPTION: HPD of Ti Kα computed from the EEF (radial cumulative distribution function, encircled energy) 
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.pdf]]
+
+
+***** Perfect mirrors 
+
+Perfect mirror:
+#+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
+    --llnl --focalPoint \
+    --sourceKind skXrayFinger \
+    --rayAt 1.013 \
+    --sensorKind sSum \
+    --energyMin 4.50 --energyMax 4.52 \
+    --usePerfectMirror=true \
+    --ignoreWindow \
+    --sourceDistance 130.297.m \
+    --sourceRadius 0.42.mm \
+    --telescopeRotation 90.0 \
+    --sourceOnOpticalAxis \
+    --ignoreMagnet \
+    --targetRadius 40.mm
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-11T09:37:15+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-11T09:37:15+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-11T09:37:15+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-11T09:37:15+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm.pdf \
+    --inPixels=false \
+    --title "Ti Kα, 4.51 keV, 3x3 mm, source optical axis" \
+    --xrange 1.5
+#+end_src
+
+#+RESULTS:
+| INFO: | using |            default | height             |                of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using |            default | width              |                of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using |            default | height             |                of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using |            default | width              |                of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along |                 x: | 0.1400000000000006 |                as | angle: | 18.87390378692756 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along |                 y: | 2.436              |                as | angle: | 328.4056493105146 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Val   | at:   |                0.9 | =                  | 333.7531445943796 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | below |  1.213560944372482 | :                  | 65510262.06201264 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | above |  1.213560944372482 | :                  | 7278495.262482432 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Val   | at:   |                0.8 | =                  | 288.5410499685314 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | below |  1.049165035489549 | :                  |  58231807.0367901 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | above |  1.049165035489549 | :                  | 14556950.28770481 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Val   | at:   |                0.5 | =                  | 174.8413254494009 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | below | 0.6357410375749298 | :                  |    36396804.70486 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | above | 0.6357410375749298 | :                  | 36391952.61963489 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+#+CAPTION: Our result Ti Kα as 3x3 mm with perfect mirrors
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm.pdf]]
+
+#+CAPTION: Our result Ti Kα as 3x3 mm with perfect mirrors, log10
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_log10.pdf]]
+
+#+CAPTION: HPD in X for perfect mirrors of Ti Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_hpd_x.pdf]]
+
+#+CAPTION: HPD in Y for perfect mirrors of Ti Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_hpd_y.pdf]]
+
+#+CAPTION: HPD of Ti Kα computed from the EEF (radial cumulative distribution function, encircled energy) 
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_hpd_via_eef_50.pdf]]
+
+
+**** Fe Kα
+
+
+Run the ~raytracer~, note the ~energyMin~ and ~energyMax~.
+#+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
+    --llnl --focalPoint \
+    --sourceKind skXrayFinger \
+    --rayAt 1.013 \
+    --sensorKind sSum \
+    --energyMin 6.39 --energyMax 6.41 \
+    --usePerfectMirror=false \
+    --ignoreWindow \
+    --sourceDistance 130.297.m \
+    --sourceRadius 0.42.mm \
+    --telescopeRotation 90.0 \
+    --sourceOnOpticalAxis \
+    --ignoreMagnet \
+    --targetRadius 40.mm
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-12T12:59:52+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-12T12:59:52+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-12T12:59:52+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-12T12:59:52+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm.pdf \
+    --inPixels=false \
+    --title "Fe Kα, 6.41 keV, 3x3 mm, figure errors, source optical axis" \
+    --xrange 1.5
+#+end_src
+
+#+RESULTS:
+| INFO: | using | default | height             | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width              | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height             | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width              | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 0.1679999999999993 | as | angle: | 22.64868451649989 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 2.31               | as | angle: | 311.4191767261138 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+#+CAPTION: Our result Fe Kα as 3x3 mm with imperfect mirrors
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm.pdf]]
+
+#+CAPTION: Our result Fe Kα as 3x3 mm with imperfect mirrors, log10
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_log10.pdf]]
+
+#+CAPTION: HPD in X for imperfect mirrors of Fe Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_hpd_x.pdf]]
+
+#+CAPTION: HPD in Y for imperfect mirrors of Fe Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_hpd_y.pdf]]
+
+#+CAPTION: HPD of Fe Kα computed from the EEF (radial cumulative distribution function, encircled energy) 
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.pdf]]
+
+
+***** Perfect mirrors 
+
+Perfect mirror:
+#+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
+    --llnl --focalPoint \
+    --sourceKind skXrayFinger \
+    --rayAt 1.013 \
+    --sensorKind sSum \
+    --energyMin 6.39 --energyMax 6.41 \
+    --usePerfectMirror=true \
+    --ignoreWindow \
+    --sourceDistance 130.297.m \
+    --sourceRadius 0.42.mm \
+    --telescopeRotation 90.0 \
+    --sourceOnOpticalAxis \
+    --ignoreMagnet \
+    --targetRadius 40.mm
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-11T09:41:47+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-11T09:41:47+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-11T09:41:47+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-11T09:41:47+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm.pdf \
+    --inPixels=false \
+    --title "Fe Kα, 6.41 keV, 3x3 mm, source optical axis" \
+    --xrange 1.5
+#+end_src
+
+#+RESULTS:
+| INFO: | using |            default | height             |                of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using |            default | width              |                of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using |            default | height             |                of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using |            default | width              |                of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along |                 x: | 0.1400000000000006 |                as | angle: | 18.87390378692756 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along |                 y: | 2.197999999999999  |                as | angle: | 296.3200864311206 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Val   | at:   |                0.9 | =                  |  296.523470064401 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | below |    1.0781899486169 | :                  | 48506492.61313087 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | above |    1.0781899486169 | :                  | 5385733.150556044 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Val   | at:   |                0.8 | =                  | 257.7868500325422 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | below | 0.9373395598019377 | :                  | 43114338.96146736 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | above | 0.9373395598019377 | :                  |  10777886.8022196 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Val   | at:   |                0.5 | =                  | 160.3741245847753 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | below | 0.5831368020869885 | :                  |  26950827.2941249 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| Sum   | above | 0.5831368020869885 | :                  | 26941398.46956202 |        |                     |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+#+CAPTION: Our result Fe Kα as 3x3 mm with perfect mirrors
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm.pdf]]
+
+#+CAPTION: Our result Fe Kα as 3x3 mm with perfect mirrors, log10
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_log10.pdf]]
+
+#+CAPTION: HPD in X for perfect mirrors of Fe Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_hpd_x.pdf]]
+
+#+CAPTION: HPD in Y for perfect mirrors of Fe Kα
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_hpd_y.pdf]]
+
+#+CAPTION: HPD of Fe Kα computed from the EEF (radial cumulative distribution function, encircled energy) 
+[[~/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_hpd_via_eef_50.pdf]]
 
 
 ** Computing an axion image with TrAXer
@@ -40584,12 +41097,420 @@ the HPDs:
 :CUSTOM_ID: sec:appendix:raytracing:axion_image
 :END:
 
+The previous section provides us with reasonable guarantees that our
+raytracer produces compatible results to PANTER measurements and the
+LLNL raytracing results. In particular for the axion-electron coupling
+we do not wish to reuse the raytracing prediction for the solar axion
+image computed by Michael Pivovaroff at LLNL, as used in the CAST
+Nature 2017 paper [[cite:&cast_nature]] paper. [fn:have_access] This is
+because of the different radial emission profile (compare
+fig. [[sref:fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz]]).
+
+To simulate the solar axion image, we use the scene already shown in
+fig. sref:fig:appendix:raytracing:cast_setup_example. The Sun is
+placed as an X-ray emitter [fn:why_xray] at $\SI{0.989}{AU}$
+away [fn:distance] from the telescope. It emits X-rays of energies and
+from radii corresponding to the distribution seen in
+fig. sref:fig:theory:solar_axion_flux:flux_vs_energy_and_radius
+calculated using the opacity calculation code [[cite:&JvO_axionElectron]]
+also developed by Johanna von Oy during her master thesis
+[[cite:&vonOy_MSc]]. The calculations are based on the AGSS09 solar model
+cite:agss09_chemical,agss09_new_solar. The
+telescope is rotated under the angle it was installed at CAST, as
+deduced from the X-ray finger taken at CAST,
+fig. sref:fig:cast:xray_finger_centers (about $\SI{14}{°}$). The image
+sensor is placed slightly in front of the focal
+point. $\SI{1492.93}{mm}$ away from the center of the telescope
+(to the virtual reflection point) instead of $\SI{1500}{mm}$ to
+account for the median conversion point of the X-rays of the expected axion
+electron X-ray flux (as mentioned in sec. [[#sec:limit:median_absorption_depth]]).
+
+With all these in place, the axion image comes out as seen in
+fig. sref:fig:appendix:raytracing:traxer_solar_axion_image. In comparison
+fig. sref:fig:appendix:raytracing:llnl_solar_axion_image shows the axion
+image as computed by the LLNL raytracing code (albeit only for the
+axion-photon coupling and related emission). The similarity between
+the two images is implying our raytracing simulation is
+sensible. Small differences are expected, not only because of a
+different solar emission. The different rotation angle is only due to
+the different viewing direction (front or back). Our raytracing image
+shows a larger bulge in the center at very low intensity. The absolute
+size of the major flux region is very comparable. The slight asymmetry
+in our image is due to it being effectively $\SI{8}{mm}$ in front of
+the focal point.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "TrAXer") (label "fig:appendix:raytracing:traxer_solar_axion_image")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.pdf"))
+        (subfigure (linewidth 0.5) (caption "LLNL") (label "fig:appendix:raytracing:llnl_solar_axion_image")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/raytracing/raytracing_axion_image_llnl_jaime_all_energies_gridpix_size.pdf"))
+        (caption
+         (subref "fig:appendix:raytracing:traxer_solar_axion_image")
+         ": TrAXer simulation of the solar axion image using the correct Sun-Earth distance with the
+          image sensor placed " ($ (SI 1492.93 "mm")) " away from the telescope center. "
+         (subref "fig:appendix:raytracing:llnl_solar_axion_image")
+         ": Corresponding raytracing simulation done at LLNL, however for axion-photon production only. 
+         The difference in rotation between the two images is only due to direction from which they are
+         seen.")
+        (label "fig:appendix:raytracing:comparison_traxer_llnl_axion_image"))
+#+end_src
+
+
+
+[fn:have_access] Let alone the fact that we only got access to these
+raytracing results mid 2023, but our raytracing work started years
+before that.
+
+[fn:why_xray] The axion-photon conversion probability is handled in
+the limit code.
+
+[fn:distance] This was the average distance to the Sun during our CAST
+data taking campaign, as discussed in
+sec. [[#sec:limit:ingredients:solar_axion_flux]].
+
 *** TODOs for this section [/]                                   :noexport:
 
 Related to explicit axion image 
 
 - [ ] *SHOW PLOTS CHARACTERIZING USED SOLAR MODEL*
 - [ ] *REFERENCE SOLAR MODEL*
+
+
+*** Further thoughts on the (missing?) bow tie                   :extended:
+
+The bow tie feature in the raytracing images is partially present even
+in the perfect mirror raytracing results. But in those there is a hard
+cutoff at some point, because the last shell and largest angles have
+been reached. Once figure errors are included this turns into a much
+smoother process, resulting in the bow tie shape.
+
+*** Note on conversion point                                     :extended:
+
+The calculation for the conversion point was mentioned in
+
+- [ ] *REFERENCE*
+
+*** Generate solar axion image using TrAXer [/]                  :extended:
+
+- [ ] *WE FORGOT TO USE THE CORRECT DISTANCE, I.E. MEAN CONVERSION!*
+
+The main ingredient we need to simulate the correct axion image is the
+data file that describes the radial and spectral emission of axions
+from the Sun.
+
+Make sure to get the [[cite:&JvO_axionElectron]] code:
+#+begin_src sh
+cd <path/of/choice>
+git clone https://github.com/jovoy/AxionElectronLimit.git
+cd AxionElectronLimit
+cd src
+nim c -d:danger readOpacityFile
+#+end_src
+
+Note that you also need to download the OPCD files from the opacity
+project https://cdsweb.u-strasbg.fr/topbase/TheOP.html.
+Download the ~.tar~ file and place it in a location of your
+choice. With that done, update the ~AxionElectronLimit~ config file
+found in
+[[file:~/CastData/ExternCode/AxionElectronLimit/config/config.toml]]
+by setting the
+#+begin_src toml
+opcdPath         = "/home/basti/CastData/data/"
+#+end_src
+field under ~[ReadOpacityFile]~ to the correct directory. The
+directory should point to the parent directory of the ~OPCD_3.3~ dir.
+
+If you do not have a ~config.toml~ file, just create a copy of the
+~config_default.toml~ as ~config.toml~.
+
+Now we can run ~readOpacityFile~:
+#+begin_src sh
+./readOpacityFile --suffix "_0.989AU" --distanceSunEarth 0.9891144450781392.AU --fluxKind fkAxionElectronPhoton
+#+end_src
+where we insert the correct distance from Sun to Earth. And we set the
+fluxes to only those interactions we are interested in (ignoring
+things like plasmon interactions).
+
+The output data will be written as a CSV file to a location also
+defined in the config file.
+
+Using this CSV file, which should be called
+~solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv~ we
+can run the raytracer, in this case in the focal point:
+
+#+begin_src sh
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 \
+    --llnl --focalPoint --sourceKind skSun \
+    --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv \
+    --sensorKind sSum \
+    --usePerfectMirror=false \
+    --ignoreWindow
+#+end_src
+:RESULTS:
+# Using the new FUZZ parameters:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-12T16:12:11+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-12T16:12:11+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-12T16:12:11+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+# Using the old single FUZZ with sampling from normal distribution:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-10T12:40:44+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-10T12:40:44+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-10T12:40:44+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+The important point is the ~solarModelFile~ parameter and
+~--sensorKind sSum~, which sets image sensors up to sum up all flux
+contributions in each pixel (instead of just counting how many rays
+hit each pixel). We do not want to have the GridPix window strongback
+in the result.
+
+It will sample in an energy range between 0.03 and 15 keV. The lower
+bound is due to the limit on the reflectivity calculation that is
+possible based on the atomic scattering factors.
+
+Time to produce a plot of the image:
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-10T12:40:44+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_old_figure_errors.pdf \
+    --inPixels=false \
+    --title "Solar axion image at 0.989 AU from Sun (old figure errors)"
+#+end_src
+
+#+RESULTS:
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 2.421999999999999 | as | angle: | 326.5182636835636 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 1.148000000000001 | as | angle: | 154.7659824408381 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+With the new fuzzing logic:
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-12T16:12:11+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU.pdf \
+    --inPixels=false \
+    --title "Solar axion image at 0.989 AU from Sun (imperfect mirrors)"
+#+end_src
+
+#+RESULTS:
+| INFO: | using | default | height | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width  | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width  | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 2.59   | as | angle: | 349.166887507867 ''  |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 1.204  | as | angle: | 162.3155395156477 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+
+
+For comparison let's also run the code without any figure errors:
+
+#+begin_src sh
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 \
+    --llnl --focalPoint --sourceKind skSun \
+    --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv \
+    --sensorKind sSum \
+    --usePerfectMirror=true \
+    --ignoreWindow
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-10T12:45:29+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-10T12:45:29+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-10T12:45:29+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-10T12:45:29+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/solar_axion_image_perfect_mirrors_fkAxionElectronPhoton_0.989AU.pdf \
+    --inPixels=false \
+    --title "Solar axion image at 0.989 AU from Sun, perfect mirrors"
+#+end_src
+
+And finally we also compute the axion image at the point of most
+likely conversion of X-rays, i.e. at $\SI{1492.93}{mm}$ instead of
+$\SI{1500}{mm}$. Thus, ~--rayAt 0.995286666667~ (1492.93 / 1500) to
+get the correct placement:
+#+begin_src sh
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 \
+    --llnl --focalPoint --sourceKind skSun \
+    --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv \
+    --sensorKind sSum \
+    --usePerfectMirror=false \
+    --rayAt 0.995286666667 \
+    --ignoreWindow
+#+end_src
+:RESULTS:
+# Using the new FUZZ parameters:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-12T16:23:18+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-12T16:23:18+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-12T16:23:18+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+# Using the old single FUZZ with sampling from normal distribution:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-10T20:38:55+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-10T20:38:55+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-10T20:38:55+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+Which we also plot:
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-10T20:38:55+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm_old_figure_error.pdf \
+    --inPixels=false \
+    --title "Solar axion image at 0.989 AU from Sun, 1492.93 mm (old figure error)"
+#+end_src
+
+#+RESULTS:
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 2.407999999999999 | as | angle: | 324.6308780019351 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 1.176             | as | angle: | 158.5407610313404 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-12T16:23:18+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.pdf \
+    --inPixels=false \
+    --title "Solar axion image at 0.989 AU from Sun, 1492.93 mm"
+#+end_src
+
+#+RESULTS:
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 2.617999999999999 | as | angle: | 352.9416573414177 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 1.204000000000001 | as | angle: | 162.3155395156478 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+
+
+This yields the files included in the main body.
+- ~~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.pdf~
+- ~~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU.pdf~
+- ~~/phd/Figs/raytracing/solar_axion_image_perfect_mirrors_fkAxionElectronPhoton_0.989AU.pdf~
+
+If you compare
+[[~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU.pdf]]
+with
+[[~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.pdf]]
+you see that there is a minor amount of asymmetry in the version that
+is ~1 cm in front of the focal point, as expected. The impact on the
+size is very small though. This can be seen when comparing:
+
+- [[~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm_hpd_via_eef_50.pdf]]
+- [[~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm_hpd_x.pdf]]
+- [[~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm_hpd_y.pdf]]
+
+with the same plots from the focal point.  
+- [[~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_hpd_via_eef_50.pdf]]
+- [[~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_hpd_x.pdf]]
+- [[~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_hpd_y.pdf]]
+
+The HPD increases by <0.05 mm 
+
+Comparing this to the LLNL raytracing axion image:
+[[~/org/Figs/statusAndProgress/rayTracing/raytracing_axion_image_llnl_jaime_all_energies_gridpix_size.pdf]]
+they actually look very compatible.
+
+*Note*: we also produced figures for $\SI{1487.93}{mm}$ instead of the
+final $\SI{1492.93}{mm}$ found in
+[[file:Figs/raytracing/axion_image_assuming_1.5cm_behind_window/]]
+
+**** What does the axion image look like without any orthogonal fuzzing? :extended:
+
+This thought just occurred to me, because the LLNL raytracing image
+still has more of a 'waist' in the center.
+
+#+begin_src sh
+FUZZ_ORTH=0.0 ./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 \
+    --llnl --focalPoint --sourceKind skSun \
+    --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv \
+    --sensorKind sSum \
+    --usePerfectMirror=false \
+    --ignoreWindow
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-12T16:29:50+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-12T16:29:50+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-12T16:29:50+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-12T16:29:50+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out /tmp/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm_no_orth_fuzz.pdf \
+    --inPixels=false \
+    --title "Solar axion image at 0.989 AU from Sun, 1492.93 mm (no orth fuzz)"
+#+end_src
+
+#+RESULTS:
+| INFO: | using | default | height | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width  | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width  | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 2.59   | as | angle: | 349.166887507867 ''  |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 1.204  | as | angle: | 162.3155395156477 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+Ok, the plot looks near identical. :)
+
+** Reproducing an X-ray finger run with TrAXer                    :extended:
+
+We can of course also attempt to reproduce an X-ray finger run using
+TrAXer. Essentially it is not too dissimilar from the PANTER
+measurements, with two differences:
+1. source distance and size
+2. source placement. In contrast to the PANTER measurement, where the
+   source is on the optical axis, at CAST for X-ray finger
+   measurements the source is in the magnet bore and therefore in
+   front of the telescope (i.e. _away_ from the optical axis).
+
+The main reason this is not part of the main thesis is that this is
+neither very important and at the same time we don't actually know the
+dimensions or distance of the X-ray finger used at CAST very well.
+
+
+-> Decide final arguments
+#+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
+    --llnl --focalPoint \
+    --sourceKind skXrayFinger \
+    --sensorKind sSum \
+    --energyMin 2.5 --energyMax 3.5 \
+    --usePerfectMirror=false \
+    --sourceDistance 10.m \
+    --sourceRadius 2.0.mm 
+#+end_src
+Note the lack of ~--sourceOnOpticalAxis~, which puts the source behind
+in at the center of the magnet bore instead of the optical axis.
+   
 
 ** DONE Can we finish our interactive ray tracer?                 :noexport:
 
@@ -40616,10 +41537,71 @@ RGB based approach, thinking and implementing how to essentially have
 for X-rays etc. In the end it was a good 4 weeks of work I guess
 instead of a weekend. :) 
 
-** Computation of atomic processes :noexport:
+** Computation of atomic processes                                :noexport:
 
 Computation of atomic processes done in *CODE*. 
 
+
+** Rerunning Al Kα after replacing target                         :noexport:
+
+I moved the "light target" to the end of the magnet (on the telescope
+side) in order to get better statistics for regular X-ray finger
+runs. While doing this I realized that with ~--sourceOnOpticalAxis~
+the target at the beginning is problematic, because the telescope may
+not be fully illuminated at all! But the below shows that it does not
+make an important difference.
+
+*UPDATE* <2023-11-10 Fri 21:28>: I forgot to add ~--ignoreMagnet~ to all commands above! Need
+to rerun them tomorrow!!!
+- [X] *FOR THAT* adjust the light target size, make it a parameter!
+  -> Done.
+
+#+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
+    --llnl --focalPoint \
+    --sourceKind skXrayFinger \
+    --rayAt 1.013 \
+    --sensorKind sSum \
+    --energyMin 1.48 --energyMax 1.50 \
+    --usePerfectMirror=false \
+    --ignoreWindow \
+    --sourceDistance 130.297.m \
+    --sourceRadius 0.42.mm \
+    --telescopeRotation 90.0 \
+    --sourceOnOpticalAxis \
+    --ignoreMagnet \
+    --targetRadius 40.mm
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-11T09:26:25+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-11T09:26:25+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-11T09:26:25+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+Once you deem that enough statistics has been accumulated, press ~F5~
+on your keyboard to save all buffers to binary files. The output
+filenames will be printed to the terminal. 
+
+And then with the produced binary files we can plot them and compute
+the HPDs:
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-11T09:26:25+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out /tmp/test_me.pdf \
+    --inPixels=false \
+    --title "Al Kα, 1.49 keV, 3x3 mm, figure errors, source optical axis" \
+    --xrange 1.5
+#+end_src
+
+** Figure error development notes                                 :extended:
+
+For my development notes taken when I fixed the implementation to what
+it is now in the above, see
+[[file:~/org/Doc/StatusAndProgress.org::#sec:raytracing:interactive:fixing_figure_error]].
 
 
 * List of figures and tables
