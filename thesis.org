@@ -8869,7 +8869,7 @@ view.addRow(h5f, septem, fileInfo, 0, 2, 5, showEmpty = true)
 view.addRow(h5f, septem, fileInfo, 1, 3, 2)
 view.addRow(h5f, septem, fileInfo, 2, 2, 0)
 
-view.draw("/home/basti/phd/Figs/sparking_occupancy_80_quantile_run_$#.pdf" % $Run)
+view.draw("/home/basti/phd/Figs/detector/sparking/sparking_occupancy_80_quantile_run_$#.pdf" % $Run)
 #+end_src
 
 Running the above code for run 268 (the run we installed the fan and
@@ -14063,6 +14063,10 @@ been calculated.
   #+end_quote
 
 *** Generate X-ray heatmap [/]                                   :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:alignment:xray_finger_plots
+:END:
+
 
 - [X] *FIND XRAY FINGER RUN 2, RUN 189!*
   [[file:~/CastData/data/XrayFingerRuns/]]
@@ -14115,7 +14119,7 @@ proc main(run: int, switchAxes: bool = false) =
   
   var df = readRunDsets(h5f, run = run,
                         chipDsets = some((
-                          chip: 3, dsets: @["centerX", "centerY"])))
+                        chip: 3, dsets: @["centerX", "centerY"])))
     .mutate(f{"xidx" ~ toIdx(idx("centerX"))},
             f{"yidx" ~ toIdx(idx("centerY"))})
   let xidx = df["xidx", int]
@@ -23359,7 +23363,7 @@ $\SI{670}{μm.cm^{-1/2}}$, implying the approach yields reasonable values.
 #+CAPTION: are CDL calibration runs. The color scale is the CvM test score.
 #+CAPTION: Background runs are marked by crosses.
 #+NAME: fig:background:mlp:gas_diffusion_values
-[[~/phd/Figs/σT_per_run.pdf]]
+[[~/phd/Figs/determineDiffusion/σT_per_run.pdf]]
 
 Because this iterative calculation is not computationally negligible, the
 resulting $D_T$ parameters for each run are cached in an HDF5 file. [fn:determine_D_T_time]
@@ -29069,7 +29073,7 @@ i.e. integrating them out
 # \begin{align*}
 # \mathcal{L}_M &= \iiiint_{-∞}^∞ \left(\prod_i \frac{P_{\text{pois}}(n_i; s_i'' + b_i')}{P_{\text{pois}}(n_i; b_i')}\right) \cdot \mathcal{N}(θ_s, σ_s)
 # \cdot \mathcal{N}(θ_b, σ_b) \cdot \mathcal{N}(θ_x, σ_x) \cdot \mathcal{N}(θ_y, σ_y) \\
-# \mathcal{L}'(g, θ_s, θ_b, θ_x, θ_y) &= e^{s'_\text{tot}} \prod_i (1 + \frac{s_i''}{b_i'}) ·
+# \mathcal{L}'(g, θ_s, θ_b, θ_x, θ_y) &= e^{-s'_\text{tot}} \prod_i (1 + \frac{s_i''}{b_i'}) ·
 #   \exp\left[-\frac{1}{2} \left(\frac{θ_s}{σ_s}\right)² 
 #     -\frac{1}{2} \left(\frac{θ_b}{σ_b}\right)² 
 #     -\frac{1}{2} \left(\frac{θ_x}{σ_x}\right)² 
@@ -29231,7 +29235,7 @@ to get a combined likelihood to compute a limit for.
   to either have 0 entries (most channels) or 1 entry. This means we
   have a large number of channels, but because of our definition of
   $\mathcal{L}$ this does not matter. All channels with 0 candidates do not
-  contribute to $\mathcal{L}$ (they are $(1 + \frac{s_i}{b_i})^0 = 1$). As a
+  contribute to $\mathcal{L}$ (they are $\left(1 + \frac{s_i}{b_i}\right)^0 = 1$). As a
   result our expression of $\mathcal{L}$ simplifies further to:
 
   \[
@@ -29542,7 +29546,7 @@ This results in the following final (single nuisance parameter)
 likelihood $\mathcal{L}'$:
 
 \[
-\mathcal{L}' = e^{-s'_\text{tot}} \prod_i (1 + \frac{s_i'}{b_i}) · \exp\left[-\frac{1}{2} \left(\frac{ϑ_s}{σ_s}\right)² \right]
+\mathcal{L}' = e^{-s'_\text{tot}} \prod_i \left(1 + \frac{s_i'}{b_i}\right) · \exp\left[-\frac{1}{2} \left(\frac{ϑ_s}{σ_s}\right)² \right]
 \]
 
 where $s_i' = s_i (1 + ϑ_s)$ and similarly $s_{\text{tot}}' =
@@ -29591,7 +29595,7 @@ Putting all these four nuisance parameters together we have
 \begin{align}
 \mathcal{L}' &= \left(\prod_i \frac{P_{\text{pois}}(n_i; s_i + b_i)}{P_{\text{pois}}(n_i; b_i)}\right) \cdot \mathcal{N}(θ_s, σ_s)
 \cdot \mathcal{N}(θ_b, σ_b) \cdot \mathcal{N}(θ_x, σ_x) \cdot \mathcal{N}(θ_y, σ_y) \\
-\mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y) &= e^{s'_\text{tot}} \prod_i (1 + \frac{s_i''}{b_i'}) ·
+\mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y) &= e^{-s'_\text{tot}} \prod_i \left(1 + \frac{s_i''}{b_i'} \right) ·
   \exp\left[-\frac{1}{2} \left(\frac{ϑ_s}{σ_s}\right)² 
     -\frac{1}{2} \left(\frac{ϑ_b}{σ_b}\right)² 
     -\frac{1}{2} \left(\frac{ϑ_x}{σ_x}\right)² 
@@ -30848,6 +30852,10 @@ ggplot(df, aes("E", "Efficiency", color = "Type")) +
 #+RESULTS:
   
 *** Average absorption depth of X-rays
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:median_absorption_depth
+:END:
+
 
 - [ ] FOcal spot in center of chamber
 - [ ] UPdated calc monte carlo for median pos  
@@ -31455,9 +31463,6 @@ nim r -d:danger /tmp/sample_axion_xrays_conversion_points.nim
 #+end_src
 $⇒$ the case we most care about and of which the numbers are mentioned
 in the text above. 
-
-
-
 
 *** Raytracing axion image
 :PROPERTIES:
@@ -35361,7 +35366,7 @@ appears sound.
 
 - [ ] *CREATE APPENDIX FOR OTHER CANDIDATE PLTOS!!!*  
 
-*** Rate plot comparing background to candidates                 :noexport:
+*** Rate plot comparing background to candidates                 :extended:
 
 Combined:
 #+begin_src sh
@@ -35393,13 +35398,13 @@ maybe there is still a slight excess, yes, but it *seems* (may not be
 though) to be more in line with expectation. 
 
 
-*** Perform the data unblinding and produce plots                :noexport:
+*** Perform the data unblinding and produce plots                :extended:
 
 1. run ~likelihood~ with ~--tracking~
 2. compute ~mcmc_limit_calculation~ based on the files
   
 
-*** Generate plots for real candidates                           :noexport:
+*** Generate plots for real candidates                           :extended:
 
 Using the files created in the previous section, let's create some plots.
 
@@ -35423,7 +35428,7 @@ plotBackgroundClusters \
 [[~/org/Figs/statusAndProgress/trackingCandidates/background_cluster_centersmlp_0.95_scinti_fadc_line_tracking_candidates_axion_image_with_energy_radius_85.pdf]]
 
 
-*** Number of background clusters expected                       :noexport:
+*** Number of background clusters expected                       :extended:
 
 This is part of the ~sanityCheckBackgroundSampling~ procedure in the
 limit code.
