@@ -41870,9 +41870,97 @@ dimensions or distance of the X-ray finger used at CAST very well.
     --sourceDistance 10.m \
     --sourceRadius 2.0.mm 
 #+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-12T17:16:36+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-12T17:16:36+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-12T17:16:36+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
 Note the lack of ~--sourceOnOpticalAxis~, which puts the source behind
 in at the center of the magnet bore instead of the optical axis.
-   
+
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-12T17:16:36+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/xray_finger_10m_2mm_3keV.pdf \
+    --inPixels=false \
+    --title "X-ray finger in 10 m distance, 2 mm radius at 2.5-3.5 keV"
+#+end_src
+
+#+RESULTS:
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 5.600000000000001 | as | angle: | 754.9527823402237 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 5.809999999999999 | as | angle: | 783.2632444367842 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+
+And now using 14.2 m and 3 mm source, which is what is mentioned in
+[[cite:&anders_phd]] under fig. 4.32. While I don't understand how these
+numbers are supposed to make sense, they produce a better image.
+
+#+begin_src sh :post nim-head(*this*,lines=5) :eval no-export
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 \
+    --llnl --focalPoint \
+    --sourceKind skXrayFinger \
+    --sensorKind sSum \
+    --energyMin 2.5 --energyMax 3.5 \
+    --usePerfectMirror=false \
+    --sourceDistance 14.2.m \
+    --sourceRadius 3.0.mm 
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2023-11-12T17:21:37+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2023-11-12T17:21:37+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2023-11-12T17:21:37+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-12T17:21:37+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/xray_finger_14.2m_3mm_3keV.pdf \
+    --inPixels=false \
+    --title "X-ray finger in 14.2 m distance, 3 mm radius at 2.5-3.5 keV"
+#+end_src
+
+#+RESULTS:
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | height            | of |      1 | since               | no | raster | height | information | supplied. | Add | `height` | or | (`yMin`, | `yMax`) | as | aesthetics | for | a | different | values. |
+| INFO: | using | default | width             | of |      1 | since               | no | raster | width  | information | supplied. | Add | `width`  | or | (`xMin`, | `xMax`) | as | aesthetics | for | a | different | values. |
+| HPD   | along | x:      | 4.354             | as | angle: | 586.9768249098241 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+| HPD   | along | y:      | 4.116000000000001 | as | angle: | 554.8914342751674 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
+
+Yielding (10 m)
+[[~/phd/Figs/raytracing/xray_finger_10m_2mm_3keV.pdf]]
+and (14.2 m):
+[[~/phd/Figs/raytracing/xray_finger_14.2m_3mm_3keV.pdf]]
+
+
+*I still believe* it is a bit weird as to why the 10 m case is
+definitely too large. Comparing our result to
+[[~/org/Figs/statusAndProgress/rayTracing/raytracing_xray_finger_llnl_jaime_gridpix_size.pdf]]
+(from
+[[file:~/org/Doc/StatusAndProgress.org::#sec:raytracing:llnl_raytracing_results:xray_finger]])
+
+also looks a bit smaller than ours.
+
+But well, maybe there is still something wrong, but I think this will
+be for someone else to understand. :/
+
+In any case, comparing the 14.2 m simulation to our real data:
+[[~/phd/Figs/CAST_Alignment/xray_finger_centers_run_189.pdf]]
+shows a near perfect match! So all in all this is a success!
+
 
 ** DONE Can we finish our interactive ray tracer?                 :noexport:
 
