@@ -14139,6 +14139,10 @@ proc main(run: int, switchAxes: bool = false) =
   discard h5f.close()
  
   echo "Center position of the cluster is at: (x, y) = (", centerX, ", ", centerY, ")"
+  ## NOTE: Exchanging the axes for X and Y is equivalent to a 90° clockwise rotation, which is
+  ## the real rotation of the Septemboard detector at CAST seen from the telescope onto the
+  ## detector.
+  ## XXX: extend
   let x = if switchAxes: "centerY" else: "centerX"
   let y = if switchAxes: "centerX" else: "centerY"
   let cX = if switchAxes: centerY else: centerX
@@ -35463,6 +35467,10 @@ mcmc_limit_calculation sanity --limitKind lkMCMC
 
 
 *** Determine correct rotation for candidates                    :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:candidates:septemboard_layout_transformations
+:EXPORT_FILE_NAME: required_septemboard_layout_transformations
+:END:
 
 We know we need to apply a rotation to the candidates, because the
 Septemboard detector is rotated in relation to the native 'readout'
@@ -35474,9 +35482,10 @@ outside the lead housing.
 
 Reminder about the Septemboard layout: (why did I not just do it in
 inkscape?)
-#+begin_src
+<<septemboard_layout_view>>
+#+begin_src sh
 Coordinate system for chips *5* and *6*, each!
-    256         0
+     0         256
 256  +----------> x
      |
      |
@@ -35486,30 +35495,30 @@ Coordinate system for chips *5* and *6*, each!
                  |   6   |   5   |         
                  |       |       |
              +---+---+---+---+---+---+  
-             |       |       |       |  
+             |       |       |       |         
              |   2   |   3   |   4   |  
-             |       |       |       |
-             +-------+-------+-------+  
-             =========================
-  
-256  y           +-------+-------+      
-     ^           |       |       |     
-     |           |   0   |   1   |
-     |           |       |       |
-     |           +-------+-------+
-     |           =================
-     |  
-     |  
-     |
+             |       |       |       |         
+             +-------+-------+-------+         
+             =========================         
+                                               
+256  y           +-------+-------+             
+     ^           |       |       |             
+     |           |   0   |   1   |             
+     |           |       |       |             
+     |           +-------+-------+             
+     |           =================             
+     |                                         
+     |                                         
+     |                                         
    0 +---------------------> x   
-     0                    256
+    256                    0 
 
   ^--- Coordinates of chips 0, 1, 2, 3, 4 *each*
 #+end_src
 Note that chips 5 and 6 are "inverted" in their ordering /
 numbering. Also note the inversion of the coordinate systems for chips
 5 and 6 due to being installed upside down compared to the other
-chips.
+chips. 
 
 Keep this in mind for the explanation below:
 
@@ -35527,7 +35536,8 @@ In this way the schematic above should be rotated by $\SI{90}{°}$
 /clockwise/.
 
 Kind of like this:
-#+begin_src
+<<cast_septemboard_view>>
+#+begin_src sh
                                          Legend:
                ‖+-------+                  ‖      
                ‖|       |                  ‖
@@ -35545,16 +35555,233 @@ Kind of like this:
 #+end_src
 That should be the view from the front.
 
+This implies that when we look at the data from a single GridPix, we
+actually see the data in the plot matching [[septemboard_layout_view]]
+above, but we _want_ to see it like this rotated view
+[[cast_septemboard_view]] here. This means we need to remap the
+coordinates, so that we view the y axis as our x axis and vice versa.
+
+To be more specific about the kind of transformation required to
+get the desired coordinates and some details
+that make this more tricky than it may appear (depending on how your
+brain works :) ), see the next section.
+
+**** Some words on viewing direction and required transformations
+
+One extremely confusing aspect about data taking with these detectors
+(and presenting results) is that different people have different
+notions on how to interpret the data.
+
+For some people the detector is essentially a camera. We look at the
+world from the detector's point of view and thus 'see' the telescope
+and Sun in front of us.
+
+For other people the detector is an object that we look at from
+outside, acting more like a photo plate or a fog chamber that you look
+at. You thus see the image being built up from the view of the Sun or
+the telescope.
+
+To me, the latter interpretation makes more sense. I 'wait' the time
+of the data taking and then I 'look at' the detector 'from above' and
+see what was recorded on each chip.
+
+However, Christoph used the former approach in his analysis and
+initially I copied that over. In our code mapping pixel numbers as
+returned from TOS into physical positions we 'invert' the x pixel
+position by subtracting from the total number of pixels. See
+~/TimepixAnalysis/Analysis/ingrid/private/geometry.nim~ in
+~applyPitchConversion~:
+#+begin_src nim
+func applyPitchConversion*[T: (float | SomeInteger)](x, y: T, npix: int): (float, float) =
+  ## template which returns the converted positions on a Timepix
+  ## pixel position --> absolute position from pixel center in mm.
+  ## Note that the x axis is 'inverted'!
+  ((float(npix) - float(x) + 0.5) * PITCH, (float(y) + 0.5) * PITCH)
+#+end_src
+
+#+begin_src sh
+     Coordinate system of a single Timepix
+                                          
+       y                                  
+   256 ^                                   Legend:                     
+       |                                   ======= <- chip bonding area
+       |                                  
+       |    +-------+                     
+       |    |       |                     
+       |    |       |                     
+       |    |       |                     
+       |    +-------+                     
+       |    =========                     
+       |                                  
+     0 +-----------------> x              
+       0                256
+
+
+becomes:
+
+                                          
+       y                                  
+   256 ^                                   Legend:                     
+       |                                   ======= <- chip bonding area
+       |                                  
+       |    +-------+                     
+       |    |       |                     
+       |    |       |                     
+       |    |       |                     
+       |    +-------+                     
+       |    =========                     
+       |                                  
+     0 +-----------------> x              
+      256                0
+
+#+end_src
+
+which is equivalent to 'looking at' (original coordinate system) the
+detector from above or 'looking through' the detector from behind
+(transformed coordinate system).
+
+Because all our physical coordinates (~centerX/Y~ in particular) take
+place in this 'inverted' coordinate system we need to take that into
+account when comparing to our raytracing results and present our final
+data.
+
+In particular our raytracer is a very obvious example for 'my'
+viewpoint, because it allows us to see the accumulation of signal on
+an ~ImageSensor~, see
+fig. [[fig:limit:septemboard_coordinates:traxer_view_at]].
+
+#+CAPTION: Screenshot of TrAXer looking at an ~ImageSensor~ from on top of the magnet bore.
+#+CAPTION: The axion image is built up on the sensor and we view it "from above".
+#+NAME: fig:limit:septemboard_coordinates:traxer_view_at
+[[~/phd/Figs/raytracing/traxer_cast_view_top_magnet_to_imagesensor.png]]
+
+Let's be more specific now about what these things mean precisely and
+how to get to the correct coordinate system we care about (looking
+'at' the detector), taking into account the 90° rotation of the
+septemboard at CAST. Our target is the 'looking at' coordinates that
+fall out of TrAXer as seen in the screenshot. Let's use the term
+'world coordinates' for this view.
+
+- Description of our data reconstruction ::
+  As mentioned, our data reconstruction performs an inversion of the
+  data seen 'from above' to 'through detector from behind'.
+
+  This means we perform a reflection along the $y$ axis and perform a
+  translation of 256 pixels, $\vec{v}_x$
+
+  A coordinate $(x, y)$ in the transformed coordinates becomes $(x',
+  y')$, given by
+
+  \begin{align*}
+  \vektor{x' \\ y'} &= \mathbf{T}_y · \vektor{x \\ y} + \vec{v}_x \\
+                    &= \mtrix{ -1 & 0 \\
+                                0 & 1 } · \vektor{x \\ y} + \vektor{256 \\ 0} \\
+                    &= \vektor{-x \\ y} + \vektor{256 \\ 0} \\
+                    &= \vektor{256 - x \\ y} \\
+                    &= \vektor{\tilde{x} \\ y}
+  \end{align*}
+  where we introduced $\tilde{x}$ for our new inverted x-coordinates, given in millimeter.
+
+  (Note: we could make the translation more robust by using a 3D
+  matrix (for this case) in homogeneous coordinates of the form
+  
+  \[
+  \mathbf{V} = \mtrix{ 1 & 0 & 256 \\
+                       0 & 1 &   0 \\
+                       0 & 0 &   1 }
+  \]
+  where the last column performs a translation for us. Our input
+  vectors would need to be extended by a third row, which we would set
+  to 1. After applying the transformation we would then drop the 3rd
+  dimension again. The result is essentially the same as above, but
+  can be represented as a matrix product. This is commonly used in
+  computer graphics { with there adding a 4th dimension to 3D vectors
+  } )
+
+- Description of the native data transformation ::
+  To convert the raw GridPix data (without the above inversion) into
+  our target coordinates (in world coordinates) we need to account for
+  the rotation of the GridPix detector. As described in the previous
+  section, the detector is rotated by 90° clockwise (in world coordinates).
+  
+  Rotations in mathematics commonly describe positive rotations as
+  anti clockwise. Thus, our detector is rotated by
+  $\SI{-90}{°}$. Applying this rotation to our data yields the image
+  as seen from world coordinates, mapped to the TrAXer simulation:
+
+  \begin{align*}
+  \vektor{x' \\ y'} &= R_{\SI{-90}{°}} · \vektor{x \\ y} \\
+                    &= \mtrix{ \cos θ & -\sin θ \\
+                               \sin θ &  \cos θ } ·
+                               \vektor{x \\ y} \\
+                    &= \mtrix{  0 & 1 \\
+                                           -1 & 0 } ·
+                                           \vektor{x \\ y} \\
+                    &= \vektor{y \\ -x}
+  \end{align*}
+  where we used $θ = -π/2$.
+  
+- Comparing our current description to the target ::
+  Our current reconstructed data is of the form $(-x, y)$ while our
+  target is $(y, -x)$. This means to get to the desired outcome all we
+  have to do is replace the x and y coordinates. In other words
+  perform a reflection along the line $x = y$ in our data.
+
+  \begin{align*}
+  \vektor{x' \\ y'} &= \mathbf{S}_{x = y} · \vektor{256 - x \\ y} \\
+                    &= \mtrix{ 0 & 1 \\
+                               1 & 0 } · \vektor{256 - x \\ y} \\
+                    &= \vektor{y \\ 256 - x}
+  \end{align*}
+
+  which is exactly what we want outside of the translation by
+  $\num{256}$, which is not strictly speaking there in our actual
+  data, due to the data being converted into millimeter. But this just
+  means /the numbers are different, but the features are in the right
+  place/. That latter part is important. In our coordinated (inverted)
+  data, the final transformation may look like $(y, \tilde{x})$ --
+  clearly different from our target $(y, -x)$ -- the underlying
+  transformation is anyway of the form $(y, -x)$, barring a
+  translation. That translation is essentially just dropped due to the
+  millimeter conversion, but the inherent effect on the final geometry
+  is anyway retained (and encoded in the fact that all x coordinates
+  are reversed).
+
+This means to bring our center cluster data to the same coordinates
+that we get from TrAXer (the world coordinates, 'looking at' the
+detector), all we need to do is to transpose our coordinates; replace
+x by y and vice versa.
+
 From here we can cross check with the X-ray finger run, run 189, see
 fig. sref:fig:cast:xray_finger_centers generated in
-sec. [[#sec:cast:alignment:xray_finger_plots]].
+sec. [[#sec:cast:alignment:xray_finger_plots]], that this indeed makes
+sense. To quickly reproduce that figure here and compare it to our
+TrAXer raytracing for an X-ray finger run, see
+fig. sref:fig:limit:candidates:layout_transformations.
 
-In the plotting code in that section we implement the rotation by
-exchanging the X by the Y center data. This should be correct. A
-transposition like that should yield a clock wise rotation.
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "X-ray finger run") (label "fig:limit:candidates:xray_finger_transformed")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "~/phd/Figs/CAST_Alignment/xray_finger_centers_run_189.pdf"))
+        (subfigure (linewidth 0.5) (caption "MLP prediction") (label "fig:limit:candidates:traxer_xray_finger")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "~/phd/Figs/raytracing/xray_finger_14.2m_3mm_3keV.pdf"))
+        (caption
+         (subref "fig:limit:candidates:xray_finger_transformed")
+         " X-ray finger run 189, which is transformed by $x ⇔ y$ transformation."
+         (subref "fig:limit:candidates:traxer_xray_finger")
+         " TrAXer X-ray finger simulation already in world coordinates.
+          As we can see comparing the two, the shape is the same.")
+        (label "fig:limit:candidates:layout_transformations"))
+#+end_src
 
-A lot of talk for very little new information, but some clarification
-I hope.
+In the plotting code in that section we implement the required
+transformation by exchanging the X by the Y center data. This is
+correct, /but only/ because the conversion from pixel coordinates to
+milli meters when computing the cluster centers already includes the
+inversion of the x axis. A transposition like that should yield a
+clock wise rotation.
 
 This means for our limit calculation: perform the same X ⇔ Y
 replacement to get the correct rotation. Furthermore, let's look at an
@@ -35562,10 +35789,13 @@ X-ray finger run using ~TrAXer~ (read appendix
 [[#sec:appendix:raytracing]] first) to reproduce the X-ray finger run of
 run 189.
 
-
-
-
-
+#+begin_quote
+Note: the TrAXer raytracing binary output files that store the image
+sensor data are again inverted in y compared to what we see / what we
+want. In our detector the bottom left is $(0, 0)$. But the data buffer
+associated with an ~ImageSensor~ in TrAXer starts with $(0, 0)$ in the
+top left. Hence you see ~--invertY~ in all calls to ~plotBinary~!
+#+end_quote
 
 ** Observed limits
 
