@@ -27183,6 +27183,9 @@ introduce.
 
 
 **** Calculate random coincidence rates and real efficiencies of veto setups :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:background:calculate_random_coincidences
+:END:
 
 The following code snippet runs the
 ~TimepixAnalysis/Analysis/ingrid/likelihood.nim~ program with
@@ -27241,9 +27244,7 @@ type
 proc runCommand(r, w: cint) =
   let o = open(w, fmWrite)  
   for cmdBuf in getLenPfx[int](r.open):
-    let cmdObjs = fromFlat[Command](fromString(cmdBuf))
-    doAssert cmdObjs.len == 1, "Got more than one command: " & $cmdObjs
-    let cmdObj = cmdObjs[0]
+    let cmdObj = flatTo[Command](fromString(cmdBuf))
     let cmdStr = cmdObj.cmd
     let (res, err) = shellVerbose:
       one:
@@ -27283,7 +27284,7 @@ proc main(septem = false,
   if not dryRun:
     # 1. fill the channel completely (so workers simply work until channel empty, then stop
     let t0 = epochTime()
-    let cmdBufs = cmds.mapIt(copyFlat(it).toString())
+    let cmdBufs = cmds.mapIt(asFlat(it).toString())
     var pp = initProcPool(runCommand, framesLenPfx, nJobs)
     var readRes = proc(s: MSlice) = echo $s
     pp.evalLenPfx cmdBufs, readRes
