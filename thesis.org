@@ -129,7 +129,7 @@ latexmk -pvc -pdf -view=none -shell-escape -output-directory=texout -pdflatex=lu
 it watches the file and automatically recompiles if the file changed
 on disc.
 
-* Start me                                                         :noexport:
+* Emacs and Org settings                                           :noexport:
 :PROPERTIES:
 :CUSTOM_ID: sec:latex_book_class
 :END:
@@ -137,7 +137,37 @@ on disc.
 #+begin_src emacs-lisp
 (add-to-list 'org-latex-classes
              '("book-noparts"
-               "\\documentclass{book}"
+               "\\documentclass{scrbook}"
+               ("\\chapter{%s}" . "\\chapter*{%s}")
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+(setq bibtex-completion-bibliography "~/phd/references.bib")
+
+(add-to-list 'org-latex-packages-alist '("outputdir=texout" "minted"))
+
+(defun my-custom-org-exclude-tags (backend)
+  "Set tags to exclude depending on BACKEND."
+  (cond ((eq backend 'latex)
+         (setq-local org-export-exclude-tags '("noexport" "extended" "html")))
+        ((eq backend 'html)
+         (setq-local org-export-exclude-tags '("noexport" "extended" "latex")))))
+
+(add-hook 'org-export-before-processing-hook 'my-custom-org-exclude-tags)
+#+end_src
+
+#+RESULTS:
+| my-custom-org-exclude-tags | my/org-process-subfigure-dsl | my/org-html-export-figs | org-blackfriday--reset-org-blackfriday--code-block-num-backticks |
+
+
+
+#+begin_src emacs-lisp
+(add-to-list 'org-latex-classes
+             '("book-noparts"
+               "\\documentclass{scrbook}"
                ("\\chapter{%s}" . "\\chapter*{%s}")
                ("\\section{%s}" . "\\section*{%s}")
                ("\\subsection{%s}" . "\\subsection*{%s}")
@@ -147,7 +177,7 @@ on disc.
 #+end_src
 
 #+RESULTS:
-| book-noparts | \documentclass{book}          | (\chapter{%s} . \chapter*{%s}) | (\section{%s} . \section*{%s})       | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s}) |
+| book-noparts | \documentclass{scrbook}       | (\chapter{%s} . \chapter*{%s}) | (\section{%s} . \section*{%s})       | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s}) |
 | article      | \documentclass[11pt]{article} | (\section{%s} . \section*{%s}) | (\subsection{%s} . \subsection*{%s}) | (\subsubsection{%s} . \subsubsection*{%s}) | (\paragraph{%s} . \paragraph*{%s})         | (\subparagraph{%s} . \subparagraph*{%s})   |                                          |
 | report       | \documentclass[11pt]{report}  | (\part{%s} . \part*{%s})       | (\chapter{%s} . \chapter*{%s})       | (\section{%s} . \section*{%s})             | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) |                                          |
 | book         | \documentclass[11pt]{book}    | (\part{%s} . \part*{%s})       | (\chapter{%s} . \chapter*{%s})       | (\section{%s} . \section*{%s})             | (\subsection{%s} . \subsection*{%s})       | (\subsubsection{%s} . \subsubsection*{%s}) |                                          |
