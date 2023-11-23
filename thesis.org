@@ -8974,6 +8974,11 @@ additional detector features.
 
 *** Calculation of full detection efficiency   :noexport:
 
+*Note*: We also have
+[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/septemboardDetectionEff/septemboardDetectionEff.nim]]
+which includes the LLNL effective area (designed for the limit
+calculation) now!
+
 #+begin_src nim :tangle /home/basti/phd/code/detector_efficiency.nim
 import std / strutils
 import xrayAttenuation, ggplotnim
@@ -32665,6 +32670,9 @@ calculation and the CAST data taking with the Septemboard detector.
   *only* the candidates that actually changes.
 
 *** Magnet bore and solar tracking time - $A$, $t$
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:ingredients:magnet_tracking
+:END:
 
 Starting with the simplest inputs to the signal, the magnet bore area
 and the solar tracking time. The CAST magnet has a bore diameter of
@@ -32774,6 +32782,9 @@ Distance Sun Earth:
 -> ~horizonsAPI~ plus code in ~journal.org~
 
 *** Conversion probability - $P_{aγ}(g_{aγ})$
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:ingredients:conversion_probability
+:END:
 
 The conversion probability of the arriving axions is simply a constant
 factor, depending on $g_{aγ}$, see section
@@ -33043,7 +33054,21 @@ pieces somewhere!
 # The old plot we had here, from the sanity checks
 # ~/org/Figs/statusAndProgress/limitSanityChecks/sanity_detection_eff.pdf
 
-***** Generate plot of detection efficiency                    :noexport:
+***** Generate plot of detection efficiency [/]                :extended:
+
+*NOTE*: We also have
+[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/septemboardDetectionEff/septemboardDetectionEff.nim]]
+nowadays for the limit calculation (to produce the CSV file including
+LLNL effective area).
+
+To produce the CSV file
+#+begin_src sh
+./septemboardDetectionEff \
+    --outpath ~/phd/resources/ \
+    --llnlEff ~/org/resources/llnl_cast_nature_jaime_data/2016_DEC_Final_CAST_XRT/EffectiveArea.txt \
+    --sep ' '
+#+end_src
+note the usage of the "correct" effective area file. 
 
 - [ ] Well, do we need the ingredients separately? Not really right?
 
@@ -33058,7 +33083,9 @@ So just read the extended LLNL file.
   -> Done.
 - [ ] NEED TO update numericalnim for interpolation!
 - [ ] NEED TO update seqmath for linspace fixes
-  
+
+
+- [X] *USE 2016 FINAL EFFECTIVE AREA*
 #+begin_src nim :tangle /home/basti/phd/code/combined_detection_efficiency.nim
 import std / strutils
 import xrayAttenuation, ggplotnim
