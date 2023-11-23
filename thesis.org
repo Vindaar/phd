@@ -33821,7 +33821,69 @@ expected number of counts.
 #+ATTR_LATEX: :width 0.8\textwidth
 [[~/org/Figs/statusAndProgress/axionImages/axion_image_2018_1487_93_0.989AU_with_window.pdf]]
 
+
+*** Computing the total signal
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:ingredients:total_signal
+:END:
+
+As mentioned in sec. [[#sec:limit:method_computing_L]] in principle we
+need to integrate the signal function $s(E, x, y)$ over the entire
+chip area and all energies. However, we do not actually need to
+perform that integration, because we know the efficiency of our
+telescope and detector setup as well as the amount of flux entering
+the telescope.
+
+Therefore we compute $s_{\text{tot}}$ via
+
+\[
+s_{\text{tot}} = ∫_0^{E_{\text{max}}} f(g, E) · A · t · P_{a ↦ γ}(g_{aγ}) · ε(E) \, \dd E,
+\]
+
+making use of the fact that the position dependent function $r(x, y)$
+integrates to $\num{1}$  over the entire axion image. This allows us
+to precompute the integral and only rescale the result for the current
+coupling constant $g$ via
+
+\[
+s_{\text{tot}}(g) = s_{\text{tot}}(g_{\text{ref}}) · \frac{g²}{g²_{\text{ref}}},
+\]
+
+where $g_{\text{ref}}$ is the reference coupling constant for which
+the integral is computed initially. Similar rescaling needs to be done
+for the axion-photon coupling $g_{aγ}$, in case of computing a limit
+for the axion-photon coupling.
+
+**** TODOs for this section [0/1]                               :noexport:
+
+- [ ] Shortly discuss what we do
+  1. raytracing ignored: sums to total 1
+  2. take solar axion flux, integrate numerically
+  3. ?
+
+**** Code for the calculation of the total                      :extended:
+
+This is the implementation of the ~totalSignal~ in code. We simply
+circumvent the integration when calculating limits by precomputing the
+integral in the initialization (into ~integralBase~), taking into
+account the detection efficiency. From there it is just a
+multiplication of magnet bore, tracking time and conversion probability.
+#+begin_src nim
+proc totalSignal(ctx: Context): UnitLess =
+  ## Computes the total signal expected in the detector, by integrating the
+  ## axion flux arriving over the total magnet bore, total tracking time.
+  ##
+  ## The `integralBase` is the integral over the axion flux multiplied by the detection
+  ## efficiency (window, gas and telescope).
+  const areaBore = π * (2.15 * 2.15).cm²
+  let integral = ctx.integralBase.rescale(ctx)
+  result = integral.cm⁻²•s⁻¹ * areaBore * ctx.totalTrackingTime.to(s) * conversionProbability(ctx)
+#+end_src
+
 *** Background [0/6]
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:ingredients:background
+:END:
 
 The background must be evaluated at the position and energy of each
 cluster candidate. As the background is not constant in energy or
@@ -35994,7 +36056,7 @@ So if the main peak was exactly on the strongback, we'd barely see anything!
 For performance reasons we cannot integrate out the nuisance
 parameters using the most sophisticated algorithms. Maybe in the end
 we could assign a systematic by computing a few "accurate"
-integrations (e.g. integrating out $θ_x$ and $θ_y$) with adaptive
+integrations (e.g. integrating out $ϑ_x$ and $ϑ_y$) with adaptive
 gauss and then with our chosen method and compare the result on the
 limit? Could just be a "total" uncertainty on the limit w/o changing
 any parameters. 
@@ -37862,7 +37924,7 @@ get the desired coordinates and some details
 that make this more tricky than it may appear (depending on how your
 brain works :) ), see the next section.
 
-**** Some words on viewing direction and required transformations
+**** Viewing direction and required transformations
 
 One extremely confusing aspect about data taking with these detectors
 (and presenting results) is that different people have different
@@ -38093,7 +38155,12 @@ associated with an ~ImageSensor~ in TrAXer starts with $(0, 0)$ in the
 top left. Hence you see ~--invertY~ in all calls to ~plotBinary~!
 #+end_quote
 
+
+
 ** Observed limits
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:observed_limits
+:END:
 
 With the data fully unblinded and the solar tracking candidates known,
 we can now compute the observed limits.
@@ -43834,8 +43901,9 @@ sec. [[#sec:limit:ingredients:solar_axion_flux]].
 Related to explicit axion image 
 
 - [ ] *SHOW PLOTS CHARACTERIZING USED SOLAR MODEL*
-- [ ] *REFERENCE SOLAR MODEL*
+- [X] *REFERENCE SOLAR MODEL*
 
+- [ ] *INVERT LLNL IMAGE PLOT*
 
 *** Further thoughts on the (missing?) bow tie                   :extended:
 
