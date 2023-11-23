@@ -28272,11 +28272,11 @@ calculation.
 #+CAPTION: fake data correspond to the random coincidence rate.
 #+NAME: tab:background:veto_random_coinc_rate
 #+ATTR_LATEX: :booktabs t
-| Septem veto | Line veto | Fake [%]      | Real [%]      |
+| Septem veto | Line veto | Real [%]      | Fake [%]      |
 |-------------+-----------+---------------+---------------|
-| y           | n         | $\num{78.41}$ | $\num{23.15}$ |
-| n           | y         | $\num{86.02}$ | $\num{22.03}$ |
-| y           | y         | $\num{73.25}$ | $\num{13.68}$ |
+| y           | n         | $\num{14.12}$ | $\num{83.11}$ |
+| n           | y         | $\num{25.32}$ | $\num{85.39}$ |
+| y           | y         | $\num{9.17}$  | $\num{78.63}$ |
 
 **** TODOs for this section [/]                                 :noexport:
 
@@ -28316,6 +28316,8 @@ introduce.
 
 - [ ] *NAME THE ABSOLUTE EFFICIENCIES OF EACH SETUP*
 
+- [X] *REWRITE FOR UPDATED VALUES*
+
 - [ ] *IMPORTANT:*
   The random coincidence we calculate here changes not only the dead
   time for the tracking time, but also for the background rate! As
@@ -28326,6 +28328,15 @@ introduce.
   one understands the associated efficiencies. So need to explain
   that. This part should become :noexport:, but a shortened simpler
   version of this should remain.
+
+Old table before septem veto fixes:
+#+begin_quote
+| Septem veto | Line veto | Fake [%]      | Real [%]      |
+|-------------+-----------+---------------+---------------|
+| y           | n         | $\num{78.41}$ | $\num{23.15}$ |
+| n           | y         | $\num{86.02}$ | $\num{22.03}$ |
+| y           | y         | $\num{73.25}$ | $\num{13.68}$ |
+#+end_quote
 
 
 **** Calculate random coincidence rates and real efficiencies of veto setups :extended:
@@ -28366,7 +28377,6 @@ ECC_LINE_VETO_CUT=$# \
     --septemLineVetoEfficiencyFile $# \
     --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 $#
 """
-const nJobs = 4
 proc toName(rf: RealOrFake): string =
   if rf == Real: "" else: "fake_events"
 proc toName(vetoes: set[Veto], rf: RealOrFake): string = (toSeq(vetoes).mapIt($it).join("_") & "_" & toName(rf)).strip(chars = {'_'})
@@ -28405,7 +28415,8 @@ proc main(septem = false,
           septemLine = false,
           eccs = false,
           dryRun = false,
-          outpath = "/tmp/") =
+          outpath = "/tmp/",
+          jobs = 6) =
   var vetoSetups: seq[set[Veto]]
   if septem:     vetoSetups.add {Septem}
   if line:       vetoSetups.add {Line}
@@ -28431,7 +28442,7 @@ proc main(septem = false,
     # 1. fill the channel completely (so workers simply work until channel empty, then stop
     let t0 = epochTime()
     let cmdBufs = cmds.mapIt(asFlat(it).toString())
-    var pp = initProcPool(runCommand, framesLenPfx, nJobs)
+    var pp = initProcPool(runCommand, framesLenPfx, jobs)
     var readRes = proc(s: MSlice) = echo $s
     pp.evalLenPfx cmdBufs, readRes
     echo "Running all commands took: ", epochTime() - t0, " s"
@@ -28445,21 +28456,29 @@ when isMainModule:
 | Commands | to  | run:     |       |                       |   |
 | Running  | all | commands | took: | 0.0008711814880371094 | s |
 
-To run it:
+To run it: 
 #+begin_src sh :dir ~/phd/
 code/analyze_random_coinc_and_efficiency_vetoes  \
     --septem --line --septemLine --eccs \
     --outpath ~/phd/resources/estimateRandomCoinc/ \
+    --jobs 16 \
     --dryRun
 #+end_src
 (remove the ~--dryRun~ to actually run it! This way it just prints the
 commands it would run)
+Note that it uses much less RAM than regular ~likelihood~. So we can
+get away with 16 jobs.
+
+<2023-11-20 Mon 11:29>: I'll rerun the code now with all
+eccentricities. I remove the eccentricity 1.0 values, because they
+were produced before we fixed the septem veto geometry stuff!
+-> Rerun finished.
 
 Now we need to parse the data and compute the results from the output
 text files.
 
 Let's calculate the fraction in all cases:
-#+begin_src nim :results drawer
+#+begin_src nim :results drawer :tangle code/analyze_random_coincidence_results.nim
 import strutils
 
 proc parseFile(fname: string): float =
@@ -28528,25 +28547,41 @@ for f in walkFiles(path / "septem_veto_before_after*.txt"):
   df.add toDf({"Type" : typ, "Septem" : hasSeptem(f), "Line" : hasLine(f), "Fake" : isFake(f), "ε_cut" : eccCut, "FractionPass" : frac})
 
 # Now write the table we want to use in the thesis for the efficiencies & random coinc
-# rate 
-echo df.spread("Fake", "FractionPass").drop(["ε_cut", "Type"]).toOrgTable()
-
+# rate
+import std / strformat  
+proc convert(x: float): string =
+  let s = &"{x * 100.0:.2f}"
+  result = r"$\num{" & s & "}$"
+  
+echo df.filter(f{`ε_cut` == 1.0})
+  .mutate(f{float -> string: "FractionPass" ~ convert(idx("FractionPass"))})
+  .drop("Type", "ε_cut")
+  .spread("Fake", "FractionPass").toOrgTable()
 # And finally create the plots and output CSV file
 if false:
   df.writeCsv("/home/basti/phd/resources/septem_line_random_coincidences_ecc_cut.csv", precision = 8)  
 
 block PlotFromCsv:
-  let df = readCsv("/home/basti/org/resources/septem_line_random_coincidences_ecc_cut.csv")
-    .filter(f{`Type` notin ["LinelvRegularNoHLCReal", "LinelvRegularNoHLCFake"]})
-    .mutate(f{string: "Type" ~ `Type`.replace("lvRegular", "").replace("NoHLC", "")})
-  ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
-    geom_point() +
-    ggtitle("Fraction of events passing line veto based on ε cutoff") +
-    #margin(right = 9) + 
-    ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
-           width = 600, height = 420, useTeX = true, standalone = true)
-            
-    #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf", width = 800, height = 480)
+  block OldPlot:  
+    let df = readCsv("/home/basti/org/resources/septem_line_random_coincidences_ecc_cut.csv")
+      .filter(f{`Type` notin ["LinelvRegularNoHLCReal", "LinelvRegularNoHLCFake"]})
+      .mutate(f{string: "Type" ~ `Type`.replace("lvRegular", "").replace("NoHLC", "")})
+    ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
+      geom_point() +
+      ggtitle("Fraction of events passing line veto based on ε cutoff") +
+      #margin(right = 9) + 
+      ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
+             width = 600, height = 420, useTeX = true, standalone = true)
+      #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf", width = 800, height = 480)
+  block NewPlot:
+    ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
+      geom_point() +
+      ggtitle("Fraction of events passing line veto based on ε cutoff") +
+      #margin(right = 9) +
+      ggsave("/tmp/test.pdf", 
+      #ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
+             width = 600, height = 420, useTeX = true, standalone = true)
+    
   
 ## XXX: we probably don't need the following plot for the real data, as the eccentricity
 ## cut does not cause anything to get worse at lower values. Real improvement better than
