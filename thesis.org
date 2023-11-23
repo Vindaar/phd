@@ -31853,22 +31853,24 @@ energy bins and draw a number from each Poisson distribution. This
 is the number of candidates in that bin for the toy. Given that we
 assumed a constant background over the chip area, we finally need to
 draw the $(x_i, y_i)$ positions for each toy candidate from a
-uniform distribution.
+uniform distribution. [fn:if_pos_dep]
 
 These sets of toy candidates can be used to compute an "expected
 limit". The term expected limit is usually understood to mean the
-median of sets of representative toy candidates. If $L_{t_i}$ is
-the limit of the toy candidate set $t_i$, the expected limit
-$\langle L \rangle$ is
-defined as
+median of many limits computed based on representative toy candidate
+sets. If $L_{t_i}$ is the limit of the toy candidate set $t_i$, the
+expected limit $\langle L \rangle$ is defined as
 
 \[
 \langle L \rangle = \mathrm{median}( \{ L_{t_i} \} )
 \]
 
-If the number of toy candidate sets is large enough the expected
+If the number of toy candidate sets is large enough, the expected
 limit should prove accurate. The real limit will then be below or
 above with $\SI{50}{\%}$ chance each.
+
+[fn:if_pos_dep] If one considers a position independent likelihood
+function, there is no need to sample positions of course.
 
 ** Limit method - extending $\mathcal{L}$ for systematics
 :PROPERTIES:
@@ -31880,8 +31882,8 @@ inputs for the signal and background hypotheses. In practice neither
 of these is known perfectly though. Each input typically has
 associated a small systematic uncertainty (e.g. the width of the
 detector window is only known up to N nanometers, the pressure in
-the chamber only up to M milli bar, magnet length only up to A
-centimeter etc.). These all affect the "real" numbers one should
+the chamber only up to M millibar, magnet length only up to C
+centimeters etc.). These all affect the "real" numbers one should
 actually calculate with. So how does one treat these uncertainties?
 
 The basic starting point is realizing that the values we use are our
@@ -31889,65 +31891,48 @@ The basic starting point is realizing that the values we use are our
 approximation that the real value will likely be within some
 standard deviation around that best guess, following a normal
 distribution. Further, it is a good idea to identify all systematic
-uncertainties and classify them by which aspect of $s_i$ or $b_i$
-they affect (amount of signal or background or the position { in
-some other type of likelihood function possibly other } ). Another
+uncertainties and classify them by which aspect of $s_i$, $b_i$ or
+$(x_i, y_i)$ they affect (amount of signal, background or the
+position [fn:other_likelihood] ). Another
 reasonable assumption is to combine different uncertainties of the
-same type by the square root of their squared sum, i.e. computing
-the euclidean radius N dimensions (for N uncertainties of the same
-type).
+same type by
 
-For example assuming we had these systematics (expressed as
-relative numbers from the best guess):
-- signal uncertainties:
-  - magnet length: \SI{0.2}{\%}
-  - magnet bore diameter: \SI{2.3}{\%}
-  - window thickness: \SI{0.6}{\%}
-- position uncertainty (of where the axion image is projected):
-  - detector alignment: \SI{5}{\%}
-- background uncertainty:
-  - A: \SI{0.5}{\%} (whatever it may be, all real ones of mine are
-    very specific)
+\[
+Δx = \sqrt{ \sum_{i=1}^N Δx²_i },
+\]
 
-From here we compute 3 combined systematics:
-- $σ_s = \sqrt{ 0.2² + 2.3² + 0.6²} = \SI{2.38}{\%}$
-- $σ_p = \SI{5}{\%}$
-- $σ_b = \SI{0.5}{\%}$
+i.e. computing the euclidean radius in N dimensions, for N
+uncertainties of the same type.
 
-The previous explanation and assumptions already tells us everything
-about how to encode these uncertainties into the limit
-calculation. For a value corresponding to our "best guess" we want
-to recover the likelihood function $\mathcal{L}$ from before. The further we
-get away from our "best guess" the more the likelihood function
-should be "penalized", i.e. the actual likelihood of that parameter
-given our data should be *lower*. We will see in a minute what is
-meant by "being at the 'best guess'" or "away from it".
-
-We encode this by multiplying the initial likelihood $\mathcal{L}$ with
-additional normal distributions, one for each uncertainty (4 in
-total in our case, signal, background, and two position
-uncertainties). Each adds an additional parameter, a "nuisance parameter".
+The above explanation can be followed to encode these uncertainties
+into the limit calculation. For a value corresponding to our "best
+guess" we want to recover the likelihood function $\mathcal{L}$ from
+before. The further we get away from our "best guess" the more the
+likelihood function should be "penalized", meaning the actual
+likelihood of that parameter given our data should be *lower*. The
+initial likelihood $\mathcal{L}$ will be modified by multiplying with
+additional normal distributions, one for each uncertainty (4 in total
+in our case, signal, background, and two position uncertainties). Each
+adds an additional parameter, a 'nuisance parameter'.
 
 To illustrate the details, let's look at the case of adding a single
 nuisance parameter. In particular we'll look at the nuisance
 parameter for the signal as it requires more care.
 
-The idea is to express our uncertainty of a parameter - in this case
-the signal - by introducing an additional parameter $s_i'$. In
+The idea is to express our uncertainty of a parameter -- in this case
+the signal -- by introducing an additional parameter $s_i'$. In
 contrast to $s_i$ it describes a possible _other_ value of $s_i$ due
 to our systematic uncertainty. For simplicity we rewrite our
 likelihood $\mathcal{L}$ as $\mathcal{L}'(s_i, s_i', b_i)$:
 
 \[
-\mathcal{L}' = e^{-s'_\text{tot}} \prod_i (1 + \frac{s_i'}{b_i}) · \exp\left[-\frac{1}{2} \left(\frac{s_i' - s_i}{σ_s'}\right)² \right]
+\mathcal{L}' = e^{-s'_\text{tot}} \prod_i \left(1 + \frac{s_i'}{b_i}\right) · \exp\left[-\frac{1}{2} \left(\frac{s_i' - s_i}{σ_s'}\right)² \right]
 \]
 
 where $s_i'$ takes the place of the $s_i$. The added gaussian then
 provides a penalty for any deviation from $s_i$. The standard
 deviation of the gaussian $σ_s'$ is the actual systematic
-uncertainty on our parameter $s_i$ in units of $s_i$ (so not in
-percent as we showed examples further up, but as an effective number
-of counts { or whatever unit $s_i$ is expressed in } ).
+uncertainty on our parameter $s_i$ in units of $s_i$.
 
 This form of adding a secondary parameter $s_i'$ of the same units
 as $s_i$ is not the most practical, but maybe provides the best
@@ -31988,8 +31973,7 @@ likelihood $\mathcal{L}'$:
 
 where $s_i' = s_i (1 + ϑ_s)$ and similarly $s_{\text{tot}}' =
 s_{\text{tot}} ( 1 + ϑ_s )$ (the latter just follows because $1 +
-ϑ_s$ is a constant under the different channels $i$, see the
-appendix below).
+ϑ_s$ is a constant under the different channels $i$).
 
 The same approach is used to encode the background systematic
 uncertainty. The position uncertainty is generally handled the same,
@@ -32011,27 +31995,27 @@ parameters:
 \]
 
 where $s'_i$ is now the modification from above using $r'$ instead
-of $r$. Now we perform the same substitution as we do for $θ_b$ and
-$θ_s$  to arrive at:
+of $r$. Now we perform the same substitution as we do for $ϑ_b$ and
+$ϑ_s$  to arrive at:
 
 \[
 \mathcal{L}' = \exp[-s] \cdot \prod_i \left(1 + \frac{s'_i}{b_i}\right) \cdot
-  \exp\left[-\left(\frac{θ_x}{\sqrt{2}σ_x} \right)² \right] \cdot \exp\left[-\left(\frac{θ_y}{\sqrt{2}σ_y} \right)² \right]
+  \exp\left[-\left(\frac{ϑ_x}{\sqrt{2}σ_x} \right)² \right] \cdot \exp\left[-\left(\frac{ϑ_y}{\sqrt{2}σ_y} \right)² \right]
 \]
 
 The substitution for $r'$ means the following for the parameters:
 \[
-r' = r\left(x (1 + θ_x), y (1 + θ_y)\right)
+r' = r\left(x (1 + ϑ_x), y (1 + ϑ_y)\right)
 \]
-where essentially a deviation of $|θ| = 1$ means we move the spot
+where essentially a deviation of $|ϑ| = 1$ means we move the spot
 to the edge of the chip.
 
 Putting all these four nuisance parameters together we have
 
 #+NAME: eq:limit_method:likelihood_function_def
 \begin{align}
-\mathcal{L}' &= \left(\prod_i \frac{P_{\text{pois}}(n_i; s_i + b_i)}{P_{\text{pois}}(n_i; b_i)}\right) \cdot \mathcal{N}(θ_s, σ_s)
-\cdot \mathcal{N}(θ_b, σ_b) \cdot \mathcal{N}(θ_x, σ_x) \cdot \mathcal{N}(θ_y, σ_y) \\
+\mathcal{L}' &= \left(\prod_i \frac{P_{\text{pois}}(n_i; s_i + b_i)}{P_{\text{pois}}(n_i; b_i)}\right) \cdot \mathcal{N}(ϑ_s, σ_s)
+\cdot \mathcal{N}(ϑ_b, σ_b) \cdot \mathcal{N}(ϑ_x, σ_x) \cdot \mathcal{N}(ϑ_y, σ_y) \\
 \mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y) &= e^{-s'_\text{tot}} \prod_i \left(1 + \frac{s_i''}{b_i'} \right) ·
   \exp\left[-\frac{1}{2} \left(\frac{ϑ_s}{σ_s}\right)² 
     -\frac{1}{2} \left(\frac{ϑ_b}{σ_b}\right)² 
@@ -32045,58 +32029,60 @@ via $r'$.
 
 An example of the impact of the nuisance parameters on the likelihood
 space as well as on the parameters ($s, b, x, y$) is shown in
-fig. \ref{fig:limit:method_systematics:example}. First,
-fig. \ref{fig:limit:method_systematics:example_theta_0.6} shows how
-the axion image moves when $θ_{x,y}$ change, in this example $θ_{x,y}
-= 0.6$ moves the image center to the bottom left ($θ_{x,y} = 1$ would
+fig. sref:fig:limit:method_systematics:example. First,
+fig. sref:fig:limit:method_systematics:example_theta_0.6 shows how
+the axion image moves when $ϑ_{x,y}$ change, in this example $ϑ_{x,y}
+= 0.6$ moves the image center to the bottom left ($ϑ_{x,y} = 1$ would
 move the center into the corner). Note that the window strongback is
 not tied to the axion image, but remains
-fixed. Fig. \ref{fig:limit:method_systematics:example_sigma_0.05} and
-\ref{fig:limit:method_systematics:example_sigma_0.25} show the impact
+fixed. Fig. sref:fig:limit:method_systematics:example_sigma_0.05 and
+sref:fig:limit:method_systematics:example_sigma_0.25 show the impact
 of the nuisance parameters on the likelihood space. The larger the
-standard deviation $σ_{x,y}$ is, the more of the $θ_{x,y}$ space
-contributes meaningfully to $\mathcal{L}_M$. In the former example - a
-realistic uncertainty - only small regions around the center are
+standard deviation $σ_{x,y}$ is, the more of the $ϑ_{x,y}$ space
+contributes meaningfully to $\mathcal{L}_M$. In the former example -- a
+realistic uncertainty -- only small regions around the center are
 allowed to contribute. Regions further outside receive too large of a
 penalty. However, at large uncertainties significant regions of the
 parameter space play an important role. Given that each point on the
-figures \ref{fig:limit:method_systematics:example_sigma_0.05} and
-\ref{fig:limit:method_systematics:example_sigma_0.25} describe one
-axion image like \ref{fig:limit:method_systematics:example_theta_0.6},
+figures sref:fig:limit:method_systematics:example_sigma_0.05 and
+sref:fig:limit:method_systematics:example_sigma_0.25 describe one
+axion image like sref:fig:limit:method_systematics:example_theta_0.6,
 brighter regions imply positions where the axion image is moved to
 parts that provide a larger $s/b$ in the center portion of the axion
-image, while still only having a small enough penalty.
+image, while still only having a small enough penalty. For the
+realistic uncertainty, $σ = 0.05$, roughly the inner $-0.1 < ϑ < 0.1$
+space contributes. This corresponds to a range of $\SI{-0.7}{mm} < x <
+\SI{0.7}{mm}$ around the center in fig. sref:fig:limit:method_systematics:example_theta_0.6.
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.33\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/axion_image_limit_calc_theta_0_6.pdf}
-    \caption{Axion image at $θ_{x,y} = 0.6$}
-    \label{fig:limit:method_systematics:example_theta_0.6}
-  \end{subfigure}%
-  \begin{subfigure}{0.33\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/likelihood_sigma_0.05_manyθx_θy.pdf}
-    \caption{$σ_{x,y} = 0.05$}
-    \label{fig:limit:method_systematics:example_sigma_0.05}
-  \end{subfigure}%
-  \begin{subfigure}{0.33\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/likelihood_sigma_0.25_manyθx_θy.pdf}
-    \caption{$σ_{x,y} = 0.25$}
-    \label{fig:limit:method_systematics:example_sigma_0.25}
-  \end{subfigure}%
-  \label{fig:limit:method_systematics:example}
-  \caption{\subref{fig:limit:method_systematics:example_theta_0.6} Impact of the position nuisance parameter on the
-  axion image. A value of $θ_{x,y} = 0.6$ is shown, moving the center of the image to the bottom left corner.
-  \subref{fig:limit:method_systematics:example_sigma_0.05} shows the impact on the likelihood itself for varying
-  $θ_{x,y}$ values given a standard deviation of $σ_{x,y} = 0.05$. Small variations of the position still yield
-  contributions to $\mathcal{L}_M$.
-  \subref{fig:limit:method_systematics:example_sigma_0.25} the same for $σ_{x,y} = 0.25$. At this value large regions
-  of the $θ_{x,y}$ parameter space contribute to $\mathcal{L}_M$, generally regions of larger $s/b$.
-  }
-\end{figure}
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.33) (caption "Axion image at $ϑ_{x,y} = 0.6$") (label "fig:limit:method_systematics:example_theta_0.6")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/statusAndProgress/limitSanityChecks/axion_image_limit_calc_theta_0_6.pdf"))
+        (subfigure (linewidth 0.33) (caption "$σ_{x,y} = 0.05$") (label "fig:limit:method_systematics:example_sigma_0.05")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/statusAndProgress/limitSanityChecks/likelihood_sigma_0.05_manyθx_θy.pdf"))
+        (subfigure (linewidth 0.33) (caption "$σ_{x,y} = 0.25$") (label "fig:limit:method_systematics:example_sigma_0.25")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/statusAndProgress/limitSanityChecks/likelihood_sigma_0.25_manyθx_θy.pdf"))
+        (caption
+         (subref "fig:limit:method_systematics:example_theta_0.6")
+         ": Impact of the position nuisance parameter on the axion image.
+          A value of $ϑ_{x,y} = 0.6$ is shown, moving the center of the image to the bottom left corner. "
+         (subref "fig:limit:method_systematics:example_sigma_0.05")
+         " shows the impact on the likelihood itself for varying " ($ "ϑ_{x,y}")
+         " values given a standard deviation of " ($ "σ_{x,y} = 0.05")
+         ". Small variations of the position still yield contributions to "
+         ($ "\\mathcal{L}_M") ". "
+         (subref "fig:limit:method_systematics:example_sigma_0.25")
+         " the same for " ($ "σ_{x,y} = 0.25") ". At this value large regions
+           of the " ($ "ϑ_{x,y}") " parameter space contribute to "
+           ($ "\\mathcal{L}_M") " , generally regions of larger " ($ "s/b") ".")
+        (label "fig:limit:method_systematics:example"))
+#+end_src
+
+[fn:other_likelihood] For different likelihood functions other
+parameters may be affected.
 
 *** TODOs for this section [1/1] :noexport:
 
@@ -32106,6 +32092,42 @@ image, while still only having a small enough penalty.
   further down. Reasoning being that at this point we have not shown
   or talked about the axion image at all here. This being mostly
   theoretical after all.
+
+*** Example for systematics                                      :extended:
+
+- [ ] *THINK ABOUT IF THIS IN THESIS!*
+
+For example assuming we had these systematics (expressed as
+relative numbers from the best guess):
+- signal uncertainties:
+  - magnet length: $\SI{0.2}{\%}$
+  - magnet bore diameter: $\SI{2.3}{\%}$
+  - window thickness: $\SI{0.6}{\%}$
+- position uncertainty (of where the axion image is projected):
+  - detector alignment: $\SI{5}{\%}$
+- background uncertainty:
+  - A: $\SI{0.5}{\%}$ (whatever it may be, all real ones of mine are
+    very specific)
+
+From here we compute 3 combined systematics:
+- $σ_s = \sqrt{ 0.2² + 2.3² + 0.6²} = \SI{2.38}{\%}$
+- $σ_p = \SI{5}{\%}$
+- $σ_b = \SI{0.5}{\%}$
+
+*** $s'$ is equivalent to $s_i'$ ?                               :extended:
+
+\begin{align*}
+s &= Σ_i s_i \\
+s_i' &= s_i (1 + θ_s) \\
+s' &= Σ_i s_i' \\
+   &= Σ_i s_i (1 + θ_s) \\
+   &\text{as }(1 + θ_s)\text{ is constant} \\
+   &= (1 + θ_s) Σ_i s_i \\
+   &= (1 + θ_s) s \\
+s' &= s (1 + θ_s) \\
+\end{align*}
+so indeed, this is perfectly valid.
+  
 
 ** Limit method - evaluating $\mathcal{L}$ with nuisance parameters
 :PROPERTIES:
@@ -32123,14 +32145,14 @@ the 95-th percentile of the "integral volume", but this would lead
 to infinitely many values of $g$ that describe said contour.
 
 As a result to still define a sane limit value, the concept of the
-_likelihood][marginal likelihood]] function $\mathcal{L}'_M$ is introduced. The idea is to
+marginal likelihood function $\mathcal{L}'_M$ is introduced. The idea is to
 integrate out the nuisance parameters
 
 \[
-\mathcal{L}'_M(g) = \iiiint_{-∞}^∞ \mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y)\,\mathrm{d}ϑ_s\mathrm{d}ϑ_b\mathrm{d}ϑ_x\mathrm{d}ϑ_y
+\mathcal{L}'_M(g) = \iiiint_{-∞}^∞ \mathcal{L}'(g, ϑ_s, ϑ_b,ϑ_x,ϑ_y)\, \ddϑ_s \ddϑ_b \ddϑ_x \ddϑ_y
 \]
 
-Depending on the exact definition of $\mathcal{L}'$ in use these integrals
+Depending on the exact definition of $\mathcal{L}'$ in use, these integrals
 may be analytically computable. In many cases however they are not
 and numerical techniques to evaluate the integral must be utilized.
 
@@ -32151,11 +32173,11 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
   this area does not physically contribute to the integral.
 
   Using standard numerical integration routines (simpson, adaptive
-  Gauss-Kronecker etc.) are all too expensive to compute such a
+  Gauss-Kronrod etc.) are all too expensive to compute such a
   four-fold integration under the context of computing many limits for
   an expected limit. For this reason Monte Carlo approaches are used,
   in particular the Metropolis-Hastings (MH) Markov Chain Monte Carlo
-  (MCMC) is used. The basic idea of general Monte Carlo integration
+  (MCMC). The basic idea of general Monte Carlo integration
   routines is to evaluate the function at random points and computing
   the integral based on the function evaluation at these points (by
   scaling the evaluations correctly). Unless the function is very
@@ -32167,7 +32189,7 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
   function more often in those points where the contributions are
   large. The basic idea is the following:
 
-  - [ ] REWRITE THIS
+  - [ ] *REWRITE THIS!!!*
   
   Pick a random point in the integration space as a starting
   point $p_0$. Next, pick another random point $p_1$ within the vicinity of
@@ -32225,7 +32247,24 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
   - [ ] Check sagemath calculations for x and y systematics
 
 - [ ] *DO NOT HAVE* a section *"about the evaluation of L'"*
-    
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *REFERENCES FOR METROPOLIS HASTINGS*:
+  #+begin_quote
+  The algorithm is named in part for Nicholas Metropolis, the first
+  coauthor of a 1953 paper, entitled Equation of State Calculations by
+  Fast Computing Machines, with Arianna W. Rosenbluth, Marshall
+  Rosenbluth, Augusta H. Teller and Edward Teller. For many years the
+  algorithm was known simply as the Metropolis algorithm.[1][2] The
+  paper proposed the algorithm for the case of symmetrical proposal
+  distributions, but in 1970, W.K. Hastings extended it to the more
+  general case.[3]
+  #+end_quote
+   Kalos, Malvin H.; Whitlock, Paula A. (1986). Monte Carlo Methods Volume I: Basics. New York: Wiley. pp. 78–88.
+   Tierney, Luke (1994). "Markov chains for exploring posterior distributions". The Annals of Statistics. 22 (4): 1701–1762.
+   Hastings, W.K. (1970). "Monte Carlo Sampling Methods Using Markov Chains and Their Applications". Biometrika. 57 (1): 97–109. Bibcode:1970Bimka..57...97H. doi:10.1093/biomet/57.1.97. JSTOR 2334940. Zbl 0219.65008.
+
 ** Limit method - practicalities for our real case                :noexport:    
 - Evaluate $\mathcal{L}'$ in our case ::
 
@@ -32260,28 +32299,15 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
     - [ ] handled using a grid of NxNxM volumes (x, y, E)
     - [ ] sample in each volume & assign uniform positions in volume
   
-** Note about likelihood integral                                 :noexport:
+** Note about likelihood integral                                 :extended:
 
 The likelihood is a product of probability density functions. However,
 it is important to note that the likelihood is a function of the
 *parameter* and not the data. As such integrating over all parameters
 does not necessarily equate to 1!
 
-** $s'$ is equivalent to $s_i'$ ?                                 :noexport:
 
-\begin{align*}
-s &= Σ_i s_i \\
-s_i' &= s_i (1 + θ_s) \\
-s' &= Σ_i s_i' \\
-   &= Σ_i s_i (1 + θ_s) \\
-   &\text{as }(1 + θ_s)\text{ is constant} \\
-   &= (1 + θ_s) Σ_i s_i \\
-   &= (1 + θ_s) s \\
-s' &= s (1 + θ_s) \\
-\end{align*}
-so indeed, this is perfectly valid.
-
-** Derivation of short form of $\mathcal{L}$ [/]                  :noexport:
+** Derivation of short form of $\mathcal{L}$ [/]                  :extended:
 
 - [ ] *WRITE THE NON LOG FORM*
 
@@ -32548,7 +32574,7 @@ code as the =lkBayesScan= limit.
 
 ** Likelihood ingredients in detail [/]
 :PROPERTIES:
-:CUSTOM_ID: sec:limit:limit_method
+:CUSTOM_ID: sec:limit:ingredients
 :END:
 
 - [ ] *All The text here below is irrelevant now*
@@ -32577,16 +32603,16 @@ one. The final likelihood including nuisance parameters we evaluate is
 (see section [[#sec:limit:limit_method]] for the derivation):
 
 \[
-\mathcal{L}_{SBM} = ∫_{-∞}^∞∫_{-∞}^∞∫_{-∞}^∞∫_{-∞}^∞ \exp(-s'_{\text{tot}}) \cdot \prod_i \left(1 +
+\mathcal{L}_{SBM} = \iiiint_{-∞}^∞ \exp(-s'_{\text{tot}}) \cdot \prod_i \left(1 +
 \frac{s_i''}{b_i'}\right) \cdot
-\exp\left[-\frac{θ_b²}{2 σ_b²} - \frac{θ_s²}{2 σ_s²} -
-\frac{θ_x²}{2 σ_x²} - \frac{θ_y²}{2 σ_y²} \right]
-\, \mathrm{d}\,θ_b \mathrm{d}\,θ_s \mathrm{d}\,θ_x \mathrm{d}\,θ_y.
+\exp\left[-\frac{ϑ_b²}{2 σ_b²} - \frac{ϑ_s²}{2 σ_s²} -
+\frac{ϑ_x²}{2 σ_x²} - \frac{ϑ_y²}{2 σ_y²} \right]
+\, \mathrm{d}\,ϑ_b \mathrm{d}\,ϑ_s \mathrm{d}\,ϑ_x \mathrm{d}\,ϑ_y.
 \]
 where primed symbols refer to the base symbol with a modification due
 to the value of the corresponding nuisance parameter, i.e.
-$x' = x(1 + θ_x)$. The double primed $s_i''$ not only includes $θ_s$,
-but also the position dependent nuisance parameters $θ_x$ and $θ_y$
+$x' = x(1 + ϑ_x)$. The double primed $s_i''$ not only includes $ϑ_s$,
+but also the position dependent nuisance parameters $ϑ_x$ and $ϑ_y$
 (see again the previous section).
 
 The inputs required to compute a likelihood value are (with the
