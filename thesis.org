@@ -22413,10 +22413,10 @@ of the raw data.
 (figure ()
         (subfigure (linewidth 0.5) (caption "Cluster centers $\\ln\\mathcal{L}$") (label "fig:background:cluster_centers_no_vetoes_2017_18")
                    (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/backgroundClusters/background_cluster_centers_no_vetoes.pdf"))
+                                    "~/phd/Figs/backgroundClusters/background_cluster_centers_lnL80_no_vetoes.pdf"))
         (subfigure (linewidth 0.5) (caption "Background suppression") (label "fig:background:background_suppression_tiles_no_vetoes_2017_18")
                    (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/backgroundClusters/background_suppression_tiles_no_vetoes.pdf"))
+                                    "~/phd/Figs/backgroundClusters/background_suppression_tile_map_lnL80_no_vetoes.pdf"))
         (caption
          (subref "fig:background:cluster_centers_no_vetoes_2017_18")
          " Cluster centers of all X-ray like clusters in the 2017/18 CAST background
@@ -22811,16 +22811,85 @@ likelihood -f ~/CastData/data/DataRuns2018_Reco.h5 --computeLogL \
 With this we can first create the plot of the cluster centers from the
 all chip files using ~plotClusterCenters~:
 
-#+begin_src sh
-plotBackgroundClusters ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crAll.h5 \
-                       ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crAll.h5 \
-                       --zMax 30 \
-                       --title "X-ray like clusters of CAST data" \
-                       --outpath ~/phd/Figs/backgroundClusters/ \
-                       --showGoldRegion \
-                       --backgroundSuppression \
-                       --filterNoisyPixels
+    
+
+#+begin_src sh :results drawer
+plotBackgroundClusters \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL.h5 \
+    --zMax 30 \
+    --title "X-ray like clusters of CAST data" \
+    --outpath ~/phd/Figs/backgroundClusters/ \
+    --showGoldRegion \
+    --backgroundSuppression \
+    --energyMin 0.2 --energyMax 12.0 \
+    --suffix "_lnL80_no_vetoes" \
+    --filterNoisyPixels
 #+end_src
+
+#+RESULTS:
+:results:
+reading: /home/basti/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL.h5
+reading: /home/basti/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL.h5
+@["/home/basti/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL.h5", "/home/basti/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL.h5"]
+DataFrame with 3 columns and 24527 rows:
+     Idx            x            y        count
+  dtype:          int          int          int
+       0            2            1            2
+       1            2          247            3
+       2            3          247            5
+       3            5          247            1
+       4            6            1            2
+       5            6          166            8
+       6            9           33            1
+       7            9           88            1
+       8            9          122            1
+       9            9          128            1
+      10            9          205            1
+      11            9          224            1
+      12           10            7            1
+      13           10           57            1
+      14           10          106            1
+      15           10          107            1
+      16           10          146            1
+      17           10          147            1
+      18           10          165            2
+      19           10          166            1
+
+[INFO]: Saving plot to /home/basti/phd/Figs/backgroundClusters//background_cluster_centers_lnL80_no_vetoes.pdf
+INFO: The integer column `x` has been automatically determined to be continuous. To overwrite this behavior add a `+ scale_x/y_discrete()` call to the plotting chain. Choose `x` or `y` depending on which axis this column refers to. Or apply a `factor` to the column name in the `aes` call, i.e. `aes(..., factor("x"), ...)`.
+INFO: The integer column `xs` has been automatically determined to be continuous. To overwrite this behavior add a `+ scale_x/y_discrete()` call to the plotting chain. Choose `x` or `y` depending on which axis this column refers to. Or apply a `factor` to the column name in the `aes` call, i.e. `aes(..., factor("xs"), ...)`.
+INFO: The integer column `y` has been automatically determined to be continuous. To overwrite this behavior add a `+ scale_x/y_discrete()` call to the plotting chain. Choose `x` or `y` depending on which axis this column refers to. Or apply a `factor` to the column name in the `aes` call, i.e. `aes(..., factor("y"), ...)`.
+INFO: The integer column `ys` has been automatically determined to be continuous. To overwrite this behavior add a `+ scale_x/y_discrete()` call to the plotting chain. Choose `x` or `y` depending on which axis this column refers to. Or apply a `factor` to the column name in the `aes` call, i.e. `aes(..., factor("ys"), ...)`.
+DataFrame with 4 columns and 49 rows:
+     Idx           xI           yI           cI           sI
+  dtype:          int          int          int        float
+       0            0            0         4821        6.882
+       1            0           36         1952           17
+       2            0           73          364        91.15
+       3            0          109          618        53.69
+       4            0          146          405        81.93
+       5            0          182         2686        12.35
+       6            0          219         2257         14.7
+       7           36            0         3970        8.358
+       8           36           36         3665        9.053
+       9           36           73         1251        26.52
+      10           36          109         1488         22.3
+      11           36          146         1393        23.82
+      12           36          182         4895        6.778
+      13           36          219         2604        12.74
+      14           73            0          509        65.19
+      15           73           36          578         57.4
+      16           73           73          195        170.2
+      17           73          109          175        189.6
+      18           73          146          196        169.3
+      19           73          182          845        39.27
+
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /home/basti/phd/Figs/backgroundClusters /home/basti/phd/Figs/backgroundClusters/background_suppression_tile_map_lnL80_no_vetoes.tex
+Generated: /home/basti/phd/Figs/backgroundClusters/background_suppression_tile_map_lnL80_no_vetoes.pdf
+:end:
 
 From the logL output files created by
 ~createAllLikelihoodCombinations~, let's now create the 'classical'
@@ -22828,19 +22897,21 @@ background rate in the gold region without any vetoes:
 
 #+begin_src sh :results drawer
 plotBackgroundRate \
- ~/phd/resources/background/autoGen/likelihood_cdl2018_Run2_crGold.h5 \
- ~/phd/resources/background/autoGen/likelihood_cdl2018_Run3_crGold.h5 \
- --combName 2017/18 \
- --combYear 2017 \
- --centerChip 3 \
- --title "Background rate from CAST data" \
- --showNumClusters \
- --showTotalTime \
- --topMargin 1.5 \
- --energyDset energyFromCharge \
- --outfile background_rate_crGold_no_vetoes.pdf \
- --outpath ~/phd/Figs/background/ \
- --useTeX
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL.h5 \
+    --combName 2017/18 \
+    --combYear 2017 \
+    --centerChip 3 \
+    --region crGold \
+    --title "Background rate from CAST data" \
+    --showNumClusters \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --outfile background_rate_crGold_no_vetoes.pdf \
+    --outpath ~/phd/Figs/background/ \
+    --useTeX \
+    --quiet
 #+end_src
 
 which generates
@@ -23680,93 +23751,139 @@ unnecessarily, all the figures are simply found in
 
 *** Overview of the best performing MLP [/]
 
-As a reference an MLP was trained (implementation
-[[https://github.com/Vindaar/TimepixAnalysis/blob/master/Tools/NN_playground/train_ingrid.nim][here]]) on a mix of simulated X-rays and a subset
+As a reference [fn:reference] an MLP was trained on a mix of simulated X-rays and a subset
 of the CAST background data. The implementation was done using
 [[https://github.com/scinim/flambeau][Flambeau]] [[cite:&flambeau]], a wrapper for [[https://pytorch.org/][libtorch]]
 [[cite:&Paszke_PyTorch_An_Imperative_2019]] [fn:libtorch], using the
-following parameters:
+parameters and inputs as shown in
+tab. [[tab:background:best_mlp_overview]]. The network layout consists of
+$\num{14}$ input neurons, two hidden layers of only $\num{30}$ neurons [fn:neurons]
+each and $\num{2}$ neurons on the output layer. We use the Adam
+cite:&kingma14_adam optimizer and $\tanh$ as an activation function on
+both hidden layers, with $\text{sigmoid}$ used on the output
+layer. The mean squared error between output and target vectors is
+used as the loss function.
 
-- Input neurons: 14 (12 geometric, 2 non-geometric)
-- Hidden layers: 2
-- Neurons on hidden layer: 300
-- Output neurons: 2
-- Activation function: $\tanh$ 
-- Gradient algorithm: Stochastic Gradient Descent (SGD)
-- Momentum: 0.2
-- Learning rate: $\num{7e-4}$
-- Batch size: 8192
-- Training data: $\num{250 000}$ simulated X-rays and $\num{288 000}$
-  real background events selected from the *outer chips only*, same
-  number for validation [fn:number_of_events]
-- Training epochs: $\num{800 000}$
+#+CAPTION: Overview of all MLP parameters and training information.
+#+NAME: tab:background:best_mlp_overview
+#+ATTR_LATEX: :booktabs t
+| Property                         | Value                                                |
+|----------------------------------+------------------------------------------------------|
+| Input neurons                    | 14 (12 geometric, 2 non-geometric)                   |
+| Hidden layers                    | 2                                                    |
+| Neurons on hidden layer          | 30                                                   |
+| Output neurons                   | 2                                                    |
+| Activation function              | $\tanh$                                              |
+| Output layer activation function | $\text{sigmoid}$                                     |
+| Loss function                    | Mean Squared Error (MSE)                             |
+| Optimizer                        | Adam [[cite:&kingma14_adam]]                             |
+| Learning rate                    | $\num{7e-4}$                                         |
+| Batch size                       | 8192                                                 |
+| Training data                    | $\num{250 000}$ simulated X-rays and $\num{288 000}$ |
+|                                  | real background events selected from the             |
+|                                  | *outer chips only*, same number for validation       |
+| Training epochs                  | $\num{82 000}$                                       |
 
-The 14 input neurons were fed with all geometric properties that do
-not scale directly with the energy (no number of active pixels or
-direct energy) or position on the chip (as the training data is skewed
-towards the center). For the background data we avoid 'contaminating'
-the training dataset with CAST clusters that will end up as part of
-our background rate for the limit calculation, we only select clusters
-from chips other than the center chip. This way the MLP is trained
-entirely on data independent of the CAST data of interest.
+The $\num{14}$ input neurons were fed with all geometric properties
+that do not scale directly with the energy (no number of active pixels
+or direct energy) or position on the chip (as the training data is
+skewed towards the center) with the exception of the total charge. For
+the background data we avoid 'contaminating' the training dataset with
+CAST clusters that will end up as part of our background rate for the
+limit calculation by only selecting clusters from chips other than the
+center chip. This way the MLP is trained entirely on data independent
+of the CAST data of interest. $\num{250 000}$ synthetic X-rays and
+$\num{288 000}$ background clusters are used for training and the same
+number of validation [fn:number_of_events].
 
-This is considered a "reference" implementation, as it is essentially
-the simplest ANN layout possible. As a comparison to the likelihood
-method the receiver operating characteristic (ROC) curves for the
-different X-ray reference datasets is used. The signal and background
-data used for each case (likelihood and MLP) is the test dataset used
-to test the MLP performance after
-training. Fig. [[fig:roc_curves_logl_mlp]] shows these ROC curves with the
-line style indicating the method and the color corresponding to the
-different targets and thus different fluorescence lines. The
-improvement in background rejection at a fixed signal efficiency
-exceeds $\SI{10}{\percent}$ at multiple energies.
+The first $\num{25000}$ epochs are trained on a synthetic X-ray
+dataset with a strong bias to low energy X-rays (clusters in the range
+from $\SIrange{0}{3}{keV}$ with the frequency dropping linearly with
+increasing energy). This is because these are more difficult to
+separate from background. Afterwards we switch to a separate set of
+synthetic X-rays uniformly distributed in energies. Without this
+approach the network can drift towards a local minimum, in which low
+energy X-rays are classified as background, while still achieving good
+accuracy. At the cost of low energy X-rays, low energy background
+clusters are almost perfectly rejected. This is of course undesirable.
 
-The usage of such neural networks is plainly a replacement for the
-likelihood cut method used to detect the initial cluster candidates
-and during classification of the septem/line veto. It does not replace
-any of the vetoes, as these include information outside the center
-chip, which is not available for the neural network (training and
-validation becomes much more complicated if all chips were to be used,
-due to the random coincidence problem mentioned in a previous
-section).
-
-During the training process of $\num{500 000}$ epochs every
-$\num{5000}$ epochs the accuracy and loss are evaluated based on the
+During the training process of $\num{82 000}$ epochs every
+$\num{1000}$ epochs the accuracy and loss are evaluated based on the
 test sample and a model checkpoint is stored. The evolution of the
-loss function for this network are shown in
-fig. sref:fig:background:mlp:training_loss. As desired the loss
-decreases during the training, but spikes somewhere between $\num{485
-000}$ and $\num{490 000}$ epochs. It does recover, but does not reach
-the minima found earlier. The accuracy also decreases slightly, but
-not to the extent potentially expected based on the loss. Regardless,
-the checkpoint after $\num{485 000}$ epochs is used as the final MLP
-model. Fig. sref:fig:background:mlp:validation_output shows the
-output of neuron 0 (neuron 1 is a mirror image) for the test sample,
-with signal like data towards 1 and background like data
-towards 0. The separation is almost perfect, but small contributions
-of the opposite type can be seen near the extrema. This is expected
-due to the presence of real X-rays in the background dataset and
-extreme statistical outliers in the X-ray dataset.
+loss function for this network is shown in
+fig. sref:fig:background:mlp:training_loss. We can see that
+performance for the test dataset is mostly stagnant from around epoch
+$\num{10 000}$. The network develops minor overtraining, but this is
+not important, because no training data is ever used in practice. 
+
+Fig. sref:fig:background:mlp:validation_output shows the output of
+neuron 0 (neuron 1 is a mirror image) for the test sample, with signal
+like data towards 1 and background like data towards 0. The separation
+is almost perfect, but a small amount of each type can be seen over
+the entire range. This is expected due to the presence of real X-rays
+in the background dataset, low energy events generally being similar
+and statistical outliers in the X-ray dataset.
 
 #+begin_src subfigure
 (figure ()
         (subfigure (linewidth 0.5) (caption "Training loss") (label "fig:background:mlp:training_loss")
                    (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/neuralNetworks/30_10_23_sgd_tanh300_mse_outer_chips/loss.pdf"))
+                                    "~/phd/Figs/neuralNetworks/17_11_23_adam_tanh30_sigmoid_mse_3keV/loss.pdf"))
         (subfigure (linewidth 0.5) (caption "MLP prediction") (label "fig:background:mlp:validation_output")
                    (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/neuralNetworks/30_10_23_sgd_tanh300_mse_outer_chips/test_validation_log10.pdf"))
+                                    "~/phd/Figs/neuralNetworks/17_11_23_adam_tanh30_sigmoid_mse_3keV/test_validation_log10.pdf"))
         (caption
          (subref "fig:background:mlp:training_loss")
-         " Loss over the training progress, evaluated every " ($ "\\num{5000}") 
-         " epochs. A small spike in loss is seen after checkpoint " ($ "\\num{485000}") 
-         ", which is not fully recovered from. "
+         " Loss over the training progress, evaluated every " ($ "\\num{1000}") 
+         " epochs. Test data loss mostly stagnant after " ($ "\\num{10000}") 
+         " epochs. "
          (subref "fig:background:mlp:validation_output")
-         " Output of the validation data sample for neuron 0 as a log10 plot. Almost perfect signal
-           and background separation.")
+         " Output of the validation data sample for neuron 0 as a " ($ "\\log") " plot.")
         (label "fig:background:mlp:training_plots"))
-#+end_src        
+#+end_src
+
+Beyond the MLP prediction to indicate a measure of classification
+efficiency we can look at the receiver operating characteristic (ROC)
+curves for different X-ray reference datasets of the CDL data. For
+this we read all real center GridPix background data and all CDL
+data. Both of these are split into the corresponding target/filter
+combinations based on the energy of each cluster.
+
+We can then define the background rejection $b_{\text{rej}}$ for
+different cut values $c_i$ as
+
+\[
+b_{\text{rej}} = \frac{\text{card}(\{ b < c_i\})}{\text{card}(\{ b \})},
+\]
+
+where $b$ are all the predictions of the MLP for background data and
+$\text{card}$ is the cardinality of the set of numbers, i.e. the
+number of entries. $i$ refers to the $i^{\text{th}}$ cut value (as
+this is computed with discrete bins). In addition we define the signal
+efficiency by
+
+
+\[
+s_{\text{eff}} = \frac{\text{card}(\{ s \geq c_i\})}{\text{card}(\{ s \})},
+\]
+
+where similarly $s$ are the MLP predictions for X-ray clusters.
+
+If we plot the pairs of signal efficiency and background rejection
+values (one for each cut value), we produce a ROC curve. Done for each
+CDL target/filter combination and similarly for the likelihood cut by
+replacing the MLP prediction with the likelihood value of each
+cluster, we obtain fig. [[fig:roc_curves_logl_mlp]]. The line style
+indicates the classifier method ($\ln\mathcal{L}$ or MLP) and the
+color corresponds to the different targets and thus different
+fluorescence lines. The improvement in background rejection at a fixed
+signal efficiency exceeds $\SI{10}{\percent}$ at multiple
+energies. The only region where the MLP is worse than the likelihood
+cut is for the Cu-EPIC $\SI{0.9}{kV}$ target/filter combination at
+signal efficiencies above about $\SI{92}{\%}$. Especially the shape of
+the ROC curve for the MLP at high signal efficiencies implies that it
+should produce comparable background rates to the likelihood cut at
+higher signal efficiencies.
 
 #+CAPTION: ROC curves for the comparison of the likelihood cut method (solid lines) to the
 #+CAPTION: MLP predictions (dashed lines), colored by the different targets used to generate the
@@ -23774,11 +23891,19 @@ extreme statistical outliers in the X-ray dataset.
 #+CAPTION: clusters in an energy range around the fluorescence line.
 #+CAPTION: The MLP visibly outperforms the likelihood cut method in all energies. At the same
 #+CAPTION: signal efficiency (x axis) a significantly higher background rejection is achieved.
-#+CAPTION: *REDO THIS PLOT!!!!!!!!!!!!!!!!!!!!!!!!!!*
 #+NAME: fig:roc_curves_logl_mlp
-[[~/org/Figs/statusAndProgress/neuralNetworks/roc_curve_mlp_vs_likelihood_split_by_target_1000_epochs_no_energy_hits.pdf]]
+[[~/phd/Figs/neuralNetworks/17_11_23_adam_tanh30_sigmoid_mse_3keV/roc_curve_combined_split_by_target.pdf]]
+
+[fn:reference] This network is considered a "reference"
+implementation, as it is essentially the simplest ANN layout possible.
 
 [fn:libtorch] ~libtorch~ is the C++ library PyTorch is built on.
+
+[fn:neurons] Yes, only $\num{30}$ neurons. When using SGD as an
+optimizer more neurons are useful. With Adam anything more leads to
+excessive overtraining. Model performance and training time is anyhow
+better with Adam. Indeed, even a $\num{10}$ neuron model performs
+almost as good.
 
 [fn:number_of_events] For training X-rays a total of $\num{500 000}$
 events are simulated. For background $\num{1 000}$ events are randomly
@@ -23792,14 +23917,48 @@ events. Training and validation is split 50-50.
   our work, say this has been looked into already during MSc thesis
 
 - [X] *Verify NUMBER OF USED INPUTS*
-- [ ] *VERIFY NUMBER OF TRAINING EVENTS*  
+- [X] *VERIFY NUMBER OF TRAINING EVENTS*  
 
-- [ ] *REDO PREDICTION PLOT AS A LOG Y PLOT!*
+- [X] *REDO PREDICTION PLOT AS A LOG Y PLOT!*
 
-- [ ] References for SGD and ReLU
+- [X] References for SGD and ReLU
   -> We don't actually use ReLU in the final network.
+  -> We use Adam & tanh
 
-**** Thoughts on number of background training events           :extended:
+Parameters of old SGD model:
+#+begin_quote
+- Gradient algorithm: Stochastic Gradient Descent (SGD)
+- Momentum: 0.2
+#+end_quote
+
+Old loss explanation for SGD model:
+#+begin_quote
+As desired the loss
+decreases during the training, but spikes somewhere between $\num{485
+000}$ and $\num{490 000}$ epochs. It does recover, but does not reach
+the minima found earlier. The accuracy also decreases slightly, but
+not to the extent potentially expected based on the loss. Regardless,
+the checkpoint after $\num{485 000}$ epochs is used as the final MLP
+model.
+#+end_quote
+
+Old paragraph about MLP replacement for LnL:
+#+begin_quote
+The usage of such neural networks is plainly a replacement for the
+likelihood cut method used to detect the initial cluster candidates
+and during classification of the septem/line veto. It does not replace
+any of the vetoes, as these include information outside the center
+chip, which is not available for the neural network (training and
+validation becomes much more complicated if all chips were to be used,
+due to the random coincidence problem mentioned in a previous
+section).
+#+end_quote
+
+**** Training code                                              :extended:
+
+The code performing the training is found [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Tools/NN_playground/train_ingrid.nim][here]].
+
+**** Thoughts on number of background training events           :noexport:
 
 The total number of background events is almost a third of all
 background clusters on the center chip. Hmm.
@@ -23808,37 +23967,94 @@ We should probably select 1000 from each chip instead of 6000 from the
 center chip only.
 Better even use _only_ outer chip data.
 
-**** Training call for best performing MLP                      :extended:
+-> This is what we ended up doing in the end!
 
-The MLP described above uses the following datasets as inputs:
-- eccentricity
-- skewnessLongitudinal
-- skewnessTransverse
-- kurtosisLongitudinal
-- kurtosisTransverse
-- length
-- width
-- rmsLongitudinal
-- rmsTransverse
-- lengthDivRmsTrans
-- rotationAngle
-- fractionInTransverseRms
-- totalCharge
-- σT (<- this is actually $D_T$)
+**** More thoughts on different types of MLPs                   :extended:
 
-The following is the training call that produced the MLP with the best
-performance (the one used for all plots and limit calculations):
+As mentioned in the footnote of the main section above, we trained
+different networks. Any network trained with stochastic gradient
+descent (SGD) tends to require a lot longer to train and generally
+struggles more to find the best parameters. Initially I focused on SGD
+networks, due to the extreme overtraining found with Adam networks. It
+was only when I tried ridiculously small networks that Adam ended up
+being very useful after all.
 
-Reference: ~journal.org~ entry on <2023-05-10 Wed 14:24>.
+The main reason I prefer the 30 neuron network over the mentioned 10
+neuron network, is that it tends to generalize a little bit better
+between different runs (i.e. gas gain and diffusion parameters) of
+X-rays of similar energies. What this means is that the effective
+efficiency is a bit more stable, in particular for the CDL data (where
+we know the data differs more between runs and compared to our
+synthetic data).
 
-#+begin_src sh
+Next, we use a sigmoid function on the output layer and then simply the mean
+squared error as the loss function. The advantage of the sigmoid on
+the output is that the neuron predictions will be effectively clamped
+between $(0, 1)$. This is useful, because otherwise there is always a
+chance the network will produce different 'distributions' in the
+output prediction. So that inputs with differing parameters produce
+strictly different outputs in different ranges. This is not
+necessarily a problem (it can even be useful), but it can become one
+if the synthetic dataset from which a cut value is computed ends
+(partially) in a different output distribution than the target data
+(e.g. a \cefe calibration data). It tends to exacerbate potential
+differences between synthetic and real data leading to larger
+differences in the target and real efficiencies.
+
+Also, the nice aspect about the models being so tiny, is that it makes
+it much easier to look into the model. In particular the mentioned 10
+neuron model (2 layers of 10 neurons each) can easily be represented
+as a set of 2 matrices and 2 bias vectors, small enough to look at by
+eye. With the 30 neuron model we mostly use finally, this is starting
+to be on the annoying and opaque end of course. Still much better than
+a 300x300 matrix!
+
+
+
+**** Network validation                                         :extended:
+
+In order to validate the usability and performance of any MLP we
+train, we look at the following things (outside loss, accuracy and train / test
+predictions):
+1. the direct MLP prediction values for all the different CDL
+   runs. This use useful to check that all data, independent of energy
+   and gas properties is classified as X-rays (as mentioned in the
+   text, low energy X-rays can end up in the background class).
+2. the effective efficiencies for each calibration and CDL run, as
+   explained in sec. [[#sec:background:mlp:mlp_cut_value]] and
+   [[#sec:background:mlp:effective_efficiency]]. The real efficiency
+   should be as close to the target efficiency as possible. Otherwise
+   the network does not generalize from synthetic data to the real
+   data as it should.
+3. the ROC curve split by each CDL fluorescence line. Ideally it
+   should be higher than the likelihood cut ROC curve for all lines
+   and in all relevant signal efficiency regions. If this is not the
+   case the network is likely not going to outperform the likelihood
+   cut method.
+
+All the plots for the MLP we use can be found in XXXXXXXXX   
+
+**** Generate plots of the loss, accuracy and output [/]        :extended:
+
+The plots we care about for the context of the thesis are:
+- validation output as log10 plot <- ~train_ingrid~
+- loss <- ~train_ingrid~
+- ROC curve <- ~train_ingrid~
+
+The ROC curve is generated by ~train_ingrid~ when passing the ~--predict~
+argument. The first two are either generated during training or when
+using the ~--skipTraining~ argument without ~--predict~ (due to
+different data requirements).
+
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/NN_playground/
 ./train_ingrid \
     ~/CastData/data/CalibrationRuns2017_Reco.h5 \
     ~/CastData/data/CalibrationRuns2018_Reco.h5 \
     --back ~/CastData/data/DataRuns2017_Reco.h5 \
     --back ~/CastData/data/DataRuns2018_Reco.h5 \
-    --modelOutpath ~/org/resources/nn_devel_mixing/10_05_23_sgd_gauss_diffusion_tanh300_mse_loss/mlp_tanh300_mse.pt \
-    --plotPath ~/Sync/10_05_23_sgd_tanh300_mse/ \
+    --simFiles ~/CastData/data/FakeData/fakeData_500k_uniform_energy_0_10_keV.h5 \
+    --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
+    --plotPath ~/phd/Figs/neuralNetworks/17_11_23_adam_tanh30_sigmoid_mse_3keV/ \
     --datasets eccentricity \
     --datasets skewnessLongitudinal \
     --datasets skewnessTransverse \
@@ -23853,28 +24069,71 @@ Reference: ~journal.org~ entry on <2023-05-10 Wed 14:24>.
     --datasets fractionInTransverseRms \
     --datasets totalCharge \
     --datasets σT \
-    --numHidden 300 \
-    --numHidden 300 \
+    --numHidden 30 \
+    --numHidden 30 \
     --activation tanh \
     --outputActivation sigmoid \
     --lossFunction MSE \
-    --optimizer SGD \
+    --optimizer Adam \
     --learningRate 7e-4 \
     --simulatedData \
     --backgroundRegion crAll \
     --nFake 250_000 \
-    --subsetPerRun 6000
+    --backgroundChips 0 \
+    --backgroundChips 1 \
+    --backgroundChips 2 \
+    --backgroundChips 4 \
+    --backgroundChips 5 \
+    --backgroundChips 6 \
+    --clamp 50 \
+    --predict
 #+end_src
 
-*NOTE*: The command up there was still run with the default Nim RNG
-seed for the ~shuffle~ procedure which reorders the background and
-simulated data into training and validation samples!
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/NN_playground/
+./train_ingrid \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --back ~/CastData/data/DataRuns2017_Reco.h5 \
+    --back ~/CastData/data/DataRuns2018_Reco.h5 \
+    --simFiles ~/CastData/data/FakeData/fakeData_500k_uniform_energy_0_10_keV.h5 \
+    --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
+    --plotPath ~/phd/Figs/neuralNetworks/17_11_23_adam_tanh30_sigmoid_mse_3keV/ \
+    --datasets eccentricity \
+    --datasets skewnessLongitudinal \
+    --datasets skewnessTransverse \
+    --datasets kurtosisLongitudinal \
+    --datasets kurtosisTransverse \
+    --datasets length \
+    --datasets width \
+    --datasets rmsLongitudinal \
+    --datasets rmsTransverse \
+    --datasets lengthDivRmsTrans \
+    --datasets rotationAngle \
+    --datasets fractionInTransverseRms \
+    --datasets totalCharge \
+    --datasets σT \
+    --numHidden 30 \
+    --numHidden 30 \
+    --activation tanh \
+    --outputActivation sigmoid \
+    --lossFunction MSE \
+    --optimizer Adam \
+    --learningRate 7e-4 \
+    --simulatedData \
+    --backgroundRegion crAll \
+    --nFake 250_000 \
+    --backgroundChips 0 \
+    --backgroundChips 1 \
+    --backgroundChips 2 \
+    --backgroundChips 4 \
+    --backgroundChips 5 \
+    --backgroundChips 6 \
+    --clamp 50 \
+    --skipTraining
+#+end_src
 
-**** Generate plots of the loss, accuracy and output [/]        :extended:
 
-The plots generated during the training call are also found in
-
-[[file:Figs/neuralNetworks/10_05_23_sgd_tanh300_mse/]]
+[[file:Figs/neuralNetworks/17_11_23_adam_tanh30_mse/]]
 
 which are a direct copy of the initial plots generated from the call
 above.
@@ -23914,533 +24173,6 @@ repository / Zenodo, but there is not _that_ much of interest there I imagine.
 
 - [ ] *UPLOAD ALL MODELS*
 
-
-**** Train an MLP on outer chip background data only            :extended:
-
-Started the training run <2023-10-30 Mon 14:45>. Note that we leave
-out ~--backgroundChip 3~ explicitly, to train on all outer chips and
-*not* on the center chip at all!
-#+begin_src sh
-./train_ingrid \
-    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --back ~/CastData/data/DataRuns2017_Reco.h5 \
-    --back ~/CastData/data/DataRuns2018_Reco.h5 \
-    --modelOutpath ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh300_mse.pt \
-    --plotPath ~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/ \
-    --datasets eccentricity \
-    --datasets skewnessLongitudinal \
-    --datasets skewnessTransverse \
-    --datasets kurtosisLongitudinal \
-    --datasets kurtosisTransverse \
-    --datasets length \
-    --datasets width \
-    --datasets rmsLongitudinal \
-    --datasets rmsTransverse \
-    --datasets lengthDivRmsTrans \
-    --datasets rotationAngle \
-    --datasets fractionInTransverseRms \
-    --datasets totalCharge \
-    --datasets σT \
-    --numHidden 300 \
-    --numHidden 300 \
-    --activation tanh \
-    --outputActivation sigmoid \
-    --lossFunction MSE \
-    --optimizer SGD \
-    --learningRate 7e-4 \
-    --simulatedData \
-    --backgroundRegion crAll \
-    --nFake 250_000 \
-    --backgroundChips 0 \
-    --backgroundChips 1 \
-    --backgroundChips 2 \
-    --backgroundChips 4 \
-    --backgroundChips 5 \
-    --backgroundChips 6
-#+end_src
-Training of the first 100k epochs finished <2023-10-30 Mon 16:10>.
-
-In order for this to work as intended, the following changes were
-made:
-- ~subsetPerRun~ now is taken literal. No more hardcoded factors for
-  background data or anything like that
-- ~backgroundChips~ added to read background data for each of these
-  chips, allowing us to explicitly _exclude_ the center chip. We will
-  have to see whether that causes us to interpret too many center chip
-  clusters as X-rays because the diffusion and gas gain of the
-  training data better matches the center chip for X-rays
-- ~shuffle~ now uses the MLPDesc random number seed
-- added more fields to the MLPDesc HDF5 file about how many elements
-  were used for training and for validation as well as how many
-  elements were read for background in total.
-
-Continue for another 200k now <2023-10-30 Mon 16:15>:
-#+begin_src sh
-./train_ingrid \
-    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --back ~/CastData/data/DataRuns2017_Reco.h5 \
-    --back ~/CastData/data/DataRuns2018_Reco.h5 \
-    --modelOutpath ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh300_mse.pt \
-    --plotPath ~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/ \
-    --numHidden 300 \
-    --numHidden 300 \
-    --activation tanh \
-    --outputActivation sigmoid \
-    --lossFunction MSE \
-    --optimizer SGD \
-    --learningRate 7e-4 \
-    --simulatedData \
-    --backgroundRegion crAll \
-    --nFake 250_000 \
-    --backgroundChips 0 \
-    --backgroundChips 1 \
-    --backgroundChips 2 \
-    --backgroundChips 4 \
-    --backgroundChips 5 \
-    --backgroundChips 6 \
-    --epochs 200000 \
-    --continueAfterEpoch 100000
-#+end_src
-It finished some time around 19:00 to 20:00.
-
-I've now modified the ~train_ingrid~ code a bit more to:
-- allow handing an input model file via ~--model~ instead of
-  ~--modelOutpath~
-- the user should not include the final checkpoint name anymore in the
-  initial training call ~--modelOutpath~. That will be generated based
-  on the model layout
-- continuing training does not require the ~--continueAfterEpoch~
-  argument anymore. If further training is to be skipped use ~--skipTraining~    
-- paths can be changed
-- learning rates can be changed. The old learning rates will be stored
-  in ~--pastLearningRates~
-
-Continue further from 300k now, around <2023-10-31 Tue 10:00>:
-#+begin_src sh
-./train_ingrid \
-    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --back ~/CastData/data/DataRuns2017_Reco.h5 \
-    --back ~/CastData/data/DataRuns2018_Reco.h5 \
-    --model ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh300_mse.pt \
-    --plotPath ~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/ \
-    --numHidden 300 \
-    --numHidden 300 \
-    --activation tanh \
-    --outputActivation sigmoid \
-    --lossFunction MSE \
-    --optimizer SGD \
-    --learningRate 7e-4 \
-    --simulatedData \
-    --backgroundRegion crAll \
-    --nFake 250_000 \
-    --backgroundChips 0 \
-    --backgroundChips 1 \
-    --backgroundChips 2 \
-    --backgroundChips 4 \
-    --backgroundChips 5 \
-    --backgroundChips 6 \
-    --epochs 100000
-#+end_src
-
-Finished <2023-10-31 Tue 11:27>.
-
-Continue for another 100k (slightly different command, because we now
-want to use the auto generated model. In the future the same command
-will work of course) <2023-10-31 Tue 11:28>:
-#+begin_src sh
-./train_ingrid \
-    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --back ~/CastData/data/DataRuns2017_Reco.h5 \
-    --back ~/CastData/data/DataRuns2018_Reco.h5 \
-    --model ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh_sigmoid_MSE_SGD_300_2.pt \
-    --plotPath ~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/ \
-    --numHidden 300 \
-    --numHidden 300 \
-    --activation tanh \
-    --outputActivation sigmoid \
-    --lossFunction MSE \
-    --optimizer SGD \
-    --learningRate 7e-4 \
-    --simulatedData \
-    --backgroundRegion crAll \
-    --nFake 250_000 \
-    --backgroundChips 0 \
-    --backgroundChips 1 \
-    --backgroundChips 2 \
-    --backgroundChips 4 \
-    --backgroundChips 5 \
-    --backgroundChips 6 \
-    --epochs 100000
-#+end_src
-Finished around <2023-10-31 Tue 13:00>.
-
-Won't start another run for now, due to meeting at 2 pm.
--> Meeting canceled, starting now <2023-10-31 Tue 14:17>.
--> Finished <2023-10-31 Tue 15:43>.
-
-Start another 100k at <2023-10-31 Tue 15:43>.
-Finished sometime while I was out.
-
-Start another 100k, because there is an intriguing looking dip at the
-very end with a steeper slope! <2023-10-31 Tue 17:39>
-
-And it finished with 800k epochs in total around
-<2023-10-31 Tue 19:10>.
-
-The plots are:
-- [[~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/accuracy.pdf]]
-- [[~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/loss.pdf]]
-- [[~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/roc_curve.pdf]]
-- [[~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/test_validation.pdf]]
-- [[~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/test_validation_log10.pdf]]
-- [[~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/training_output.pdf]]
-- [[~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/training_output_log10.pdf]]
-- [[~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/validation_output.pdf]]
-- [[~/Sync/30_10_23_sgd_tanh300_mse_outer_chips/validation_output_log10.pdf]]
-
-That's a mighty fine result!
-
-Last output of training and test validation:
-#+begin_src
-Train set: Average loss: 0.0046 | Accuracy: 0.994
-Test set: Average loss: 0.0047 | Accuracy: 0.9943
-Test loss after training: 0.004683235776610672 with accuracy 0.994271375464684
-#+end_src
-
-A good chunk better than even the 485k epoch for 10_05_23_SGD, our
-previous best model which included center chip data.
-The question will be (tomorrow) as to how well this model generalizes
-to the center chip. But I'm not worried really.
-
-See the HDF5 file
-[[file:~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_desc_v2.h5]]
-for the real parameters as they were used to verify they are the same
-as in the command above.
-
-- [ ] Create effective efficiency plot
-- [ ] Create background cluster plot for Run-2 and Run-3 data.
-
-***** Effective efficiency of newly trained MLP
-
-Let's create the effective efficiency plot using 
-~TimepixAnalysis/Tools/NN_playground/effective_eff_55_fe.nim~ for *95%*:
-
-#+begin_src sh
-./effective_eff_55fe \
-    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --model ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh_sigmoid_MSE_SGD_300_2.pt \
-    --ε 0.95 \
-    --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
-    --evaluateFit \
-    --plotDatasets \
-    --plotPath ~/Sync/run2_run3_30_10_23_tanh300_effective_eff
-#+end_src
-
-which yields
-
-[[~/Sync/run2_run3_30_10_23_tanh300_effective_eff/efficiency_based_on_fake_data_per_run_cut_val.pdf]]
-
-which looks very good! Actually even a little bit better than
-fig. [[fig:background:mlp:effective_efficiencies]].
-
-And for *98%*:
-
-#+begin_src sh
-./effective_eff_55fe \
-    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --model ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh_sigmoid_MSE_SGD_300_2.pt \
-    --ε 0.98 \
-    --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
-    --evaluateFit \
-    --plotDatasets \
-    --plotPath ~/Sync/run2_run3_30_10_23_tanh300_effective_eff_98
-#+end_src
-
-which yields
-[[~/Sync/run2_run3_30_10_23_tanh300_effective_eff_98/efficiency_based_on_fake_data_per_run_cut_val.pdf]]
-
-
-And for *85%*:
-
-#+begin_src sh
-./effective_eff_55fe \
-    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --model ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh_sigmoid_MSE_SGD_300_2.pt \
-    --ε 0.85 \
-    --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
-    --evaluateFit \
-    --plotDatasets \
-    --plotPath ~/Sync/run2_run3_30_10_23_tanh300_effective_eff_85
-#+end_src
-
-which yields
-[[~/Sync/run2_run3_30_10_23_tanh300_effective_eff_85/efficiency_based_on_fake_data_per_run_cut_val.pdf]]
-
-If now the network also produces a number of clusters as good or
-better than the old network that'd be splendid.
-
-***** Regenerate the training plots for thesis
-
-We'll regenerate the plots and place them in the thesis figure
-directory by essentially rerunning the same commands as above, but
-handing the ~--skipTraining~ argument:
-#+begin_src sh
-./train_ingrid \
-    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --back ~/CastData/data/DataRuns2017_Reco.h5 \
-    --back ~/CastData/data/DataRuns2018_Reco.h5 \
-    --model ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh_sigmoid_MSE_SGD_300_2.pt \
-    --plotPath ~/phd/Figs/neuralNetworks/30_10_23_sgd_tanh300_mse_outer_chips/ \
-    --numHidden 300 \
-    --numHidden 300 \
-    --activation tanh \
-    --outputActivation sigmoid \
-    --lossFunction MSE \
-    --optimizer SGD \
-    --learningRate 7e-4 \
-    --simulatedData \
-    --backgroundRegion crAll \
-    --nFake 250_000 \
-    --backgroundChips 0 \
-    --backgroundChips 1 \
-    --backgroundChips 2 \
-    --backgroundChips 4 \
-    --backgroundChips 5 \
-    --backgroundChips 6 \
-    --skipTraining
-#+end_src
-
-***** Apply MLP to data
-
-#+begin_src sh
-./createAllLikelihoodCombinations \
-    --f2017 ~/CastData/data/DataRuns2017_Reco.h5 \
-    --f2018 ~/CastData/data/DataRuns2018_Reco.h5 \
-    --c2017 ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    --c2018 ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --regions crAll \
-    --vetoSets "{fkMLP, +fkFadc, +fkScinti, +fkSeptem, fkLineVeto, fkExclusiveLineVeto}" \
-    --mlpPath ~/org/resources/nn_devel_mixing/30_10_23_sgd_tanh300_mse_loss_outer_chips/mlp_tanh_sigmoid_MSE_SGD_300_2.pt \
-    --fadcVetoPercentile 0.99 \
-    --signalEfficiency 0.85 --signalEfficiency 0.9 --signalEfficiency 0.95 --signalEfficiency 0.98 \
-    --out ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/ \
-    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
-    --multiprocessing \
-    --jobs 4 \
-    --dryRun
-#+end_src
-
-***** Background clusters of new MLP
-
-85%:
-#+begin_src sh
-plotBackgroundClusters \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    --zMax 30 \
-    --title "X-ray like clusters of CAST data MLP@80%" \
-    --outpath /tmp/ \
-    --filterNoisyPixels \
-    --energyMin 0.2 --energyMax 12.0 \
-    --suffix "_mlp_85" \
-    --backgroundSuppression
-#+end_src
-
-98%
-#+begin_src sh
-plotBackgroundClusters \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.98_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.98_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    --zMax 30 \
-    --title "X-ray like clusters of CAST data MLP@98%" \
-    --outpath /tmp/ \
-    --filterNoisyPixels \
-    --energyMin 0.2 --energyMax 12.0 \
-    --suffix "_mlp_98" \
-    --backgroundSuppression
-#+end_src
-
-85%
-#+begin_src sh
-plotBackgroundClusters \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    --zMax 30 \
-    --title "X-ray like clusters of CAST data MLP@80%" \
-    --outpath /tmp/ \
-    --filterNoisyPixels \
-    --energyMin 0.2 --energyMax 12.0 \
-    --suffix "_mlp_85_vetoes" \
-    --backgroundSuppression    
-#+end_src
-
-98%
-#+begin_src sh
-plotBackgroundClusters \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.98_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.98_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    --zMax 30 \
-    --title "X-ray like clusters of CAST data MLP@98%" \
-    --outpath /tmp/ \
-    --filterNoisyPixels \
-    --energyMin 0.2 --energyMax 12.0 \
-    --suffix "_mlp_98_vetoes" \
-    --backgroundSuppression
-#+end_src
-
-***** Background rates (alone & compare to old best MLP)
-
-First background rates on its own, *85%*:
-#+begin_src sh
-plotBackgroundRate \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    --centerChip 3 \
-    --names "MLP@0.8" --names "MLP@0.8" \
-    --names "MLP@0.8+V" --names "MLP@0.8+V" \
-    --title "Background rate in center 5·5 mm², MLP@80%" \
-    --showNumClusters \
-    --region crGold \
-    --showTotalTime \
-    --topMargin 1.5 \
-    --energyDset energyFromCharge \
-    --energyMin 0.2 \
-    --outfile background_rate_gold_mlp_0.8_plus_vetoes.pdf \
-    --outpath /tmp \
-    --quiet
-#+end_src
-
-*90%*:
-#+begin_src sh
-plotBackgroundRate \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    --centerChip 3 \
-    --names "MLP@0.9" --names "MLP@0.9" \
-    --names "MLP@0.9+V" --names "MLP@0.9+V" \
-    --title "Background rate in center 5·5 mm², MLP@90%" \
-    --showNumClusters \
-    --region crGold \
-    --showTotalTime \
-    --topMargin 1.5 \
-    --energyDset energyFromCharge \
-    --energyMin 0.2 \
-    --outfile background_rate_gold_mlp_0.9_plus_vetoes.pdf \
-    --outpath /tmp \
-    --quiet
-#+end_src
-
-And now comparisons to the previously best model, both at *95%*:
-#+begin_src sh
-plotBackgroundRate \
-    ~/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R2_crAll_sEff_0.95_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.h5 \
-    ~/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.h5 \
-    ~/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933_vQ_0.99.h5 \
-    ~/org/resources/lhood_limits_10_05_23_mlp_sEff_0.99/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    --names "MLP@91" --names "MLP@91" \
-    --names "MLP91+V" --names "MLP91+V" \
-    --names "MLP@91 NEW" --names "MLP@91 NEW" \
-    --names "MLP91NEW+V" --names "MLP91NEW+V" \
-    --centerChip 3 \
-    --title "Background rate from CAST data" \
-    --showNumClusters \
-    --showTotalTime \
-    --topMargin 1.5 \
-    --energyDset energyFromCharge \
-    --outfile background_rate_crGold_scinti_fadc_septem_line.pdf \
-    --outpath /tmp \
-    --useTeX \
-    --region crGold \
-    --energyMin 0.2 \
-    --quiet
-#    --hideErrors \
-#    --hidePoints \
-#
-#    --applyEfficiencyNormalization \
-#+end_src
-
-Comparison of the different efficiencies for the MLP without vetoes:
-#+begin_src sh
-plotBackgroundRate \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.98_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.98_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2.h5 \
-    --names "MLP@98" --names "MLP@98" \
-    --names "MLP@95" --names "MLP@95" \
-    --names "MLP@90" --names "MLP@90" \
-    --names "MLP@85" --names "MLP@85" \
-    --centerChip 3 \
-    --title "Background rate from CAST data" \
-    --showNumClusters \
-    --showTotalTime \
-    --topMargin 1.5 \
-    --energyDset energyFromCharge \
-    --outfile background_rate_crGold_mlp_eff_comparison.pdf \
-    --outpath /tmp \
-    --useTeX \
-    --region crGold \
-    --energyMin 0.2 \
-    --quiet
-#    --hideErrors \
-#    --hidePoints \
-#
-#    --applyEfficiencyNormalization \
-#+end_src
-
-And with scinti+fadc+line veto:
-#+begin_src sh
-plotBackgroundRate \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.98_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.98_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.9_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.9_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    ~/org/resources/lhood_mlp_tanh300_outer_chip_training_30_10_23/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_SGD_300_2_vQ_0.99.h5 \
-    --names "MLP@98" --names "MLP@98" \
-    --names "MLP@95" --names "MLP@95" \
-    --names "MLP@90" --names "MLP@90" \
-    --names "MLP@85" --names "MLP@85" \
-    --centerChip 3 \
-    --title "Background rate from CAST data with scinti+fadc+line veto" \
-    --showNumClusters \
-    --showTotalTime \
-    --topMargin 1.5 \
-    --energyDset energyFromCharge \
-    --outfile background_rate_crGold_mlp_eff_comparison_scinti_fadc_line.pdf \
-    --outpath /tmp \
-    --useTeX \
-    --region crGold \
-    --energyMin 0.2 \
-    --quiet
-#    --hideErrors \
-#    --hidePoints \
-#
-#    --applyEfficiencyNormalization \
-#+end_src
-
 **** Generate plot of the ROC curve                             :extended:
 
 The ROC curve plot is generated by ~train_ingrid~ if the ~--predict~
@@ -24472,6 +24204,394 @@ Generate the ROC curve for the MLP trained on the outer chips:
     --backgroundChips 5 \
     --backgroundChips 6 \
     --predict
+#+end_src
+
+
+
+**** Training call for the best performing MLP                  :extended:
+
+All MLPs we trained, including the one we mainly use in the end, use
+the following datasets as inputs:
+- eccentricity
+- skewnessLongitudinal
+- skewnessTransverse
+- kurtosisLongitudinal
+- kurtosisTransverse
+- length
+- width
+- rmsLongitudinal
+- rmsTransverse
+- lengthDivRmsTrans
+- rotationAngle
+- fractionInTransverseRms
+- totalCharge
+- σT (<- this is actually $D_T$)
+
+This section (anything below) is extracted from
+[[file:~/org/journal.org::#sec:journal:17_11_23:train_adam_tanh30]].
+
+Start training at <2023-11-17 Fri 19:42>:
+#+begin_src sh
+./train_ingrid \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --back ~/CastData/data/DataRuns2017_Reco.h5 \
+    --back ~/CastData/data/DataRuns2018_Reco.h5 \
+    --simFiles ~/CastData/data/FakeData/fakeData_500k_0_to_3keV_decrease.h5 \
+    --modelOutpath ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/ \
+    --plotPath ~/Sync/17_11_23_adam_tanh30_sigmoid_mse_3keV/ \
+    --datasets eccentricity \
+    --datasets skewnessLongitudinal \
+    --datasets skewnessTransverse \
+    --datasets kurtosisLongitudinal \
+    --datasets kurtosisTransverse \
+    --datasets length \
+    --datasets width \
+    --datasets rmsLongitudinal \
+    --datasets rmsTransverse \
+    --datasets lengthDivRmsTrans \
+    --datasets rotationAngle \
+    --datasets fractionInTransverseRms \
+    --datasets totalCharge \
+    --datasets σT \
+    --numHidden 30 \
+    --numHidden 30 \
+    --activation tanh \
+    --outputActivation sigmoid \
+    --lossFunction MSE \
+    --optimizer Adam \
+    --learningRate 7e-4 \
+    --simulatedData \
+    --backgroundRegion crAll \
+    --nFake 250_000 \
+    --backgroundChips 0 \
+    --backgroundChips 1 \
+    --backgroundChips 2 \
+    --backgroundChips 4 \
+    --backgroundChips 5 \
+    --backgroundChips 6 \
+    --clamp 5000 \
+    --plotEvery 1000
+#+end_src
+Stopped after 25k <2023-11-17 Fri 20:09>
+
+Now continue with uniform data:
+
+#+begin_src sh
+./train_ingrid \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --back ~/CastData/data/DataRuns2017_Reco.h5 \
+    --back ~/CastData/data/DataRuns2018_Reco.h5 \
+    --simFiles ~/CastData/data/FakeData/fakeData_500k_uniform_energy_0_10_keV.h5 \
+    --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_25000_loss_0.0253_acc_0.9657.pt \
+    --plotPath ~/Sync/17_11_23_adam_tanh30_sigmoid_mse_3keV/ \
+    --datasets eccentricity \
+    --datasets skewnessLongitudinal \
+    --datasets skewnessTransverse \
+    --datasets kurtosisLongitudinal \
+    --datasets kurtosisTransverse \
+    --datasets length \
+    --datasets width \
+    --datasets rmsLongitudinal \
+    --datasets rmsTransverse \
+    --datasets lengthDivRmsTrans \
+    --datasets rotationAngle \
+    --datasets fractionInTransverseRms \
+    --datasets totalCharge \
+    --datasets σT \
+    --numHidden 30 \
+    --numHidden 30 \
+    --activation tanh \
+    --outputActivation sigmoid \
+    --lossFunction MSE \
+    --optimizer Adam \
+    --learningRate 7e-4 \
+    --simulatedData \
+    --backgroundRegion crAll \
+    --nFake 250_000 \
+    --backgroundChips 0 \
+    --backgroundChips 1 \
+    --backgroundChips 2 \
+    --backgroundChips 4 \
+    --backgroundChips 5 \
+    --backgroundChips 6 \
+    --clamp 5000 \
+    --plotEvery 1000
+#+end_src
+
+Stopped after 82k epochs <2023-11-17 Fri 21:14>.
+
+***** ~nn_predict~
+
+Prediction:
+#+begin_src sh
+./nn_predict \
+    --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
+    --signalEff 0.9 \
+    --plotPath ~/Sync/17_11_23_adam_tanh30_sigmoid_mse_3keV
+#+end_src
+
+All positive fortunately.
+
+***** ~effective_eff_55fe~
+
+
+#+begin_src sh
+./effective_eff_55fe \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
+    --ε 0.95 \
+    --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
+    --evaluateFit --plotDatasets \
+    --plotPath ~/Sync/run2_run3_17_11_23_adam_tanh30_sigmoid_mse_82k/ 
+#+end_src
+Finished <2023-11-17 Fri 21:29>.
+
+[[~/Sync/run2_run3_17_11_23_adam_tanh30_sigmoid_mse_82k/efficiency_based_on_fake_data_per_run_cut_val.pdf]]
+
+-> Somewhat similar to the 10 neuron network *BUT* the spread is much
+smaller and the CDL data is better predicted!
+This might our winner.
+
+90% <2023-11-18 Sat 08:59>
+#+begin_src sh
+./effective_eff_55fe \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
+    --ε 0.90 \
+    --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
+    --evaluateFit --plotDatasets \
+    --plotPath ~/Sync/run2_run3_17_11_23_adam_tanh30_sigmoid_mse_mlp90_82k/ 
+#+end_src
+
+
+***** ~train_ingrid --predict~
+
+<2023-11-17 Fri 21:30>
+#+begin_src sh
+./train_ingrid \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --back ~/CastData/data/DataRuns2017_Reco.h5 \
+    --back ~/CastData/data/DataRuns2018_Reco.h5 \
+    --simFiles ~/CastData/data/FakeData/fakeData_500k_uniform_energy_0_10_keV.h5 \
+    --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
+    --plotPath ~/Sync/17_11_23_adam_tanh30_sigmoid_mse_3keV/ \
+    --datasets eccentricity \
+    --datasets skewnessLongitudinal \
+    --datasets skewnessTransverse \
+    --datasets kurtosisLongitudinal \
+    --datasets kurtosisTransverse \
+    --datasets length \
+    --datasets width \
+    --datasets rmsLongitudinal \
+    --datasets rmsTransverse \
+    --datasets lengthDivRmsTrans \
+    --datasets rotationAngle \
+    --datasets fractionInTransverseRms \
+    --datasets totalCharge \
+    --datasets σT \
+    --numHidden 30 \
+    --numHidden 30 \
+    --activation tanh \
+    --outputActivation sigmoid \
+    --lossFunction MSE \
+    --optimizer Adam \
+    --learningRate 7e-4 \
+    --simulatedData \
+    --backgroundRegion crAll \
+    --nFake 250_000 \
+    --backgroundChips 0 \
+    --backgroundChips 1 \
+    --backgroundChips 2 \
+    --backgroundChips 4 \
+    --backgroundChips 5 \
+    --backgroundChips 6 \
+    --clamp 5000 \
+    --predict
+#+end_src
+Finished <2023-11-17 Fri 21:33>
+
+Compared to the ROC curve of tanh10, this ROC curve looks a little bit
+worse. But the effective efficiency predictions are quite a bit
+better.
+
+So we will choose based on what happens with the background and other
+efficiencies.
+
+***** ~createAllLikelihoodCombinations~
+
+Starting <2023-11-18 Sat 00:03>:
+#+begin_src sh
+./createAllLikelihoodCombinations \
+    --f2017 ~/CastData/data/DataRuns2017_Reco.h5 \
+    --f2018 ~/CastData/data/DataRuns2018_Reco.h5 \
+    --c2017 ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    --c2018 ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --regions crAll \
+    --vetoSets "{fkMLP, +fkFadc, +fkScinti, +fkSeptem, fkLineVeto, fkExclusiveLineVeto}" \
+    --mlpPath ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
+    --fadcVetoPercentile 0.99 \
+    --signalEfficiency 0.85 --signalEfficiency 0.9 --signalEfficiency 0.95 --signalEfficiency 0.98 \
+    --out ~/org/resources/lhood_mlp_17_11_23_adam_tanh10_sigmoid_mse_82k/ \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --multiprocessing \
+    --jobs 4 \
+    --dryRun
+#+end_src
+#+begin_src
+Running all likelihood combinations took 11730.39050412178 s
+#+end_src
+Despite only 2 jobs in the multithreaded case below (but excluding
+fkMLP alone!!) it was still more than twice slower. So single threaded
+is the better way.
+
+Multithreaded took:
+#+begin_src
+Running all likelihood combinations took 31379.83979129791 s
+#+end_src
+
+***** ~plotBackgroundClusters~, ~plotBackgroundRate~
+
+****** No vetoes
+
+Background clusters, 95%:
+#+begin_src sh
+plotBackgroundClusters \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    --zMax 30 --title "X-ray like clusters of CAST data MLP@95%" \
+    --outpath /tmp/ --filterNoisyPixels \
+    --energyMin 0.2 --energyMax 12.0 --suffix "_mlp_95_adam_tanh30_sigmoid_mse_82k" \
+    --backgroundSuppression
+#+end_src
+
+90%
+#+begin_src sh
+plotBackgroundClusters \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    --zMax 30 --title "X-ray like clusters of CAST data MLP@90%" \
+    --outpath /tmp/ --filterNoisyPixels \
+    --energyMin 0.2 --energyMax 12.0 --suffix "_mlp_90_adam_tanh30_sigmoid_mse_82k" \
+    --backgroundSuppression
+#+end_src
+
+
+Background rate, comparison:
+#+begin_src sh
+plotBackgroundRate \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.98_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.98_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    --names "98" --names "98" \
+    --names "95" --names "95" \
+    --names "90" --names "90" \
+    --names "85" --names "85" \
+    --centerChip 3 --title "Background rate from CAST" \
+    --showNumClusters --showTotalTime --topMargin 1.5 --energyDset energyFromCharge \
+    --outfile background_rate_adam_tanh30_mse_sigmoid_82k.pdf \
+    --outpath /tmp \
+    --region crGold \
+    --energyMin 0.2
+#+end_src
+
+****** Scinti+FADC+Line
+
+Background clusters, 95%:
+#+begin_src sh
+plotBackgroundClusters \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --zMax 30 --title "X-ray like clusters of CAST data MLP@95%+Scinti+FADC+Line" \
+    --outpath /tmp/ --filterNoisyPixels \
+    --energyMin 0.2 --energyMax 12.0 --suffix "_mlp_95_scinti_fadc_line_adam_tanh30_sigmoid_mse_82k" \
+    --backgroundSuppression
+#+end_src
+
+85%
+#+begin_src sh
+plotBackgroundClusters \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --zMax 30 --title "X-ray like clusters of CAST data MLP@85%+Scinti+FADC+Line" \
+    --outpath /tmp/ --filterNoisyPixels \
+    --energyMin 0.2 --energyMax 12.0 --suffix "_mlp_85_scinti_fadc_line_adam_tanh30_sigmoid_mse_82k" \
+    --backgroundSuppression
+#+end_src
+
+#+begin_src sh
+plotBackgroundRate \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.98_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.98_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.9_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.9_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "98" --names "98" \
+    --names "95" --names "95" \
+    --names "90" --names "90" \
+    --names "85" --names "85" \
+    --centerChip 3 --title "Background rate from CAST" \
+    --showNumClusters --showTotalTime --topMargin 1.5 --energyDset energyFromCharge \
+    --outfile background_rate_adam_tanh30_scinti_fadc_line_mse_sigmoid_82k.pdf \
+    --outpath /tmp \
+    --region crGold \
+    --energyMin 0.2
+#+end_src
+
+****** Scinti+FADC+Septem+Line
+
+Background clusters, 95%:
+#+begin_src sh
+plotbackgroundclusters \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --zMax 30 --title "X-ray like clusters of CAST data MLP@95%+Scinti+FADC+Septem+Line" \
+    --outpath /tmp/ --filterNoisyPixels \
+    --energyMin 0.2 --energyMax 12.0 --suffix "_mlp_95_scinti_fadc_septem_line_adam_tanh30_sigmoid_mse_82k" \
+    --backgroundSuppression
+#+end_src
+
+85%
+#+begin_src sh
+plotBackgroundClusters \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --zMax 30 --title "X-ray like clusters of CAST data MLP@85%+Scinti+FADC+Septem+Line" \
+    --outpath /tmp/ --filterNoisyPixels \
+    --energyMin 0.2 --energyMax 12.0 --suffix "_mlp_85_scinti_fadc_septem_line_adam_tanh30_sigmoid_mse_82k" \
+    --backgroundSuppression
+#+end_src
+
+#+begin_src sh
+plotBackgroundRate \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.98_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.98_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "98" --names "98" \
+    --names "95" --names "95" \
+    --names "90" --names "90" \
+    --names "85" --names "85" \
+    --centerChip 3 --title "Background rate from CAST" \
+    --showNumClusters --showTotalTime --topMargin 1.5 --energyDset energyFromCharge \
+    --outfile background_rate_adam_tanh30_scinti_fadc_septem_line_mse_sigmoid_82k.pdf \
+    --outpath /tmp \
+    --region crGold \
+    --energyMin 0.2
 #+end_src
 
 **** Combination of NN w/ vetoes                                :noexport: 
@@ -24553,14 +24673,15 @@ As the simulated X-ray clusters certainly differ from real X-rays,
 verification of the software efficiency using calibration data is
 required. For all \cefe calibration runs as well as all CDL data we
 produce cut values as explained in the previous section. Then we apply
-these to those same runs and compute the effective efficiency as
+these to the real clusters of those runs and compute the effective
+efficiency as
 
 \[
 ε_{\text{effective}} = \frac{N_{\text{cut}}}{N_{\text{total}}}
 \]
 
 where $N_{\text{cut}}$ is the clusters remaining after applying the
-MLP cut and $N_{\text{total}}$ is the total number of clusters after
+MLP cut. $N_{\text{total}}$ is the total number of clusters after
 application of the standard cleaning cuts applied for the \cefe
 spectrum fit and the CDL fluorescence line fits. 
 
@@ -24569,40 +24690,49 @@ produces. A close match with the target software efficiency implies
 the simulated X-ray data matches the real data well and the network
 learned to identify X-rays based on physical properties (and not due
 to overtraining). In the limit calculation later the mean of all these
-effective efficiencies is used in place of the target software
-efficiency as a realistic estimator for the signal efficiency.
+effective efficiencies of the \cefe calibration runs is used in place
+of the target software efficiency as a realistic estimator for the
+signal efficiency. The standard deviation of all these effective
+efficiencies is one of the systematics used there.
 
 Fig. [[fig:background:mlp:effective_efficiencies]] shows the effective
 efficiencies obtained for all \cefe calibration and CDL runs using the
-MLP checkpoint introduced earlier. The target efficiency in the plot
-was $\SI{95}{\%}$ with an achieved mean effective efficiency of about
-$\SI{91}{\%}$. Variation is significantly larger in the CDL runs (runs
-above number 305), but fortunately towards actual larger
-efficiencies. This is good because it implies using the mean of all
-efficiencies -- resulting in a smaller value -- is conservative. The
-marker symbol represents the energy of the target fluorescence
-line. Note that the \cefe calibration escape peak near $\SI{3}{keV}$
-is a separate data point ~"3.0"~ compared to the Silver fluorescence
-line given as ~"2.98"~. That is because the two are fundamentally
-different things. The escape event is a $\SI{5.9}{keV}$ photopeak
-X-ray entering the detector, which ends up 'losing' about
-$\SI{3}{keV}$ due to excitation of an Argon fluorescence $Kα$
-X-ray. This means the absorption length is that of a $\SI{5.9}{keV}$
-photon, whereas the Silver fluorescence line corresponds to a real
-$\SI{2.98}{keV}$ photon and thus corresponding absorption length. As
-such the geometric properties on average are different.
+MLP introduced earlier. The marker symbol represents the energy of the
+target fluorescence line. Note that the \cefe calibration escape peak
+near $\SI{3}{keV}$ is a separate data point ~"3.0"~ compared to the
+Silver fluorescence line given as ~"2.98"~. That is because the two
+are fundamentally different things. The escape event is a
+$\SI{5.9}{keV}$ photopeak X-ray entering the detector, which ends up
+'losing' about $\SI{3}{keV}$ due to excitation of an Argon
+fluorescence $Kα$ X-ray. This means the absorption length is that of a
+$\SI{5.9}{keV}$ photon, whereas the Silver fluorescence line
+corresponds to a real $\SI{2.98}{keV}$ photon and thus corresponding
+absorption length. As such the geometric properties on average are
+different.
 
-The standard deviation of all these effective efficiencies is one of
-the systematics later used for the limit calculation.
+The target efficiency in the plot was $\SI{95}{\%}$ with an achieved
+mean effective efficiency close to the target. Values are slightly
+lower in Run-2 (runs < 200) and slightly above in Run-3. Variation is
+significantly larger in the CDL runs (runs above number 305), but
+often towards larger efficiencies. Only one CDL run is at
+significantly lower efficiency ($\SI{82}{\%}$), with a few other lower
+energy runs around $\SI{90}{\%}$. The data quality in the CDL data is
+lower and it has larger variation of the common properties (gas
+gain, diffusion) as compared to the CAST dataset. 
 
 #+CAPTION: Effective efficiencies obtained using the MLP for a target $ε = \SI{95}{\%}$
 #+CAPTION: software efficiency. Runs above run 305 are CDL calibration runs. Different
 #+CAPTION: symbols represent different target fluorescence lines. The \cefe escape peak
 #+CAPTION: is indicated at $\SI{3}{keV}$ in contrast to the $\SI{2.98}{keV}$ Silver
-#+CAPTION: line, due to different physical properties.
+#+CAPTION: line, due to different physical properties. The photopeak corresponds to ~5.9~ and
+#+CAPTION: the equivalent CDL Mn target to ~5.89~. 
 #+NAME: fig:background:mlp:effective_efficiencies
 #+ATTR_LATEX: :width 0.7\textwidth
-[[~/phd/Figs/neuralNetworks/effective_efficiency_at_0.95_mlp_mse_300tanh.pdf]]
+[[~/phd/Figs/neuralNetworks/17_11_23_adam_tanh30_sigmoid_mse_3keV/effectiveEff0.95/efficiency_based_on_fake_data_per_run_cut_val.pdf]]
+
+**** TODOs for this section                                     :noexport:
+
+- [ ] *UPDATE PLOT* to have larger margin at top
 
 **** Generate effective efficiency plot                         :extended:
 :PROPERTIES:
@@ -24628,14 +24758,12 @@ copied here:
 Now we compute the effective efficiencies:
 #+begin_src sh
 ./effective_eff_55fe \
-    ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-    ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-    --model ~/org/resources/nn_devel_mixing/10_05_23_sgd_gauss_diffusion_tanh300_mse_loss/mlp_tanh300_msecheckpoint_epoch_485000_loss_0.0055_acc_0.9933.pt \
+    ~/CastData/data/CalibrationRuns2017_Reco.h5 ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
     --ε 0.95 \
     --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
-    --evaluateFit \
-    --plotDatasets \
-    --plotPath ~/Sync/10_05_23_sgd_tanh300_mse/effective_efficiencies
+    --evaluateFit --plotDatasets \
+    --plotPath ~/phd/Figs/neuralNetworks/17_11_23_adam_tanh30_sigmoid_mse_3keV/effectiveEff0.95/
   #+end_src
 
 ***** TODOs for this section                                   :noexport:
