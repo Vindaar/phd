@@ -28997,21 +28997,46 @@ In this chapter we will introduce a generic limit calculation method,
 which can be used to compute limits on different axion or ALP coupling
 constants.
 
-We will first present the limit method by introducing the likelihood
-function we use to compute a limit in
-sec. [[#sec:limit:limit_method]]. 
+The first part of this chapter focuses on the more theoretical and
+conceptual aspects of our limit calculation methods. The second half
+discusses our inputs in detail and shows our expected and observed limits.
 
-Then we will extend it in
-sec. [[#sec:limit:systematics]] to include systematic uncertainties. Up
-next we discuss the definition of expected limits and how they are
-computed.
+We will start with an introduction of the method itself, a Bayesian
+extended likelihood approach,
+sec. [[#sec:limit:method_introduction]]. Step by step we will introduce
+the likelihood function we use (sec. [[#sec:limit:method_likelihood]]),
+what the individual pieces are and how likelihood values are computed
+(sec. [[#sec:limit:method_computing_L]]) and how a limit is computed from
+such a likelihood function,
+sec. [[#sec:limit:method_computing_a_limit]]. Then we introduce our
+approach to compute an expected limit by sampling toy candidates,
+sec. [[#sec:limit:method_expected_limit]]. 
 
-With the 
+After this we will extend our approach in sec. [[#sec:limit:systematics]]
+to include systematic uncertainties. Due to added complexity in
+evaluating the thus produced likelihood function, we discuss our
+Markov Chain Monte Carlo (MCMC) approach to evaluate the likelihood
+function in sec. [[#sec:limit:method_mcmc]].
+
+This concludes the first half of the chapter. From here we introduce
+all ingredients entering the likelihood function in detail,
+sec. [[#sec:limit:ingredients]]. Next we discuss our systematics,
+sec. [[#sec:limit:systematics]], after which we explain our MCMC approach
+in more detail (number of chains, parameters bounds, starting
+parameters etc.), sec. [[#sec:limit:mcmc_calc_limit]].
+
+At this point we can finally tie everything together and discuss the
+expected limits obtained for a variety of different classifier and
+veto choices, sec. [[#sec:limit:expected_limits]]. For the best performing
+setup -- the one yielding the best expected limit -- we present our
+axion candidates, [[#sec:limit:candidates]]. Based on these we finally
+present our observed limits in sec. [[#sec:limit:observed_limits]].
+
+** TODOs for this section [/]                                     :noexport:
 
 - [ ] Need to rethink how to structure it first...
 
-
-- [ ] *TALK ABOUT ASIMOV DATASET IN CONTEXT OF EXPECTED LIMITS* and
+- [X] *TALK ABOUT ASIMOV DATASET IN CONTEXT OF EXPECTED LIMITS* and
   how it likely won't help us, as we cannot 'compute' the Asimov
   dataset.
   The closest we could do is to take the exact numbers of candidates
@@ -29120,21 +29145,24 @@ parameter space where the integrand contributes to the integral.
 :CUSTOM_ID: sec:limit:method_introduction
 :END:
 
+We start with a few words on the terminology we use and what we have
+in mind when we talk about 'limits'.
+
 - Context and terminology :: An experiment tries to detect a new
   phenomenon of the kind where you expect very little signal compared
   to background sources. We have a dataset in which the experiment is
-  _sensitive_ to the phenomenon, another dataset in which it is _not
-  sensitive_ and finally a theoretical model of our _expected signal_.
+  /sensitive/ to the phenomenon, another dataset in which it is /not
+  sensitive/ and finally a theoretical model of our /expected signal/.
   
   Any data entry (after cleaning) in the sensitive dataset is a
-  _candidate_. Each candidate is drawn from a distribution of the
-  present background plus the expected signal contribution (c = s +
-  b). Any entry in the non sensitive dataset is _background_ only.
+  /candidate/. Each candidate is drawn from a distribution of the
+  present background plus the expected signal contribution ($c = s +
+  b$). Any entry in the non sensitive dataset is /background/ only.
 
 - Goal :: compute the value of a parameter (coupling constant) such
-  that there is 95% confidence that the combined hypothesis of signal
-  and background sources are compatible with the background only
-  hypothesis.
+  that there is $\SI{95}{\%}$ confidence that the combined hypothesis
+  of signal and background sources are compatible with the background
+  only hypothesis.
 
 - Condition :: Our experiment should be such that the data in some
   "channels" of our choice can be modeled by a Poisson distribution
@@ -29151,22 +29179,22 @@ parameter space where the integrand contributes to the integral.
   channel's Poisson probability
   
   \[
-  \mathcal{L}(λ) = \prod_i P_{i, \text{Pois}}(k; λ) = \prod_i \frac{λ_i^{k_i} e^{-λ_i}}{k_i!}
+  \mathcal{L}(λ) = \prod_i P_{i, \text{Pois}}(k; λ) = \prod_i \frac{λ_i^{k_i} e^{-λ_i}}{k_i!}.
   \]
   
-  i.e. given a set of $k_i$ recorded counts for all different channels
-  $i$ with expected means $λ_i$ the "likelihood" gives us the literal
+  Given a set of $k_i$ recorded counts for all different channels $i$
+  with expected means $λ_i$ the "likelihood" gives us the literal
   likelihood to record exactly that experimental outcome. Note that
   the parameter of the likelihood function is the mean $λ$ and not the
   recorded data $k$! The likelihood function describes the likelihood
   for a *fixed set of data* (our real measured counts) for different
-  parameters (our signal & background models - where background model
-  is constant as well).
+  parameters (our signal & background models - where the background
+  model is constant as well).
 
-  In addition the method described below is valid under the assumption
-  that our experiment did not have a statistically significant
-  detection in the signal sensitive dataset compared to the background
-  dataset! 
+  In addition the method described in the next section is valid under
+  the assumption that our experiment did not have a statistically
+  significant detection in the signal sensitive dataset compared to
+  the background dataset.
 
 # - [ ] Why do we use the likelihood ratio that we use?
 
@@ -29175,19 +29203,19 @@ parameter space where the integrand contributes to the integral.
 :CUSTOM_ID: sec:limit:method_likelihood
 :END:
 
-The likelihood function as described in the 
-previous section is not helpful to compute a limit for the usage
-with different datasets as described before. For that case we want
-to have some kind of a "test statistic" that relates the sensitive
-dataset with its seen candidates to the background dataset. For
-practical purposes we prefer to define such a statistic which is
-monotonically increasing in the number of candidates (see T. Junk's
-1999 paper for details or read
-sec. [[#sec:math_behind_cls_plus_b]]). There are different choices
-possible, but the one we use is:
+The likelihood function as described in the previous section is not
+optimal to compute a limit for the usage with different datasets as
+described before. [fn:we_could] For that case we want to have some kind of a "test
+statistic" that relates the sensitive dataset with its seen candidates
+to the background dataset. For practical purposes we prefer to define
+a statistic, which is monotonically increasing in the number of
+candidates (see for example cite:junk99_mclimit). There are different choices
+possible, but the one we use is
+
 \[
-\mathcal{L}(s, b) = \prod_i \frac{P_{\text{pois}}(c_i; s_i + b_i)}{P_{\text{pois}}(c_i; b_i)}
+\mathcal{L}(s, b) = \prod_i \frac{P_{\text{pois}}(c_i; s_i + b_i)}{P_{\text{pois}}(c_i; b_i)},
 \]
+
 so the ratio of the signal plus background over the pure background
 hypothesis. The number $c_i$ is the real number of measured
 *candidates*. So the numerator gives the probability to measure $c_i$
@@ -29259,6 +29287,40 @@ to get a combined likelihood to compute a limit for.
 
   where $i$ is now all channels where a candidate is contained ($c_i =
   1$).
+
+[fn:we_could] We could use $P_i(k_i; λ_i = s_i + b_i)$, but among
+other things a ratio is numerically more stable.
+
+*** Notes on more explanations                                   :extended:
+
+For more explanations on this, I really recommend to read Thomas Junk 1999
+paper about ~mclimit~, cite:junk99_mclimit. While it only covers
+binned limit approaches, it is anyhow very clear in its explanations.
+
+In general I recommend the following resources on statistics and limit
+calculations. Roughly in the order in which I would recommend them.
+- Luca Lista's book on statistics, [[cite:&lista23_statistics]]
+  -> If you log in to a CERN account, you can just download it
+  directly from Springer (I think that's the reason it works for me)
+- Luca List also uploaded a 'shortened version' if you will to arxiv
+  cite:lista16_arxiv.
+- Barlow's book on statistics is still a good book, but from 1989,
+  [[cite:&barlow1993statistics]]
+- Barlow also wrote a paper for the arxiv recently
+  [[cite:&barlow19_arxiv_statistics]]
+- Cowan's book on statistics, [[cite:&cowan1998statistical]]
+
+Cowan's and Barlow's books are good to check both. They mostly cover
+the same topics, but reading in each can be helpful. Luca Lista is my
+personal preference though, because it seems clearer to me. Also it's
+more up to date with modern methods.
+
+For the topic here in particular, maybe also see my own notes from a
+few years back trying to better understand the maths behind CL_S and
+CL_s+b:
+[[file:~/org/Doc/StatusAndProgress.org::#sec:math_behind_cls_plus_b]]
+
+
 
 ** Limit method - computing $\mathcal{L}$
 :PROPERTIES:
