@@ -16202,19 +16202,21 @@ taking campaign (one of them was aborted after 30 min).
 | active duration                | 2.6 h         | 3.53 h        | 2238.78 h      | 1079.6 h       |
 | active fraction                | 2.422 %       | 4.049 %       | 89.29 %        | 90.02 %        |
 | # trackings                    | \num{0}      | \num{0}      | \num{68}      | \num{47}      |
+| non tracking time              | 107.42 h      | 87.06 h       | 2401.42 h      | 1124.93 h      |
+| active non tracking time       | 2.6 h         | 3.53 h        | 2144.66 h      | 1012.67 h      |
 | tracking time                  | 0 h           | 0 h           | 106.01 h       | 74.3 h         |
-| active tracking time           | 0 h           | 0 h           | 94.65 h        | 66.89 h        |
+| active tracking time           | 0 h           | 0 h           | 93.36 h        | 67 h           |
 |--------------------------------+--------------+--------------+---------------+---------------|
 | Events                         |              |              |               |               |
 |--------------------------------+--------------+--------------+---------------+---------------|
 | total # events                 | \num{532020} | \num{415927} | \num{3758960} | \num{1837330} |
-| only center chip               | \num{480232} | \num{366917} | \num{23820}   | \num{9462}    |
-| only any outer chip            | \num{7}      | \num{5}      | \num{1557934} | \num{741199}  |
-| center + outer                 | \num{51368}  | \num{47825}  | \num{960499}  | \num{460726}  |
-| center chip                    | \num{531600} | \num{414742} | \num{984319}  | \num{470188}  |
-| any chip                       | \num{531607} | \num{414747} | \num{2542253} | \num{1211387} |
-| fraction with center           | 99.92 %       | 99.72 %       | 26.19 %        | 25.59 %        |
-| fraction with any              | 99.92 %       | 99.72 %       | 67.63 %        | 65.93 %        |
+| only center chip               | \num{472048} | \num{361244} | \num{21684}   | \num{10342}   |
+| only any outer chip            | \num{5}      | \num{5}      | \num{1558546} | \num{744722}  |
+| center + outer                 | \num{59554}  | \num{53499}  | \num{1014651} | \num{486478}  |
+| center chip                    | \num{531602} | \num{414743} | \num{1036335} | \num{496820}  |
+| any chip                       | \num{531607} | \num{414748} | \num{2594881} | \num{1241542} |
+| fraction with center           | 99.92 %       | 99.72 %       | 27.57 %        | 27.04 %        |
+| fraction with any              | 99.92 %       | 99.72 %       | 69.03 %        | 67.57 %        |
 | with fadc readouts             | \num{531529} | \num{413853} | \num{542233}  | \num{211683}  |
 | fraction with FADC             | 99.91 %       | 99.50 %       | 14.43 %        | 11.52 %        |
 | with SiPM trigger <4095        | \num{1656}   | \num{20}     | \num{8585}    | \num{4304}    |
@@ -16223,6 +16225,8 @@ taking campaign (one of them was aborted after 30 min).
 | with any veto scinti trigger   | \num{0}      | \num{216170} | \num{0}       | \num{206025}  |
 | fraction with any SiPM         | 99.91 %       | 0.3154 %      | 21.96 %        | 1.903 %        |
 | fraction with any veto scinti  | 0.000 %       | 51.97 %       | 0.000 %        | 11.21 %        |
+
+
 
 *** TODOs for this section [/]                                   :noexport:
 
@@ -16357,6 +16361,8 @@ type
     activeDuration: Second
     activeFraction: float # ratio of active / total    
     numTrackings: int
+    nonTrackingDuration: Second
+    activeNonTrackingTime: Second
     trackingTime: Second
     activeTrackingTime: Second
     totalEvents: int # total number of recorded events
@@ -16379,34 +16385,38 @@ type
 
 proc fieldToStr(s: string): string =
   case s
-  of "totalDuration":      result = "total duration"
-  of "activeDuration":     result = "active duration"
-  of "activeFraction":     result = "active fraction"
-  of "numTrackings":       result = "# trackings"
-  of "trackingTime":       result = "tracking time"
-  of "activeTrackingTime": result = "active tracking time"
-  of "totalEvents":        result = "total # events"
-  of "center":             result = "center chip"
-  of "onlyCenter":         result = "only center chip"
-  of "onlyOuter":          result = "only any outer chip"
-  of "centerAndOuter":     result = "center + outer"
-  of "anyActive":          result = "any chip"
-  of "fractionWithCenter": result = "fraction with center"
-  of "fractionWithAny":    result = "fraction with any"
-  of "fadcReadouts":       result = "with fadc readouts"
-  of "fractionFadc":       result = "fraction with FADC"
-  of "scinti1NonTrivial":  result = "with SiPM trigger <4095"
-  of "scinti2NonTrivial":  result = "with veto scinti trigger <4095"
-  of "scinti1Triggers":    result = "with any SiPM trigger"
-  of "scinti2Triggers":    result = "with any veto scinti trigger"
-  of "fractionScinti1":    result = "fraction with any SiPM"
-  of "fractionScinti2":    result = "fraction with any veto scinti"  
+  of "totalDuration":         result = "total duration"
+  of "activeDuration":        result = "active duration"
+  of "activeFraction":        result = "active fraction"
+  of "numTrackings":          result = "# trackings"
+  of "nonTrackingDuration":   result = "non tracking time"
+  of "activeNonTrackingTime": result = "active non tracking time"
+  of "trackingTime":          result = "tracking time"
+  of "activeTrackingTime":    result = "active tracking time"
+  of "totalEvents":           result = "total # events"
+  of "center":                result = "center chip"
+  of "onlyCenter":            result = "only center chip"
+  of "onlyOuter":             result = "only any outer chip"
+  of "centerAndOuter":        result = "center + outer"
+  of "anyActive":             result = "any chip"
+  of "fractionWithCenter":    result = "fraction with center"
+  of "fractionWithAny":       result = "fraction with any"
+  of "fadcReadouts":          result = "with fadc readouts"
+  of "fractionFadc":          result = "fraction with FADC"
+  of "scinti1NonTrivial":     result = "with SiPM trigger <4095"
+  of "scinti2NonTrivial":     result = "with veto scinti trigger <4095"
+  of "scinti1Triggers":       result = "with any SiPM trigger"
+  of "scinti2Triggers":       result = "with any veto scinti trigger"
+  of "fractionScinti1":       result = "fraction with any SiPM"
+  of "fractionScinti2":       result = "fraction with any veto scinti"  
 
 proc `$`(castInfo: CastInformation): string =
   result.add &"Total duration: {pretty(castInfo.totalDuration.to(Hour), 4, true)}\n"
   result.add &"Active duration: {pretty(castInfo.activeDuration.to(Hour), 4, true)}\n"
   result.add &"Active fraction: {castInfo.activeFraction}\n"
   result.add &"Number of trackings: {castInfo.numTrackings}\n"
+  result.add &"Non-tracking time: {pretty(castInfo.nonTrackingDuration.to(Hour), 4, true)}\n"
+  result.add &"Active non-tracking time: {pretty(castInfo.activeNonTrackingTime.to(Hour), 4, true)}\n"
   result.add &"Tracking time: {pretty(castInfo.trackingTime.to(Hour), 4, true)}\n"
   result.add &"Active tracking time: {pretty(castInfo.activeTrackingTime.to(Hour), 4, true)}\n"
   result.add &"Number of total events:   {castInfo.totalEvents}\n"
@@ -16450,10 +16460,11 @@ proc processFile(fname: string): CastInformation = # extend to both calib & both
     let runInfo = getExtendedRunInfo(h5f, run, fileInfo.runType)
     castInfo.totalDuration  += runInfo.timeInfo.t_length.inSeconds().Second
     castInfo.activeDuration += runInfo.activeTime.inSeconds.Second
+    castInfo.nonTrackingDuration += runInfo.nonTrackingDuration.inSeconds.Second
+    castInfo.activeNonTrackingTime += runInfo.activeNonTrackingTime.inSeconds.Second    
     castInfo.numTrackings   += runInfo.trackings.len
-    for track in runInfo.trackings:
-      castInfo.trackingTime += track.t_length.inSeconds.Second
-
+    castInfo.trackingTime   += runInfo.trackingDuration.inSeconds.Second
+    castInfo.activeTrackingTime += runInfo.activeTrackingTime.inSeconds.Second
     # read the data of all chips & FADC
     const names = ["eventNumber", "fadcReadout", "szint1ClockInt", "szint2ClockInt"]
     let dfNoChips = h5f.readRunDsets(run, commonDsets = names)
@@ -16471,7 +16482,6 @@ proc processFile(fname: string): CastInformation = # extend to both calib & both
 # compute at the end as we need total information about fraction of total / active
   template fraction(arg, by: untyped): untyped = (castInfo.arg / castInfo.by) * 100.0
   castInfo.activeFraction = fraction(activeDuration, totalDuration)
-  castInfo.activeTrackingTime = (castInfo.trackingTime * castInfo.activeFraction / 100.0)
   # fractions
   castInfo.fractionWithCenter = fraction(center         , totalEvents)
   castInfo.fractionWithAny    = fraction(anyActive      , totalEvents)
@@ -16561,6 +16571,109 @@ when isMainModule:
 | fraction with any veto scinti  | 0.000 %      | 51.97 %      | 0.000 %       | 11.21 %       |
 
 - [X] generate that table... then onto calibration finally!
+
+#+begin_src sh
+code/cast_run_information \
+    ~/CastData/data/DataRuns2017_Reco.h5 \
+    ~/CastData/data/DataRuns2018_Reco.h5 \
+    -c ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    -c ~/CastData/data/CalibrationRuns2018_Reco.h5
+#+end_src
+
+
+
+
+| Field                          | calib Run-2  | calib Run-3  | back Run-2    | back Run-3    |
+|--------------------------------+--------------+--------------+---------------+---------------|
+| total duration                 | 107.42 h      | 87.06 h       | 2507.43 h      | 1199.22 h      |
+| active duration                | 2.6 h         | 3.53 h        | 2238.78 h      | 1079.6 h       |
+| active fraction                | 2.422 %       | 4.049 %       | 89.29 %        | 90.02 %        |
+| # trackings                    | \num{0}      | \num{0}      | \num{68}      | \num{47}      |
+| non tracking time              | 107.42 h      | 87.06 h       | 2401.42 h      | 1124.93 h      |
+| active non tracking time       | 2.6 h         | 3.53 h        | 2144.66 h      | 1012.67 h      |
+| tracking time                  | 0 h           | 0 h           | 106.01 h       | 74.3 h         |
+| active tracking time           | 0 h           | 0 h           | 93.36 h        | 67 h           |
+| total # events                 | \num{532020} | \num{415927} | \num{3758960} | \num{1837330} |
+| only center chip               | \num{472048} | \num{361244} | \num{21684}   | \num{10342}   |
+| only any outer chip            | \num{5}      | \num{5}      | \num{1558546} | \num{744722}  |
+| center + outer                 | \num{59554}  | \num{53499}  | \num{1014651} | \num{486478}  |
+| center chip                    | \num{531602} | \num{414743} | \num{1036335} | \num{496820}  |
+| any chip                       | \num{531607} | \num{414748} | \num{2594881} | \num{1241542} |
+| fraction with center           | 99.92 %       | 99.72 %       | 27.57 %        | 27.04 %        |
+| fraction with any              | 99.92 %       | 99.72 %       | 69.03 %        | 67.57 %        |
+| with fadc readouts             | \num{531529} | \num{413853} | \num{542233}  | \num{211683}  |
+| fraction with FADC             | 99.91 %       | 99.50 %       | 14.43 %        | 11.52 %        |
+| with SiPM trigger <4095        | \num{1656}   | \num{20}     | \num{8585}    | \num{4304}    |
+| with veto scinti trigger <4095 | \num{0}      | \num{2888}   | \num{0}       | \num{70016}   |
+| with any SiPM trigger          | \num{531528} | \num{1312}   | \num{825460}  | \num{34969}   |
+| with any veto scinti trigger   | \num{0}      | \num{216170} | \num{0}       | \num{206025}  |
+| fraction with any SiPM         | 99.91 %       | 0.3154 %      | 21.96 %        | 1.903 %        |
+| fraction with any veto scinti  | 0.000 %       | 51.97 %       | 0.000 %        | 11.21 %        |
+
+
+Cross check with logic in ~writeRunList~:
+-> *Yes, they match*.
+#+begin_src sh
+./writeRunList -b ~/CastData/data/DataRuns2017_Reco.h5 -c ~/CastData/data/CalibrationRuns2017_Reco.h5 --runList /tmp/runList_2017.org
+#+end_src
+         total duration: 14 weeks, 6 days, 11 hours, 25 minutes, 59 seconds, 97 milliseconds, 615 microseconds, and 921 nanoseconds
+           In hours: 2507.433082670833
+           active duration: 2238.783333333333
+         trackingDuration: 4 days, 10 hours, and 20 seconds
+           In hours: 106.0055555555556
+           active tracking duration: 93.36890683888889
+           active tracking duration from event durations: 93.36890683861111
+         nonTrackingDuration: 14 weeks, 2 days, 1 hour, 25 minutes, 39 seconds, 97 milliseconds, 615 microseconds, and 921 nanoseconds
+           In hours: 2401.427527115278
+           active background duration: 2144.666241943055
+| Solar tracking [h] | Background [h] | Active tracking [h] | Active tracking (eventDuration) [h] | Active background [h] | Total time [h] | Active time [h] |
+|--------------------+----------------+---------------------+-------------------------------------+-----------------------+----------------+-----------------|
+|            106.006 |        2401.43 |             93.3689 |                             93.3689 |               2144.67 |        2507.43 |         2238.78 |
+         total duration: 4 days, 11 hours, 25 minutes, 20 seconds, 453 milliseconds, 596 microseconds, and 104 nanoseconds
+           In hours: 107.4223482211111
+           active duration: 2.601388888888889
+         trackingDuration: 0 nanoseconds
+           In hours: 0.0
+           active tracking duration: 0.0
+           active tracking duration from event durations: 0.0
+         nonTrackingDuration: 4 days, 11 hours, 25 minutes, 20 seconds, 453 milliseconds, 596 microseconds, and 104 nanoseconds
+           In hours: 107.4223482211111
+           active background duration: 2.601391883888889
+| Solar tracking [h] | Background [h] | Active tracking [h] | Active tracking (eventDuration) [h] | Active background [h] | Total time [h] | Active time [h] |
+|--------------------+----------------+---------------------+-------------------------------------+-----------------------+----------------+-----------------|
+|                  0 |        107.422 |                   0 |                                   0 |               2.60139 |        107.422 |         2.60139 |
+
+#+begin_src sh
+./writeRunList -b ~/CastData/data/DataRuns2018_Reco.h5 -c ~/CastData/data/CalibrationRuns2018_Reco.h5 --runList /tmp/runList_2018.org
+#+end_src
+         total duration: 7 weeks, 23 hours, 13 minutes, 35 seconds, 698 milliseconds, 399 microseconds, and 775 nanoseconds
+           In hours: 1199.226582888611
+           active duration: 1079.598333333333
+         trackingDuration: 3 days, 2 hours, 17 minutes, and 53 seconds
+           In hours: 74.29805555555555
+           active tracking duration: 67.00656808194445
+           active tracking duration from event durations: 67.00656808222222
+         nonTrackingDuration: 6 weeks, 4 days, 20 hours, 55 minutes, 42 seconds, 698 milliseconds, 399 microseconds, and 775 nanoseconds
+           In hours: 1124.928527333056
+           active background duration: 1012.677445774444
+| Solar tracking [h] | Background [h] | Active tracking [h] | Active tracking (eventDuration) [h] | Active background [h] | Total time [h] | Active time [h] |
+|--------------------+----------------+---------------------+-------------------------------------+-----------------------+----------------+-----------------|
+|            74.2981 |        1124.93 |             67.0066 |                             67.0066 |               1012.68 |        1199.23 |          1079.6 |
+         total duration: 3 days, 15 hours, 3 minutes, 47 seconds, 557 milliseconds, 131 microseconds, and 279 nanoseconds
+           In hours: 87.06321031416667
+           active duration: 3.525555555555556
+         trackingDuration: 0 nanoseconds
+           In hours: 0.0
+           active tracking duration: 0.0
+           active tracking duration from event durations: 0.0
+         nonTrackingDuration: 3 days, 15 hours, 3 minutes, 47 seconds, 557 milliseconds, 131 microseconds, and 279 nanoseconds
+           In hours: 87.06321031416667
+           active background duration: 3.525561761944445
+| Solar tracking [h] | Background [h] | Active tracking [h] | Active tracking (eventDuration) [h] | Active background [h] | Total time [h] | Active time [h] |
+|--------------------+----------------+---------------------+-------------------------------------+-----------------------+----------------+-----------------|
+|                  0 |        87.0632 |                   0 |                                   0 |               3.52556 |        87.0632 |         3.52556 |
+
+
 
 * Data calibration                                                    :Part3:
 :PROPERTIES:
