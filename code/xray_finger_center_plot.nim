@@ -14,7 +14,7 @@ proc main(run: int, switchAxes: bool = false) =
   
   var df = readRunDsets(h5f, run = run,
                         chipDsets = some((
-                          chip: 3, dsets: @["centerX", "centerY"])))
+                        chip: 3, dsets: @["centerX", "centerY"])))
     .mutate(f{"xidx" ~ toIdx(idx("centerX"))},
             f{"yidx" ~ toIdx(idx("centerY"))})
   let xidx = df["xidx", int]
@@ -27,6 +27,10 @@ proc main(run: int, switchAxes: bool = false) =
   discard h5f.close()
  
   echo "Center position of the cluster is at: (x, y) = (", centerX, ", ", centerY, ")"
+  ## NOTE: Exchanging the axes for X and Y is equivalent to a 90° clockwise rotation for our data
+  ## because the centerX values are inverted `(256 - x), applyPitchConversion`. 
+  ## The real rotation of the Septemboard detector at CAST seen from the telescope onto the
+  ## detector is precisely 90° clockwise. 
   let x = if switchAxes: "centerY" else: "centerX"
   let y = if switchAxes: "centerX" else: "centerY"
   let cX = if switchAxes: centerY else: centerX

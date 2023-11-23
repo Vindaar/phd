@@ -24,7 +24,6 @@ ECC_LINE_VETO_CUT=$# \
     --septemLineVetoEfficiencyFile $# \
     --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 $#
 """
-const nJobs = 4
 proc toName(rf: RealOrFake): string =
   if rf == Real: "" else: "fake_events"
 proc toName(vetoes: set[Veto], rf: RealOrFake): string = (toSeq(vetoes).mapIt($it).join("_") & "_" & toName(rf)).strip(chars = {'_'})
@@ -38,6 +37,7 @@ proc toCommand(vetoes: set[Veto], rf: RealOrFake): string = (toSeq(vetoes).mapIt
 proc toEffFile(vetoes: set[Veto], rf: RealOrFake, ecc: float, outpath: string): string =
   result = &"{outpath}/septem_veto_before_after_septem_line_ecc_cutoff_{ecc}_{toName(vetoes, rf)}.txt"
 
+## `flatBuffers` to copy objects containing string to `procpool`
 import flatBuffers
 type
   Command = object
@@ -47,9 +47,7 @@ type
 proc runCommand(r, w: cint) =
   let o = open(w, fmWrite)  
   for cmdBuf in getLenPfx[int](r.open):
-    let cmdObjs = fromFlat[Command](fromString(cmdBuf))
-    doAssert cmdObjs.len == 1, "Got more than one command: " & $cmdObjs
-    let cmdObj = cmdObjs[0]
+    let cmdObj = flatTo[Command](fromString(cmdBuf))
     let cmdStr = cmdObj.cmd
     let (res, err) = shellVerbose:
       one:
@@ -64,7 +62,8 @@ proc main(septem = false,
           septemLine = false,
           eccs = false,
           dryRun = false,
-          outpath = "/tmp/") =
+          outpath = "/tmp/",
+          jobs = 6) =
   var vetoSetups: seq[set[Veto]]
   if septem:     vetoSetups.add {Septem}
   if line:       vetoSetups.add {Line}
@@ -89,8 +88,8 @@ proc main(septem = false,
   if not dryRun:
     # 1. fill the channel completely (so workers simply work until channel empty, then stop
     let t0 = epochTime()
-    let cmdBufs = cmds.mapIt(copyFlat(it).toString())
-    var pp = initProcPool(runCommand, framesLenPfx, nJobs)
+    let cmdBufs = cmds.mapIt(asFlat(it).toString())
+    var pp = initProcPool(runCommand, framesLenPfx, jobs)
     var readRes = proc(s: MSlice) = echo $s
     pp.evalLenPfx cmdBufs, readRes
     echo "Running all commands took: ", epochTime() - t0, " s"

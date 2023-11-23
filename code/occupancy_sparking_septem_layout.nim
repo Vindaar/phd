@@ -233,4 +233,4 @@ view.addRow(h5f, septem, fileInfo, 0, 2, 5, showEmpty = true)
 view.addRow(h5f, septem, fileInfo, 1, 3, 2)
 view.addRow(h5f, septem, fileInfo, 2, 2, 0)
 
-view.draw("/home/basti/phd/Figs/sparking_occupancy_80_quantile_run_$#.pdf" % $Run)
+view.draw("/home/basti/phd/Figs/detector/sparking/sparking_occupancy_80_quantile_run_$#.pdf" % $Run)

@@ -12,6 +12,8 @@ type
     activeDuration: Second
     activeFraction: float # ratio of active / total    
     numTrackings: int
+    nonTrackingDuration: Second
+    activeNonTrackingTime: Second
     trackingTime: Second
     activeTrackingTime: Second
     totalEvents: int # total number of recorded events
@@ -34,34 +36,38 @@ type
 
 proc fieldToStr(s: string): string =
   case s
-  of "totalDuration":      result = "total duration"
-  of "activeDuration":     result = "active duration"
-  of "activeFraction":     result = "active fraction"
-  of "numTrackings":       result = "# trackings"
-  of "trackingTime":       result = "tracking time"
-  of "activeTrackingTime": result = "active tracking time"
-  of "totalEvents":        result = "total # events"
-  of "center":             result = "center chip"
-  of "onlyCenter":         result = "only center chip"
-  of "onlyOuter":          result = "only any outer chip"
-  of "centerAndOuter":     result = "center + outer"
-  of "anyActive":          result = "any chip"
-  of "fractionWithCenter": result = "fraction with center"
-  of "fractionWithAny":    result = "fraction with any"
-  of "fadcReadouts":       result = "with fadc readouts"
-  of "fractionFadc":       result = "fraction with FADC"
-  of "scinti1NonTrivial":  result = "with SiPM trigger <4095"
-  of "scinti2NonTrivial":  result = "with veto scinti trigger <4095"
-  of "scinti1Triggers":    result = "with any SiPM trigger"
-  of "scinti2Triggers":    result = "with any veto scinti trigger"
-  of "fractionScinti1":    result = "fraction with any SiPM"
-  of "fractionScinti2":    result = "fraction with any veto scinti"  
+  of "totalDuration":         result = "total duration"
+  of "activeDuration":        result = "active duration"
+  of "activeFraction":        result = "active fraction"
+  of "numTrackings":          result = "# trackings"
+  of "nonTrackingDuration":   result = "non tracking time"
+  of "activeNonTrackingTime": result = "active non tracking time"
+  of "trackingTime":          result = "tracking time"
+  of "activeTrackingTime":    result = "active tracking time"
+  of "totalEvents":           result = "total # events"
+  of "center":                result = "center chip"
+  of "onlyCenter":            result = "only center chip"
+  of "onlyOuter":             result = "only any outer chip"
+  of "centerAndOuter":        result = "center + outer"
+  of "anyActive":             result = "any chip"
+  of "fractionWithCenter":    result = "fraction with center"
+  of "fractionWithAny":       result = "fraction with any"
+  of "fadcReadouts":          result = "with fadc readouts"
+  of "fractionFadc":          result = "fraction with FADC"
+  of "scinti1NonTrivial":     result = "with SiPM trigger <4095"
+  of "scinti2NonTrivial":     result = "with veto scinti trigger <4095"
+  of "scinti1Triggers":       result = "with any SiPM trigger"
+  of "scinti2Triggers":       result = "with any veto scinti trigger"
+  of "fractionScinti1":       result = "fraction with any SiPM"
+  of "fractionScinti2":       result = "fraction with any veto scinti"  
 
 proc `$`(castInfo: CastInformation): string =
   result.add &"Total duration: {pretty(castInfo.totalDuration.to(Hour), 4, true)}\n"
   result.add &"Active duration: {pretty(castInfo.activeDuration.to(Hour), 4, true)}\n"
   result.add &"Active fraction: {castInfo.activeFraction}\n"
   result.add &"Number of trackings: {castInfo.numTrackings}\n"
+  result.add &"Non-tracking time: {pretty(castInfo.nonTrackingDuration.to(Hour), 4, true)}\n"
+  result.add &"Active non-tracking time: {pretty(castInfo.activeNonTrackingTime.to(Hour), 4, true)}\n"
   result.add &"Tracking time: {pretty(castInfo.trackingTime.to(Hour), 4, true)}\n"
   result.add &"Active tracking time: {pretty(castInfo.activeTrackingTime.to(Hour), 4, true)}\n"
   result.add &"Number of total events:   {castInfo.totalEvents}\n"
@@ -105,10 +111,11 @@ proc processFile(fname: string): CastInformation = # extend to both calib & both
     let runInfo = getExtendedRunInfo(h5f, run, fileInfo.runType)
     castInfo.totalDuration  += runInfo.timeInfo.t_length.inSeconds().Second
     castInfo.activeDuration += runInfo.activeTime.inSeconds.Second
+    castInfo.nonTrackingDuration += runInfo.nonTrackingDuration.inSeconds.Second
+    castInfo.activeNonTrackingTime += runInfo.activeNonTrackingTime.inSeconds.Second    
     castInfo.numTrackings   += runInfo.trackings.len
-    for track in runInfo.trackings:
-      castInfo.trackingTime += track.t_length.inSeconds.Second
-
+    castInfo.trackingTime   += runInfo.trackingDuration.inSeconds.Second
+    castInfo.activeTrackingTime += runInfo.activeTrackingTime.inSeconds.Second
     # read the data of all chips & FADC
     const names = ["eventNumber", "fadcReadout", "szint1ClockInt", "szint2ClockInt"]
     let dfNoChips = h5f.readRunDsets(run, commonDsets = names)
@@ -126,7 +133,6 @@ proc processFile(fname: string): CastInformation = # extend to both calib & both
 # compute at the end as we need total information about fraction of total / active
   template fraction(arg, by: untyped): untyped = (castInfo.arg / castInfo.by) * 100.0
   castInfo.activeFraction = fraction(activeDuration, totalDuration)
-  castInfo.activeTrackingTime = (castInfo.trackingTime * castInfo.activeFraction / 100.0)
   # fractions
   castInfo.fractionWithCenter = fraction(center         , totalEvents)
   castInfo.fractionWithAny    = fraction(anyActive      , totalEvents)
