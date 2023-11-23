@@ -29336,9 +29336,7 @@ explicit case of an X-ray detector behind a telescope at CAST.
 Here it is important to note that the signal hypothesis depends on
 the coupling constant we wish to compute a limit for, we will just
 call it $g$ in the remainder (it may be $g_{aγ}$ or $g_{ae}$ or any
-other coupling constant). And this is the actual parameter of $\mathcal{L}$,
-but more on that in the next section on how a limit is actually
-computed later.
+other coupling constant). This is the actual parameter of $\mathcal{L}$.
 
 First of all the signal contribution in each channel $s_i$. It is
 effectively a number of counts that one would expect within the time
@@ -29362,27 +29360,27 @@ s_i(g) = f(g, E_i) · A · t · P_{a \rightarrow γ}(g_{aγ}) · ε(E_i) · r(x_
 \end{equation}
 where:
 - $f(g, E_i)$ is the axion flux at energy $E_i$ in units of
-  $\si{keV^{-1}.cm^{-2}.s^{-1}}$ as a function of $g$.
-- $A$ is the area of the magnet bore in $\si{cm²}$
-- $t$ is the tracking time in $\si{s}$
+  $\si{keV^{-1}.cm^{-2}.s^{-1}}$ as a function of $g$, sec. [[#sec:limit:ingredients:solar_axion_flux]],
+- $A$ is the area of the magnet bore in $\si{cm²}$, sec. [[#sec:limit:ingredients:magnet_tracking]],
+- $t$ is the tracking time in $\si{s}$, also sec. [[#sec:limit:ingredients:magnet_tracking]],
 - $P_{a \rightarrow γ}$ is the conversion probability of the axion
   converting into a photon computed via
   \[
   P_{a \rightarrow γ}(g_{aγ}) = \left( \frac{g_{aγ} B L}{2} \right)²
   \]
-  written in *natural units* (meaning if we wish to use the equation
-  as written here we need to convert $B = \SI{9}{T}$ and $L =
+  written in /natural units/ (meaning we need to convert $B = \SI{9}{T}$ and $L =
   \SI{9.26}{m}$ into values expressed in powers of electronvolt
-  $\si{eV}$). 
+  $\si{eV}$, as discussed in sec. [[#sec:theory:axion_interactions]]),
+  sec. [[#sec:limit:ingredients:conversion_probability]],
 - $ε(E_i)$ is the combined detection efficiency, i.e. the
   combination of X-ray telescope effective area, the transparency of
   the detector window and the absorption probability of an X-ray in
-  the gas.
+  the gas, sec. [[#sec:limit:ingredients:detection_eff]],
 - $r(x_i, y_i)$ is the expected amount of flux from the solar axion
   flux after it is focused by the X-ray telescope in the readout
   plane of the detector at the candidate's position $(x_i, y_i)$
   (this requires a raytracing model). It should be expressed as a
-  fractional value in units of $\si{cm^{-2}}$.
+  fractional value in units of $\si{cm^{-2}}$. See sec. [[#sec:limit:ingredients:raytracing]].
 As a result the units of $s_i$ are then given in
 $\si{keV^{-1}.cm^{-2}}$ with the tracking time integrated out.
 If one computes a limit for $g_{aγ}$ then $f$ and $P$ both depend on
@@ -29398,7 +29396,8 @@ model at the (potentially) position $(x_i, y_i)$ of the candidate and
 energy $E_i$ of the candidate. The value should then be scaled to
 the same units of as $s_i$, namely
 $\si{keV^{-1}.cm^{-2}}$. Depending on how the model is defined this
-might just be a multiplication by the total tracking time in seconds.
+might just be a multiplication by the total tracking time in
+seconds. We discuss this in detail in sec. [[#sec:limit:ingredients:background]].
 
 The final piece is the total signal $s_{\text{tot}}$, corresponding
 to the total number of counts expected from our signal hypothesis
@@ -29407,13 +29406,15 @@ $s_i$ over the entire energy range and detection area. However,
 because $s_i$ implies the signal for candidate $i$, we write $s(E,
 x, y)$  to mean the equivalent signal as if we had a candidate at
 $(E, x, y)$
+
 \[
-s_{\text{tot}} = ∫_0^{E_{\text{max}}} ∫_A s(E, x, y) \mathrm{d}E \mathrm{d}x \mathrm{d}y
+s_{\text{tot}} = ∫_0^{E_{\text{max}}} ∫_A s(E, x, y)\, \mathrm{d}E\, \mathrm{d}x\, \mathrm{d}y
 \]
+
 where $A$ simply implies integrating the full area in which $(x, y)$
-is defined (the axion flux is bounded within a region much smaller
+is defined. The axion flux is bounded within a region much smaller
 than the active detection area and hence all contributions outside
-are 0).
+are 0.
 
 ** Limit method - computing a limit
 :PROPERTIES:
@@ -29426,46 +29427,245 @@ important to realize that $\mathcal{L}$ is a function of the coupling constant
 $g$, $\mathcal{L}(g)$ with all other parameters effectively constant in the
 context of "one experiment".
 
-With this in mind the "limit" is defined as the 95-th percentile of
-$\mathcal{L}(g)$ *within the physical region of $g$* (the region $g < 0$ is
+With this in mind the 'limit' is defined as the 95-th percentile of
+$\mathcal{L}(g)$ /within the physical region of $g$/. The region $g < 0$ is
 explicitly ignored, as a coupling constant cannot be negative! This
-can be "rigorously" justified in Bayesian statistics by saying the
-prior $π(g)$ is 0 for $g < 0$.).
+can be rigorously justified in Bayesian statistics by saying the
+prior $π(g)$ is 0 for $g < 0$. In practice one might even work with
+$g²$ or $g⁴$, but the same idea holds.
 
-So we can define it implicitly as:
+We can define it the limit implicitly as [fn:note_α]
 #+NAME: eq:limit_method:limit_def
 \begin{equation}
-0.95 = \frac{∫_0^{g'} \mathcal{L}(g) \mathrm{d}g}{∫_0^∞ \mathcal{L}(g) \mathrm{d}g}
+0.95 = \frac{∫_0^{g'} \mathcal{L}(g)\, \mathrm{d}g}{∫_0^∞ \mathcal{L}(g)\, \mathrm{d}g}
 \end{equation}
 
 In practice the integral cannot be evaluated until
-infinity. Fortunately, our choice of $\mathcal{L}$ in the first place means
-that the function converges to $0$ quickly for large values of
+infinity. Fortunately, our choice of $\mathcal{L}$ in the first place
+means that the function converges to $0$ quickly for large values of
 $g$. Therefore, we only need to compute values to a "large enough"
-value of $g$ to get the shape of $\mathcal{L}(g)$. From there we can use any
-numerical approach (via an empirical CDF for example) to determine
-the coupling constant $g'$ that corresponds to the 95-th percentile
-of $\mathcal{L}(g)$.
+value of $g$ to get the shape of $\mathcal{L}(g)$. From there we can
+use any numerical approach (via an empirical cumulative distribution
+function for example) to determine the coupling constant $g'$ that
+corresponds to the 95-th percentile of $\mathcal{L}(g)$.
 
 In an intuitive sense the limit means the following:
 $\SI{95}{\percent}$ of all coupling constants that reproduce the
-data we measured - given our signal and background hypotheses - are
+data we measured -- given our signal and background hypotheses -- are
 smaller than $g'$.
 
-Fig. [[fig:limit_method:example_limit_95th_perc]] shows the likelihood
-as a function of $g_{ae}²$. The blue area is the lower \SI{95}{\%} of the
-parameter space and the red area is everything below. Therefore, the
-limit in this particular set of toy candidates is at the
-intersection of the two colors.
+Fig. [[fig:limit_method:example_limit_95th_perc]] shows an example of a
+likelihood function of some coupling constant. The blue area is the
+lower $\SI{95}{\%}$ of the parameter space and the red area is the
+upper $\SI{5}{\%}$. Therefore, the limit in this particular set of toy
+candidates is at the intersection of the two colors.
 
-#+CAPTION: Example likelihood as a function of $g_{ae}²$ for a set of toy candidates.
+#+CAPTION: Example likelihood function for a set of toy candidates.
 #+CAPTION: Blue is the lower 95-th percentile of the integral over the likelihood
 #+CAPTION: function and red the upper 5-th. The limit is at the intersection.
 #+NAME: fig:limit_method:example_limit_95th_perc
-[[~/org/Figs/statusAndProgress/limitCalculation/mcmc_histo_example_limit_determination.pdf]]
+[[~/phd/Figs/limit/simple_likelihood_limit_example.pdf]]
 
-- [ ] *REPLACE THIS PLOT* by an analytical likelihood function!
+[fn:note_α] This equation essentially computes the confidence level at
+$\text{CL} = \SI{95}{\%} \equiv 0.95 = 1 - 0.05 = 1 - α$. In the
+equation we already removed the prior and therefore adjusted the
+integration range.
+
+*** TODOs for this section  [/]                                  :noexport:
+
+- [X] *REPLACE THIS PLOT* by an analytical likelihood function!
   -> Use the binned example limit code to produce it.
+  -> Done.
+
+
+*** Implementing a basic limit calculation method [/]            :extended:
+
+The following are two examples for a basic limit calculation in
+code. This is to showcase the basic idea without getting lost in too
+many details. In terms of the main thesis, we use the first example to
+produce a plot to illustrate how the limit is computed via the 95% percentile.
+
+The real code we use for the limit is found here:
+https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/mcmc_limit_calculation.nim
+
+Simplest implementation:
+- single channel
+- no detection efficiencies etc., just a flux that scales with $g²$
+- constant background (due to single channel)
+- no telescope, i.e. area for signal flux is the same as for
+  background (due to no focusing)  
+#+begin_src nim :results drawer :exports both :tangle /tmp/simple_limit_example.nim
+import unchained, math
+## Assumptions:
+const totalTime = 100.0.h # 100 of "tracking time"
+const totalArea = 10.cm² # assume 10 cm² area (magnet bore and chip! This case has no telescope)
+defUnit(cm⁻²•s⁻¹)
+
+proc flux(g: float): cm⁻²•s⁻¹ =
+  ## Dummy flux. Just the coupling constant squared · 1e-6
+  result = 1e-6 * (g*g).cm⁻²•s⁻¹
+
+proc totalFlux(g: float): float =
+  ## Flux integrated to total time and area
+  result = flux(g) * totalTime.to(Second) * totalArea
+
+## Assume signal and background in counts of the single channel!
+## (Yes, `signal` is the same as `totalFlux` in this case)
+proc signal(g: float): float = flux(g) * totalTime * totalArea ## Signal only depends on coupling in this simple model
+proc background(): float = 1e-6.cm⁻²•s⁻¹ * totalTime * totalArea ## Single channel, i.e. constant background
+  
+proc likelihood(g: float, cs: int): float = ## `cs` = number of candidates in the single channel
+  result = exp(-totalFlux(g)) # `e^{-s_tot}`
+  result *= pow(1 + signal(g) / background(), cs.float)
+
+proc poisson(k: int, λ: float): float = λ^k * exp(-λ) / (fac(k))
+
+echo "Background counts = ", background(), ". Probabilty to measure 4 counts given background: ", poisson(4, background())
+echo "equal to signal counts at g = 1: ", signal(1.0)
+echo "Likelihood at g = 1 for 4 candidates = ", likelihood(1.0, 4)
+
+## Let's plot it from 0 to 3 assuming 4 candidates
+import ggplotnim
+let xs = linspace(0.0, 3.0, 100)
+let ys = xs.map_inline(likelihood(x, 4))
+
+## Compute limit, CDF@95%
+import algorithm
+let yCumSum = ys.cumSum()                    # cumulative sum
+let yMax = yCumSum.max                       # maximum of the cumulative sum
+let yCdf = yCumSum.map_inline(x / yMax)      # normalize to get (empirical) CDF
+let limitIdx = yCdf.toSeq1D.lowerBound(0.95) # limit at 95% of the CDF
+echo "Limit at : ", xs[limitIdx]
+let L_atLimit = ys[limitIdx]
+let df = toDf(xs, ys)
+let dfLimit = df.filter(f{float: `xs` >= xs[limitIdx]})
+echo dfLimit
+ggplot(df, aes("xs", "ys")) +
+  xlab("Coupling constant") + ylab("Likelihood") + 
+  geom_line(fillColor = "blue", alpha = 0.4) +
+  geom_line(data = dfLimit, fillColor = "red") + 
+  #geom_linerange(aes = aes(x = xs[limitIdx], yMin = 0.0, yMax = L_atLimit), ) + 
+  annotate(x = xs[limitIdx], y = L_atLimit + 0.1, text = "Limit at 95% area") +
+  ggtitle("Example likelihood and limit") +
+  theme_font_scale(scale = 1.0, family = "serif") +
+  ggsave("/home/basti/phd/Figs/limit/simple_likelihood_limit_example.pdf", width = 600, height = 380)
+#+end_src
+
+#+RESULTS:
+:results:
+Background counts = 3.6. Probabilty to measure 4 counts given background: 0.1912223391751322
+equal to signal counts at g = 1: 3.6
+Likelihood at g = 1 for 4 candidates = 0.4371795591566811
+Limit at : 1.12121212121212
+:end:
+
+More realistic implementation, above plus:
+- real solar axion flux
+- TODO: (detection efficiency) (could just use fixed efficiency)
+- X-ray telescope without usage of local flux information
+- multiple channels in energy
+#+begin_src nim :results drawer :exports both :tangle /tmp/energy_bins_limit_example.nim
+import unchained, math, seqmath, sequtils, algorithm
+## Assumptions:
+const totalTime = 100.0.h # 100 of "tracking time"
+const areaBore = π * (2.15 * 2.15).cm²
+const chipArea = 5.mm * 5.mm # assume all flux is focused into an area of 5x5 mm²
+                             # on the detector. Relevant area for background!
+defUnit(GeV⁻¹)
+defUnit(cm⁻²•s⁻¹)
+defUnit(keV⁻¹)
+defUnit(keV⁻¹•cm⁻²•s⁻¹)
+
+## Constants defining the channels and background info
+const
+  Energies =   @[0.5,    1.5,    2.5,    3.5,    4.5,    5.5,     6.5,    7.5,  8.5,    9.5].mapIt(it.keV)
+  Background = @[0.5e-5, 2.5e-5, 4.5e-5, 4.0e-5, 1.0e-5, 0.75e-5, 0.8e-5, 3e-5, 3.5e-5, 2.0e-5]
+    .mapIt(it.keV⁻¹•cm⁻²•s⁻¹) # convert to a rate
+  ## A possible set of candidates from `Background · chipArea · totalTime · 1 keV`
+  ## (1e-5 · 5x5mm² · 100h = 0.9 counts)
+  Candidates = @[0,      2,      7,     3,      1,      0,       1,      4,    3,      2]
+
+proc solarAxionFlux(ω: keV, g_aγ: GeV⁻¹): keV⁻¹•cm⁻²•s⁻¹ =
+  # axion flux produced by the Primakoff effect in solar core
+  # in units of keV⁻¹•m⁻²•yr⁻¹
+  let flux = 2.0 * 1e18.keV⁻¹•m⁻²•yr⁻¹ * (g_aγ / 1e-12.GeV⁻¹)^2 * pow(ω / 1.keV, 2.450) * exp(-0.829 * ω / 1.keV)
+  # convert flux to correct units
+  result = flux.to(keV⁻¹•cm⁻²•s⁻¹)
+
+func conversionProbability(g_aγ: GeV⁻¹): UnitLess =
+  ## the conversion probability in the CAST magnet (depends on g_aγ)
+  ## simplified vacuum conversion prob. for small masses
+  let B = 9.0.T
+  let L = 9.26.m
+  result = pow( (g_aγ * B.toNaturalUnit * L.toNaturalUnit / 2.0), 2.0 )
+
+from numericalnim import simpson # simpson numerical integration routine  
+proc totalFlux(g_aγ: GeV⁻¹): float =
+  ## Flux integrated to total time, energy and area
+  # 1. integrate the solar flux
+  ## NOTE: in practice this integration must not be done in this proc! Only perform once!
+  let xs = linspace(0.0, 10.0, 100)
+  let fl = xs.mapIt(solarAxionFlux(it.keV, g_aγ))
+  let integral = simpson(fl.mapIt(it.float), # convert units to float for compatibility
+                         xs).cm⁻²•s⁻¹ # convert back to units (integrated out `keV⁻¹`!)
+  # 2. compute final flux by "integrating" out the time and area
+  result = integral * totalTime * areaBore * conversionProbability(g_aγ)
+
+## NOTE: only important that signal and background have the same units!  
+proc signal(E: keV, g_aγ: GeV⁻¹): keV⁻¹ =
+  ## Returns the axion flux based on `g` and energy `E`
+  result = solarAxionFlux(E, g_aγ) * totalTime.to(Second) * areaBore * conversionProbability(g_aγ)
+
+proc background(E: keV): keV⁻¹ =
+  ## Compute an interpolation of energies and background
+  ## NOTE: For simplicity we only evaluate at the channel energies anyway. In practice
+  ## one likely wants interpolation to handle all energies in the allowed range correctly!
+  let idx = Energies.lowerBound(E) # get idx of this energy
+  ## Note: area of interest is the region on the chip, in which the signal is focused!
+  ## This also allows us to see that the "closer" we cut to the expected axion signal on the
+  ## detector, the less background we have compared to the *fixed* signal flux!
+  result = (Background[idx] * totalTime * chipArea).to(keV⁻¹)
+  
+proc likelihood(g_aγ: GeV⁻¹, energies: seq[keV], cs: seq[int]): float =
+  ## `energies` = energies corresponding to each channel
+  ## `cs` = each element is number of counts in that energy channel
+  result = exp(-totalFlux(g_aγ)) # `e^{-s_tot}`
+  for i in 0 ..< cs.len:
+    let c = cs[i]       # number of candidates in this channel
+    let E = energies[i] # energy of this channel
+    let s = signal(E, g_aγ)
+    let b = background(E)
+    result *= pow(1 + signal(E, g_aγ) / background(E), c.float)
+
+## Let's plot it from 0 to 3 assuming 4 candidates
+import ggplotnim
+# define coupling constants
+let xs = logspace(-13, -10, 300).mapIt(it.GeV⁻¹) # logspace 1e-13 GeV⁻¹ to 1e-8 GeV⁻¹
+let ys = xs.mapIt(likelihood(it, Energies, Candidates))
+
+let df = toDf({"xs" : xs.mapIt(it.float), ys})
+ggplot(df, aes("xs", "ys")) +
+  geom_line() +
+  ggsave("/tmp/energy_bins_likelihood.pdf")
+
+## Compute limit, CDF@95%
+import algorithm
+# limit needs non logspace x & y data! (at least if computed in this simple way)
+let xLin = linspace(0.0, 1e-10, 1000).mapIt(it.GeV⁻¹)
+let yLin = xLin.mapIt(likelihood(it, Energies, Candidates))
+let yCumSum = yLin.cumSum()          # cumulative sum
+let yMax = yCumSum.max               # maximum of the cumulative sum
+let yCdf = yCumSum.mapIt(it / yMax)  # normalize to get (empirical) CDF
+let limitIdx = yCdf.lowerBound(0.95) # limit at 95% of the CDF
+echo "Limit at : ", xLin[limitIdx]
+# Code outputs:
+# Limit at : 6.44645e-11 GeV⁻¹
+#+end_src
+
+#+RESULTS:
+:results:
+Limit at : 6.44645e-11 GeV⁻¹
+:end:
 
 ** Limit method - toy candidate sets and expected limits
 :PROPERTIES:
@@ -29939,186 +30139,6 @@ This uses the logarithm form, but the non log form is even easier actually.
   &\text{or alternatively} \\
   &= -s_{\text{tot}} + \sum_i n_i \ln \left(1 + \frac{s_i}{b_i} \right) \\
 \end{align*}
-
-** Implementing a basic limit calculation method [/]              :noexport:
-
-The following are two examples for a basic limit calculation in
-code. This is to showcase the basic idea without getting lost in too
-many details. The real code we use for the limit is found here *INSERT
-ME*
-
-- [ ] *INSERT REF*
-
-Simplest implementation:
-- single channel
-- no detection efficiencies etc., just a flux that scales with $g²$
-- constant background (due to single channel)
-- no telescope, i.e. area for signal flux is the same as for
-  background (due to no focusing)  
-#+begin_src nim :results drawer :exports both :tangle /tmp/simple_limit_example.nim
-import unchained, math
-## Assumptions:
-const totalTime = 100.0.h # 100 of "tracking time"
-const totalArea = 10.cm² # assume 10 cm² area (magnet bore and chip! This case has no telescope)
-defUnit(cm⁻²•s⁻¹)
-
-proc flux(g: float): cm⁻²•s⁻¹ =
-  ## Dummy flux. Just the coupling constant squared · 1e-6
-  result = 1e-6 * (g*g).cm⁻²•s⁻¹
-
-proc totalFlux(g: float): float =
-  ## Flux integrated to total time and area
-  result = flux(g) * totalTime.to(Second) * totalArea
-
-## Assume signal and background in counts of the single channel!
-## (Yes, `signal` is the same as `totalFlux` in this case)
-proc signal(g: float): float = flux(g) * totalTime * totalArea ## Signal only depends on coupling in this simple model
-proc background(): float = 1e-6.cm⁻²•s⁻¹ * totalTime * totalArea ## Single channel, i.e. constant background
-  
-proc likelihood(g: float, cs: int): float = ## `cs` = number of candidates in the single channel
-  result = exp(-totalFlux(g)) # `e^{-s_tot}`
-  result *= pow(1 + signal(g) / background(), cs.float)
-
-proc poisson(k: int, λ: float): float = λ^k * exp(-λ) / (fac(k))
-
-echo "Background counts = ", background(), ". Probabilty to measure 4 counts given background: ", poisson(4, background())
-echo "equal to signal counts at g = 1: ", signal(1.0)
-echo "Likelihood at g = 1 for 4 candidates = ", likelihood(1.0, 4)
-
-## Let's plot it from 0 to 3 assuming 4 candidates
-import ggplotnim
-let xs = linspace(0.0, 3.0, 100)
-let ys = xs.map_inline(likelihood(x, 4))
-
-ggplot(toDf(xs, ys), aes("xs", "ys")) +
-  geom_line() +
-  ggsave("/tmp/simple_likelihood.pdf")
-
-## Compute limit, CDF@95%
-import algorithm
-let yCumSum = ys.cumSum()                    # cumulative sum
-let yMax = yCumSum.max                       # maximum of the cumulative sum
-let yCdf = yCumSum.map_inline(x / yMax)      # normalize to get (empirical) CDF
-let limitIdx = yCdf.toSeq1D.lowerBound(0.95) # limit at 95% of the CDF
-echo "Limit at : ", xs[limitIdx]
-#+end_src
-
-#+RESULTS:
-:results:
-Background counts = 3.6. Probabilty to measure 4 counts given background: 0.1912223391751322
-equal to signal counts at g = 1: 3.6
-Likelihood at g = 1 for 4 candidates = 0.4371795591566811
-Limit at : 1.12121212121212
-:end:
-
-More realistic implementation, above plus:
-- real solar axion flux
-- TODO: (detection efficiency) (could just use fixed efficiency)
-- X-ray telescope without usage of local flux information
-- multiple channels in energy
-#+begin_src nim :results drawer :exports both :tangle /tmp/energy_bins_limit_example.nim
-import unchained, math, seqmath, sequtils, algorithm
-## Assumptions:
-const totalTime = 100.0.h # 100 of "tracking time"
-const areaBore = π * (2.15 * 2.15).cm²
-const chipArea = 5.mm * 5.mm # assume all flux is focused into an area of 5x5 mm²
-                             # on the detector. Relevant area for background!
-defUnit(GeV⁻¹)
-defUnit(cm⁻²•s⁻¹)
-defUnit(keV⁻¹)
-defUnit(keV⁻¹•cm⁻²•s⁻¹)
-
-## Constants defining the channels and background info
-const
-  Energies =   @[0.5,    1.5,    2.5,    3.5,    4.5,    5.5,     6.5,    7.5,  8.5,    9.5].mapIt(it.keV)
-  Background = @[0.5e-5, 2.5e-5, 4.5e-5, 4.0e-5, 1.0e-5, 0.75e-5, 0.8e-5, 3e-5, 3.5e-5, 2.0e-5]
-    .mapIt(it.keV⁻¹•cm⁻²•s⁻¹) # convert to a rate
-  ## A possible set of candidates from `Background · chipArea · totalTime · 1 keV`
-  ## (1e-5 · 5x5mm² · 100h = 0.9 counts)
-  Candidates = @[0,      2,      7,     3,      1,      0,       1,      4,    3,      2]
-
-proc solarAxionFlux(ω: keV, g_aγ: GeV⁻¹): keV⁻¹•cm⁻²•s⁻¹ =
-  # axion flux produced by the Primakoff effect in solar core
-  # in units of keV⁻¹•m⁻²•yr⁻¹
-  let flux = 2.0 * 1e18.keV⁻¹•m⁻²•yr⁻¹ * (g_aγ / 1e-12.GeV⁻¹)^2 * pow(ω / 1.keV, 2.450) * exp(-0.829 * ω / 1.keV)
-  # convert flux to correct units
-  result = flux.to(keV⁻¹•cm⁻²•s⁻¹)
-
-func conversionProbability(g_aγ: GeV⁻¹): UnitLess =
-  ## the conversion probability in the CAST magnet (depends on g_aγ)
-  ## simplified vacuum conversion prob. for small masses
-  let B = 9.0.T
-  let L = 9.26.m
-  result = pow( (g_aγ * B.toNaturalUnit * L.toNaturalUnit / 2.0), 2.0 )
-
-from numericalnim import simpson # simpson numerical integration routine  
-proc totalFlux(g_aγ: GeV⁻¹): float =
-  ## Flux integrated to total time, energy and area
-  # 1. integrate the solar flux
-  ## NOTE: in practice this integration must not be done in this proc! Only perform once!
-  let xs = linspace(0.0, 10.0, 100)
-  let fl = xs.mapIt(solarAxionFlux(it.keV, g_aγ))
-  let integral = simpson(fl.mapIt(it.float), # convert units to float for compatibility
-                         xs).cm⁻²•s⁻¹ # convert back to units (integrated out `keV⁻¹`!)
-  # 2. compute final flux by "integrating" out the time and area
-  result = integral * totalTime * areaBore * conversionProbability(g_aγ)
-
-## NOTE: only important that signal and background have the same units!  
-proc signal(E: keV, g_aγ: GeV⁻¹): keV⁻¹ =
-  ## Returns the axion flux based on `g` and energy `E`
-  result = solarAxionFlux(E, g_aγ) * totalTime.to(Second) * areaBore * conversionProbability(g_aγ)
-
-proc background(E: keV): keV⁻¹ =
-  ## Compute an interpolation of energies and background
-  ## NOTE: For simplicity we only evaluate at the channel energies anyway. In practice
-  ## one likely wants interpolation to handle all energies in the allowed range correctly!
-  let idx = Energies.lowerBound(E) # get idx of this energy
-  ## Note: area of interest is the region on the chip, in which the signal is focused!
-  ## This also allows us to see that the "closer" we cut to the expected axion signal on the
-  ## detector, the less background we have compared to the *fixed* signal flux!
-  result = (Background[idx] * totalTime * chipArea).to(keV⁻¹)
-  
-proc likelihood(g_aγ: GeV⁻¹, energies: seq[keV], cs: seq[int]): float =
-  ## `energies` = energies corresponding to each channel
-  ## `cs` = each element is number of counts in that energy channel
-  result = exp(-totalFlux(g_aγ)) # `e^{-s_tot}`
-  for i in 0 ..< cs.len:
-    let c = cs[i]       # number of candidates in this channel
-    let E = energies[i] # energy of this channel
-    let s = signal(E, g_aγ)
-    let b = background(E)
-    result *= pow(1 + signal(E, g_aγ) / background(E), c.float)
-
-## Let's plot it from 0 to 3 assuming 4 candidates
-import ggplotnim
-# define coupling constants
-let xs = logspace(-13, -10, 300).mapIt(it.GeV⁻¹) # logspace 1e-13 GeV⁻¹ to 1e-8 GeV⁻¹
-let ys = xs.mapIt(likelihood(it, Energies, Candidates))
-
-let df = toDf({"xs" : xs.mapIt(it.float), ys})
-ggplot(df, aes("xs", "ys")) +
-  geom_line() +
-  ggsave("/tmp/energy_bins_likelihood.pdf")
-
-## Compute limit, CDF@95%
-import algorithm
-# limit needs non logspace x & y data! (at least if computed in this simple way)
-let xLin = linspace(0.0, 1e-10, 1000).mapIt(it.GeV⁻¹)
-let yLin = xLin.mapIt(likelihood(it, Energies, Candidates))
-let yCumSum = yLin.cumSum()          # cumulative sum
-let yMax = yCumSum.max               # maximum of the cumulative sum
-let yCdf = yCumSum.mapIt(it / yMax)  # normalize to get (empirical) CDF
-let limitIdx = yCdf.lowerBound(0.95) # limit at 95% of the CDF
-echo "Limit at : ", xLin[limitIdx]
-# Code outputs:
-# Limit at : 6.44645e-11 GeV⁻¹
-#+end_src
-
-#+RESULTS:
-:results:
-Limit at : 6.44645e-11 GeV⁻¹
-:end:
-
 
 
 ** Generic limit calculation method                               :noexport:
