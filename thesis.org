@@ -14139,10 +14139,10 @@ proc main(run: int, switchAxes: bool = false) =
   discard h5f.close()
  
   echo "Center position of the cluster is at: (x, y) = (", centerX, ", ", centerY, ")"
-  ## NOTE: Exchanging the axes for X and Y is equivalent to a 90° clockwise rotation, which is
-  ## the real rotation of the Septemboard detector at CAST seen from the telescope onto the
-  ## detector.
-  ## XXX: extend
+  ## NOTE: Exchanging the axes for X and Y is equivalent to a 90° clockwise rotation for our data
+  ## because the centerX values are inverted `(256 - x), applyPitchConversion`. 
+  ## The real rotation of the Septemboard detector at CAST seen from the telescope onto the
+  ## detector is precisely 90° clockwise. 
   let x = if switchAxes: "centerY" else: "centerX"
   let y = if switchAxes: "centerX" else: "centerY"
   let cX = if switchAxes: centerY else: centerX
@@ -14192,6 +14192,9 @@ detector was removed in Apr 2018. This is the baseline for our idea
 where the focal spot is going to be.
 file:Figs/CAST_Alignment/xray_finger_centers_run_189.pdf
 
+*NOTE*: For a longer explanation about the reasoning behind the
+comment for ~--switchAxes~ in the code, see
+sec. [[#sec:limit:candidates:septemboard_layout_transformations]].
 
 *** Systematic uncertainty from graphite spacer rotation [/]     :extended:
 
