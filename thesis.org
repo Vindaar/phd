@@ -16208,11 +16208,12 @@ taking campaign (one of them was aborted after 30 min).
 #+CAPTION: See the table below [[tab:cast:data_stats_overview]] for more details.
 #+NAME: tab:cast:total_data_time
 #+ATTR_LATEX: :align lrrrrr :booktabs t
-|       | Solar tracking [h] | Active s. [h] | Background [h] | Active b. [h] | Active % |
-|-------+--------------------+---------------+----------------+---------------+----------|
-| Run-2 |             106.01 |         94.12 |        2401.43 |       2144.67 |     89.3 |
-| Run-3 |              74.29 |         66.92 |        1124.93 |       1012.68 |     90.0 |
-| Total |             180.30 |        161.05 |        3526.36 |       3157.35 |     89.5 |
+|       | Solar tracking [h] | Active s. [h] | Background [h] | Active b. [h] | Active [%] |
+|-------+--------------------+---------------+----------------+---------------+------------|
+| Run-2 |            106.006 |       93.3689 |        2391.16 |       2144.12 |      89.65 |
+| Run-3 |            74.2981 |       67.0066 |        1124.93 |       1012.68 |      90.02 |
+| Total |           180.3041 |      160.3755 |        3516.09 |       3157.35 |      89.52 |
+
 
 #+CAPTION: Overview of working (\green{o}), mostly working (\orange{m}), not
 #+CAPTION: working (\red{x}) features in each run. FADC was partially noisy
@@ -16301,7 +16302,13 @@ taking campaign (one of them was aborted after 30 min).
 
 - [X] *FIX UP THE TABLE TO NOT USE FIELDS AS ROW NAMES, BUT RATHER
   TEXT*
-- [X] *SEE NOEXPORT SECTION BELOW TO THINK ABOUT ADDING OTHER THINGS*  
+- [X] *SEE NOEXPORT SECTION BELOW TO THINK ABOUT ADDING OTHER THINGS*
+
+- [X] *UPDATE TABLE!!!*
+  -> The numbers here are still the ones before the tracking length *
+  active ratio fix!
+  -> Table from ~writeRunList~
+  -> Done <2023-11-24 Fri 10:46>.
 
 *** Extended table about total time                              :extended:
 
@@ -16314,12 +16321,13 @@ This, tab. [[tab:cast:total_data_time_extended]], is an extended version
 #+CAPTION: time the detector was active (shutter open).
 #+NAME: tab:cast:total_data_time_extended
 #+ATTR_LATEX: :align lrrrrrrr :booktabs t
-|       | Solar tracking [h] | Background [h] | Active tracking [h] | Active background [h] | Total time [h] | Active time [h] |   Active % |
-|-------+--------------------+----------------+---------------------+-----------------------+----------------+-----------------+------------|
-| Run-2 |            106.006 |        2391.16 |             92.8017 |               2144.12 |        2497.16 |         2238.78 | 0.89653046 |
-| Run-3 |            74.2981 |        1124.93 |             67.0066 |               1012.68 |        1199.23 |          1079.6 | 0.90024432 |
-| Total |           180.3041 |        3516.09 |            159.8083 |                3156.8 |        3696.39 |         3318.38 | 0.89773536 |
-#+TBLFM: $8=$7/$6
+|       | Solar tracking [h] | Background [h] | Active tracking [h] | Active tracking (eventDuration) [h] | Active background [h] | Total time [h] | Active time [h] | Active [%] |
+|-------+--------------------+----------------+---------------------+-------------------------------------+-----------------------+----------------+-----------------+------------|
+| Run-2 |            106.006 |        2391.16 |             93.3689 |                             93.3689 |               2144.12 |        2497.16 |         2238.78 | 0.89653046 |
+| Run-3 |            74.2981 |        1124.93 |             67.0066 |                             67.0066 |               1012.68 |        1199.23 |          1079.6 | 0.90024432 |
+| Total |           180.3041 |        3516.09 |            160.3755 |                            160.3755 |               3157.35 |        3706.66 |         3318.38 | 0.89524801 |
+#+TBLFM: $9=$8/$7
+
 
 *** Code to compute statistics [10/17]                           :extended:
 
@@ -16651,24 +16659,42 @@ code/cast_run_information \
 | fraction with any veto scinti  | 0.000 %       | 51.97 %       | 0.000 %        | 11.21 %        |
 
 
+**** Cross check with ~writeRunList~ and regenerate short table
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:data_taking_campaigns:gen_total_time_table
+:END:
+
 Cross check with logic in ~writeRunList~:
--> *Yes, they match*.
+-> *Yes, they match*, <2023-11-23 Thu>.
+
+The above commands produce this table (after creating the active
+column and total sum row):
+
+|       | Solar tracking [h] | Background [h] | Active tracking [h] | Active tracking (eventDuration) [h] | Active background [h] | Total time [h] | Active time [h] | Active [%] |
+|-------+--------------------+----------------+---------------------+-------------------------------------+-----------------------+----------------+-----------------+------------|
+| Run-2 |            106.006 |        2391.16 |             93.3689 |                             93.3689 |               2144.12 |        2497.16 |         2238.78 | 0.89653046 |
+| Run-3 |            74.2981 |        1124.93 |             67.0066 |                             67.0066 |               1012.68 |        1199.23 |          1079.6 | 0.90024432 |
+| Total |           180.3041 |        3516.09 |            160.3755 |                            160.3755 |               3157.35 |        3706.66 |         3318.38 | 0.89524801 |
+#+TBLFM: $9=$8/$7
+
+
+
 #+begin_src sh
 ./writeRunList -b ~/CastData/data/DataRuns2017_Reco.h5 -c ~/CastData/data/CalibrationRuns2017_Reco.h5 --runList /tmp/runList_2017.org
 #+end_src
-         total duration: 14 weeks, 6 days, 11 hours, 25 minutes, 59 seconds, 97 milliseconds, 615 microseconds, and 921 nanoseconds
-           In hours: 2507.433082670833
+         total duration: 14 weeks, 6 days, 1 hour, 9 minutes, 53 seconds, 97 milliseconds, 615 microseconds, and 921 nanoseconds
+           In hours: 2497.1647493375
            active duration: 2238.783333333333
          trackingDuration: 4 days, 10 hours, and 20 seconds
            In hours: 106.0055555555556
            active tracking duration: 93.36890683888889
            active tracking duration from event durations: 93.36890683861111
-         nonTrackingDuration: 14 weeks, 2 days, 1 hour, 25 minutes, 39 seconds, 97 milliseconds, 615 microseconds, and 921 nanoseconds
-           In hours: 2401.427527115278
-           active background duration: 2144.666241943055
+         nonTrackingDuration: 14 weeks, 1 day, 15 hours, 9 minutes, 33 seconds, 97 milliseconds, 615 microseconds, and 921 nanoseconds
+           In hours: 2391.159193781944
+           active background duration: 2144.122404722222
 | Solar tracking [h] | Background [h] | Active tracking [h] | Active tracking (eventDuration) [h] | Active background [h] | Total time [h] | Active time [h] |
 |--------------------+----------------+---------------------+-------------------------------------+-----------------------+----------------+-----------------|
-|            106.006 |        2401.43 |             93.3689 |                             93.3689 |               2144.67 |        2507.43 |         2238.78 |
+|            106.006 |        2391.16 |             93.3689 |                             93.3689 |               2144.12 |        2497.16 |         2238.78 |
          total duration: 4 days, 11 hours, 25 minutes, 20 seconds, 453 milliseconds, 596 microseconds, and 104 nanoseconds
            In hours: 107.4223482211111
            active duration: 2.601388888888889
@@ -32121,7 +32147,7 @@ space contributes. This corresponds to a range of $\SI{-0.7}{mm} < x <
 [fn:other_likelihood] For different likelihood functions other
 parameters may be affected.
 
-*** TODOs for this section [1/1] :noexport:
+*** TODOs for this section [1/3]                                 :noexport:
 
 - [X] *INSERT SUB FIG OF THE EXAMPLE FROM THE TALK. θ_x, θ_y*!!
 
