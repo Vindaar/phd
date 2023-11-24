@@ -31603,9 +31603,8 @@ where:
   \[
   P_{a \rightarrow γ}(g_{aγ}) = \left( \frac{g_{aγ} B L}{2} \right)²
   \]
-  written in /natural units/ (meaning we need to convert $B = \SI{9}{T}$ and $L =
-  \SI{9.26}{m}$ into values expressed in powers of electronvolt
-  $\si{eV}$, as discussed in sec. [[#sec:theory:axion_interactions]]),
+  written in /natural units/ (meaning we need to convert $B$ and $L$
+  into values expressed in powers of $\si{eV}$, as discussed in sec. [[#sec:theory:axion_interactions]]),
   sec. [[#sec:limit:ingredients:conversion_probability]],
 - $ε(E_i)$ is the combined detection efficiency, i.e. the
   combination of X-ray telescope effective area, the transparency of
@@ -32223,9 +32222,10 @@ As a result to still define a sane limit value, the concept of the
 marginal likelihood function $\mathcal{L}'_M$ is introduced. The idea is to
 integrate out the nuisance parameters
 
-\[
-\mathcal{L}'_M(g) = \iiiint_{-∞}^∞ \mathcal{L}'(g, ϑ_s, ϑ_b,ϑ_x,ϑ_y)\, \ddϑ_s \ddϑ_b \ddϑ_x \ddϑ_y
-\]
+#+NAME: eq:limit:method_mcmc:L_integral
+\begin{equation}
+\mathcal{L}'_M(g) = \iiiint_{-∞}^∞ \mathcal{L}'(g, ϑ_s, ϑ_b,ϑ_x,ϑ_y)\, \dd ϑ_s \dd ϑ_b \dd ϑ_x \dd ϑ_y
+\end{equation}
 
 Depending on the exact definition of $\mathcal{L}'$ in use, these integrals
 may be analytically computable. In many cases however they are not
@@ -32264,13 +32264,11 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
   function more often in those points where the contributions are
   large. The basic idea is the following:
 
-  - [ ] *REWRITE THIS!!!*
-  
   Pick a random point in the integration space as a starting
   point $p_0$. Next, pick another random point $p_1$ within the vicinity of
   $p_0$. If the function evaluates to a larger value at $p_1$ accept
   it as the new current position. If it is smaller, accept it with a
-  probability of $1 - \frac{f(p_i)}{f(p_{i-1})}$ (i.e. if the new
+  probability of $\frac{f(p_i)}{f(p_{i-1})}$ (i.e. if the new
   value is close to the old one we accept it with a high probability
   and if the new one is much lower accept it rarely). This guarantees 
   to pick values inching closer to the most contributing areas of the
@@ -32279,51 +32277,62 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
   positions. However, this also implies that regions of constant
   $\mathcal{L}$ (regions where the values are close to 0, but also
   generally 'flat' regions) produce a pure random walk from the
-  algorithm, because $\frac{f(p_{i-1})}{f(p_i)} \approx 1$ in those
+  algorithm, because $\frac{f(p_i)}{f(p_{i-1})} \approx 1$ in those
   regions. This needs to be taken into account.
 
   If a new point is accepted and becomes the current position, the
   "chain" of points is extended (hence "Markov Chain"). By creating a
-  chain of reasonable length the integration space is taken into
-  account well enough. Because the initial point is completely random
-  (up to some possible prior) the first $N$ links of the chain are in
-  a region of low interest (and depending on the interpretation of the
-  chain "wrong"). For that reason one defines a cutoff $N_b$ of the
-  first elements that are thrown away as "burn-in" before using the
-  chain to evaluate the integral or parameters.
+  chain of reasonable length the integration space is sampled
+  well. Because the initial point is completely random (up to some
+  possible prior) the first $N$ links of the chain are in a region of
+  low interest (and depending on the interpretation of the chain
+  "wrong"). For that reason one defines a cutoff $N_b$ of the first
+  elements that are thrown away as "burn-in" before using the chain to
+  evaluate the integral or parameters.
 
   In addition it can be valuable to not only start a single Markov
-  Chain from one random point, but instead start _multiple_ chains
+  Chain from one random point, but instead start /multiple/ chains
   from different points in the integration space. This increases the
   chance to cover different regions of interest even in the presence
   of multiple peaks separated too far away to likely "jump over" via
-  the probabilistic acceptance.
+  the probabilistic acceptance. As such it reduces bias from the
+  starting sampling.
 
+  To summarize the algorithm:
+  1. let $\vec{p}$ be a random vector in the integration space and
+    $f(\vec{p})$ the function to evaluate,
+  2. pick new point $\vec{p}'$ in vicinity of $\vec{p}$,
+  3. sample from random uniform in $[0, 1]$: $u$,
+  4. accept $\vec{p}'$ if $u < \frac{f(\vec{p}')}{f(\vec{p})}$, add
+    $\vec{p}'$ to chain and iterate (if $f(\vec{p}') > f(\vec{p})$ every
+     new link accepted!),
+  5. long enough chain samples integration space well,
+  6. throw away first N elements as "burn in",
+  7. generate multiple chains to be less dependent on starting position.
+
+  Applied to eq. [[eq:limit:method_mcmc:L_integral]], we obtain
+  $\mathcal{L}_M(g)$ by computing the histogram of all sampled $g$
+  values, which are one component of the vector $\vec{p}$. More on
+  that in sec. [[#sec:limit:mcmc_calc_limit]].
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *REWRITE THIS!!!*
+  
+- [ ] Check sagemath calculations for x and y systematics
+  -> ?? The integrals? Or what am I referring to?
+
+Old paragraph:  
+  #+begin_quote
   Furthermore, outside of using Metropolis-Hastings we still have to
   make sure the evaluation of $\mathcal{L}'(g, ϑ_s, ϑ_b, ϑ_x, ϑ_y)$ is fast. We
   will discuss this in the next section about the evaluation of
   $\mathcal{L}'$.
-
-  In particular: Metropolis-Hastings (Markov Chain Monte Carlo) to
-    evaluate integration space
-  1. let $\vec{x}$ be a random vector in the integration space and
-    $f(\vec{x})$ the function to evaluate
-  2. pick new point $\vec{x}'$ in vicinity of $\vec{x}$
-  3. sample from random uniform in $[0, 1]$: $u$
-  4. accept $\vec{x}'$ if $u < \frac{f(\vec{x}')}{f(\vec{x})}$, add
-    $\vec{x}'$ to chain and iterate (if $f(\vec{x}') > f(\vec{x})$ every
-     new link accepted!)
-  5. long enough chain samples integration space well
-  6. throw away first N elements as "burn in"
-  7. generate multiple chains to be less dependent on starting position
-  
-  $⇒$ $\mathcal{L}_m$ computed by histogram of sampled $g_{ae}²$ values
-
-  - [ ] Check sagemath calculations for x and y systematics
-
+  #+end_quote
+-> We don't actually even have this section. But it is partially
+mentioned in parts below of course. No need to be specific I guess.
 - [ ] *DO NOT HAVE* a section *"about the evaluation of L'"*
 
-*** TODOs for this section [/]                                   :noexport:
 
 - [ ] *REFERENCES FOR METROPOLIS HASTINGS*:
   #+begin_quote
@@ -32652,9 +32661,47 @@ code as the =lkBayesScan= limit.
 :CUSTOM_ID: sec:limit:ingredients
 :END:
 
-- [ ] *All The text here below is irrelevant now*
+To reiterate, the likelihood function we finally evaluate using MCMC,
+with explicit dependency on the coupling constant we intend to
+(mainly) consider -- the axion-electron coupling $g_{ae}$ -- can be
+written as
+
+\[
+\mathcal{L'}_{M}(g²_{ae}) = \iiiint_{-∞}^∞ e^{-s'_{\text{tot}}(g²_{ae})} ·
+  \prod_i \left(1 +\frac{s_i''(g²_{ae})}{b_i'}\right) ·
+  \exp\left[
+     -\frac{ϑ_b²}{2 σ_b²}
+     -\frac{ϑ_s²}{2 σ_s²}
+     -\frac{ϑ_x²}{2σ_x²}
+     -\frac{ϑ_y²}{2 σ_y²}
+     \right] \, \dd ϑ_b \dd ϑ_s \dd ϑ_x \dd ϑ_y.
+\]
+
+We alluded to the general make up of both the signal terms
+$s_{\text{tot}}$ and $s_i$ as well as the background $b_i$ in
+sec. [[#sec:limit:method_computing_L]]. Let us now look at what goes into
+each of these explicitly and how they are calculated.
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [X] *All The text here below is irrelevant now*
   -> Must become an introduction of sort for the ingredients.
-- [ ] *RENAME THE CUSTOM ID OF THIS SECTION*  
+- [X] *RENAME THE CUSTOM ID OF THIS SECTION*
+
+- [ ] *THINK ABOUT WHETHER TO ADD DEFINITION OF s AGAIN*  
+
+Old text for this section from before we added all the subsections.  
+#+begin_quote
+
+<insert equation>
+
+where primed symbols refer to the base symbol with a modification due
+to the value of the corresponding nuisance parameter, i.e.
+$x' = x(1 + ϑ_x)$. The double primed $s_i''$ not only includes $ϑ_s$,
+but also the position dependent nuisance parameters $ϑ_x$ and $ϑ_y$
+(see again the previous section).
+
+...
 
 The limit calculation method is based on the approach presented in
 cite:cast_nature, with modifications to better suit the GridPix
@@ -32677,18 +32724,6 @@ We will now go through the ingredients for the limit method one by
 one. The final likelihood including nuisance parameters we evaluate is
 (see section [[#sec:limit:limit_method]] for the derivation):
 
-\[
-\mathcal{L}_{SBM} = \iiiint_{-∞}^∞ \exp(-s'_{\text{tot}}) \cdot \prod_i \left(1 +
-\frac{s_i''}{b_i'}\right) \cdot
-\exp\left[-\frac{ϑ_b²}{2 σ_b²} - \frac{ϑ_s²}{2 σ_s²} -
-\frac{ϑ_x²}{2 σ_x²} - \frac{ϑ_y²}{2 σ_y²} \right]
-\, \mathrm{d}\,ϑ_b \mathrm{d}\,ϑ_s \mathrm{d}\,ϑ_x \mathrm{d}\,ϑ_y.
-\]
-where primed symbols refer to the base symbol with a modification due
-to the value of the corresponding nuisance parameter, i.e.
-$x' = x(1 + ϑ_x)$. The double primed $s_i''$ not only includes $ϑ_s$,
-but also the position dependent nuisance parameters $ϑ_x$ and $ϑ_y$
-(see again the previous section).
 
 The inputs required to compute a likelihood value are (with the
 relevant parameters):
@@ -32738,6 +32773,7 @@ calculation and the CAST data taking with the Septemboard detector.
   Then again, here we mainly present the *technique* still. So for
   example the final candidates wouldn't show up here. But ok, it's
   *only* the candidates that actually changes.
+#+end_quote
 
 *** Magnet bore and solar tracking time - $A$, $t$
 :PROPERTIES:
@@ -32757,99 +32793,236 @@ A = π (\SI{21.5}{mm})² = \SI{1452.2}{mm²}.
 
 The time of interest is the total solar tracking duration, in which
 the detector was sensitive (i.e. removing the dead time due to
-readout). As given in the CAST data taking overview, the amount of
-active solar tracking time is
+readout). As given in the CAST data taking overview,
+sec. [[#sec:cast:data_taking_campaigns]], the amount of active solar
+tracking time is
 
 \[
 t = \SI{160.38}{h}.
 \]
-
 
 *** Solar axion flux - $f(g, E_i)$ [0/3]
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:ingredients:solar_axion_flux
 :END:
 
-The solar axion flux for the model to be studied must be known both as
-a function of energy $E$ and also as a differential flux as a function
-of the solar radius to produce the expected axion image via raytracing
-(see sec. [[#sec:appendix:raytracing]]). 
+The solar axion flux is based on the calculations by J. Redondo
+cite:Redondo_2013 as already introduced in
+sec. [[#sec:theory:solar_axion_flux]]. The $f(g, E_i)$ term of the signal
+refers to the differential solar axion flux. The flux,
+fig. sref:fig:limit:ingredients:solar_axion_flux, is computed for a
+specific axion model and coupling constant, in this case
+$g_{\text{ref}} = g_{ae} = \num{1e-13}$ and $g_{aγ} =
+\SI{1e-12}{GeV^{-1}}$. As the flux scales by the coupling constant
+squared, it is rescaled to a coupling constant $g$ by
+
+\[
+f(g, E_i) = f(g_{\text{ref}}, E_i) · \frac{g²}{g²_{\text{ref}, ae}}.
+\]
+
+$g_{aγ}$ is kept constant. At this ratio of the two coupling
+constants, the axion-photon flux is negligible.
+
+The shown differential flux is computed using a Sun ⇔ Earth distance of
+$d_{S⇔E} = \SI{0.989}{AU}$ due to the times of the year in which solar
+trackings were taken at
+CAST. Fig. [[fig:limit:ingredients:distance_sun_earth]] shows the distance
+between Sun and Earth during the entire data taking period, with the
+solar trackings marked in purple. The data for the distance is
+obtained using the JPL Horizons API [[cite:&jplHorizons]].
+
+The code used to calculate the differential flux,
+[[cite:&JvO_axionElectron]] [fn:axion_flux_raytracing], can also be used
+to compute the flux for other axion models, for example a pure
+axion-photon coupling model.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Solar axion flux") (label "fig:limit:ingredients:solar_axion_flux")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/axions/differential_solar_axion_flux_by_type.pdf"))
+        (subfigure (linewidth 0.5) (caption "Distance Sun-Earth") (label "fig:limit:ingredients:distance_sun_earth")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/systematics/sun_earth_distance_cast_solar_tracking.pdf"))
+        (caption
+         (subref "fig:limit:ingredients:solar_axion_flux")
+         ": Differential solar axion flux assuming a distance to the Sun of " ($ (SI 0.989 "AU")) 
+         " based on "
+         (subref "fig:limit:ingredients:distance_sun_earth")
+         ".")
+        (label "fig:limit:ingredients:flux_distance"))
+#+end_src  
+
+[fn:axion_flux_raytracing] The code was mainly developed by Johanna
+von Oy under my supervision. I only contributed minor feature additions
+and refactoring, as well as performance related improvements.
+
+**** TODOs for this section [/]                                 :noexport:
 
 -> This is only for the axion *IMAGE*:
 This means we require knowledge about the production as shown in the
 heatmap of fig. [[fig:limit:axion_production_heatmap]]. (Move this to
 theory?)
 
-- [ ] generate heatmap of production as function of energy and solar
+- [X] generate heatmap of production as function of energy and solar
   radius
-- [ ] or show here just the signal?
+  -> In theory section!
+  - [ ] REFERENCE THEORY DISTRIBUTION
+- [X] or show here just the signal?
 - [ ] the idea being here that we highlight what one needs to replace
   in order to compute a limit of something else possibly (which then
   allows us later to have a section "axion-photon" or "chameleon"
   where we just present the inputs "see sec. blub, here's the
   production heatmap" kind of deal
 
-The solar axion flux is based on the calculations by J. Redondo
-cite:Redondo_2013. An implementation following it is found in
-*RAYTRACING_CODE*. [fn:axion_flux_raytracing] The code includes the
-calculation of the Primakoff production as well as the ABC
-processes. For the latter the Opacity Project (OPAC) *CITE ME* are
-used, following cite:Redondo_2013.
 
-As the input to the limit calculation for the signal $s_i$ the solar
-axion flux $f(g, E_i)$ is needed as a differential flux. For a
-specific set of coupling constants, $g_{ae} = \num{1e-13}$ and $g_{aγ}
-= \SI{1e-12}{GeV⁻¹}$, the flux is shown in
-fig. [[fig:limit:ingredients:flux]]. The data in the plot is computed
-using a Sun ⇔ Earth distance of $d_{S⇔E} = \SI{0.989}{AU}$ due to the
-times of the year in which solar trackings were taken at
-CAST. Fig. [[fig:limit:ingredients:distance_sun_earth]] shows the distance
-between Sun and Earth during the entire data taking period, with the
-solar trackings marked in purple. The data for the distance is
-obtained using the JPL Horizons API.
-
-- [ ] *JPL HORIZONS API CITATION*
-  -> I started the citation in ~references.org~, but it's not finished
-  yet!!!!! There's probably an official citation that one should use
-  for it!
 
 - [X] *Should we show the Earth⇔Sun distance here or in data summary
   of CAST data taking?*
   -> For now here. Might be moved at some point.
 
-- [ ] *ADD REFERENCE TO AXIONELECTRONLIMIT*.
-  -> *Rename the repository!* Has nothing to do with a *LIMIT*
+- [X] *JPL HORIZONS API CITATION*
+  -> I started the citation in ~references.org~, but it's not finished
+  yet!!!!! There's probably an official citation that one should use
+  for it!
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/differential_flux_sun_earth_distance/differential_solar_axion_fluxg_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.pdf}
-    \caption{Solar axion flux}
-    \label{fig:limit:ingredients:solar_axion_flux}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/systematics/sun_earth_distance_cast_solar_tracking.pdf}
-    \caption{Distance Sun-Earth}
-    \label{fig:limit:ingredients:distance_sun_earth}
-  \end{subfigure}%
-  \label{fig:limit:ingredients:flux_distance}
-  \caption{\subref{fig:limit:ingredients:solar_axion_flux} Differential solar axion flux assuming a
-  distance to the Sun of $\SI{0.989}{AU}$ based on \subref{fig:limit:ingredients:distance_sun_earth}}.
-\end{figure}
+- [X] *ADD REFERENCE TO AXIONELECTRONLIMIT*.
+  - [ ] *Rename the repository!* Has nothing to do with a *LIMIT*
 
-[fn:axion_flux_raytracing] The code was mainly developed by Johanna
-von Oy under my supervision. I only contributed minor feature additions
-and refactoring, as well as performance related modifications.
 
-**** Generate solar axion flux plot and distance Sun-Earth      :noexport:
+**** Generate solar axion flux plot and distance Sun-Earth      :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:ingredients:solar_axion_flux:gen_flux_distance_sun
+:END:
 
 Differential flux:
 -> ~readOpacityFiles~
+-> See sec. [[#sec:theory:gen_solar_axion_flux_plots]] and sec. [[#sec:appendix:raytracing:generate_axion_image]]
 
-Distance Sun Earth:
--> ~horizonsAPI~ plus code in ~journal.org~
+***** Use Horizons API to download data for distance during CAST data taking
+
+See [[file:~/org/journal.org::#sec:journal:01_07_23_sun_earth_dist]]
+-> notes about writing the below code.
+See [[file:~/org/journal.org::#sec:journal:28_06_23:horizonsapi_devel]]
+-> notes on development of the ~horizonsapi~ Nim library that we use
+below.
+
+First we download the distance between the Sun and Earth during the
+data taking campaign at CAST (between Jan 2017 and Dec 2019; we could
+be more strict, but well).
+
+This is done using https://github.com/SciNim/horizonsAPI, a simple
+library to interface with JPL's Horizons API. An API that allows to
+access all sorts of data about the solar system.
+
+#+begin_src nim :tangle code/get_cast_sun_earth_distances.nim
+import horizonsapi, datamancer, times
+
+let startDate = initDateTime(01, mJan, 2017, 00, 00, 00, 00, local())
+let stopDate = initDateTime(31, mDec, 2019, 23, 59, 59, 00, local())
+let nMins = (stopDate - startDate).inMinutes()
+const blockSize = 85_000 # max line number somewhere above 90k. Do less to have some buffer
+let numBlocks = ceil(nMins.float / blockSize.float).int # we end up at a later date than `stopDate`, but that's fine
+echo numBlocks
+let blockDur = initDuration(minutes = blockSize)
+
+let comOpt = { #coFormat : "json", # data returned as "fake" JSON 
+               coMakeEphem : "YES", 
+               coCommand : "10",  # our target is the Sun, index 10
+               coEphemType : "OBSERVER" }.toTable # observational parameters
+var ephOpt = { eoCenter : "coord@399", # observational point is a coordinate on Earth (Earth idx 399)
+               eoStartTime : startDate.format("yyyy-MM-dd"),
+               eoStopTime : (startDate + blockDur).format("yyyy-MM-dd"),
+               eoStepSize : "1 MIN", # in 1 min steps
+               eoCoordType : "GEODETIC", 
+               eoSiteCoord : "+6.06670,+46.23330,0", # Geneva
+               eoCSVFormat : "YES" }.toTable # data as CSV within the JSON (yes, really)
+var q: Quantities
+q.incl 20 ## Observer range! In this case range between our coordinates on Earth and target
+
+var reqs = newSeq[HorizonsRequest]()
+for i in 0 ..< numBlocks:
+  # modify the start and end dates
+  ephOpt[eoStartTime] = (startDate + i * blockDur).format("yyyy-MM-dd")
+  ephOpt[eoStopTime] = (startDate + (i+1) * blockDur).format("yyyy-MM-dd")
+  echo "From : ", ephOpt[eoStartTime], " to ", ephOpt[eoStopTime]
+  reqs.add initHorizonsRequest(comOpt, ephOpt, q)
+
+let res = getResponsesSync(reqs)
+
+proc convertToDf(res: seq[HorizonsResponse]): DataFrame =
+  result = newDataFrame()
+  for r in res:
+    result.add parseCsvString(r.csvData)
+
+let df = res.convertToDf().unique("Date__(UT)__HR:MN")
+  .select(["Date__(UT)__HR:MN", "delta", "deldot"])
+echo df
+
+df.writeCsv("/home/basti/phd/resources/sun_earth_distance_cast_datataking.csv",
+            precision = 16)
+#+end_src
+
+***** Generate plot of distance with CAST trackings marked
+
+See again [[file:~/org/journal.org::#sec:journal:01_07_23_sun_earth_dist]]
+
+With the CSV file produced in the previous section we can now plot the
+CAST trackings (from the TimepixAnalysis ~resources~ directory)
+against it.
+
+#+begin_src nim :tangle code/plot_distance_sun_earth_horizons_cast.nim
+import ggplotnim, sequtils, times, strutils, strformat
+# 2017-Jan-01 00:00
+const Format = "yyyy-MMM-dd HH:mm"
+const OrgFormat = "'<'yyyy-MM-dd ddd H:mm'>'"
+const p2017 = "~/CastData/ExternCode/TimepixAnalysis/resources/DataRuns2017_Reco_tracking_times.csv"
+const p2018 = "~/CastData/ExternCode/TimepixAnalysis/resources/DataRuns2018_Reco_tracking_times.csv"
+var df = readCsv("~/phd/resources/sun_earth_distance_cast_datataking.csv")
+  .mutate(f{string -> int: "Timestamp" ~ parseTime(idx("Date__(UT)__HR:MN").strip, Format, local()).toUnix.int})
+proc readRuns(f: string): DataFrame =
+  result = readCsv(f)
+    .mutate(f{string -> int: "TimestampStart" ~ parseTime(idx("Tracking start"), OrgFormat, local()).toUnix.int})
+    .mutate(f{string -> int: "TimestampStop" ~ parseTime(idx("Tracking stop"), OrgFormat, local()).toUnix.int})
+var dfR = readRuns(p2017)  
+dfR.add readRuns(p2018)
+
+var dfHT = newDataFrame()
+for tracking in dfR:
+  let start = tracking["TimestampStart"].toInt
+  let stop = tracking["TimestampStop"].toInt
+  dfHT.add df.filter(f{int: `Timestamp` >= start and `Timestamp` <= stop})
+
+dfHT["Type"] = "Trackings"
+df["Type"] = "HorizonsAPI"
+df.add dfHT
+
+let deltas = dfHT["delta", float]
+let meanD = deltas.mean
+let varD = deltas.variance
+let stdD = deltas.std
+echo "Mean distance during trackings = ", meanD
+echo "Variance of distance during trackings = ", varD
+echo "Std of distance during trackings = ", stdD
+# and write back the DF of the tracking positions
+dfHT.writeCsv("~/phd/resources/sun_earth_distance_cast_solar_trackings.csv")
+
+ggplot(df, aes("Timestamp", "delta", color = "Type")) +
+  geom_line(data = df.filter(f{`Type` == "HorizonsAPI"})) +
+  geom_point(data = df.filter(f{`Type` == "Trackings"}), size = 1.0) +
+  scale_x_date(isTimestamp = true,
+               formatString = "yyyy-MM",
+               dateSpacing = initDuration(days = 60)) +
+  xlab("Date", rotate = -45.0, alignTo = "right", margin = 1.5) +
+  annotate(text = &"Mean distance during trackings = {meanD:.4f}", x = 1.52e9, y = 1.0175) + 
+  annotate(text = &"Variance distance during trackings = {varD:.4g}", x = 1.52e9, y = 1.015) +   
+  annotate(text = &"Std distance during trackings = {stdD:.4f}", x = 1.52e9, y = 1.0125) + 
+  margin(bottom = 2.0) + 
+  ggtitle("Distance in AU Sun ⇔ Earth") +
+  theme_font_scale(1.0, family = "serif") + 
+  ggsave("~/phd/Figs/systematics/sun_earth_distance_cast_solar_tracking.pdf", width = 600, height = 360)
+#+end_src
+
 
 *** Conversion probability - $P_{aγ}(g_{aγ})$
 :PROPERTIES:
@@ -32998,19 +33171,7 @@ constants.
 - software efficiency (setup dependent)
 - veto efficiency (setup dependent)
 
-**** TODO Telescope efficiency - $ε_{\text{telescope}}(E_i)$ [/]
-
-- [ ] *UPDATE THE USED EFFECTIVE AREA!!!*
-  See journal [[#sec:journal:2023_07_13]]!!
-
-- [ ] Merge with window transmission and argon gas, as detection efficiency
-
-- [X] Refer back to section that describes the LLNL telescope!
-
-- [ ] Think about having a proper introduction to effective area in
-  the theory introduction?
-  -> Then here we can just give a quick reiteration and refer to the
-  plot of the combined efficiency?
+**** Telescope efficiency - $ε_{\text{telescope}}(E_i)$
 
 The X-ray telescope further has a direct impact not only on the shape
 of the axion signal on the readout, but also the total number of
@@ -33048,6 +33209,23 @@ the fact that different shells receive parallel light under different
 angles, which means the reflectivity varies between shells. Therefore,
 this is a measure for the average efficiency.
 
+***** TODOs for this section [/]                               :noexport:
+
+- [ ] *TALK ABOUT WHERE DATA COMES FROM!!!!!!*
+
+
+- [ ] *UPDATE THE USED EFFECTIVE AREA!!!*
+  See journal [[#sec:journal:2023_07_13]]!!
+
+- [ ] Merge with window transmission and argon gas, as detection efficiency
+
+- [X] Refer back to section that describes the LLNL telescope!
+
+- [ ] Think about having a proper introduction to effective area in
+  the theory introduction?
+  -> Then here we can just give a quick reiteration and refer to the
+  plot of the combined efficiency?
+
 
 **** Window transmission and Argon gas absorption - $ε_{\text{window}}(E_i), ε_{\text{gas}}(E_i)$
 
@@ -33062,7 +33240,9 @@ While the window also has 4 \SI{500}{μm} thick strongbacks which in
 total occlude about $\SI{22.2}{\%} of the center region, these are
 _not_ taken into account into the combined detection
 efficiency. Instead they are handled together with the axion image
-$r(x_i, y_i)$ in sec. [[#sec:limit:ingredients:raytracing]]. 
+$r(x_i, y_i)$ in sec. [[#sec:limit:ingredients:raytracing]].
+
+***** TODOs for this section [/]                               :noexport:
 
 - [ ] plot of the effective area
 - [ ] compute window transmission with =xrayAttenuation=
@@ -33893,11 +34073,8 @@ position on the chip, we need a continuous description in those
 dimensions of the background rate.
 
 In order to obtain such a thing, we start from all X-ray like clusters
-remaining after background rejection, see
-fig. [[fig:limit:background_clusters]] where each point is a cluster
-center with the color indicating its energy (similar to the candidates
-plot further up).
-- [ ] *CLUSTER PLOT HERE AGAIN?*
+remaining after background rejection, see for example
+fig. [[sref:fig:background:cluster_center_comparison]].
 
 For the background we construct a background interpolation based on
 all clusters found in the background dataset. This is done by defining
@@ -33949,10 +34126,10 @@ of $I$ into a background rate. It is the 'volume' of our measure
 within the boundaries set by our metric $\mathcal{D}$:
 
 \begin{align*}
-W(x', y', E') &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_{\mathcal{D}(\vec{x'}, \vec{x}) \leq R} \mathcal{M}(x', y') \, \mathrm{d}x\, \mathrm{d}y\, \mathrm{d} E \\
-  &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_{\mathcal{D}(\vec{x'}, \vec{x}) \leq R} \exp\left[ -\frac{1}{2} \mathcal{D}² / σ² \right] \, \mathrm{d}x \, \mathrm{d}y \, \mathrm{d} E \\
-  &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_0^R ∫_0^{2π} r \exp\left[ -\frac{1}{2} \frac{\mathcal{D}² }{σ²} \right] \, \mathrm{d}r\, \mathrm{d}φ\, \mathrm{d} E \\
-  &= t_B ∫_{E' - E_c}^{E' + E_c} -2 π \left( σ²  \exp\left[ -\frac{1}{2} \frac{R²}{σ^2} \right] - σ² \right) \, \mathrm{d} E \\
+W(x', y', E') &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_{\mathcal{D}(\vec{x'}, \vec{x}) \leq R} \mathcal{M}(x', y') \, \dd x\, \dd y\, \dd  E \\
+  &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_{\mathcal{D}(\vec{x'}, \vec{x}) \leq R} \exp\left[ -\frac{1}{2} \mathcal{D}² / σ² \right] \, \dd x \, \dd y \, \dd  E \\
+  &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_0^R ∫_0^{2π} r \exp\left[ -\frac{1}{2} \frac{\mathcal{D}² }{σ²} \right] \, \dd r\, \dd φ\, \dd  E \\
+  &= t_B ∫_{E' - E_c}^{E' + E_c} -2 π \left( σ²  \exp\left[ -\frac{1}{2} \frac{R²}{σ^2} \right] - σ² \right) \, \dd E \\
   &= -4 π t_B E_c \left( σ² \exp\left[ -\frac{1}{2} \frac{R²}{σ^2} \right] - σ² \right), \\
 \end{align*}
 
@@ -34021,53 +34198,58 @@ where:
   \]
   denoted as $ϑ'$ here.
 
-Fig. \ref{fig:limit:background_interpolation} shows an example of the background
+Fig. sref:fig:limit:background_interpolation shows an example of the background
 interpolation centered at $\SI{3}{keV}$, with all clusters within a
 radius of $\num{40}$ pixels and in an energy range from
-$\SIrange{2.7}{3.3}{keV}$. Fig. \ref{fig:limit:interpolation_clusters}
+$\SIrange{2.7}{3.3}{keV}$. Fig. sref:fig:limit:interpolation_clusters
 shows the initial step of the interpolation, with all colored points
 inside the circle being clusters that are contained in $\mathcal{D}
 \leq R$. Their color represents the weight based on the measure
 $\mathcal{M}$. After normalization and calculation for each point on
 the chip, we get the interpolation shown in
-fig. \ref{fig:limit:background_interpolation_example}.
+fig. sref:fig:limit:background_interpolation_example.
 
 Implementation wise, as the lookup of the closest neighbors in general
 is an $N²$ operation for $N$ clusters, all clusters are stored in a
-$k$-d tree, for fast querying of clusters close to the point to be
+$k\text{-d}$ tree, for fast querying of clusters close to the point to be
 evaluated. Furthermore, because the likelihood $\mathcal{L}$ is
 evaluated many times for a given set of candidates to compute a limit,
 we perform caching of the background interpolation values for each
 candidate. That way we only compute the interpolation once for each
 candidate.
 
-- [ ] *REFERNECE k-d TREE*
-
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/interpolation_clusters_E_3.0_keV_x_110_y_80.pdf}
-    \caption{Intensity at a point}
-    \label{fig:limit:interpolation_clusters}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/normalized_interpolation_at_3.0keV_ymax_5e-05.pdf}
-    \caption{Interpolation}
-    \label{fig:limit:background_interpolation_example}
-  \end{subfigure}%
-  \label{fig:limit:background_interpolation}
-  \caption{\subref{fig:limit:interpolation_clusters} Calculation of intensity $I$ at the center of the red circle.
-  Black crosses indicate \underline{all} background clusters. The red circle indicates cutoff $R$ in the x-y plane. Only
-  clusters with colored dots inside the circle are within $\SIrange{2.70}{3.3}{keV}$. Their color is the weight based
-  on the gaussian metric $\mathcal{D}$. 
-  \subref{fig:limit:background_interpolation_example} Example of the resulting background interpolation at $\SI{3}{keV}$ computed
-  over the entire chip. A smooth, correctly normalized interpolation is obtained.
-  }
-\end{figure}
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Intensity at a point") (label "fig:limit:interpolation_clusters")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/statusAndProgress/limitSanityChecks/interpolation_clusters_E_3.0_keV_x_110_y_80.pdf"))
+        (subfigure (linewidth 0.5) (caption "Interpolation") (label "fig:limit:background_interpolation_example")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/statusAndProgress/limitSanityChecks/normalized_interpolation_at_3.0keV_ymax_5e-05.pdf"))
+        (caption
+         (subref "fig:limit:interpolation_clusters")
+         ": Calculation of intensity " ($ "I") " at the center of the red circle. Black crosses indicate all
+          background clusters. The red circle indicates cutoff "
+         ($ "R") " in the x-y plane. Only clusters with colored dots inside the circle
+          are within " ($ "\\SIrange{2.70}{3.3}{keV}") ". Their color is the weight based on the gaussian metric "
+         ($ "\\mathcal{D}") ". "
+         (subref "fig:limit:background_interpolation_example")
+         ": Example of the resulting background interpolation at "
+         ($ (SI "3" "keV")) " computed over the entire chip. A smooth, correctly normalized interpolation is obtained.")
+        (label "fig:limit:background_interpolation"))
+#+end_src
 
 **** Notes about this section [2/9]                             :noexport:
+
+- [ ] *REFERNECE k-d TREE*
+  -> Not even sure what there is to reference.
+
+- [X] *CLUSTER PLOT HERE AGAIN?*
+  -> Sort of.
+
+- [ ] *THINK ABOUT* whether to move missing circle segment to the
+  appendix, possibly.   
+
 Figures:
 1. [X] background clusters
    -> They are part of the background rate section
@@ -34139,9 +34321,20 @@ One of the fundamental points about making this whole procedure generic.
   is. This is the same as the thought of whether a background rate
   should be corrected for by the signal efficiency. This is never
   done. 
-  
 
-**** STARTED Homogeneous background for energies > 2 keV [/]    :noexport:
+
+**** Sampling of background interpolation                       :noexport:
+
+Take interpolation. For sampling purposes we need to sample from
+background according to rate. How?
+Take a grid in x, y, E of N grid cells. Take background in those
+volumes & normalize to # counts in tracking time. Then Poisson sample
+from that as mean. Sample an (x, y, E) "position" in that cube.
+
+10x10x20 ? cells used. Plot of the cells, normalized to counts.
+
+
+**** STARTED Homogeneous background for energies > 2 keV [/]    :extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:correct_inter_cutoff
 :END:
@@ -34260,7 +34453,7 @@ Implemented this as a prototype in:
 Next step: incorporate this into the interpolation to re-weight the
 interpolation near the corners.
 
-**** Normalization of gaussian weighted k-d tree background interpolation :noexport:
+**** Normalization of gaussian weighted k-d tree background interpolation :extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:gaussian_weight_normalization
 :END:
@@ -34467,7 +34660,7 @@ proc normalizeValue*(x, radius: float, energyRange: keV, backgroundTime: Hour): 
 #+end_src
 
 
-**** Error propagation of background interpolation              :noexport:
+**** Error propagation of background interpolation              :extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:background_interpolation_uncertainty
 :END:
@@ -35114,18 +35307,6 @@ element seems to follow nicely the actual width of the distribution.
 In particular this is visible in the artificial high statistics case,
 where the mean value of the error is comparable to the width of the
 =value= histogram.
-
-
-**** Sampling of background interpolation
-
-Take interpolation. For sampling purposes we need to sample from
-background according to rate. How?
-Take a grid in x, y, E of N grid cells. Take background in those
-volumes & normalize to # counts in tracking time. Then Poisson sample
-from that as mean. Sample an (x, y, E) "position" in that cube.
-
-10x10x20 ? cells used. Plot of the cells, normalized to counts.
-
 
 *** Candidates [/]
 :PROPERTIES:
@@ -43959,12 +44140,18 @@ If you do not have a ~config.toml~ file, just create a copy of the
 ~config_default.toml~ as ~config.toml~.
 
 Now we can run ~readOpacityFile~:
-#+begin_src sh
-./readOpacityFile --suffix "_0.989AU" --distanceSunEarth 0.9891144450781392.AU --fluxKind fkAxionElectronPhoton
+#+begin_src sh :dir ~/CastData/ExternCode/AxionElectronLimit/src
+./readOpacityFile \
+    --suffix "_0.989AU" \
+    --distanceSunEarth 0.9891144450781392.AU \
+    --fluxKind fkAxionElectronPhoton \
+    --plotPath ~/phd/Figs/readOpacityFile/ \
+    --outpath ~/phd/resources/readOpacityFile/
 #+end_src
-where we insert the correct distance from Sun to Earth. And we set the
-fluxes to only those interactions we are interested in (ignoring
-things like plasmon interactions).
+where we insert the correct distance from Sun to Earth, see
+sec. [[#sec:limit:ingredients:solar_axion_flux:gen_flux_distance_sun]]. And
+we set the fluxes to only those interactions we are interested in
+(ignoring things like plasmon interactions).
 
 The output data will be written as a CSV file to a location also
 defined in the config file.
