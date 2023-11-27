@@ -2186,9 +2186,10 @@ needs to be squared for the probability to measure a photon at
 distance $z$ when starting purely from axions in an external,
 transverse magnetic field $B_T$
 
-\[
-P_{a↦γ}(z) = |{A_{\parallel}(z)}|² = \left( \frac{g_{aγγ} B_T z}{2} \right)² \left(\frac{\sin(\frac{q z}{2})}{\frac{q z}{2}}\right)²,
-\]
+#+NAME: eq:theory:axion_interaction:conversion_probability
+\begin{equation}
+P_{a↦γ}(z) = |{A_{\parallel}(z)}|² = \left( \frac{g_{aγγ} B_T z}{2} \right)² \left(\frac{\sin\left(\frac{q z}{2}\right)}{\frac{q z}{2}}\right)²,
+\end{equation}
 
 with $q = \frac{m²_γ - m²_a}{2ω}$ and we dropped additional terms $∝
 g_{aγ} B_T$ as arguments to $\sinc$, because they are extremely small
@@ -2405,7 +2406,7 @@ echo "Δ² = ", Δ(1e-12.GeV⁻¹, 9.T)^2
 
 Yeah, as expected that's the reason. 
 
-*** Deriving the missing constants in the conversion probability [/] :optional:
+*** Deriving the missing constants in the conversion probability [/] :extended:
 
 - [ ] *Move this into an appendix?*
 
@@ -32686,7 +32687,12 @@ written as
 We alluded to the general make up of both the signal terms
 $s_{\text{tot}}$ and $s_i$ as well as the background $b_i$ in
 sec. [[#sec:limit:method_computing_L]]. Let us now look at what goes into
-each of these explicitly and how they are calculated.
+each of these explicitly and how they are calculated, starting with each
+of the signal contributions,
+
+\[
+s_i(g) = f(g, E_i) · A · t · P_{a \rightarrow γ}(g_{aγ}) · ε(E_i) · r(x_i, y_i).
+\]
 
 *** TODOs for this section [/]                                   :noexport:
 
@@ -32829,10 +32835,10 @@ f(g, E_i) = f(g_{\text{ref}}, E_i) · \frac{g²}{g²_{\text{ref}, ae}}.
 $g_{aγ}$ is kept constant. At this ratio of the two coupling
 constants, the axion-photon flux is negligible.
 
-The shown differential flux is computed using a Sun ⇔ Earth distance of
+The shown differential flux is computed using a Sun to Earth distance of
 $d_{S⇔E} = \SI{0.989}{AU}$ due to the times of the year in which solar
 trackings were taken at
-CAST. Fig. [[fig:limit:ingredients:distance_sun_earth]] shows the distance
+CAST. Fig. [[sref:fig:limit:ingredients:distance_sun_earth]] shows the distance
 between Sun and Earth during the entire data taking period, with the
 solar trackings marked in purple. The data for the distance is
 obtained using the JPL Horizons API [[cite:&jplHorizons]].
@@ -33040,7 +33046,7 @@ factor, depending on $g_{aγ}$, see section
 [[#sec:theory:axion_interactions]] for the derivation from the general
 formula.
 
-The simplified expression for coherent conversion in a constant
+The simplified expression for coherent conversion [fn:incoherent] in a constant
 magnetic field [fn:inhomogeneous_fields] is
 
 \[
@@ -33067,7 +33073,11 @@ P(g_{aγ}, B, L) &= \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2 \\
                &= \num{1.627e-21}
 \end{align*}
 
-[fn:inhomogeneous_fields] Note that in a perfect analysis one would
+[fn:incoherent] Note that to calculate limits for larger axion masses
+the $\sinc$ term of
+eq. [[eq:theory:axion_interaction:conversion_probability]] needs to be included.
+
+[fn:inhomogeneous_fields] Also note that in a perfect analysis one would
 compute the conversion in a realistic magnetic field, as the field
 strength is not perfectly homogeneous. That would require a very
 precise field map of the magnet. In addition the calculations for
@@ -33157,25 +33167,25 @@ additional conversion factors are correct.
 :CUSTOM_ID: sec:limit:ingredients:detection_eff
 :END:
 
+The detection efficiency $ε(E_i)$ includes multiple aspects of the
+full setup. It can be further decomposed into the telescope
+efficiency, window transparency, gas absorption, software efficiency
+of the classifier and veto efficiency,
+
+\[
+ε(E_i) = ε_{\text{telescope}}(E_i) · ε_{\text{window}}(E_i) · ε_{\text{gas}}(E_i) · ε_{\text{software eff.}} · ε_{\text{veto eff.}}.
+\]
+
+The first three are energy dependent and the latter two constants, but
+dependent on the classifier and veto setup for which we compute limits.
+
+**** TODOs for this section [/]                                 :noexport:
+
 - [ ] *Don't forget this includes things like the veto efficiencies as
   well! Strongback only implicitly!*
 
-The detection efficiency $ε(E_i)$ includes multiple aspects of the
-full setup. It can be further decomposed into 
 
-\[
-ε(E_i) = ε_{\text{telescope}}(E_i) · ε_{\text{window}}(E_i) · ε_{\text{gas}}(E_i) · ε_{\text{software eff.}} · ε_{\text{veto eff.}}
-\]
-
-where the first three parts are energy dependent and the latter two
-constants.
-
-- telescope effective area (i.e. reflectivity under different angles
-  etc)
-- detector window transmission
-- gas absorption probability
-- software efficiency (setup dependent)
-- veto efficiency (setup dependent)
+- [ ] *THINK ABOUT TURNING SEC INTO PARAGRAPHS?*
 
 **** Telescope efficiency - $ε_{\text{telescope}}(E_i)$
 
@@ -33188,8 +33198,10 @@ quoted using the term "effective area". In section
 optics used at CAST is shown. 
 
 The term effective area refers to the equivalent area a perfect X-ray
-telescope would cover. As such, the real efficiency $ε_{\text{tel}}$ can be computed by
-the ratio of the effective area $A_{\text{eff}}$ and the total area of the optic $A_{\text{tel}}$.
+telescope ($\SI{100}{\%}$ transmission) would cover. As such, the real
+efficiency $ε_{\text{tel}}$ can be computed by the ratio of the
+effective area $A_{\text{eff}}$ and the total area of the optic
+$A_{\text{tel}}$ exposed to light.
 
 \[
 ε_{\text{tel}}(E) = \frac{A_{\text{eff}}(E)}{A_{\text{tel}}}
@@ -33199,15 +33211,24 @@ where the effective area $A_{\text{eff}}$ depends on the
 energy. [fn:eff_area_reflectivity] In case of CAST the relevant total
 area is not actually the cross-sectional area of the optic itself, but
 rather the exposed area due to the diameter of the magnet
-coldbore. With a coldbore diameter of $d_{\text{cb}} = \SI{43}{mm}$
+coldbore. With a coldbore diameter of $d_{\text{bore}} = \SI{43}{mm}$
 the effective area can be converted to $ε_{\text{tel}}$.
 
 The resulting effective area is shown in
 fig. [[fig:limit:limit_method:combined_detection_eff]] in the next section
 together with the window transmission and gas absorption.
 
+#+begin_quote
+Note: all publicly available effective areas for the LLNL telescope,
+meaning [[cite:&anders_phd]] and [[cite:&llnl_telescope_first_cast_results]],
+are inapplicable or wrong. Jaime Ruz sent me the simulation results
+used for the CAST Nature paper [[cite:&cast_nature]], which include the
+effective area. These numbers are used in the figure below and our
+limit calculation.
+#+end_quote
+
 [fn:eff_area_reflectivity] Note that $ε_{\text{tel}}$ here is the average effective
-efficiency of the full telescope and *not* the reflectivity of a
+efficiency of the full telescope and /not/ the reflectivity of a
 single shell. As a Wolter I optic requires two reflections
 $ε_{\text{tel}}$ is equivalent to the reflectivity squared
 $R²$. Individual reflectivities of shells are further complicated by
@@ -33219,11 +33240,10 @@ this is a measure for the average efficiency.
 
 - [ ] *TALK ABOUT WHERE DATA COMES FROM!!!!!!*
 
-
-- [ ] *UPDATE THE USED EFFECTIVE AREA!!!*
+- [X] *UPDATE THE USED EFFECTIVE AREA!!!*
   See journal [[#sec:journal:2023_07_13]]!!
 
-- [ ] Merge with window transmission and argon gas, as detection efficiency
+- [X] Merge with window transmission and argon gas, as detection efficiency
 
 - [X] Refer back to section that describes the LLNL telescope!
 
