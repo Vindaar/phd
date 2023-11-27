@@ -27,16 +27,33 @@
 # NOTE: At this point <2023-09-14 Thu 18:04> compiling using Computer
 # Modern works fine! We don't actually use any fancy unicode in the
 # context of the thesis.
-#+LATEX_HEADER: \setmainfont{DejaVu Serif} % supports all unicode we care about as serif font
+# #+LATEX_HEADER: \setmainfont{DejaVu Serif} % supports all unicode we care about as serif font
 
 # STIX looks nice, but we have to set up the other versions (bold
 # etc.) and decide on a good line spacing.
 # #+LATEX_HEADER: \setmainfont[Path = "/usr/share/fonts/stix/static_otf/", Extension = ".otf"]{"STIXTwoText-Regular"}
-# #+LATEX_HEADER:   #UprightFont    =  ,
-# #+LATEX_HEADER:   #BoldFont       = *-Bold ,
-# #+LATEX_HEADER:   #ItalicFont     = *-Italic ,
-# #+LATEX_HEADER:   #BoldItalicFont = *-BoldItalic
-# #+LATEX_HEADER: ]{"STIXTwoText-Regular"}
+#+LATEX_HEADER: \setmainfont[
+#+LATEX_HEADER:   Path = "/usr/share/fonts/stix/static_otf/",
+#+LATEX_HEADER:   Extension      = .otf,
+#+LATEX_HEADER:   UprightFont    = *-Regular,
+#+LATEX_HEADER:   BoldFont       = *-Bold ,
+#+LATEX_HEADER:   ItalicFont     = *-Italic ,
+#+LATEX_HEADER:   BoldItalicFont = *-BoldItalic
+#+LATEX_HEADER: ]{STIXTwoText}
+#+LATEX_HEADER: \setmathfont[Path = "/usr/share/fonts/stix/static_otf/", Extension = ".otf"]{STIXTwoMath-Regular}
+
+# Now set up a fallback font, using DejaVu for some unicode characters
+# that are not in STIX (if we end up using STIX that is)
+#+LATEX_HEADER: \directlua{
+#+LATEX_HEADER:   luaotfload.add_fallback(
+#+LATEX_HEADER:   "FallbackFonts",
+#+LATEX_HEADER:   {
+#+LATEX_HEADER:         "DejaVu Serif:mode=harf;",
+#+LATEX_HEADER:         "DejaVu Sans Mono:mode=harf;",
+#+LATEX_HEADER:         % we could add many more fonts here optionally!
+#+LATEX_HEADER:     }
+#+LATEX_HEADER:   )
+#+LATEX_HEADER: }
 
 
 # The following is the approach using `ucharclasses` but that ruins
