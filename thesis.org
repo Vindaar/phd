@@ -33777,8 +33777,8 @@ candidate.
          ": Calculation of intensity " ($ "I") " at the center of the red circle. Black crosses indicate all
           background clusters. The red circle indicates cutoff "
          ($ "R") " in the x-y plane. Only clusters with colored dots inside the circle
-          are within " ($ "\\SIrange{2.70}{3.3}{keV}") ". Their color is the weight based on the gaussian metric "
-         ($ "\\mathcal{D}") ". "
+          are within " ($ "\\SIrange{2.70}{3.3}{keV}") ". Their color is the weight based on the gaussian measure "
+         ($ "\\mathcal{M}") ". "
          (subref "fig:limit:background_interpolation_example")
          ": Example of the resulting background interpolation at "
          ($ (SI "3" "keV")) " computed over the entire chip. A smooth, correctly normalized interpolation is obtained.")
@@ -33787,14 +33787,15 @@ candidate.
 
 **** Notes about this section [2/9]                             :noexport:
 
-- [ ] *REFERNECE k-d TREE*
+- [ ] *THINK ABOUT* whether to move missing circle segment to the
+  appendix, possibly.   
+
+- [X] *REFERNECE k-d TREE*
   -> Not even sure what there is to reference.
 
 - [X] *CLUSTER PLOT HERE AGAIN?*
   -> Sort of.
 
-- [ ] *THINK ABOUT* whether to move missing circle segment to the
-  appendix, possibly.   
 
 Figures:
 1. [X] background clusters
@@ -33817,7 +33818,9 @@ Figures:
 - [ ] About edge correction:
   - [ ] Maybe make a quick schematic of Inkscape showing the different
   areas A, B, C, D, E, F?
+  -> *If* we keep this, that would be very valuable. 
   - [ ] Maybe take most of the description out of the regular thesis?
+    -> Ding ding ding. Appendix.
 
 
 Highlight:
@@ -33826,7 +33829,7 @@ the full chip! Generic ALPs can be studied this way, as we don't have
 to manually define regions on the chip with specific backgrounds etc.!
 One of the fundamental points about making this whole procedure generic.
 
-- [ ] explain using k-d tree to efficiently look up "neighbors" at any
+- [X] explain using k-d tree to efficiently look up "neighbors" at any
   point (x, y, E). In particular explain how energy works. Not taken
   into account in distance aside from whether inside. So gaussian
   weighting only in x/y.
@@ -33834,7 +33837,7 @@ One of the fundamental points about making this whole procedure generic.
 - [X] use number & distance to these points to compute a weighted
   number of elements in desired "radius"
   -> Explained
-- [ ] Explain that energy is rescaled according to a the "radius" of
+- [X] Explain that energy is rescaled according to a the "radius" of
   the metric
 - [X] potentially rescale number based on area cut off due to edges of
   the chip. how does this work.
@@ -33843,7 +33846,7 @@ One of the fundamental points about making this whole procedure generic.
   rate. . how does rescaling work.
   -> Done
 
-- [ ] explain how the integration works etc, copy from sections
+- [X] explain how the integration works etc, copy from sections
   [[sec:correct_inter_cutoff]] and [[sec:limit:gaussian_weight_normalization]]
   in status.
   -> Both sections copied now below.
@@ -33851,14 +33854,14 @@ One of the fundamental points about making this whole procedure generic.
 - [X] *INSERT CROSSES FOR CLUSTERS IN THE ENERGY RANGE!*
   -> Done as a separate plot!
 
-- [ ] *TODO*: check the integration of the gaussian weight again. Is
+- [X] *TODO*: check the integration of the gaussian weight again. Is
   that really correct??!! Ahh, it might be correct. What we try to do
   is not to compute anything related to the actual neighbors found in
   the radius, but rather to get the "equivalent area" of the weighted
   data!
 
 
-- [ ] *IMPORTANT:*
+- [X] *IMPORTANT:*
   Our knowledge of the random coincidence rate of the septem & line
   veto implies that the *time* used to calculate the tracking time and
   background time must be modified by that factor. So not only a dead
@@ -33868,6 +33871,13 @@ One of the fundamental points about making this whole procedure generic.
   should be corrected for by the signal efficiency. This is never
   done. 
 
+
+**** Generate the interpolation figure                          :extended:
+
+Sanity check!
+#+begin_src sh
+#+end_src
+  
 
 **** Sampling of background interpolation                       :noexport:
 
@@ -34875,39 +34885,46 @@ candidates $κ_{ijk}$ in each grid cell, we then compute a random
 position and energy from uniform distributions along each dimension.
 
 A slice of the grid cells centered at $\SI{2.75}{keV}$ is shown in
-fig. \ref{fig:limit:expected_counts}, with the color indicating how
+fig. sref:fig:limit:expected_counts, with the color indicating how
 many candidates are expected in each cell after the solar tracking duration.
 
 A set of toy candidates generated in this manner is shown in
-fig. \ref{fig:limit:toy_candidate_set}. Each point represents one toy
+fig. sref:fig:limit:toy_candidate_set. Each point represents one toy
 candidate at its cluster center position. The color scale represents
-the energy of each cluster in \si{keV}.
+the energy of each cluster in $\si{keV}$.
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/candidate_sampling_grid_index_5.pdf}
-    \caption{Grid of expected counts}
-    \label{fig:limit:expected_counts}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitSanityChecks/example_candidates_1.pdf}
-    \caption{Toy candidate set}
-    \label{fig:limit:toy_candidate_set}
-  \end{subfigure}%
-  \label{fig:limit:toy_candidates}
-  \caption{\subref{fig:limit:expected_counts} Expected counts in $(10, 10, 20)$ cells, centered around
-  $\SI{2.75}{keV}$ obtained from background interpolation and normalized back to counts in solar tracking within
-  the volume of the grid cell. 
-  \subref{fig:limit:toy_candidate_set} A set of toy candidates drawn from cells of expected counts using a Poisson distribution
-  with mean based on each grid cell. Each point is the center of a cluster with the color scale showing the energy of that cluster.
-  }
-\end{figure}
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Grid of expected counts") (label "fig:limit:expected_counts")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/statusAndProgress/limitSanityChecks/candidate_sampling_grid_index_5.pdf"))
+        (subfigure (linewidth 0.5) (caption "Toy candidate set") (label "fig:limit:toy_candidate_set")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Figs/statusAndProgress/limitSanityChecks/example_candidates_1.pdf"))
+        (caption
+         (subref "fig:limit:expected_counts")
+         ": Expected counts in " ($ "(10, 10, 20)")
+         " cells, centered around " ($ (SI 2.75 "keV"))
+         " obtained from background interpolation and normalized back to counts in
+           solar tracking within the volume of the grid cell. "
+         (subref "fig:limit:toy_candidate_set")
+         ": A set of toy candidates drawn from cells of expected counts using a Poisson
+           distribution with mean based on each grid cell. Each point is the center of a
+           cluster with the color scale showing the energy of that cluster.")
+         (label "fig:limit:toy_candidates"))
+#+end_src
+
+**** TODOs for this section [/]                                 :noexport:
 
 - [ ] *MOVE THE SAMPLING PART* to the section about expected limits?
+  Hmm.
 
+**** Generate the candidate sampling figure                     :extended:
+
+Sanity check!
+#+begin_src sh
+#+end_src
+  
 ** Systematics
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:systematics
@@ -34950,12 +34967,65 @@ given value is for a case of $σ_{\text{software}} = \SI{2}{\%}$, which
 is a bound larger than the observed uncertainties. The position
 uncertainty is fixed by hand to $\SI{5}{\%}$ due to lack of knowledge
 about parameters that could be used to calculate a specific value. The
-numbers in the table represent bounds about the maximum deviation possible.
+numbers in the table represent bounds about the maximum deviation
+possible. For a derivation of these numbers, see the extended thesis [fn:why_not_appendix].
 
 #+CAPTION: Overview of the different systematics that are considered as well as possible
-#+CAPTION: biases due to our understanding.
+#+CAPTION: biases due to our understanding. 
 #+NAME: tab:limit:systematic_uncertainties
 #+ATTR_LATEX: :booktabs t
+| Uncertainty                           | s or b?  | rel. σ [%] | bias?                   |
+|---------------------------------------+----------+------------+-------------------------|
+| Earth $⇔$ Sun distance                | s        |     0.7732 | none                    |
+| Window thickness (± 10 nm)             | s        |     0.5807 | none                    |
+| Solar models                          | s        |      $< 1$ | none                    |
+| Magnet length (- 1 cm)                 | s        |     0.2159 | likely $\SI{9.26}{m}$   |
+| Magnet bore diameter (± 0.5 mm)        | s        |    2.32558 | measurements: 42.x - 43 |
+| Window rotation (30° ± 0.5°)          | s        |    0.18521 | none                    |
+| Software efficiency                   | s        |      $< 2$ | none                    |
+|---------------------------------------+----------+------------+-------------------------|
+| Gas gain time binning                 | b        |    0.26918 | to 0                    |
+| Reference dist interp (CDL morphing)  | b        |     0.0844 | none                    |
+|---------------------------------------+----------+------------+-------------------------|
+| Alignment (signal, related mounting)  | s (pos.) |     0.5 mm | none                    |
+| Detector mounting precision (±0.25 mm) | s (pos.) |    0.25 mm | none                    |
+
+# | note                                                         | reference                                          |
+# |--------------------------------------------------------------+----------------------------------------------------|
+# |                                                              | [[#sec:uncertain:distance_earth_sun]]                  |
+# |                                                              | [[#sec:uncertain:window_thickness]]                    |
+# | unclear from plot, need to look at code                      | [[~/org/Figs/lennert_seb_comparison_solar_models.png]] |
+# |                                                              | [[#sec:magnet_length_bore_uncertainty]]                |
+# |                                                              | [[#sec:magnet_length_bore_uncertainty]]                |
+# | rotation seems to be same in both data takings               | [[#sec:window_rotation_uncertainty]]                   |
+# | For performance reasons less precise integrations.           |                                                    |
+# | Eff. ε_photo < 2, but ε_escape > 3% (less reliable). Choose!  | [[#sec:uncertain:software_efficiency]]                 |
+# |--------------------------------------------------------------+----------------------------------------------------|
+# | Computed background clusters for different gas gain binnings | [[#sec:uncertain:gas_gain_binning]]                    |
+# |                                                              | [[#sec:uncertain:cdl_morphing]]                        |
+# | Partially encoded / fixed w/ gas gain time binning.          |                                                    |
+# |                                                              | [[#sec:uncertain:random_coincidences]]                 |
+# | From error prop. But unclear interpretation. Statistical.    | [[#sec:uncertain:background_interpolation]]            |
+# |                                                              | [[#sec:uncertain:energy_calibration]]                  |
+# |--------------------------------------------------------------+----------------------------------------------------|
+# | From X-ray finger & laser alignment                          | [[#sec:window_rotation_uncertainty]]                   |
+# | M6 screws in 6.5mm holes. Results in misalignment,
+# above.    |                                                    |
+
+[fn:why_not_appendix] I did not put them into the general appendix,
+because mostly they are small to medium large pieces of code, which
+simply run the relevant calculation with slightly different parameters
+and in the end computes the ratio of the result to the unchanged
+parameter result.
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] Missing systematics:
+  - Effective area uncertainty of telescope (Bias to positive!)
+  - See ~statusAndProgress~ section about it!
+
+
+Full table:
 | Uncertainty                               | s or b?  | rel. σ [%] | bias?                           |
 |-------------------------------------------+----------+------------+---------------------------------+
 | Earth <-> Sun distance                    | s        |     0.7732 | none                            |
@@ -34978,31 +35048,6 @@ numbers in the table represent bounds about the maximum deviation possible.
 | Detector mounting precision (±0.25mm)     | s (pos.) |    0.25 mm |                                 |
 | Gas gain vs charge calib fit              |          |          ? | none                            |
 
-- [ ] Missing systematics:
-  - Effective area uncertainty of telescope (Bias to positive!)
-  - See ~statusAndProgress~ section about it!
-
-# | note                                                         | reference                                          |
-# |--------------------------------------------------------------+----------------------------------------------------|
-# |                                                              | [[#sec:uncertain:distance_earth_sun]]                  |
-# |                                                              | [[#sec:uncertain:window_thickness]]                    |
-# | unclear from plot, need to look at code                      | [[~/org/Figs/lennert_seb_comparison_solar_models.png]] |
-# |                                                              | [[#sec:magnet_length_bore_uncertainty]]                |
-# |                                                              | [[#sec:magnet_length_bore_uncertainty]]                |
-# | rotation seems to be same in both data takings               | [[#sec:window_rotation_uncertainty]]                   |
-# | For performance reasons less precise integrations.           |                                                    |
-# | Eff. ε_photo < 2, but ε_escape > 3% (less reliable). Choose!  | [[#sec:uncertain:software_efficiency]]                 |
-# |--------------------------------------------------------------+----------------------------------------------------|
-# | Computed background clusters for different gas gain binnings | [[#sec:uncertain:gas_gain_binning]]                    |
-# |                                                              | [[#sec:uncertain:cdl_morphing]]                        |
-# | Partially encoded / fixed w/ gas gain time binning.          |                                                    |
-# |                                                              | [[#sec:uncertain:random_coincidences]]                 |
-# | From error prop. But unclear interpretation. Statistical.    | [[#sec:uncertain:background_interpolation]]            |
-# |                                                              | [[#sec:uncertain:energy_calibration]]                  |
-# |--------------------------------------------------------------+----------------------------------------------------|
-# | From X-ray finger & laser alignment                          | [[#sec:window_rotation_uncertainty]]                   |
-# | M6 screws in 6.5mm holes. Results in misalignment, above.    |                                                    |
-
 *** Derivation of the systematics                               :noexport:
 
 Copy over from =[status]=. 
@@ -35017,6 +35062,52 @@ energies & DFs.
 #+end_src
 See the latest update there too.
 
+*** Thoughts on systematics                                      :extended:
+
+Systematics like the above are obviously useful. However, one can
+easily fall into the trap of realizing that -- if one is being honest
+-- there are a myriad of other things that introduce bias and hence
+yield a form of systematic uncertainty.
+
+The numbers shown in the table are those where
+- understanding and calculating their impact was somewhat possible
+- estimating a reasonable number possible.
+
+By no means are those the only possible numbers. Some things that one
+could include relate to most of the algorithms used for background
+rejection and signal calculations. For example the random coincidence
+determination itself comes with both a statistical and likely
+systematic uncertainty, which we did not attempt to estimate
+(statistical uncertainties take care of themselves to an extent via
+our expected limits). The energy calibration comes with systematic
+uncertainties of many different kinds, but putting these into numbers
+is tricky. Or even things like CAST's pointing uncertainty (some of it
+could be computed from the CAST slow control files). 
+
+Generally, by combining all systematics we /do/ consider as a square
+root of the squared sum should generally be a conservative
+estimate. Therefore, I hope that even if some numbers are not taken
+into account, the combined uncertainty is anyhow a roughly realistic
+estimate of our systematic uncertainty.
+
+One parameter of interest that I would have included, had I had the
+data at an earlier times, is the uncertainty of the telescope
+effective area. The numbers sent to me by Jaime Ruz do contain an
+uncertainty band, which one could have attempted to utilize. 
+
+In any case though, to me the most important aspect about these
+systematics here is that we show that including systematics into such
+a limit calculation directly via such a Bayesian approach works
+well. This is interesting, because -- as far as I'm aware -- no CAST
+analysis before actually did that. This means for BabyIAXO in the
+future, there should be more emphasis on estimating systematic
+uncertainties and there need not be worry about handling them in the
+limit calculations.
+
+In particular each group responsible for a certain subset of the
+experiment should document their own systematic uncertainties. A PhD
+student should not be in charge of estimating uncertainties for
+aspects of the experiment they have no expertise in.
 
 *** Computing the combined uncertainties                        :extended:
 :PROPERTIES:
@@ -35094,6 +35185,10 @@ efficiency instead of the ~1.727~ that now show up in the code!
       for relative from 2017/18 to end of 2018) 
 
 *** Signal rate & efficiency [5/7]                              :extended:
+
+- [ ] *CLEAN THIS UP SOMEWHAT!*
+
+
 - [ ] (solar model)
   - [X] look into the work by Lennert & Sebastian. What does their study
     of different solar models imply for different fluxes?
@@ -36160,7 +36255,10 @@ systematic uncertainty & potential bias.
 *UPDATE*: The results presented below the code were computed with the
 code snippet here *as is* (and multiple arguments of course, check
 =zsh_history= at home for details). A modified version now also lives
-at [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/determineEffectiveEfficiency.nim]]
+at
+[[file:~/CastData/ExternCode/TimepixAnalysis/Tools/determineEffectiveEfficiency.nim]]
+
+- [ ] *REMOVE THE PIECE OF CODE HERE, REPLACE BY CALL TO ABOVE!*
 
 *UPDATE2* :<2022-08-24 Wed 19:15> While working on the below code for
 the script mentioned in the first update, I noticed a bug in the
