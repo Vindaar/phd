@@ -33252,32 +33252,91 @@ this is a measure for the average efficiency.
   -> Then here we can just give a quick reiteration and refer to the
   plot of the combined efficiency?
 
+- [X] plot of the effective area  
+
+***** Notes on the effective area                              :extended:
+
+Some might say people working with X-ray telescopes prefer the
+'effective area' as a measure of efficiency to hide the fact how
+inefficient X-ray telescopes are, whoops.
+
+Anyway, the effective area of the LLNL telescope is still the biggest
+mystery to me. If you haven't read the raytracing appendix
+[[#sec:appendix:raytracing]], in particular the section about the LLNL
+telescope, sec. [[#sec:appendix:raytracing:llnl_telescope]], the public
+information available about the LLNL telescope is either outdated,
+contradictory or plain wrong.
+
+The PhD thesis of Anders Jakobsen [[cite:&anders_phd]] contains a plot of
+the effective area (fig. 4.13 on page 64, 87 of PDF), which peaks near
+~10 cm². However, it is unclear what the numbers are actually based
+on. Likely they describe parallel incoming light. In addition they
+likely include the initial telescope design of 14 instead of the final
+13 shells. Both means the result is an overestimate.
+
+Then, [[cite:&llnl_telescope_first_cast_results]], the paper about the
+telescope at CAST, contains another effective area plot peaking at
+about 8.2 cm². It is stated the numbers are for an HPD (half power
+diameter) of 75 arc seconds using a solar axion emission from a 3
+arcmin disc size. And yet, apparently these numbers are still an
+overestimate.
+
+As mentioned in the main text above, I was sent the simulations used for
+the CAST Nature paper [[cite:&cast_nature]] by Jaime Ruz, which contain
+the axion image and effective area. These numbers peak at only about
+7.3 cm²! At the very least this roughly matches the slides from the
+CAST collaboration meeting on <2017-01-23 Mon>, on slide 36. If one
+looks at those slides, one might notice that the results on slide 35
+for the best model actually peak closer to the aforementioned
+8.2 cm². According to Jaime the reason for this is that the higher
+numbers are based on the /full/ telescope area and the lower numbers
+only the size of CAST's magnet bore.
+
+This may very well all be true. My personal skepticism is due to two
+things:
+1. my general feeling that the numbers are exceptionally
+   low. Essentially the telescope is mostly /worse/ than the Abrixas
+   telescope, which just surprises me. But I'm obviously not an X-ray
+   telescope expert.
+2. more importantly, every attempt of mine to compute the effective
+   area based on the reflectivities of the shells with parallel or
+   realistic solar axion emission yielded numbers quite a bit higher
+   than the data sent to me by Jaime.
+
+*One note though*: I still need to repeat the effective area
+calculations for the 'realistic' solar axion emission after fixing a
+random sampling bug. It may very well affect the result, even though
+it would surprise me if that explained the difference I saw.
+
+The most likely reason is that simply my simulation is off. Possibly
+the -- mentioned in the slides of the CCM -- contamination of
+hydrcarbons affect the reflectivity so much as to explain the
+difference. 
 
 **** Window transmission and Argon gas absorption - $ε_{\text{window}}(E_i), ε_{\text{gas}}(E_i)$
 
 The detector entrance window is the next point affecting the possible
 signal to be detected. The windows, as explained in section
 [[#sec:detector:sin_window]] are made from $\SI{300}{nm}$ thick silicon
-nitride with a \SI{20}{nm} thick Aluminium coating. Its transmission
-is very good down to about $\SI{1}{keV} below which it also starts to
+nitride with a $\SI{20}{nm}$ thick Aluminium coating. Its transmission
+is very good down to about $\SI{1}{keV}$ below which it also starts to
 degrade rapidly.
 
-While the window also has 4 \SI{500}{μm} thick strongbacks which in
-total occlude about $\SI{22.2}{\%} of the center region, these are
-_not_ taken into account into the combined detection
+While the window also has four $\SI{500}{μm}$ thick strongbacks which in
+total occlude about $\SI{22.2}{\%}$ of the center region, these are
+/not/ taken into account into the combined detection
 efficiency. Instead they are handled together with the axion image
 $r(x_i, y_i)$ in sec. [[#sec:limit:ingredients:raytracing]].
 
 ***** TODOs for this section [/]                               :noexport:
 
-- [ ] plot of the effective area
-- [ ] compute window transmission with =xrayAttenuation=
+- [X] compute window transmission with =xrayAttenuation=
   -> Needs to be done in theory already! Redo that plot that still
   uses Henke data!
   -> Already *is* an xrayAttenuation plot! But it only shows Si3N4 and
   Argon, no aluminum or isobutane.
 
-**** Software efficiency and veto efficiency $ε_{\text{software eff.}} · ε_{\text{veto eff.}}$
+**** Software efficiency and veto efficiency - $ε_{\text{software eff.}} · ε_{\text{veto eff.}}$
 
 The software efficiency $ε_{\text{software eff.}}$ of course depends
 on the specific setting which is used. Its value will range from
