@@ -36996,12 +36996,12 @@ straight to next section.
 :CUSTOM_ID: sec:limit:mcmc_calc_limit
 :END:
 
-The Metropolis-Hastings algorithm - as mentioned in
-sec. [[#sec:limit:method_mcmc]] - is used to evaluate the integral over
+The Metropolis-Hastings algorithm -- as mentioned in
+sec. [[#sec:limit:method_mcmc]] -- is used to evaluate the integral over
 the nuisance parameters to get the posterior likelihood.
 
 Instead of building a very long MCMC, we opt to construct 3 Markov
-chains with \num{150000} links to avoid a bias introduced by the
+chains with $\num{150000}$ links to reduce the bias introduced by the
 starting parameters. Ideally, one would construct even more chains,
 but a certain number of steps from the starting parameter are usually
 needed to get into the parameter space of large contributions to the
@@ -37011,7 +37011,7 @@ region, which itself is problematic in terms of bias).
 The MCMC is built based on 5 dimensional vectors $\vec{x}$,
 
 \[
-\vec{x} = \mtrix{g_{ae}² & θ_s & θ_b & θ_x & θ_y}^T
+\vec{x} = \mtrix{g_{ae}² & ϑ_s & ϑ_b & ϑ_x & ϑ_y}^T
 \]
 
 containing the coupling constant of interest squared as the first
@@ -37024,7 +37024,7 @@ Our initial starting vector $\vec{x_i}$  is randomly sampled by
 
 \[
 \vec{x} = \vektor{
-  \text{rand}([0, 5]) · g_{\text{ref}} \\
+  \text{rand}([0, 5]) · g²_{\text{base}} \\
   \text{rand}([-0.4, 0.4]) \\
   \text{rand}([-0.4, 0.4]) \\
   \text{rand}([-0.5, 0.5]) \\
@@ -37033,10 +37033,10 @@ Our initial starting vector $\vec{x_i}$  is randomly sampled by
 \]
 
 where $\text{rand}$ refers to a uniform random sampler in the given
-interval and $g_{\text{ref}}$ is a reference coupling parameter of
+interval and $g_{\text{base}}$ is a reference coupling parameter of
 choice, which also depends on the specific search.
 
-Our default reference coupling constant for $g_{ae}²$ is $g_{ae}² =
+Our default reference coupling constant for $g_{\text{base}}²$ [fn:not_ref] is $g_{ae}² =
 \num{1e-21}$, allowing for a range of parameters in the expected
 parameter space. The nuisance parameters are allowed to vary in a
 large region, given the standard deviations of $σ < 0.05$ for all four
@@ -37046,17 +37046,17 @@ use the following:
 \[
 \vec{x_{i+1}} = \vec{x_i} +
   \vektor{
-    \text{rand}( -0.5 · 3 g_{\text{ref}}, 0.5 · 3 g_{\text{ref}} ) \\
-    \text{rand}( -0.5 · 0.025, 0.5 · 0.025 ) \\
-    \text{rand}( -0.5 · 0.025, 0.5 · 0.025 ) \\
-    \text{rand}( -0.5 · 0.05,  0.5 · 0.05 ) \\
-    \text{rand}( -0.5 · 0.05,  0.5 · 0.05 ) \\
+    \text{rand}([ -0.5 · 3 g²_{\text{base}}, 0.5 · 3 g²_{\text{base}} ]) \\
+    \text{rand}([ -0.5 · 0.025, 0.5 · 0.025 ]) \\
+    \text{rand}([ -0.5 · 0.025, 0.5 · 0.025 ]) \\
+    \text{rand}([ -0.5 · 0.05,  0.5 · 0.05 ]) \\
+    \text{rand}([ -0.5 · 0.05,  0.5 · 0.05 ]) \\
   }
 \]
 
 This combination leads to an acceptance rate of the new proposal
-typically between $\SIrange{20}{25}{\%}$. After all three chains are
-built, the first \num{50000} links each are thrown out as burn-in to
+typically between $\SIrange{20}{30}{\%}$. After all three chains are
+built, the first $\num{50000}$ links each are thrown out as burn-in to
 make sure we only include meaningful parameter space.
 
 The parameter space for each of the 5 elements is restricted based on
@@ -37065,58 +37065,55 @@ the following
 \[
 \vektor{
   g = [0, ∞] \\
-  θ_s = [-1, 1] \\
-  θ_b = [-0.8, 1] \\
-  θ_x = [-1, 1] \\
-  θ_y = [-1, 1]
+  ϑ_s = [-1, 1] \\
+  ϑ_b = [-0.8, 1] \\
+  ϑ_x = [-1, 1] \\
+  ϑ_y = [-1, 1]
 },
 \]
 
 meaning we restrict ourselves to physical coupling constants and give
-loose bounds on the nuisance parameters. In particular for the $θ_b$
-parameter the restriction to values larger than $θ_b > -0.8$ is due to
-the singularity in $\mathcal{L}_M$ at $θ_b = -1$. For all realistic
-values for the systematic uncertainty $σ_b$ the region of $θ_b \ll 1$
+loose bounds on the nuisance parameters. In particular for the $ϑ_b$
+parameter the restriction to values larger than $ϑ_b > -0.8$ is due to
+the singularity in $\mathcal{L}_M$ at $ϑ_b = -1$. For all realistic
+values for the systematic uncertainty $σ_b$ the region of $ϑ_b \ll 1$
 has no physical meaning anyway. But for unit tests and sanity checks
 of the implementation, larger uncertainties are tested for, which
 cause computational issues if this restriction was not in place.
 
-Example Markov chains can be seen in fig. \ref{fig:limit:mcmc_example}
+Example Markov chains can be seen in fig. sref:fig:limit:mcmc_example
 where we see the different nuisance parameters of the chain and how
 they are distributed. As expected for our comparatively small values
 of $σ$, the chain is centered around 0 for each nuisance
 parameter. And the coupling constant in
-fig. \ref{fig:limit:mcmc_theta_x_y} also shows a clear increase
+fig. sref:fig:limit:mcmc_theta_x_y also shows a clear increase
 towards low values. 
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitCalculation/MCMC/mcmc_lines_long_0_likelihood_chain_burnin_20000_thetas_sb.png}
-    \caption{\includegraphics[width=0.03\textwidth]{/home/basti/org/Figs/panda-face_emoji_bubu.png} $θ_s$ vs. $θ_b$}
-    \label{fig:limit:mcmc_theta_s_b}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/limitCalculation/MCMC/mcmc_lines_long_0_likelihood_chain_burnin_20000.png}
-    \caption{$g²$ vs. $θ_y$}
-    \label{fig:limit:mcmc_theta_x_y}
-  \end{subfigure}%
-  \label{fig:limit:mcmc_example}
-  \caption{\subref{fig:limit:mcmc_theta_s_b} MCMC of the $θ_s$ nuisance parameter against $θ_b$ with the
-  coupling constant as the color scale. \subref{fig:limit:mcmc_theta_x_y} MCMC of the coupling constant
-  against $θ_x$ and $θ_y$ in color. Both show a clear centering to values around 0, with the coupling
-  constant a decrease in population towards larger couplings.
-  }
-\end{figure}
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "\\includegraphics[width=0.03\\textwidth]{/home/basti/org/Figs/panda-face_emoji_bubu.png} $ϑ_s$ vs. $ϑ_b$") (label "fig:limit:mcmc_theta_s_b")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "~/phd/Figs/limit/sanity/mcmc_lines_thetas_sb_real_syst_real_random_cands_0.png"))
+        (subfigure (linewidth 0.5) (caption "$g²$ vs. $ϑ_y$") (label "fig:limit:mcmc_theta_x_y")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "~/phd/Figs/limit/sanity/mcmc_lines_thetas_gy_real_syst_real_random_cands_0.png"))
+        (caption
+         (subref "fig:limit:mcmc_theta_s_b")
+         ": MCMC of the $ϑ_s$ nuisance parameter against $ϑ_b$ with the
+           coupling constant as the color scale. "
+         (subref "fig:limit:mcmc_theta_x_y")
+         ": MCMC of the coupling constant against $ϑ_x$ and $ϑ_y$ in color.
+          Both show a clear centering to values around 0, with the coupling
+          constant a decrease in population towards larger couplings.")
+        (label "fig:limit:mcmc_example"))
+#+end_src
 
 The resulting three Markov chains are finally used to compute the
 marginal posterior likelihood function by computing the histogram of
-all sampled $g$ values. The distribution of the sampled $g$ values is
+all sampled $g²$ values. The distribution of the sampled $g²$ values is
 that of the marginal posterior likelihood. This then allows to compute
 a limit by computing the empirical distribution function of the
-sampled $g$ values and extracting the value corresponding to the
+sampled $g²$ values and extracting the value corresponding to the
 $95^{\text{th}}$ percentile. An example for this is shown in
 fig. [[fig:limit:mcmc_calc_limit:limit]].
 
@@ -37126,6 +37123,10 @@ fig. [[fig:limit:mcmc_calc_limit:limit]].
 #+CAPTION: function and red the upper 5-th.
 #+NAME: fig:limit:mcmc_calc_limit:limit
 [[~/org/Figs/statusAndProgress/limitCalculation/mcmc_histo_example_limit_determination.pdf]]
+
+[fn:not_ref] Do not confuse $g_{\text{base}}$ with the reference
+coupling constant for which the axion flux is computed
+$g_{\text{ref}}$ mentioned earlier.
 
 
 *** TODO TODOs for this section [6/13] :noexport:
