@@ -37135,7 +37135,9 @@ $g_{\text{ref}}$ mentioned earlier.
   if g_aγ = 1e-12. Should we increase this to be sure we do not bias ourselves?
 
 - [ ] *POSSIBLY* move part about calculation of likelihood and limit
-  to a separate section after?  
+  to a separate section after?
+
+- [ ] *ADD APPENDIX WITH EXAMPLES WHAT HAPPENS WHEN CHAIN GOES AWRY*  
 
 
 - [X] *MENTION* the cutoff we use at background values -0.8 for
@@ -37152,9 +37154,9 @@ $g_{\text{ref}}$ mentioned earlier.
 - [X] STEP SIZE  
 
   
-- [ ] Example of MCMC plots
-- [ ] Example of likelihood space by histogram of sampled g_ae²
-- [ ] Mention some of the other performance optimizations we make?
+- [X] Example of MCMC plots
+- [X] Example of likelihood space by histogram of sampled g_ae²
+- [X] Mention some of the other performance optimizations we make?
   - [X] Caching of some values? -> Mentioned in background
     interpolation section.
   - [ ] What else do we do? No other caches. Things like custom code
@@ -37181,6 +37183,29 @@ $g_{\text{ref}}$ mentioned earlier.
 
 #+end_src
 
+*** Generate example MCMC plots                                  :extended:
+
+These plots are produced from the sanity checks in
+~mcmc_limit_calculation~.
+
+Note, if you run the command like this, it will take a while, because
+it will compute several points using regular numerical integration
+(Romberg). Pass ~--rombergIntegrationDepth 2~ to speed it up, but the
+last plot may not be produced successfully (but we don't care about
+that plot here):
+#+begin_src sh
+mcmc_limit_calculation sanity \
+                       --limitKind lkMCMC \
+                       --axionModel ~/org/resources/axionProduction/axionElectronRealDistance/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv \
+                       --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+                       --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+                       --switchAxes \
+                       --sanityPath ~/phd/Figs/limit/sanity/ \
+                       --realSystematics
+#+end_src
+
+
+
 ** Expected limits of different setups
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:expected_limits
@@ -37197,10 +37222,6 @@ straightforward, because there is no explicit mean of expectation
 values anymore. On the other hand, the Asimov dataset calculation does
 not provide information about the possible spread of all limits due to
 the statistical variation possible in toy candidate sets. 
-- [ ] *ASIMOV DATASET* and how we can / cannot use it
-  -> Check note somewhere else here about using c_i = rational number
-  for expected counts based on ~expCount~. Could that work? I think
-  so.
 
 In our case then, we fall back to computing an expected limit based on
 toy candidate sets that we draw from a discretized, grid version of the background
@@ -37208,22 +37229,25 @@ interpolation, as explained in sec. [[#sec:limit:ingredients:candidates]].
 
 We compute expected limits for different parameters, due to the signal
 efficiency penalties that these imply. In a first rough 'scan' of
-expected limits we compute an expected limit based on \num{1000} toy
+expected limits we compute an expected limit based on $\num{2500}$ toy
 limits for all setups we consider. Then we narrow it down and compute
-\num{15000} toy limits for the best few setups. Finally, we compute
-\num{30000} toys for the best setup we find. The resulting setup is
+$\num{15000}$ toy limits for the best few setups. Finally, we compute
+$\num{30000}$ toys for the best setup we find. The resulting setup is
 the one for which we unblind the solar tracking data. 
 
 
 Tab. [[tab:limit:expected_limits]] shows the different setups with their
-respective expected limits. Also shown is the limit achieved in case
-no candidate is observed as a theoretical lower bound on the
-limit. This 'no candidate' limit scales down with the total
-efficiency, as one would expect. All limits are given as limits on
-$g_{ae}·g_{aγ}$ based on a fixed $g_{aγ} = \SI{1e-12}{GeV⁻¹}$. The
-table does not show all setups that were initially considered. Further
-considerations of other possible parameters were excluded in
-preliminary studies on their effect on the expected limit.
+respective expected limits. It can be seen as an extension of
+tab. [[tab:background:background_rate_eff_comparisons]] in
+sec. [[#sec:background:all_vetoes_combined]]. Also shown is the limit
+achieved in case no candidate is present in the signal sensitive region,
+as a theoretical lower bound on the limit. This 'no candidate' limit
+scales down with the total efficiency, as one would expect. All limits
+are given as limits on $g_{ae}·g_{aγ}$ based on a fixed $g_{aγ} =
+\SI{1e-12}{GeV⁻¹}$. The table does not show all setups that were
+initially considered. Further considerations of other possible
+parameters were excluded in preliminary studies on their effect on the
+expected limit.
 
 In particular:
 - the scintillator veto is always used. It does not come with an
@@ -37233,28 +37257,133 @@ In particular:
   were considered. The current $ε_{\text{FADC}} = 0.98$ efficiency was
   deemed optimal. Harder cuts do not yield significant improvements.
 - the potential eccentricity cutoff for the line veto, as discussed in
-  sec. [[#sec:background:line_veto:eccentricity_cutoff]] is fully
-  disabled, as the efficiency gains do not outweigh the positive
-  effect on the expected limit in practice.
+  sec. [[#sec:background:line_veto]] is fully disabled, as the efficiency
+  gains do not outweigh the positive effect on the expected limit in
+  practice.
 
 Further, the table shows a few cases multiple times, with more or less
 statistics (~nmc~ column). The reason is simply that it highlights
-that \num{1000} toy sets is not enough to make a rigorous estimate of
-the expected limit. Compare row 3 with row 5 (MLP at $\SI{84.74}{\%}$
-efficiency with \num{1000} and \num{15000} toys) for an example of a
-better expected limit at low statistics. In the best setup the
-difference was even bigger (yielding an expected limit around
-$\SI{7.46e-23}{GeV⁻¹}$), but it is left out as to not appear as the
-'best case'.
+that $\num{2500}$ toy sets is not enough to make a rigorous estimate of
+the expected limit. Compare row 2 with row 3 (MLP at $\SI{95.23}{\%}$
+efficiency with $\num{2500}$ and $\num{15000}$ toys) for an example of a
+better expected limit at low statistics. 
 
 Based on this study, the MLP produces the best expected limit,
-specifically at a software efficiency of $\SI{91.07}{\%}$ using the
-scintillator veto, FADC veto (at $ε_{\text{FADC}} = \SI{98}{\%}$) and
-the line veto, but disregarding the septem veto. The software
-efficiency corresponds to a target software efficiency based on the
-simulated X-ray data of $\SI{95}{\%}$. This is the setup we will
-mainly consider for the data unblinding.
+surprisingly without any vetoes at a software efficiency of
+*XXX* $\SI{92.89}{\%}$. However, for this case we did not run any more toy
+limits, because not having any of the septem or line means there are a
+large number of candidates towards the chip corners. These slow down
+the calculation, making it too costly to run. In any case, given the
+small difference in the expected limit between this case and the
+second best, the MLP at $\SI{95.23}{\%}$ with the line veto, we prefer
+to use the second best instead. The very inhomogeneous background
+rates are problematic, as they make the result much more strongly
+dependent on the value of the systematic position uncertainty. Also,
+for other limit calculations with larger raytracing images, a lower
+background over a larger area at the cost of lower total efficiency is
+more valuable.
 
+In this 'second best' case, software efficiency $ε_{\text{eff}}$
+corresponds to a target software efficiency based on the simulated
+X-ray data of $\SI{95}{\%}$. The total combined efficiency comes out
+to $\SI{79.69}{\%}$ (excluding the detection efficiency of
+course!). This is the setup we will mainly consider for the data
+unblinding. The expected limit for this setup is
+
+\[
+g_{ae} · g_{aγ} = \SI{7.88e-23}{GeV^{-1}},
+\]
+
+based on the $\num{50 000}$ toy limits.
+
+\footnotesize
+#+CAPTION: The FADC veto is always in use at an efficiency of $ε_{\text{FADC}} = 0.98$ and so is the
+#+CAPTION: scintillator veto. These settings were defined in preliminary studies of the expected limits.
+#+CAPTION: Note the efficiencies associated with the septem veto $ε_{\text{septem}} = \SI{83.11}{\%}$ and the line veto
+#+CAPTION: $ε_{\text{line}} = \SI{85.39}{\%}$ and combined $ε_{\text{septem+line}} = \SI{78.63}{\%}$, which are implicitly
+#+CAPTION: included based on the 'Septem' and 'Line' column values into the total efficiency.
+#+NAME: tab:limit:expected_limits
+#+ATTR_LATEX: :booktabs t :environment longtable :align lrllllll
+|   ε_eff |   nmc | Type | Septem | Line  | ε_total | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] |
+|--------+-------+------+--------+-------+--------+------------------------+-----------------------|
+| 0.9289 |  2500 | MLP  | false  | false | 0.9289 |             5.9292e-23 |             7.726e-23 |
+| 0.9695 |  2500 | MLP  | false  | true  | 0.8113 |             6.3004e-23 |            7.7883e-23 |
+| 0.9695 | 15000 | MLP  | false  | true  | 0.8113 |             6.3004e-23 |            7.8065e-23 |
+| 0.9695 |  2500 | MLP  | false  | false | 0.9695 |             5.7283e-23 |            7.8254e-23 |
+| 0.9901 |  2500 | MLP  | false  | false | 0.9901 |             5.7262e-23 |            7.8257e-23 |
+| 0.9901 | 15000 | MLP  | false  | true  | 0.8285 |             6.2085e-23 |             7.831e-23 |
+| 0.9901 |  2500 | MLP  | false  | true  | 0.8285 |             6.2085e-23 |            7.8389e-23 |
+| 0.9289 |  2500 | MLP  | false  | true  | 0.7773 |             6.4676e-23 |             7.883e-23 |
+| 0.8814 |  2500 | MLP  | false  | false | 0.8814 |             5.9715e-23 |            7.8952e-23 |
+| 0.9289 | 15000 | MLP  | false  | true  | 0.7773 |             6.4676e-23 |            7.9022e-23 |
+| 0.9695 |  2500 | MLP  | true   | true  | 0.7471 |             6.5825e-23 |            8.0276e-23 |
+| 0.9901 |  2500 | MLP  | true   | true  | 0.7629 |             6.4351e-23 |            8.0461e-23 |
+| 0.9695 |  2500 | MLP  | true   | false | 0.7896 |             6.4186e-23 |            8.0536e-23 |
+| 0.9695 | 15000 | MLP  | true   | true  | 0.7471 |             6.5825e-23 |            8.0599e-23 |
+| 0.9695 | 15000 | MLP  | true   | false | 0.7896 |             6.4186e-23 |            8.0654e-23 |
+| 0.9901 | 15000 | MLP  | true   | true  | 0.7629 |             6.4351e-23 |            8.0678e-23 |
+| 0.8814 |  2500 | MLP  | false  | true  | 0.7375 |             6.5444e-23 |            8.0683e-23 |
+| 0.9901 |  2500 | MLP  | true   | false | 0.8064 |             6.3062e-23 |            8.0704e-23 |
+| 0.8814 | 15000 | MLP  | false  | true  | 0.7375 |             6.5444e-23 |            8.0779e-23 |
+| 0.9901 | 15000 | MLP  | true   | false | 0.8064 |             6.3062e-23 |            8.0812e-23 |
+| 0.9289 |  2500 | MLP  | true   | false | 0.7566 |             6.5332e-23 |            8.1152e-23 |
+| 0.9289 | 15000 | MLP  | true   | false | 0.7566 |             6.5332e-23 |            8.1388e-23 |
+| 0.9289 | 15000 | MLP  | true   | true  | 0.7158 |              6.659e-23 |            8.1721e-23 |
+| 0.9289 |  2500 | MLP  | true   | true  | 0.7158 |              6.659e-23 |            8.2018e-23 |
+|    0.9 |  2500 | LnL  | false  | true  | 0.7531 |             6.4097e-23 |            8.2171e-23 |
+| 0.8814 |  2500 | MLP  | true   | false | 0.7178 |             6.7542e-23 |            8.2809e-23 |
+| 0.8814 | 15000 | MLP  | true   | false | 0.7178 |             6.7542e-23 |            8.2886e-23 |
+| 0.8814 | 15000 | MLP  | true   | true  | 0.6791 |              6.872e-23 |            8.2968e-23 |
+| 0.8814 |  2500 | MLP  | true   | true  | 0.6791 |              6.872e-23 |            8.3403e-23 |
+|    0.9 |  2500 | LnL  | true   | true  | 0.6935 |             6.7386e-23 |            8.4274e-23 |
+|    0.8 |  2500 | LnL  | false  | true  | 0.6695 |             6.9115e-23 |            8.4993e-23 |
+|    0.9 |  2500 | LnL  | false  | false |    0.9 |             5.9862e-23 |            8.5786e-23 |
+|    0.8 |  2500 | LnL  | false  | false |    0.8 |             6.3885e-23 |            8.7385e-23 |
+|    0.8 |  2500 | LnL  | true   | true  | 0.6165 |             7.1705e-23 |             8.747e-23 |
+|    0.7 |  2500 | LnL  | false  | true  | 0.5858 |             7.4553e-23 |            8.9298e-23 |
+|    0.7 |  2500 | LnL  | false  | false |    0.7 |             6.7647e-23 |            9.0856e-23 |
+|    0.7 |  2500 | LnL  | true   | true  | 0.5394 |             7.7018e-23 |            9.2565e-23 |
+\normalsize
+
+The distribution of all toy limits for this best setup can be seen in
+fig. [[fig:limit:expected_limits:toy_limit_histogram]]. It shows both the
+limit for the case without any candidates (red line, equivalent to
+'Limit no signal' in the table above) as well as the expected limit
+(blue line). Depending on the number of candidates that are inside the
+signal sensitive region (in regions of the solar axion image with
+significant flux expectation) based on $\ln(1 + s_i/b_i) > 0.5$, the
+limits are split into histograms of different colors. Based on the
+location of these histograms and the expected limit, the most likely
+case for the real candidates seems to be 1 or 2 candidates in that
+region. Note that there are some toy limits that are below the red
+line for the case without candidates. This is expected, because the
+calculation of each limit is based on the MCMC evaluation of the
+likelihood. As such it is a statistical random process and the red
+line itself is a single sample. Further, the purple histogram for "0"
+candidates is *not* equivalent to the red line, because the definition
+of the number of signal sensitive candidates is an arbitrary
+cutoff. For the red line literally _no candidates_ at all are
+considered and the limit is based purely on the
+$\exp(-s_{\text{tot}})$ term of the likelihood.
+
+#+CAPTION: Distribution of toy limits resulting in the best expected limit based on $\num{30000}$
+#+CAPTION: toy limits. The expected limit -- the median -- is shown as a blue line. The red line
+#+CAPTION: shows the limit for the case without any candidates. The different colored histograms correspond
+#+CAPTION: to toy sets with a different number of toy candidates in the signal sensitive region, defined
+#+CAPTION: by $\ln(1 + s_i/b_i) > 0.5$. The most likely number of candidates in the sensitive region
+#+CAPTION: seems to be 1 or 2.
+#+NAME: fig:limit:expected_limits:toy_limit_histogram
+#+ATTR_LATEX: :width 0.85\textwidth
+[[~/phd/Figs/limit/mc_limit_lkMCMC_skInterpBackground_nmc_50000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500_nmc_50k_pretty.pdf]]
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *ASIMOV DATASET* and how we can / cannot use it
+  -> Check note somewhere else here about using c_i = rational number
+  for expected counts based on ~expCount~. Could that work? I think
+  so.
+
+Old table:
 \footnotesize
 #+CAPTION: The FADC veto is always in use at an efficiency of $ε_{\text{FADC}} = 0.98$ and so is the
 #+CAPTION: scintillator veto. These settings were defined in preliminary studies of the expected limits.
@@ -37292,34 +37421,7 @@ mainly consider for the data unblinding.
 |    0.7 |  1000 | LnL  | true   | true  |     0.5025 |             7.2853e-23 |            8.9271e-23 |
 \normalsize
 
-The distribution of all toy limits for this best setup can be seen in
-fig. [[fig:limit:expected_limits:toy_limit_histogram]]. It shows both the
-limit for the case without any candidates (red line) as well as the
-expected limit (blue line). Depending on the number of candidates that
-are inside the signal sensitive region (in regions of the solar axion
-image with significant flux expectation) based on $\ln(1 + s_i/b_i) >
-0.5$, the limits are split into histograms of different colors. Based
-on the location of these histograms and the expected limit, the most
-likely case for the real candidates seems to be 1 or 2 candidates in
-that region. Note that there are some toy limits that are below the
-red line for the case without candidates. This is expected, because
-the calculation of each limit is based on the MCMC evaluation of the
-likelihood. As such it is a statistical random process and the red
-line itself is a single sample. Further, the purple histogram for "0"
-candidates is *not* equivalent to the red line, because the definition
-of the number of signal sensitive candidates is an arbitrary
-cutoff. For the red line literally _no candidates_ at all are
-considered and the limit is based purely on the
-$\exp(-s_{\text{tot}})$ term of the likelihood.
-
-#+CAPTION: Distribution of toy limits resulting in the best expected limit based on $\num{30000}$
-#+CAPTION: toy limits. The expected limit -- the median -- is shown as a blue line. The red line
-#+CAPTION: shows the limit for the case without any candidates. The different colored histograms correspond
-#+CAPTION: to toy sets with a different number of toy candidates in the signal sensitive region, defined
-#+CAPTION: by $\ln(1 + s_i/b_i) > 0.5$. The most likely number of candidates in the sensitive region
-#+CAPTION: seems to be 1 or 2.
-#+NAME: fig:limit:expected_limits:toy_limit_histogram
-#+ATTR_LATEX: :width 0.85\textwidth
+Old expected limits plot
 [[~/org/Figs/statusAndProgress/mc_limit_lkMCMC_skInterpBackground_nmc_30000_uncertainty_ukUncertain_σs_0.0328_σb_0.0028_posUncertain_puUncertain_σp_0.0500nmc_30k_pretty.pdf]]
 
 *** Verification
@@ -37363,6 +37465,149 @@ can be found in the extended version after this section.
 
 - [ ] Show a plot with a few more words about the candidates in
   sensitive region from a plot.
+
+*** Generate expected limits table                               :extended:
+
+Originally written in
+[[file:~/org/journal.org::#sec:journal:23_11_23:gen_expected_limits]].
+
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/generateExpectedLimitsTable/ :results drawer
+./generateExpectedLimitsTable --path ~/org/resources/lhood_limits_21_11_23/ --prefix "mc_limit_lkMCMC"
+#+end_src
+
+#+RESULTS:
+:results:
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.9_lnL.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.7_lnL_scinti_fadc_line_vQ_0.99.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.8_lnL.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.9_lnL_scinti_fadc_septem_line_vQ_0.99.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.7_lnL_scinti_fadc_septem_line_vQ_0.99.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.9_lnL_scinti_fadc_line_vQ_0.99.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.7_lnL.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_line_vQ_0.99.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_50000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+|   ε_eff |     nmc | Type | Scinti | FADC  | ε_FADC | Septem | Line  | eccLineCut | ε_Septem |  ε_Line | ε_SeptemLine | ε_total | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] | Exp. limit variance [GeV⁻²] | Exp. limit σ [GeV⁻¹] |
+|--------+---------+------+--------+-------+-------+--------+-------+------------+---------+--------+-------------+--------+------------------------+-----------------------+----------------------------+---------------------|
+| 0.9289 |    2500 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9289 |             5.9292e-23 |             7.726e-23 |                 9.8665e-50 |          3.1411e-25 |
+| 0.9695 |    2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8113 |             6.3004e-23 |            7.7883e-23 |                  8.664e-50 |          2.9435e-25 |
+| 0.9695 | 1.5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8113 |             6.3004e-23 |            7.8065e-23 |                 1.5774e-50 |          1.2559e-25 |
+| 0.9695 |    2500 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9695 |             5.7283e-23 |            7.8254e-23 |                 5.7107e-50 |          2.3897e-25 |
+| 0.9901 |    2500 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9901 |             5.7262e-23 |            7.8257e-23 |                  8.141e-50 |          2.8533e-25 |
+| 0.9901 | 1.5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8285 |             6.2085e-23 |             7.831e-23 |                 1.4117e-50 |          1.1881e-25 |
+| 0.9901 |    2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8285 |             6.2085e-23 |            7.8389e-23 |                 7.7519e-50 |          2.7842e-25 |
+| 0.9523 |   5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7969 |             6.3874e-23 |            7.8782e-23 |                 4.1777e-51 |          6.4635e-26 |
+| 0.9289 |    2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7773 |             6.4676e-23 |             7.883e-23 |                 9.0575e-50 |          3.0096e-25 |
+| 0.8814 |    2500 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.8814 |             5.9715e-23 |            7.8952e-23 |                 7.4909e-50 |           2.737e-25 |
+| 0.9289 | 1.5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7773 |             6.4676e-23 |            7.9022e-23 |                 1.3433e-50 |           1.159e-25 |
+| 0.9695 |    2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7471 |             6.5825e-23 |            8.0276e-23 |                 7.0785e-50 |          2.6605e-25 |
+| 0.9901 |    2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7629 |             6.4351e-23 |            8.0461e-23 |                  7.485e-50 |          2.7359e-25 |
+| 0.9695 |    2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7896 |             6.4186e-23 |            8.0536e-23 |                 1.2304e-49 |          3.5077e-25 |
+| 0.9695 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7471 |             6.5825e-23 |            8.0599e-23 |                 1.4784e-50 |          1.2159e-25 |
+| 0.9695 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7896 |             6.4186e-23 |            8.0654e-23 |                   1.94e-50 |          1.3928e-25 |
+| 0.9901 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7629 |             6.4351e-23 |            8.0678e-23 |                 1.5616e-50 |          1.2496e-25 |
+| 0.8814 |    2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7375 |             6.5444e-23 |            8.0683e-23 |                 1.0737e-49 |          3.2767e-25 |
+| 0.9901 |    2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.8064 |             6.3062e-23 |            8.0704e-23 |                  1.005e-49 |          3.1702e-25 |
+| 0.8814 | 1.5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7375 |             6.5444e-23 |            8.0779e-23 |                 1.5191e-50 |          1.2325e-25 |
+| 0.9901 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.8064 |             6.3062e-23 |            8.0812e-23 |                 1.5197e-50 |          1.2328e-25 |
+| 0.9289 |    2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7566 |             6.5332e-23 |            8.1152e-23 |                  9.078e-50 |           3.013e-25 |
+| 0.9289 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7566 |             6.5332e-23 |            8.1388e-23 |                 1.5455e-50 |          1.2432e-25 |
+| 0.9289 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7158 |              6.659e-23 |            8.1721e-23 |                 1.5226e-50 |          1.2339e-25 |
+| 0.9289 |    2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7158 |              6.659e-23 |            8.2018e-23 |                 9.4224e-50 |          3.0696e-25 |
+|    0.9 |    2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7531 |             6.4097e-23 |            8.2171e-23 |                 1.3874e-49 |          3.7248e-25 |
+| 0.8814 |    2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7178 |             6.7542e-23 |            8.2809e-23 |                 6.6106e-50 |          2.5711e-25 |
+| 0.8814 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7178 |             6.7542e-23 |            8.2886e-23 |                 1.8639e-50 |          1.3652e-25 |
+| 0.8814 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6791 |              6.872e-23 |            8.2968e-23 |                 1.1619e-50 |          1.0779e-25 |
+| 0.8814 |    2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6791 |              6.872e-23 |            8.3403e-23 |                 1.0232e-49 |          3.1987e-25 |
+|    0.9 |    2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6935 |             6.7386e-23 |            8.4274e-23 |                 1.1319e-49 |          3.3644e-25 |
+|    0.8 |    2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.6695 |             6.9115e-23 |            8.4993e-23 |                 1.0229e-49 |          3.1983e-25 |
+|    0.9 |    2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.9 |             5.9862e-23 |            8.5786e-23 |                 1.3869e-49 |          3.7241e-25 |
+|    0.8 |    2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.8 |             6.3885e-23 |            8.7385e-23 |                 1.5233e-49 |           3.903e-25 |
+|    0.8 |    2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6165 |             7.1705e-23 |             8.747e-23 |                 1.6802e-49 |           4.099e-25 |
+|    0.7 |    2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.5858 |             7.4553e-23 |            8.9298e-23 |                 1.6399e-49 |          4.0495e-25 |
+|    0.7 |    2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.7 |             6.7647e-23 |            9.0856e-23 |                 1.1046e-49 |          3.3235e-25 |
+|    0.7 |    2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.5394 |             7.7018e-23 |            9.2565e-23 |                 1.1953e-49 |          3.4573e-25 |
+
+:end:
+
+
+
+*** Generate plot of expected limit histogram                    :extended:
+
+#+begin_src sh
+mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --plotFile ~/org/resources/lhood_limits_21_11_23/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/mc_limit_lkMCMC_skInterpBackground_nmc_50000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.csv \
+    --xLow 2.5e-21 \
+    --xHigh 1.5e-20 \
+    --limitKind lkMCMC \
+    --yHigh 1200 \
+    --bins 100 \
+    --linesTo 800 \
+    --as_gae_gaγ \
+    --xLabel "Limit g_ae·g_aγ [GeV⁻¹]" \
+    --yLabel "MC toy count"  \
+    --outpath ~/phd/Figs/limit/ \
+    --suffix "_nmc_50k_pretty" \
+    --nmc 50000
+#+end_src
+
+*** Run limit for 50k toys                                       :extended:
+
+Now run the best case scenario again for 50k toys! <2023-11-26 Sun 21:27>.
+#+begin_src sh
+mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --axionModel ~/org/resources/axionProduction/axionElectronRealDistance/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --switchAxes \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --limitKind lkMCMC \
+    --outpath ~/org/resources/lhood_limits_21_11_23/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/ \
+    --suffix "" \
+    --nmc 50000
+#+end_src
+It finished at some point during the night. 
 
 *** Expected limits with ~nmc = 1000~  :noexport:
 
@@ -37479,8 +37724,6 @@ but the table does not highlight that fact! 0.8602 corresponds to ε =
 
 
 
-
-
 ** Solar tracking candidates
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:candidates
@@ -37488,18 +37731,12 @@ but the table does not highlight that fact! 0.8602 corresponds to ε =
 
 Based on the best performing setup we can now look at the solar
 tracking candidates. [fn:data_unblinding] In this setup, based on the
-background model a total of \num{1449} candidates are expected over
+background model a total of $\num{845}$ candidates are expected over
 the entire chip. [fn:expected_clusters] Computing the real candidates
-yields a total of \num{1610} clusters over the chip, a somewhat
-meaningful excess. However, this excess is mostly from very low energy
-contributions below \SI{1}{keV} and potentially a sign of additional
-activity from noise related phenomena due to the tracking motor
-activity (which caused the significant FADC noise
-activity). Restricting the clusters to $\SIrange{1}{12}{keV}$ yields
-\num{219} cluster candidates where \num{210} would be expected
-(\num{4145} clusters in background). A figure comparing the rate
-observed for the candidates compared to the background is shown in
-fig. \ref{fig:limit:rate_candidates_background}.
+yields a total of $\num{850}$ clusters over the chip. A figure
+comparing the rate observed for the candidates compared to the
+background over the entire chip is shown in
+fig. sref:fig:limit:rate_candidates_background. 
 
 Fig. [[fig:limit:candidates]] shows all solar tracking candidates that are
 observed with the method yielding the best expected limit. Their
@@ -37509,7 +37746,7 @@ underlaid to provide a visual reference of the importance of each
 cluster. Very few candidates of relevant energies are seen within the
 region of interest. Based on the previously mentioned $\ln(1 +
 s_i/b_i) > 0.5$ condition it is in fact 0 candidates in the sensitive
-region. See fig. \ref{fig:limit:candidates_s_b} for an overview of the
+region. See fig. sref:fig:limit:candidates_s_b for an overview of the
 weighting of each candidate in this way.
 
 The candidates that are obtained for other setups of those shown in
@@ -37517,45 +37754,40 @@ tab. [[tab:limit:expected_limits]], see appendix
 [[sec:appendix:solar_candidates]] and the full version of the thesis for
 even more detail.
 
-#+CAPTION: Overview of all solar tracking candidates given the MLP@\SI{91}{\%} setup
-#+CAPTION: including all vetoes except the septem veto. \num{1610} clusters are observed,
+#+CAPTION: Overview of all solar tracking candidates given the MLP@\SI{95}{\%} setup
+#+CAPTION: including all vetoes except the septem veto. $\num{850}$ clusters are observed,
 #+CAPTION: with the majority low energy clusters in the chip corners. The axion image
 #+CAPTION: is underlaid the area and the energy of each cluster is color coded. For all
-#+CAPTION: candidates within a radius of \SI{85}{pixel} of the center the energy is also
+#+CAPTION: candidates within a radius of $\SI{85}{pixel}$ of the center the energy is also
 #+CAPTION: written above. We can see by eye that very few candidates of relevant energies
 #+CAPTION: are present in the region of expected signal.
 #+NAME: fig:limit:candidates
-[[~/org/Figs/statusAndProgress/trackingCandidates/background_cluster_centersmlp_0.95_scinti_fadc_line_tracking_candidates_axion_image_with_energy_radius_85.pdf]]
+[[~/phd/Figs/trackingCandidates/background_cluster_centersmlp_0.95_scinti_fadc_line_tracking_candidates_axion_image_with_energy_radius_85.pdf]]
 
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption ($ "\\ln(1 + s_i/b_i)")) (label "fig:limit:candidates_s_b")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                     "~/phd/Figs/trackingCandidates/real_candidates_signal_over_background.pdf"))
+        (subfigure (linewidth 0.5) (caption "Rate candidates vs. background") (label "fig:limit:rate_candidates_background")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                     "~/phd/Figs/trackingCandidates/rate_real_candidates_vs_background_rate_crAll_mlp_0.95_scinti_fadc_line.pdf"))
+        (caption
+         (subref "fig:limit:candidates_s_b")
+         ": Weighting of each candidate based on " ($ "\\ln(1 + s_i/b_i)") "."
+         " The largest weight given is for the \\SI{2.96}{keV} cluster seen in fig. "
+         (subref "fig:limit:candidates") 
+         " near pixel " ($ "(105,125)") " and tops out at slighlty above " ($ "\\num{0.5}") ". "
+         (subref "fig:limit:rate_candidates_background")
+         ": Rate of background and candidate clusters over the entire chip as a log plot. Rates are
+          generally compatible over the entire range.")
+        (label "fig:limit:candidates_s_b_rates"))
+#+end_src
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/trackingCandidates/real_candidates_signal_over_background.pdf}
-    \caption{$\ln(1 + s_i/b_i)$}
-    \label{fig:limit:candidates_s_b}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{~/org/Figs/statusAndProgress/trackingCandidates/rate_real_candidates_vs_background_rate_crAll_mlp_0.95_scinti_fadc_line.pdf}
-    \caption{Rate candidates vs. background}
-    \label{fig:limit:rate_candidates_background}
-  \end{subfigure}%
-  \label{fig:limit:candidates_s_b_rates}
-  \caption{\subref{fig:limit:candidates_s_b} Weighting of each candidate based on $\ln(1 + s_i/b_i)$.
-  The largest weight given is for the \SI{5.4}{keV} cluster seen in fig. \ref{fig:limit:candidates}
-  near x pixel 100 and tops out at slighlty above $\num{0.2}$. 
-  \subref{fig:limit:rate_candidates_background} Rate of background and candidate clusters over the entire
-  chip as a log plot. Candidate excess mainly below \SI{1}{keV}.
-  }
-\end{figure}
-
-
-[fn:expected_clusters] The background model contains \num{28627}
-clusters in this case. \SI{3156.8}{h} of background data and
-\SI{159.8}{h} of tracking data yields a
-$\num{28627}·\frac{3156.8}{159.8} = 1449.12$ clusters.
+[fn:expected_clusters] The background model contains $\num{16630}$
+clusters in this case. $\SI{3156.8}{h}$ of background data and
+$\SI{160.375}{h}$ of tracking data yields a
+$\num{16630}·\frac{160.375}{3156.8} \approx 845$ clusters.
 
 [fn:data_unblinding] The actual data unblinding of the candidates
 presented in this section was only done after the analysis of the
@@ -37575,9 +37807,219 @@ appears sound.
   Or is it due to energy filtering?
   -> See: [[file:~/org/resources/candidate_cluster_dates.csv]]
 
-- [ ] *CREATE APPENDIX FOR OTHER CANDIDATE PLTOS!!!*  
+- [ ] *CREATE APPENDIX FOR OTHER CANDIDATE PLTOS!!!*
+
+Old paragraph:
+#+begin_src
+, a somewhat
+meaningful excess. However, this excess is mostly from very low energy
+contributions below \SI{1}{keV} and potentially a sign of additional
+activity from noise related phenomena due to the tracking motor
+activity (which caused the significant FADC noise
+activity). Restricting the clusters to $\SIrange{1}{12}{keV}$ yields
+\num{219} cluster candidates where \num{210} would be expected
+(\num{4145} clusters in background).
+#+end_src
 
 *** Rate plot comparing background to candidates                 :extended:
+
+Combined:
+#+begin_src sh
+plotBackgroundRate \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --centerChip 3 \
+    --names "Background" --names "Background" --names "Candidates" --names "Candidates" \
+    --title "Rate over whole chip, MLP@95 % + line veto," \
+    --showNumClusters \
+    --region crAll \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --energyMin 0.2 \
+    --outfile rate_real_candidates_vs_background_rate_crAll_mlp_0.95_scinti_fadc_line.pdf \
+    --outpath ~/phd/Figs/trackingCandidates/ \
+    --logPlot \
+    --hideErrors \
+    --quiet
+#+end_src
+
+#+RESULTS:
+|  [INFO]:Dataset: | Background |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.2 |        .. | 12.0:      |       4.4601e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.2 |        .. | 12.0:      | 3.7797e-04 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Candidates |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.2 |        .. | 12.0:      |       4.4063e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.2 |        .. | 12.0:      | 3.7342e-04 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Background |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.5 |        .. | 2.5:       |       1.1442e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.5 |        .. | 2.5:       | 5.7209e-04 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Candidates |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.5 |        .. | 2.5:       |       1.0011e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.5 |        .. | 2.5:       | 5.0056e-04 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Background |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.5 |        .. | 5.0:       |       1.4225e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.5 |        .. | 5.0:       | 3.1611e-04 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Candidates |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.5 |        .. | 5.0:       |       1.3198e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.5 |        .. | 5.0:       | 2.9329e-04 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Background |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.2 |        .. | 2.5:       |       3.7810e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.2 |        .. | 2.5:       | 1.6439e-03 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Candidates |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.2 |        .. | 2.5:       |       3.6546e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.2 |        .. | 2.5:       | 1.5890e-03 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Background |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        4.0 |        .. | 8.0:       |       2.0653e-04 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        4.0 |        .. | 8.0:       | 5.1632e-05 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Candidates |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        4.0 |        .. | 8.0:       |       2.4595e-04 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        4.0 |        .. | 8.0:       | 6.1488e-05 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Background |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        2.0 |        .. | 8.0:       |       5.1210e-04 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        2.0 |        .. | 8.0:       | 8.5350e-05 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Candidates |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        2.0 |        .. | 8.0:       |       5.5425e-04 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        2.0 |        .. | 8.0:       | 9.2376e-05 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Background |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.2 |        .. | 8.0:       |       4.2249e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.2 |        .. | 8.0:       | 5.4165e-04 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|  [INFO]:Dataset: | Candidates |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |       rate |                                                                                                                  in | range:     |        0.2 |        .. | 8.0:       |       4.1604e-03 cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|          [INFO]: | Integrated | background |   rate/keV |                                                                                                                  in | range:     |        0.2 |        .. | 8.0:       | 5.3338e-04 keV⁻¹·cm⁻²·s⁻¹ |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|                  |            | Classifier |            |                                                                                                                     | ε_eff       |            |           | Scinti     |                         |           | FADC       |          |          | Septem   |          |   | Line |   |   | ε_total |   |   |      Rate |   |
+|                  |            |        MLP |            |                                                                                                                     | 0.957      |            |           | true       |                         |           | true       |          |          | false    |          |   | true |   |   |  0.807 |   |   | 0.0005417 |   |
+|                  |            |        MLP |            |                                                                                                                     | 0.957      |            |           | true       |                         |           | true       |          |          | false    |          |   | true |   |   |  0.807 |   |   | 0.0005334 |   |
+|                  |            |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+| [INFO]:DataFrame |       with |         15 |    columns |                                                                                                                 and | 113        |      rows: |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|              Idx |     Energy |       Rate |  totalTime |                                                                                                             RateErr | Dataset    |       yMin |      yMax | File       |                  ε_total |      ε_eff | Classifier | Scinti   | FADC     | Septem   | Line     |   |      |   |   |        |   |   |           |   |
+|           dtype: |      float |      float |      float |                                                                                                               float | string     |      float |     float | string     |                constant |  constant | constant   | constant | constant | constant | constant |   |      |   |   |        |   |   |           |   |
+|                0 |        0.2 |  1424.4217 |  3158.0066 |                                                                                                            15.82984 | Background |  1408.5919 | 1440.2516 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                1 |        0.4 |  475.68685 |  3158.0066 |                                                                                                            9.147824 | Background |  466.53902 | 484.83467 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                2 |        0.6 |  261.06482 |  3158.0066 |                                                                                                           6.7769052 | Background |  254.28792 | 267.84173 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                3 |        0.8 |  132.46753 |  3158.0066 |                                                                                                           4.8273851 | Background |  127.64014 | 137.29491 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                4 |          1 |  106.60733 |  3158.0066 |                                                                                                           4.3306269 | Background |  102.27671 | 110.93796 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                5 |        1.2 |  55.590623 |  3158.0066 |                                                                                                           3.1272169 | Background |  52.463406 |  58.71784 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                6 |        1.4 |  41.165208 |  3158.0066 |                                                                                                           2.6910538 | Background |  38.474154 | 43.856262 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                7 |        1.6 |  36.591296 |  3158.0066 |                                                                                                           2.5371499 | Background |  34.054146 | 39.128446 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                8 |        1.8 |  24.100998 |  3158.0066 |                                                                                                           2.0590872 | Background |  22.041911 | 26.160085 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                9 |          2 |  21.814042 |  3158.0066 |                                                                                                           1.9589588 | Background |  19.855083 | 23.773001 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               10 |        2.2 |  16.536451 |  3158.0066 |                                                                                                           1.7056047 | Background |  14.830846 | 18.242056 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               11 |        2.4 |  13.369897 |  3158.0066 |                                                                                                           1.5336323 | Background |  11.836264 | 14.903529 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               12 |        2.6 |  15.832772 |  3158.0066 |                                                                                                           1.6689207 | Background |  14.163852 | 17.501693 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               13 |        2.8 |  14.601334 |  3158.0066 |                                                                                                           1.6027047 | Background |   12.99863 | 16.204039 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               14 |          3 |  19.527086 |  3158.0066 |                                                                                                            1.853429 | Background |  17.673657 | 21.380515 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               15 |        3.2 |  18.823407 |  3158.0066 |                                                                                                           1.8197274 | Background |   17.00368 | 20.643135 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               16 |        3.4 |  17.591969 |  3158.0066 |                                                                                                           1.7591969 | Background |  15.832772 | 19.351166 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               17 |        3.6 |  13.545816 |  3158.0066 |                                                                                                            1.543689 | Background |  12.002127 | 15.089505 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               18 |        3.8 |  9.8515028 |  3158.0066 |                                                                                                           1.3164624 | Background |  8.5350403 | 11.167965 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               19 |          4 |  4.3979923 |  3158.0066 |                                                                                                          0.87959846 | Background |  3.5183938 | 5.2775908 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               20 |        4.2 |  5.1016711 |  3158.0066 |                                                                                                          0.94735654 | Background |  4.1543145 | 6.0490276 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               21 |        4.4 |  2.8147151 |  3158.0066 |                                                                                                          0.70367877 | Background |  2.1110363 | 3.5183938 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               22 |        4.6 |  2.4628757 |  3158.0066 |                                                                                                          0.65823122 | Background |  1.8046445 | 3.1211069 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               23 |        4.8 |  6.1571892 |  3158.0066 |                                                                                                           1.0407549 | Background |  5.1164343 | 7.1979442 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               24 |          5 |  3.5183938 |  3158.0066 |                                                                                                          0.78673678 | Background |  2.7316571 | 4.3051306 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               25 |        5.2 |  4.9257514 |  3158.0066 |                                                                                                          0.93087951 | Background |  3.9948719 | 5.8566309 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               26 |        5.4 |  5.4535105 |  3158.0066 |                                                                                                          0.97947939 | Background |  4.4740311 | 6.4329899 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               27 |        5.6 |  5.1016711 |  3158.0066 |                                                                                                          0.94735654 | Background |  4.1543145 | 6.0490276 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               28 |        5.8 |   4.573912 |  3158.0066 |                                                                                                          0.89701794 | Background |  3.6768941 | 5.4709299 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               29 |          6 |  4.9257514 |  3158.0066 |                                                                                                          0.93087951 | Background |  3.9948719 | 5.8566309 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               30 |        6.2 |  5.8053499 |  3158.0066 |                                                                                                           1.0105817 | Background |  4.7947682 | 6.8159315 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               31 |        6.4 |  5.1016711 |  3158.0066 |                                                                                                          0.94735654 | Background |  4.1543145 | 6.0490276 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               32 |        6.6 |  3.5183938 |  3158.0066 |                                                                                                          0.78673678 | Background |  2.7316571 | 4.3051306 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               33 |        6.8 |  2.9906348 |  3158.0066 |                                                                                                          0.72533547 | Background |  2.2652993 | 3.7159702 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               34 |          7 |  8.2682255 |  3158.0066 |                                                                                                           1.2060446 | Background |  7.0621809 | 9.4742702 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               35 |        7.2 |  5.8053499 |  3158.0066 |                                                                                                           1.0105817 | Background |  4.7947682 | 6.8159315 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               36 |        7.4 |  6.6849483 |  3158.0066 |                                                                                                           1.0844418 | Background |  5.6005065 | 7.7693901 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               37 |        7.6 |  5.4535105 |  3158.0066 |                                                                                                          0.97947939 | Background |  4.4740311 | 6.4329899 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               38 |        7.8 |  8.4441452 |  3158.0066 |                                                                                                           1.2188074 | Background |  7.2253379 | 9.6629526 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               39 |          8 |  7.9163862 |  3158.0066 |                                                                                                           1.1801052 | Background |   6.736281 | 9.0964913 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               40 |        8.2 |  8.6200649 |  3158.0066 |                                                                                                           1.2314378 | Background |  7.3886271 | 9.8515028 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               41 |        8.4 |  9.3237437 |  3158.0066 |                                                                                                           1.2807147 | Background |   8.043029 | 10.604458 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               42 |        8.6 |  10.731101 |  3158.0066 |                                                                                                           1.3739767 | Background |  9.3571245 | 12.105078 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               43 |        8.8 |  12.842138 |  3158.0066 |                                                                                                           1.5030585 | Background |  11.339079 | 14.345196 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               44 |          9 |  13.545816 |  3158.0066 |                                                                                                            1.543689 | Background |  12.002127 | 15.089505 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               45 |        9.2 |  9.6755831 |  3158.0066 |                                                                                                           1.3046554 | Background |  8.3709277 | 10.980238 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               46 |        9.4 |  10.027422 |  3158.0066 |                                                                                                           1.3281646 | Background |  8.6992579 | 11.355587 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               47 |        9.6 |  7.7404665 |  3158.0066 |                                                                                                           1.1669192 | Background |  6.5735472 | 8.9073857 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               48 |        9.8 |  8.0923059 |  3158.0066 |                                                                                                           1.1931454 | Background |  6.8991604 | 9.2854513 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               49 |         10 |  4.9257514 |  3158.0066 |                                                                                                          0.93087951 | Background |  3.9948719 | 5.8566309 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               50 |       10.2 |  4.7498317 |  3158.0066 |                                                                                                          0.91410554 | Background |  3.8357262 | 5.6639372 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               51 |       10.4 |  2.8147151 |  3158.0066 |                                                                                                          0.70367877 | Background |  2.1110363 | 3.5183938 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               52 |       10.6 |  3.5183938 |  3158.0066 |                                                                                                          0.78673678 | Background |  2.7316571 | 4.3051306 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               53 |       10.8 |  1.0555182 |  3158.0066 |                                                                                                          0.43091348 | Background | 0.62460467 | 1.4864316 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               54 |         11 |  1.5832772 |  3158.0066 |                                                                                                          0.52775908 | Background |  1.0555182 | 2.1110363 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               55 |       11.2 |  1.5832772 |  3158.0066 |                                                                                                          0.52775908 | Background |  1.0555182 | 2.1110363 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               56 |       11.4 |  1.2314378 |  3158.0066 |                                                                                                          0.46543976 | Background | 0.76599809 | 1.6968776 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               57 |       11.6 | 0.70367877 |  3158.0066 |                                                                                                          0.35183938 | Background | 0.35183938 | 1.0555182 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               58 |       11.8 | 0.87959846 |  3158.0066 |                                                                                                          0.39336839 | Background | 0.48623007 | 1.2729669 | Background |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               59 |        0.2 |  1496.4882 |  160.37547 |                                                                                                            71.99982 | Candidates |  1424.4883 |  1568.488 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               60 |        0.4 |  478.04483 |  160.37547 |                                                                                                           40.693878 | Candidates |  437.35095 | 518.73871 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               61 |        0.6 |  200.91739 |  160.37547 |                                                                                                           26.381746 | Candidates |  174.53565 | 227.29914 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               62 |        0.8 |  138.56372 |  160.37547 |                                                                                                           21.908848 | Candidates |  116.65487 | 160.47257 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               63 |          1 |  114.31507 |  160.37547 |                                                                                                           19.899699 | Candidates |  94.415369 | 134.21477 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               64 |        1.2 |  24.248651 |  160.37547 |                                                                                                           9.1651285 | Candidates |  15.083522 | 33.413779 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               65 |        1.4 |  24.248651 |  160.37547 |                                                                                                           9.1651285 | Candidates |  15.083522 | 33.413779 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               66 |        1.6 |  45.033209 |  160.37547 |                                                                                                           12.489965 | Candidates |  32.543244 | 57.523173 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               67 |        1.8 |  20.784558 |  160.37547 |                                                                                                           8.4852602 | Candidates |  12.299298 | 29.269818 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               68 |          2 |  17.320465 |  160.37547 |                                                                                                           7.7459474 | Candidates |  9.5745175 | 25.066412 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               69 |        2.2 |  13.856372 |  160.37547 |                                                                                                           6.9281859 | Candidates |  6.9281859 | 20.784558 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               70 |        2.4 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               71 |        2.6 |  24.248651 |  160.37547 |                                                                                                           9.1651285 | Candidates |  15.083522 | 33.413779 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               72 |        2.8 |  24.248651 |  160.37547 |                                                                                                           9.1651285 | Candidates |  15.083522 | 33.413779 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               73 |          3 |  24.248651 |  160.37547 |                                                                                                           9.1651285 | Candidates |  15.083522 | 33.413779 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               74 |        3.2 |  13.856372 |  160.37547 |                                                                                                           6.9281859 | Candidates |  6.9281859 | 20.784558 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               75 |        3.4 |  13.856372 |  160.37547 |                                                                                                           6.9281859 | Candidates |  6.9281859 | 20.784558 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               76 |        3.6 |  17.320465 |  160.37547 |                                                                                                           7.7459474 | Candidates |  9.5745175 | 25.066412 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               77 |        3.8 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               78 |          4 |  13.856372 |  160.37547 |                                                                                                           6.9281859 | Candidates |  6.9281859 | 20.784558 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               79 |        4.2 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               80 |        4.4 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               81 |        4.8 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               82 |          5 |  10.392279 |  160.37547 |                                                                                                            5.999985 | Candidates |  4.3922939 | 16.392264 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               83 |        5.2 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               84 |        5.4 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               85 |        5.6 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               86 |        5.8 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               87 |        6.2 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               88 |        6.4 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               89 |        6.6 |  10.392279 |  160.37547 |                                                                                                            5.999985 | Candidates |  4.3922939 | 16.392264 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               90 |        6.8 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               91 |          7 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               92 |        7.2 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               93 |        7.4 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               94 |        7.6 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               95 |        7.8 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               96 |          8 |  17.320465 |  160.37547 |                                                                                                           7.7459474 | Candidates |  9.5745175 | 25.066412 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               97 |        8.2 |  13.856372 |  160.37547 |                                                                                                           6.9281859 | Candidates |  6.9281859 | 20.784558 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               98 |        8.4 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|               99 |        8.6 |  17.320465 |  160.37547 |                                                                                                           7.7459474 | Candidates |  9.5745175 | 25.066412 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              100 |        8.8 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              101 |          9 |  10.392279 |  160.37547 |                                                                                                            5.999985 | Candidates |  4.3922939 | 16.392264 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              102 |        9.2 |  13.856372 |  160.37547 |                                                                                                           6.9281859 | Candidates |  6.9281859 | 20.784558 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              103 |        9.4 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              104 |        9.6 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              105 |        9.8 |  6.9281859 |  160.37547 |                                                                                                           4.8989673 | Candidates |  2.0292187 | 11.827153 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              106 |         10 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              107 |       10.2 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              108 |       10.4 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              109 |       10.6 |  10.392279 |  160.37547 |                                                                                                            5.999985 | Candidates |  4.3922939 | 16.392264 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              110 |       10.8 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              111 |       11.2 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|              112 |       11.4 |   3.464093 |  160.37547 |                                                                                                            3.464093 | Candidates |          0 | 6.9281859 | Candidates |              0.80656401 | 0.9568089 | MLP        | true     | true     | false    | true     |   |      |   |   |        |   |   |           |   |
+|                  |            |            |            |                                                                                                                     |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|     [INFO]:INFO: |    storing |       plot |         in | /home/basti/phd/Figs/trackingCandidates/rate_real_candidates_vs_background_rate_crAll_mlp_0.95_scinti_fadc_line.pdf |            |            |           |            |                         |           |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+|       [WARNING]: |   Printing |      total | background |                                                                                                                time | currently  |       only | supported | for        |                  single | datasets. |            |          |          |          |          |   |      |   |   |        |   |   |           |   |
+
+[[~/phd/Figs/trackingCandidates/rate_real_candidates_vs_background_rate_crAll_mlp_0.95_scinti_fadc_line.pdf]]
+
+-> The two seem pretty compatible. Maybe there is minutely more in the
+middle range than expected, but I suppose that is a statistical effect.
+
+
+*** *OUTDATED* Rate plot comparing background to candidates      :extended:
 
 Combined:
 #+begin_src sh
@@ -37609,13 +38051,63 @@ maybe there is still a slight excess, yes, but it *seems* (may not be
 though) to be more in line with expectation. 
 
 
+
 *** Perform the data unblinding and produce plots                :extended:
 
 1. run ~likelihood~ with ~--tracking~
 2. compute ~mcmc_limit_calculation~ based on the files
-  
+
+Running tracking classification for the best performing setup, MLP@95%
+plus all vetoes except septem <2023-11-27 Mon 12:16>:
+#+begin_src sh
+./createAllLikelihoodCombinations \
+    --f2017 ~/CastData/data/DataRuns2017_Reco.h5 \
+    --f2018 ~/CastData/data/DataRuns2018_Reco.h5 \
+    --c2017 ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    --c2018 ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+    --regions crAll \
+    --vetoSets "{+fkMLP, +fkFadc, +fkScinti, fkLineVeto}" \
+    --mlpPath ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
+    --fadcVetoPercentile 0.99 \
+    --signalEfficiency 0.95 \
+    --out ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/ \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --multiprocessing \
+    --jobs 8 \
+    --tracking \
+    --dryRun
+#+end_src
+#+begin_src
+Running all likelihood combinations took 399.9733135700226 s
+#+end_src
+Finished!
+
+I'm scared.
 
 *** Generate plots for real candidates                           :extended:
+
+Using the files created in the previous section, let's create some plots.
+
+#+begin_src sh
+plotBackgroundClusters \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --title "MLP@95+FADC+Scinti+Line tracking clusters" \
+    --outpath ~/phd/Figs/trackingCandidates/ \
+    --suffix "mlp_0.95_scinti_fadc_line_tracking_candidates_axion_image_with_energy_radius_85" \
+    --energyMin 0.2 --energyMax 12.0 \
+    --filterNoisyPixels \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+    --energyText \
+    --colorBy energy \
+    --energyTextRadius 85.0 \
+    --switchAxes
+#+end_src
+
+[[~/phd/Figs/trackingCandidates/background_cluster_centersmlp_0.95_scinti_fadc_line_tracking_candidates_axion_image_with_energy_radius_85.pdf]]
+
+
+*** *OUTDATED* Generate plots for real candidates                :extended:
 
 Using the files created in the previous section, let's create some plots.
 
@@ -38010,7 +38502,7 @@ Based on the candidates presented in sec. [[#sec:limit:candidates]] we
 compute an observed limit of
 
 \[
-g_{ae} · g_{aγ} = \SI{6.56e-23}{GeV⁻¹},
+g_{ae} · g_{aγ} = \SI{7.36e-23}{GeV⁻¹},
 \]
 
 which is approaching the best possible limit achievable given this
@@ -38052,7 +38544,7 @@ integration level of 5 (one often uses 8 for Romberg for
 accuracy). This highlights the need for Monte Carlo methods,
 _especially_ for expected limits.
 
-*** TODOs for this section [/] 
+**** TODOs for this section [/] 
 For limit:  
 - [ ] *likelihood space* of the real candidates as plot
 - [ ] try to fit an exponential to the likelihood and provide
@@ -38061,7 +38553,40 @@ For limit:
 
 - [ ] *CITE ROMBERG*  
 
-- [ ] *PROVIDE AT LEAST A TABLE* of the limits we get for a few other setups!
+- [ ] *PROVIDE AT LEAST A TABLE* of the limits we get for a few other
+  setups!
+
+Old limit:
+\[
+g_{ae} · g_{aγ} = \SI{6.56e-23}{GeV⁻¹},
+\]
+
+
+**** Calculate the observed limit                               :extended:
+
+#+begin_src sh
+mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --tracking ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --tracking ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --axionModel ~/org/resources/axionProduction/axionElectronRealDistance/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --switchAxes \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --limitKind lkMCMC \
+    --outpath ~/phd/Figs/trackingCandidates/ \
+    --suffix ""
+#+end_src
+
+
+-> The plot looks exactly like the one already in the thesis? Surely
+they should be switched around x/y?
 
 *** Axion-photon coupling
 
