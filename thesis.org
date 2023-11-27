@@ -33353,18 +33353,28 @@ As such the relevant veto efficiencies are:
 
 \begin{align*}
 ε_{\text{FADC}} &= \SI{98}{\%} \\
-ε_{\text{septem}} &= \SI{78.41}{\%} \\
-ε_{\text{line}} &= \SI{86.02}{\%} \\
-ε_{\text{septem+line}} &= \SI{73.25}{\%} 
+ε_{\text{septem}} &= \SI{83.11}{\%} \\
+ε_{\text{line}} &= \SI{85.39}{\%} \\
+ε_{\text{septem+line}} &= \SI{78.63}{\%} 
 \end{align*}
 
 where the last one corresponds to using both the septem and the line
-veto at the same time. Considering for example the case of using both
-these vetoes together with a software efficiency of $\SI{80}{\%}$ we
-see that the combined efficiency is already only about
-$\SI{58.6}{\%}$, which is an extreme loss in sensitivity. 
+veto at the same time. Considering for example the case of using these
+vetoes together with a software efficiency of $\SI{80}{\%}$ we see
+that the combined efficiency is already only about $\SI{61.6}{\%}$,
+which is an extreme loss in sensitivity.
 
-**** Combined detection efficiency
+***** TODOs for this section [/]                               :noexport:
+
+The table from sec. [[#sec:background:estimate_veto_efficiency]] repeated here:
+| Septem veto | Line veto | Real [%]      | Fake [%]      |
+|-------------+-----------+---------------+---------------|
+| y           | n         | $\num{14.12}$ | $\num{83.11}$ |
+| n           | y         | $\num{25.32}$ | $\num{85.39}$ |
+| y           | y         | $\num{9.17}$  | $\num{78.63}$ |
+
+
+**** Combined detection efficiency - $ε(E_i)$
 
 The previous sections cover aspects which affect the detection
 efficiency of the detector and thus impact the amount of signal
@@ -33372,7 +33382,9 @@ available. Combined they yield a detection efficiency as shown in
 fig. [[fig:limit:limit_method:combined_detection_eff]]. As can be seen,
 the combined detection efficiency maxes out at about $\sim\SI{46}{\%}$
 around $\SI{1.5}{keV}$ without taking into account the software and
-veto efficiencies.
+veto efficiencies. If one combines this with using all vetoes at a
+software efficiency of $\SI{80}{\%}$, the total detection efficiency
+of the detector would peak at only $\SI{28.4}{\%}$ at that energy.
 
 #+ATTR_LATEX: :width 0.8\textwidth
 #+CAPTION: The combined detection efficiency of the detector, taking into account the
@@ -33433,11 +33445,7 @@ So just read the extended LLNL file.
 :CUSTOM_ID: sec:limit:median_absorption_depth
 :END:
 
-
-- [ ] FOcal spot in center of chamber
-- [ ] UPdated calc monte carlo for median pos  
-
-In order to compute a realistic axion image based on raytracing the
+In order to compute a realistic axion image based on raytracing, the
 plane at which to compute the image needs to be known, as the focal
 spot size changes significantly depending on the distance to the focal
 point of the X-ray optics. The beamline behind the telescope is
@@ -33447,649 +33455,138 @@ window. [fn:source]
 This is of particular importance for a gaseous detector, as the
 raytracing only makes sense up to the generation of a photoelectron,
 after which the produced primary electrons undergo
-diffusion. Therefore, one needs to compute the average absorption
+diffusion. Therefore, one needs to compute the typical absorption
 depth of X-rays in the relevant energy ranges for the used gas mixture
 of the detector. This is easiest done based on a Monte Carlo
 simulation taking into account the incoming X-ray flux distribution
 (given the solar axion flux we consider) $f(E)$, the telescope
-effective area $ε_{\text{LLNL}}$ and window transmission, $ε_{\ce{Si3.N4}}, ε_{\ce{Al}}$,
+effective area $ε_{\text{LLNL}}(E)$ and window transmission, $ε_{\ce{Si3 N4}}(E), ε_{\ce{Al}}(E)$,
 
 \[
-I(E) = f(E) · ε_{\text{LLNL}} · ε_{\ce{Si3 N4}} · ε_{\ce{Al}}.
+I(E) = f(E) · ε_{\text{LLNL}}(E) · ε_{\ce{Si3 N4}}(E) · ε_{\ce{Al}}(E).
 \]
 
 $I(E)$ yields the correct energy distribution of expected signal
 X-rays. For each sampled X-ray we can then draw a conversion point
-based on the attenuation length and the Beer-Lambert law introduced in
-sec. [[sec:theory:xray_matter_gas]], eq. [[eq:theory:beer_lambert_law]] for
-its energy. Computing the median of all conversion points is then an
-estimator for the point at which to compute the axion image. For more
-details see the extended version of this thesis.
-
-- [ ] *EXTEND WITH REFERENCES TO THEORY CHAPTER ABOUT ABSORPTION,
-  ATTENUATION LENGTH, ETC*
+based on the attenuation length and the Beer-Lambert law for its
+energy introduced in sec. [[#sec:theory:xray_matter_gas]]. Computing the
+median of all conversion points is then an estimator for the point at
+which to compute the axion image.
 
 Performing this calculation leads to a median conversion point of
 $\langle d \rangle = \SI{0.2928}{cm}$ behind the detector window, with a standard deviation
 of $\SI{0.4247}{cm}$ due to a long tail from higher energy X-rays. It
 may be worthwhile to perform this calculation for distinct energies to
 then compute different axion images for different energies with each
-their own effective 'depth' behind the window. 
+their own effective 'depth' behind the window, however for the time
+being we do not.
 
-- [X] *INSERT COMPUTATION*
-  - [ ] *REFERENCE IT PROPERLY*
+For the calculation of these numbers, see appendix [[#sec:appendix:average_depth_xrays_argon]].
 
 [fn:source] To my knowledge there exists no technical design
 documentation about how the beamline was designed exactly. Jaime Ruz,
 who was in charge of the LLNL telescope installation, told me this is
-what he aligned to.    
+what he aligned to.
 
-**** Average distance X-rays travel in Argon at CAST conditions :extended:
-:PROPERTIES:
-:CUSTOM_ID: sec:average_depth_xrays_argon
-:END:
+**** TODOs for this section [/]                                 :noexport:
 
-#+begin_quote
-Note: This section and its subsections are also available as a
-standalone document titled ~SolarAxionConversionPoint~.
-#+end_quote
+- [X] Focal spot in center of chamber
+- [X] Updated calc monte carlo for median pos  
 
-In order to be able to compute the correct distance to use in the
-raytracer for the position of the axion image, we need a good
-understanding of where the average X-ray will convert in the gas.
+- [X] *INSERT COMPUTATION*
+  -> in appendix, sec. [[#sec:appendix:average_depth_xrays_argon]]
+  - [X] *REFERENCE IT PROPERLY*
 
-By combining the expected axion flux (or rather that folded with the
-telescope and window transmission to get the correct energy
-distribution) with the absorption length of X-rays at different
-energies we can compute a weighted mean of all X-rays and come up with
-a single number.
+- [ ] *EXTEND WITH REFERENCES TO THEORY CHAPTER ABOUT ABSORPTION,
+  ATTENUATION LENGTH, ETC*
 
-For that reason we wrote [[https://github.com/SciNim/xrayAttenuation][xrayAttenuation]].
+    
 
-Let's give it a try.
-
-***** Analytical approach
-:PROPERTIES:
-:CUSTOM_ID: sec:axion_conversion_point:analytical
-:END:
-
-#+begin_src nim :tangle /tmp/entrance_distance_xrays_cast.nim
-import xrayAttenuation, ggplotnim, unchained
-
-# 1. read the file containing efficiencies
-var effDf = readCsv("/home/basti/org/resources/combined_detector_efficiencies.csv")
-  .mutate(f{"NoGasEff" ~ idx("300nm SiN") * idx("20nm Al") * `LLNL`})
-
-# 2. compute the absorption length for Argon
-let ar = Argon.init()
-let ρ_Ar = density(1050.mbar.to(Pascal), 293.K, ar.molarMass)
-effDf = effDf
-  .filter(f{idx("Energy [keV]") > 0.05})
-  .mutate(f{float: "l_abs" ~ absorptionLength(ar, ρ_Ar, idx("Energy [keV]").keV).float})
-# compute the weighted mean of the effective flux behind the window with the
-# absorption length, i.e.
-# `<x> = Σ_i (ω_i x_i) / Σ_i ω_i`
-let weightedMean = (effDf["NoGasEff", float] *. effDf["l_abs", float]).sum() /
-  effDf["NoGasEff", float].sum()
-echo "Weighted mean of distance: ", weightedMean.Meter.to(cm)
-# for reference the effective flux:
-ggplot(effDf, aes("Energy [keV]", "NoGasEff")) +
-  geom_line() +
-  ggsave("/tmp/combined_efficiency_no_gas.pdf")
-ggplot(effDf, aes("Energy [keV]", "l_abs")) +
-  geom_line() +
-  ggsave("/tmp/absorption_length_argon_cast.pdf")
-#+end_src
-
-#+RESULTS:
-| /home/basti/CastData/ExternCode/xrayAttenuation/resources/nist_mass_attenuation/data_element_Argon_Z_18.csv |      |    |           |            |
-| /home/basti/CastData/ExternCode/xrayAttenuation/resources/henke_form_factors/ar.nff                         |      |    |           |            |
-| Weighted                                                                                                    | mean | of | distance: | 1.22082 cm |
-
-This means the "effective" position of the axion image should be
-0.0122 m or 1.22 cm in the detector. This is (fortunately) relatively
-close to the 1.5 cm (center of the detector) that we used so far.
-
-- [X] Is the above even correct? The absorption length describes the
-  distance at which only 1/e particles are left. That means at that
-  distance (1 - 1/e) have disappeared. To get a number don't we need
-  to do a monte carlo (or some kind of integral) of the average?
-  -> Well, the mean of an exponential distribution is 1/λ (if defined
-  as $\exp(-λx)$!), from that point of view I think the above is
-  perfectly adequate!
-  Note however that the _median_ of the distribution is $\frac{\ln
-  2}{λ}$! When looking at the distribution of our transverse RMS
-  values for example the peak corresponds to something that is _closer 
-  to the median_ (but is not exactly the median either; the peak is
-  the 'mode' of the distribution).
-  Arguably more interesting is the cutoff we see in the data as that
-  corresponds to the largest _possible_ diffusion (but again that is
-  being folded with the statistics of getting a larger RMS! :/ )
-
-  *UPDATE*: <2023-06-14 Wed 17:24>
-  See the section below for the numerical approach. As it turns out
-  the above unfortunately is not correct for 3 important reasons (2 of
-  which we were aware of):
-  1. It does not include the axion spectrum, it changes the location of
-     the mean slightly.
-  2. It implicitly assumes all X-rays of all energies will be
-     detected. This implies an infinitely long detector and not our
-     detector limited by a length of 3 cm!
-     This skews the actual mean to *lower values*, because the mean of
-     those that _are_ detected are at smaller values.
-  3. Point 2 implies not only that some X-rays won't be detected, but
-     effectively it gives a _higher weight_ to energies that are
-     absorbed with certainty compared to those that sometimes are not
-     absorbed! This _further_ reduces the mean.
-     This can be interpreted as reducing the input flux by the
-     percentage of the absorption probability for each energy. 
-     In this sense the above needs to be multiplied by the absorption
-     probability to be more correct! Yet this still does not make it
-     completely right, as that just assumes the fraction of photons of
-     a given energy are reduced, but not that all detected ones have
-     lengths consistent with a 3cm long volume!
-  4. (minor) does not include isobutane.
-
-A (shortened and) improved version of the above (but still not quite correct!):
-#+begin_src nim :tangle /tmp/entrance_distance_xrays_cast_incl_gas.nim
-import xrayAttenuation, ggplotnim, unchained
-# 1. read the file containing efficiencies
-var effDf = readCsv("/home/basti/org/resources/combined_detector_efficiencies.csv")
-  .mutate(f{"NoGasEff" ~ idx("300nm SiN") * idx("20nm Al") * `LLNL` * idx("30mm Ar Abs.")})
-# 2. compute the absorption length for Argon
-let ar = Argon.init()
-let ρ_Ar = density(1050.mbar.to(Pascal), 293.K, ar.molarMass)
-effDf = effDf.filter(f{idx("Energy [keV]") > 0.05})
-  .mutate(f{float: "l_abs" ~ absorptionLength(ar, ρ_Ar, idx("Energy [keV]").keV).float})
-let weightedMean = (effDf["NoGasEff", float] *. effDf["l_abs", float]).sum() /
-  effDf["NoGasEff", float].sum()
-echo "Weighted mean of distance: ", weightedMean.Meter.to(cm)
-#+end_src
-
-#+RESULTS:
-| /home/basti/CastData/ExternCode/xrayAttenuation/resources/nist_mass_attenuation/data_element_Argon_Z_18.csv |      |    |           |            |
-| /home/basti/CastData/ExternCode/xrayAttenuation/resources/henke_form_factors/ar.nff                         |      |    |           |            |
-| Weighted                                                                                                    | mean | of | distance: | 1.06606 cm |
-
-We could further multiply in the axion flux of course, but as this
-cannot be fully correct in this way, we'll do it numerically. We would
-have to calculate the real mean of the exponential distribution for
-each energy based on the truncated exponential
-distribution. Effectively we have a bonded exponential between 0 and 3
-cm, whose mean is of course going to differ from the parameter $λ$.
-
-***** Numerical approach  
-  
-Let's write a version of the above code that computes the result by
-sampling from the exponential distribution for the conversion point.
-
-What we need:
-- our sampling logic
-- sampling from exponential distribution depending on energy
-- the axion flux
-
-Let's start by importing the modules we need:  
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-import helpers / sampling_helper # sampling distributions
-import unchained                 # sane units
-import ggplotnim                 # see something!
-import xrayAttenuation           # window efficiencies
-import math, sequtils
-#+end_src
-where the ~sampling_helpers~ is a small module to sample from a
-procedure or a sequence.
-
-In addition let's define some helpers:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-from os import `/`
-const ResourcePath = "/home/basti/org/resources"
-const OutputPath = "/home/basti/org/Figs/statusAndProgress/axion_conversion_point_sampling/"
-#+end_src
-
-Now let's read the LLNL telescope efficiency as well as the axion flux
-model. Note that we may wish to calculate the absorption points not
-only for a specific axion flux model, but potentially any other kind
-of signal. We'll build in functionality to disable different
-contributions.
-
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-let dfAx = readCsv(ResourcePath / "solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15.csv")
-  .filter(f{`type` == "Total flux"})
-let dfLLNL = readCsv(ResourcePath / "llnl_xray_telescope_cast_effective_area_parallel_light_DTU_thesis.csv")
-  .mutate(f{"Efficiency" ~ idx("EffectiveArea[cm²]") / (PI * 2.15 * 2.15)})
-#+end_src
-Note: to get the differential axion flux use ~readOpacityFile~ from
-https://github.com/jovoy/AxionElectronLimit. It generates the CSV
-file.
-
-Next up we need to define the material properties of the detector
-window in order to compute its transmission.
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-let Si₃N₄ = compound((Si, 3), (N, 4)) # actual window
-const ρSiN = 3.44.g•cm⁻³
-const lSiN = 300.nm                  # window thickness
-let Al = Aluminium.init()            # aluminium coating
-const ρAl = 2.7.g•cm⁻³
-const lAl = 20.nm                    # coating thickness
-#+end_src
-With these numbers we can compute the transmission at an arbitrary
-energy. In order to compute the correct inputs for the calculation we
-now have everything. We wish to compute the following, the intensity
-$I(E)$ is the flux that enters the detector 
-
-\[
-I(E) = f(E) · ε_{\text{LLNL}} · ε_{\ce{Si3.N4}} · ε_{\ce{Al}}
-\]
-
-where $f(E)$ is the solar axion flux and the $ε_i$ are the
-efficiencies associated with the telescope and transmission of the
-window. The idea is to sample from this intensity distribution to get
-a realistic set of X-rays as they would be experienced in the
-experiment. One technical aspect still to be done is an interpolation
-of the axion flux and LLNL telescope efficiency to evaluate the data
-at an arbitrary energy as to define a function that yields $I(E)$.
-
-#+begin_quote
-_Important note_: We fully neglect here the conversion probability and
-area of the magnet bore. These (as well as a potential time component)
-are purely constants and do not affect the *shape* of the distribution
-$I(E)$. We want to sample from it to get the correct weighting of the
-different energies, but do not care about absolute numbers. So
-differential fluxes are fine.
-#+end_quote
-
-The idea is to define the interpolators and then create a procedure
-that captures the previously defined properties and interpolators.
-
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-from numericalnim import newLinear1D, eval
-let axInterp = newLinear1D(dfAx["Energy", float].toSeq1D, dfAx["diffFlux", float].toSeq1D)
-let llnlInterp = newLinear1D(dfLLNL["Energy[keV]", float].toSeq1D, dfLLNL["Efficiency", float].toSeq1D)
-#+end_src
-
-With the interpolators defined let's write the implementation for
-$I(E)$:
-
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-proc I(E: keV): float =
-  ## Compute the intensity of the axion flux after telescope & window eff.
-  ##
-  ## Axion flux and LLNL efficiency can be disabled by compiling with
-  ## `-d:noAxionFlux` and `-d:noLLNL`, respectively.
-  result = transmission(Si₃N₄, ρSiN, lSiN, E) * transmission(Al, ρAl, lAl, E)
-  when not defined(noAxionFlux):
-    result *= axInterp.eval(E.float)
-  when not defined(noLLNL):
-    result *= llnlInterp.eval(E.float)
-  
-#+end_src
-
-Let's test it and see what we get for e.g. $\SI{1}{keV}$:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-echo I(1.keV)
-#+end_src
-yields $1.249e20$. Not the most insightful, but it seems to
-work. Let's plot it:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-let energies = linspace(0.01, 10.0, 1000).mapIt(it.keV)
-let Is = energies.mapIt(I(it))
-block PlotI:
-  let df = toDf({ "E [keV]" : energies.mapIt(it.float),
-                  "I" : Is })
-  ggplot(df, aes("E [keV]", "I")) +
-    geom_line() +
-    ggtitle("Intensity entering the detector gas") + 
-    ggsave(OutputPath / "intensity_axion_conversion_point_simulation.pdf")
-#+end_src
-shown in fig. [[fig:axion_converison_point:intensity]]. It looks exactly
-as we would expect.
-
-#+CAPTION: Intensity that enters the detector taking into account LLNL telescope and window
-#+CAPTION: efficiencies as well as the solar axion flux
-#+NAME: fig:axion_converison_point:intensity
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/intensity_axion_conversion_point_simulation.pdf]]
-
-Now we define the sampler for the intensity distribution $I(E)$, which
-returns an energy weighted by $I(E)$:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-let Isampler = sampler(
-  (proc(x: float): float = I(x.keV)), # wrap `I(E)` to take `float`
-  0.01, 10.0, num = 1000 # use 1000 points for EDF & sample in 0.01 to 10 keV
-)
-#+end_src
-and define a random number generator:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-import random
-var rnd = initRand(0x42)
-#+end_src
-
-First we will sample 100,000 energies from the distribution to
-see if we recover the intensity plot from before. 
-
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-block ISampled:
-  const nmc = 100_000
-  let df = toDf( {"E [keV]" : toSeq(0 ..< nmc).mapIt(rnd.sample(Isampler)) })
-  ggplot(df, aes("E [keV]")) +
-    geom_histogram(bins = 200, hdKind = hdOutline) +
-    ggtitle("Energies sampled from I(E)") +
-    ggsave(OutputPath / "energies_intensity_sampled.pdf")
-#+end_src
-
-This yields
-fig. [[fig:axion_conversion_point:energies_sampled_intensity]], which
-clearly shows the sampling works as intended.
-
-#+CAPTION: Energies sampled from the distribution $I(E)$ using 100k samples.
-#+CAPTION: The shape is nicely reproduced, here plotted using a histogram of
-#+CAPTION: 200 bins.
-#+NAME: fig:axion_conversion_point:energies_sampled_intensity
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/energies_intensity_sampled.pdf]]
-
-The final piece now is to use the same sampling logic to generate
-energies according to $I(E)$, which correspond to X-rays of said
-energy entering the detector. For each of these energies then sample
-from the Beer-Lambert law
-
-\[
-I(z) = I_0 \exp\left[ - \frac{z}{l_{\text{abs}} } \right]
-\]
-where $I_0$ is some initial intensity and $l_\text{abs}$ the
-absorption length. The absorption length is computed from the gas
-mixture properties of the gas used at CAST, namely Argon/Isobutane
-97.7/2.3 at $\SI{1050}{mbar}$. It is the inverse of the attenuation
-coefficient $μ_M$
- 
-\[
-l_{\text{abs}} = \frac{1}{μ_M}
-\]
-
-where the attenuation coefficient is computed via
-
-\[
-μ_m = \frac{N_A}{M * σ_A}
-\]
-
-with $N_A$ Avogadro's constant, $M$ the molar mass of the compound and
-$σ_A$ the atomic absorption cross section. The latter again is defined
-by
-
-\[
-σ_A = 2 r_e λ f₂
-\]
-
-with $r_e$ the classical electron radius, $λ$ the wavelength of the
-X-ray and $f₂$ the second scattering factor. Scattering factors are
-tabulated for different elements, for example by [[https://www.nist.gov/pml/x-ray-form-factor-attenuation-and-scattering-tables][NIST]] and
-[[https://henke.lbl.gov/optical_constants][Henke]]. For a further discussion of this see the README and
-implementation of [[https://github.com/SciNim/xrayAttenuation][~xrayAttenuation~]].
-
-We will now go ahead and define the CAST gas mixture:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-proc initCASTGasMixture(): GasMixture =
-  ## Returns the absorption length for the given energy in keV for CAST
-  ## gas conditions:
-  ## - Argon / Isobutane 97.7 / 2.3 %
-  ## - 20°C ( for this difference in temperature barely matters)
-  let arC = compound((Ar, 1)) # need Argon gas as a Compound
-  let isobutane = compound((C, 4), (H, 10))
-  # define the gas mixture
-  result = initGasMixture(293.K, 1050.mbar, [(arC, 0.977), (isobutane, 0.023)])
-let gm = initCASTGasMixture()  
-#+end_src
-
-To sample from the Beer-Lambert law with a given absorption length we
-also define a helper that returns a sampler for the target energy
-using the definition of a normalized exponential distribution
-
-\[
-f_e(x, λ) = \frac{1}{λ} \exp \left[ -\frac{x}{λ} \right]
-\]
-
-#+begin_quote
-The sampling of the conversion point is the crucial aspect of
-this. Naively we might want to sample between the detector volume from
-0 to $\SI{3}{cm}$. However, this skews our result. Our calculation
-depends on the energy distribution of the incoming X-rays. If the
-absorption length is long enough the probability of reaching the
-readout plane and thus not being detected is significant. Restricting
-the sampler to $\SI{3}{cm}$ would pretend that independent of
-absorption length we would _always_ convert within the volume, giving
-too large a weight to the energies that should sometimes not be detected!
-#+end_quote
-
-Let's define the sampler now. It takes the gas mixture and the target
-energy. A constant ~SampleTo~ is defined to adjust the position to
-which we sample at compile time (to play around with different numbers).
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-proc generateSampler(gm: GasMixture, targetEnergy: keV): Sampler =
-  ## Generate the exponential distribution to sample from based on the
-  ## given absorption length
-  # `xrayAttenuation` `absorptionLength` returns number in meter!
-  let λ = absorptionLength(gm, targetEnergy).to(cm)
-  let fnSample = (proc(x: float): float =
-                    result = expFn(x, λ.float) # expFn = 1/λ · exp(-x/λ)
-  )
-  const SampleTo {.intdefine.} = 20 ## `SampleTo` can be set via `-d:SampleTo=<int>`
-  let num = (SampleTo.float / 3.0 * 1000).round.int # number of points to sample at
-  result = sampler(fnSample, 0.0, SampleTo, num = num)
-#+end_src
-Note that this is inefficient, because we generate a new sampler from
-which we only sample a single point, namely the conversion point of that
-X-ray. If one intended to perform a more complex calculation or wanted
-to sample orders of magnitude more X-rays, one should either
-restructure the code (i.e. sample from known energies and then reorder
-based on the weight defined by $I(E)$ or cache the samplers and
-pre-bin the energies.
-
-For reference let's compute the absorption length as a function of
-energy for the CAST gas mixture:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-block GasAbs:
-  let df = toDf({ "E [keV]" : linspace(0.03, 10.0, 1000),
-                  "l_abs [cm]" : linspace(0.03, 10.0, 1000).mapIt(absorptionLength(gm, it.keV).m.to(cm).float) })
-  ggplot(df, aes("E [keV]", "l_abs [cm]")) +
-    geom_line() +
-    ggtitle("Absorption length of X-rays in CAST gas mixture: " & $gm) +
-    margin(top = 1.5) + 
-    ggsave(OutputPath / "cast_gas_absorption_length.pdf")
-#+end_src
-which yields fig. [[fig:axion_conversion_point:absorption_length]]
-
-#+CAPTION: Absorption length in the CAST gas mixture as a function of X-ray energy.
-#+NAME: fig:axion_conversion_point:absorption_length
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/cast_gas_absorption_length.pdf]]
-
-So, finally: let's write the MC sampling!
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-const nmc = 500_000 # start with 100k samples
-var Es = newSeqOfCap[keV](nmc)
-var zs = newSeqOfCap[cm](nmc)
-while zs.len < nmc:
-  # 1. sample an energy according to `I(E)`
-  let E = rnd.sample(Isampler).keV
-  # 2. get the sampler for this energy
-  let distSampler = generateSampler(gm, E) 
-  # 3. sample from it
-  var z = Inf.cm
-  when defined(Equiv3cmSampling): ## To get the same result as directly sampling
-                                  ## only up to 3 cm use the following code
-    while z > 3.0.cm:
-      z = rnd.sample(distSampler).cm 
-  elif defined(UnboundedVolume): ## This branch pretends the detection volume
-                                 ## is unbounded if we sample within 20cm
-    z = rnd.sample(distSampler).cm 
-  else: ## This branch is the physically correct one. If an X-ray reaches the
-        ## readout plane it is _not_ recorded, but it was still part of the
-        ## incoming flux!
-    z = rnd.sample(distSampler).cm
-    if z > 3.0.cm: continue # just drop this X-ray
-  zs.add z
-  Es.add E
-#+end_src
-
-Great, now we have sampled the conversion points according to the
-correct intensity. We can now ask for statistics or create different
-plots (e.g. conversion point by energies etc.).
-
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-import stats, seqmath # mean, variance and percentile
-let zsF = zs.mapIt(it.float) # for math
-echo "Mean conversion position = ", zsF.mean().cm
-echo "Median conversion position = ", zsF.percentile(50).cm
-echo "Variance of conversion position = ", zsF.variance().cm
-#+end_src
-
-This prints the following:
-#+begin_src nim
-Mean conversion position = 0.556813 cm
-Median conversion position = 0.292802 cm
-Variance of conversion position = 0.424726 cm
-#+end_src
-
-As we can see (unfortunately) our initial assumption of a mean
-distance of $\SI{1.22}{cm}$ are quite of the mark. The more realistic
-number is only $\SI{0.56}{cm}$. And if we were to use the median it's
-only $\SI{0.29}{cm}$.
-
-Let's plot the conversion points of all sampled (and recorded!) X-rays
-as well as what their distribution against energy looks like.
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-let dfZ = toDf({ "E [keV]" : Es.mapIt(it.float),
-                 "z [cm]"  : zs.mapIt(it.float) })
-ggplot(dfZ, aes("z [cm]")) +
-  geom_histogram(bins = 200, hdKind = hdOutline) +
-  ggtitle("Conversion points of all sampled X-rays according to I(E)") +
-  ggsave(OutputPath / "sampled_axion_conversion_points.pdf")
-ggplot(dfZ, aes("E [keV]", "z [cm]")) +
-  geom_point(size = 1.0, alpha = 0.2) + 
-  ggtitle("Conversion points of all sampled X-rays according to I(E) against their energy") +
-  ggsave(OutputPath / "sampled_axion_conversion_points_vs_energy.png",
-        width = 1200, height = 800)  
-#+end_src
-
-The former is shown in
-fig. [[fig:axion_conversion_point:sampled_axion_conversion_points]]. The
-overlapping exponential distribution is obvious, as one would expect.
-The same data is shown in
-fig. [[fig:axion_conversion_point:sampled_axion_conversion_points_by_energy]],
-but in this case not as a histogram, but by their energy as a scatter
-plot. We can clearly see the impact of the absorption length on the
-conversion points for each energy!
-
-#+CAPTION: Distribution of the conversion points of all sampled X-rays for which
-#+CAPTION: conversion in the detector took place as sampled from $I(E)$.
-#+NAME: fig:axion_conversion_point:sampled_axion_conversion_points
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/sampled_axion_conversion_points.pdf]]
-
-#+CAPTION: Distribution of the conversion points of all sampled X-rays for which
-#+CAPTION: conversion in the detector took place as sampled from $I(E)$ as a scatter
-#+CAPTION: plot against the energy for each X-ray.
-#+NAME: fig:axion_conversion_point:sampled_axion_conversion_points_by_energy
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/sampled_axion_conversion_points_vs_energy.png]]
-
-
-***** Compiling and running the code
-
-The code above is written in literate programming style. To compile
-and run it we use ~ntangle~ to extract it from the Org file:
-#+begin_src nim
-ntangle <file>
-#+end_src
-which generates [[file:/tmp/sample_axion_xrays_conversion_points.nim]].
-
-Compiling and running it can be done via:
-#+begin_src nim
-nim r -d:danger /tmp/sample_axion_xrays_conversion_points.nim
-#+end_src
-which compiles and runs it as an optimized build.
-
-We have the following compilation flags to compute different cases:
-- ~-d:noLLNL~: do not include the LLNL efficiency into the input
-  intensity
-- ~-d:noAxionFlux~: do not include the axion flux into the input
-  intensity
-- ~-d:SampleTo=<int>~: change to where we sample the position (only to
-  3cm for example)
-- ~-d:UnboundedVolume~: if used together with the default ~SampleTo~
-  (or any large value) will effectively compute the case of an
-  unbounded detection volume (i.e. every X-ray recorded with 100%
-  certainty).
-- ~-d:Equiv3cmSampling~: Running this with the default ~SampleTo~ (or
-  any large value) will effectively change the sampling to a maximum
-  \SI{3}{cm} sampling. This can be used as a good crossheck to verify
-  the sampling behavior is independent of the sampling range.
-
-Configurations of note:
-#+begin_src nim
-nim r -d:danger -d:noAxionFlux /tmp/sample_axion_xrays_conversion_points.nim
-#+end_src
-$⇒$ realistic case for a flat input spectrum
-Yields:
-#+begin_src nim
-Mean conversion position = 0.712102 cm
-Median conversion position = 0.445233 cm
-Variance of conversion position = 0.528094 cm
-#+end_src
-
-#+begin_src nim
-nim r -d:danger -d:noAxionFlux -d:UnboundedVolume /tmp/sample_axion_xrays_conversion_points.nim
-#+end_src
-$⇒$ the closest analogue to the analytical calculation from section
-[[#sec:axion_conversion_point:analytical]] (outside of including isobutane
-here)
-Yields:
-#+begin_src nim
-Mean conversion position = 1.25789 cm
-Median conversion position = 0.560379 cm
-Variance of conversion position = 3.63818 cm
-#+end_src
-
-#+begin_src nim
-nim r -d:danger /tmp/sample_axion_xrays_conversion_points.nim
-#+end_src
-$⇒$ the case we most care about and of which the numbers are mentioned
-in the text above. 
-
-*** Raytracing axion image
+*** Raytracing axion image - $r(x_i, y_i)$
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:ingredients:raytracing
 :END:
 
 The axion image is computed based on a raytracing Monte Carlo
-simulation. It is part of the same code base as the code producing the
-differential solar axion flux, as mentioned in
-sec. [[#sec:limit:ingredients:solar_axion_flux]]. For an introduction to
-the raytracing technique and details about the LLNL telescope mirror
-shells, see appendix [[#sec:appendix:raytracing]].
+simulation, using TrAXer [[cite:&traxer]], written as part of this
+thesis. Appendix [[#sec:appendix:raytracing]] contains an introduction to
+raytracing techniques, details about the LLNL telescope, verification
+of the raytracing results using PANTER measurements of the real
+telescope and details about the calculation of the axion image.
 
-- [ ] *UPDATE NUMBER TO USE 1cm FROM WINDOW*
 Fig. [[fig:limit:ingredients:axion_image]] shows the image, computed for
 a Sun-Earth distance of $\SI{0.989}{AU}$ and a distance of
 $\SI{0.2928}{cm}$ behind the detector window. So it is
-$\SI{1.2072}{cm}$ _in front_ of the focal point.
+$\SI{0.7072}{cm}$ _in front_ of the focal point. Hence, the image is
+very slightly asymmetric along the long axis.
 
 Instead of using the raytracing image to fully characterize the axion
-flux including efficiency losses, we _only_ use it to define the
-spatial distribution. This means we rescale the full axion flux
-distribution - before taking the window strongback into account - such
+flux including efficiency losses, we /only/ use it to define the
+spatial distribution [fn:why_not]. This means we rescale the full axion flux
+distribution -- before taking the window strongback into account -- such
 that it represents the fractional X-ray flux per square
 centimeter. That way, when we multiply it with the rest of the
 expression in the signal calculation eq. [[eq:limit_method_signal_si]],
 the result is the expected number of counts at the given position and
-energy per $\si{cm²}$, because the axion flux is already given as an
-expected number of counts.
+energy per $\si{cm²}$.
+
+The window strongback is not part of the simulation, because for the
+position uncertainty, we need to move the axion image without moving
+the strongback. As such the strongback is added as part of the limit
+calculation based on the physical position on the chip of a given candidate.
 
 #+CAPTION: Axion image as computed using raytracing for the AGSS09 solar model
 #+CAPTION: and under the assumption that the axion-electron coupling constant
-#+CAPTION: $g_{ae}$ (*GIVE NUMBER*) dominates over the axion-photon coupling $g_{aγ}$.
+#+CAPTION: $g_{ae} = \num{1e-13}$ dominates over the axion-photon coupling $g_{aγ} = \SI{1e-12}{GeV^{-1}}$.
 #+CAPTION: The diagonal lines with missing flux are the detector window strongbacks.
+#+CAPTION: It is very slightly asymmetric, because of being $\SI{0.7}{cm}$ in front
+#+CAPTION: of the focal point.
 #+NAME: fig:limit:ingredients:axion_image
 #+ATTR_LATEX: :width 0.8\textwidth
-[[~/org/Figs/statusAndProgress/axionImages/axion_image_2018_1487_93_0.989AU_with_window.pdf]]
+[[~/phd/Figs/limit/sanity/axion_image_limit_calc_no_theta.pdf]]
+
+[fn:why_not] A big reason for this approach is that so far I have not
+been able to reproduce the reflectivity (and thus effective area) of
+the telescope to a sufficient degree. A pure raytracing approach would
+overestimate the amount of flux currently. 
+
+**** TODOs for this section [/]                                 :noexport:
+
+It is part of the same code base as the code producing the
+differential solar axion flux, as mentioned in
+sec. [[#sec:limit:ingredients:solar_axion_flux]]. 
+
+- [ ] *UPDATE NUMBER TO USE 1cm FROM WINDOW*
+
+**** Generate the axion image plot with strongback              :extended:
+
+In the raytracing appendix we only compute the axion image without the
+strongback (even though we support placing the strongback into the
+simulation).
+
+We could either produce the plot based on ~plotBinary~, part of the
+TrAXer repository, after running /with/ the strongback in the
+simulation, or alternatively as part of the limit calculation sanity
+checks. The latter is the cleaner approach, because it directly shows
+us the strongback is added correctly in the code where it matters.
+
+We produce it by running the ~sanity~ subcommand of
+~mcmc_limit_calculation~, in particular the ~raytracing~ argument.
+Note that we don't need any input files, the default ones are fine,
+because we don't run any input related sanity checks.
+#+begin_src sh
+mcmc_limit_calculation sanity \
+                       --limitKind lkMCMC \
+                       --axionModel ~/org/resources/axionProduction/axionElectronRealDistance/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv \
+                       --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+                       --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+                       --switchAxes \
+                       --sanityPath ~/phd/Figs/limit/sanity/ \
+                       --raytracing
+#+end_src
 
 
-*** Computing the total signal
+*** Computing the total signal - $s_{\text{tot}}$
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:ingredients:total_signal
 :END:
@@ -34113,7 +33610,7 @@ to precompute the integral and only rescale the result for the current
 coupling constant $g$ via
 
 \[
-s_{\text{tot}}(g) = s_{\text{tot}}(g_{\text{ref}}) · \frac{g²}{g²_{\text{ref}}},
+s_{\text{tot}}(g) = s_{\text{tot}}(g_{\text{ref}}) · \frac{g²}{g²_{\text{ref}, ae}},
 \]
 
 where $g_{\text{ref}}$ is the reference coupling constant for which
@@ -34123,12 +33620,12 @@ for the axion-photon coupling.
 
 **** TODOs for this section [0/1]                               :noexport:
 
-- [ ] Shortly discuss what we do
+- [X] Shortly discuss what we do
   1. raytracing ignored: sums to total 1
   2. take solar axion flux, integrate numerically
   3. ?
 
-**** Code for the calculation of the total                      :extended:
+**** Code for the calculation of the total signal               :extended:
 
 This is the implementation of the ~totalSignal~ in code. We simply
 circumvent the integration when calculating limits by precomputing the
@@ -34154,34 +33651,43 @@ proc totalSignal(ctx: Context): UnitLess =
 
 The background must be evaluated at the position and energy of each
 cluster candidate. As the background is not constant in energy or
-position on the chip, we need a continuous description in those
-dimensions of the background rate.
+position on the chip (see sec. [[#sec:background:all_vetoes_combined]]),
+we need a continuous description in those dimensions of the background
+rate.
 
 In order to obtain such a thing, we start from all X-ray like clusters
 remaining after background rejection, see for example
-fig. [[sref:fig:background:cluster_center_comparison]].
-
-For the background we construct a background interpolation based on
-all clusters found in the background dataset. This is done by defining
-$b_i$ as a function of candidate position $x_i, y_i$ and energy $E_i$ using
+fig. [[sref:fig:background:cluster_center_comparison]], and construct a
+background interpolation. We define $b_i$ as a function of candidate
+position $x_i, y_i$ and energy $E_i$,
 
 \[
-b_i(x_i, y_i, E_i) = \frac{I(x_i, y_i, E_i)}{W(x_i, y_i, E_i)}
+b_i(x_i, y_i, E_i) = \frac{I(x_i, y_i, E_i)}{W(x_i, y_i, E_i)}.
 \]
 
 where $I$ is an intensity defined over clusters within a range $R$ and
 a normalization weight $W$. From here on we will drop the candidate
-suffix $i$. The intensity is given by
+suffix $i$. The arguments will be combined to vectors
 
 \[
-I(x, y, E) = \sum_{b ∈ \{ \mathcal{D}(\vec{x}_b, \vec{x}) \leq R \}}\mathcal{M}(\vec{x}_b, E_b)
-  = \sum_{b ∈ \{ \mathcal{D}(\vec{x}_b, \vec{x}) \leq R \} } \exp \left[ -\frac{1}{2} \mathcal{D}² / σ² \right] \text{ for clarity w/o arguments},
+\mathbf{x} = \vektor{ \vec{x} \\ E } = \vektor{ x \\ y \\ E }.
+\] 
+
+The intensity $I$ is given by
+
+\[
+I(\mathbf{x}) = \sum_{b ∈ \{ \mathcal{D}(\mathbf{x}_b, \mathbf{x}) \leq R \}}\mathcal{M}(\mathbf{x}_b, \mathbf{x})
+  = \sum_{b ∈ \{ \mathcal{D}(\mathbf{x}_b, \mathbf{x}) \leq R \} } \exp \left[ -\frac{1}{2} \mathcal{D}² / σ² \right] \text{ for clarity w/o arguments},
 \]
 
-where we introduce $\mathcal{M}$ to refer to the measure we use and
-$\mathcal{D}$ to our metric:
+where we introduce $\mathcal{M}$ to refer to a normal
+distribution-like measure and $\mathcal{D}$ to a custom metric. All
+background clusters $\mathbf{x}_b$ within some 'radius' $R$ contribute
+to the intensity $I$, weighted by their distance to the point of
+interest $\mathbf{x}$. The metric is given by
 
 \begin{equation*}
+\mathcal{D}( \mathbf{x}_1, \mathbf{x}_2) =
 \mathcal{D}( (\vec{x}_1, E_1), (\vec{x}_2, E_2)) =
   \begin{cases}
     (\vec{x}_1 - \vec{x}_2)² \text{ if } |E_1 - E_2| \leq R \\
@@ -34193,10 +33699,12 @@ $\mathcal{D}$ to our metric:
 with $\vec{x} = \vektor{x \\ y}$.  Note first of all that this
 effectively describes a cylinder. Any point inside $| \vec{x}_1 -
 \vec{x}_2 | \leq R$ simply yields a euclidean distance, as long as
-their energy is smaller than $R$. Secondly, this requires rescaling
-the energy as a common number $R$, but in practice the implementation
-of this custom metric simply compares energies directly, with the
-'height' in energy of the cylinder expressed as $ΔE$.
+their energy is smaller than $R$. Further note, that the distance is
+only dependent on the distance in the x-y plane, /not/ their energy
+difference. Finally, this requires rescaling the energy as a common
+number $R$, but in practice the implementation of this custom metric
+simply compares energies directly, with the 'height' in energy of the
+cylinder expressed as $ΔE$.
 
 The commonly used value for the radius $R$ in the x-y plane are
 $R = \SI{40}{pixel}$ and in energy $ΔE = ± \SI{0.3}{keV}$. The
