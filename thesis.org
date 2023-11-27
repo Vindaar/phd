@@ -33742,54 +33742,7 @@ over the entire chip. However, towards the edges of the chip it
 underestimates the background rate, because once part of the cylinder
 is not contained within the chip, fewer clusters contribute. For that
 reason we correct for the chip edges by upscaling the value within the
-chip by the missing area.
-
-Keep in mind the area of a [[https://en.wikipedia.org/wiki/Circular_segment][circle segment]]:
-\[
-A = r² / 2 · (ϑ - \sin(ϑ))
-\]
-where $r$ is the radius of the circle and ϑ the angle that cuts off
-the circle.
-
-In the general case we need to know the area of a circle that is cut
-off from 2 sides. By subtracting the corresponding areas of circle
-segments for each of the lines that cut something off, we remove too
-much. So we need to add back:
-- another circle segment, of the angle between the two angles given by
-  the twice counted area
-- the area of the triangle with the two sides given by $R - r'$ in
-  length, where $r'$ is the distance that is cut off from the circle.
-
-In combination the area remaining for a circle cut off from two
-(orthogonal, fortunately) lines is:
-
-\[
-E = F - A - B + C + D
-\]
-where:
-- $F$: the total area of the circle
-- $A$: the area of the first circle segment
-- $B$: the area of the second circle segment
-- $C$: the area of the triangle built by the two line cutoffs:
-  \[
-  C = \frac{r' r''}{2} 
-  \]
-  with $r'$ as defined above for cutoff A and $r''$ for cutoff B.
-- $D$: the area of the circle segment given by the angles between the
-  two cutoff lines touching the circle edge:
-  \[
-  D = r² / 2 · (α - \sin(α))
-  \]
-  where $α$ is:
-  \[
-  α = π/2 - ϑ_1 - ϑ_2
-  \]
-  where $ϑ_{1,2}$ are the related to the angles $ϑ$ needed to compute
-  each circle segment, by:
-  \[
-  ϑ' = (π - ϑ) / 2
-  \]
-  denoted as $ϑ'$ here.
+chip by the missing area. See appendix [[#sec:appendix:background_interpolation_chip_area]].
 
 Fig. sref:fig:limit:background_interpolation shows an example of the background
 interpolation centered at $\SI{3}{keV}$, with all clusters within a
@@ -41477,6 +41430,116 @@ in fig. [[cdl_logL_no_interp]].
 :END:
 
 - [ ] Possibly more background rate plots?
+
+
+* Background interpolation chip cutout correction                  :Appendix:
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:background_interpolation_chip_area
+:END:
+
+As mentioned in the main text (sec. [[#sec:limit:ingredients:background]]), when performing the background
+interpolation, we need to correct for the fact that towards the edges
+of the chip, part of the circle (the x-y plane component) will be cut
+off. To correct for this we want to compute the area of the circle
+that is still contained on the chip. By scaling the intensity $I$ by
+the missing area we correct for this. Let's discuss the actual
+calculation of the (possibly) double cut out circle. 
+
+The area of a single [[https://en.wikipedia.org/wiki/Circular_segment][circle segment]] can be written as
+\[
+A = R² / 2 · (ϑ - \sin(ϑ))
+\]
+where $R$ is the radius of the circle and $ϑ$ the angle that cuts off
+the circle. See the upper center part of
+fig. [[fig:appendix:background_interp_cutoff_explanation]] for the area $A$.
+
+In the general case we need to know the area of a circle that is cut
+off from 2 sides, with angles $ϑ_1$ and $ϑ_2$, which are orthogonal to
+another. See the middle left part of
+fig. [[fig:appendix:background_interp_cutoff_explanation]] to see areas
+$A$ and $B$ cut off, leaving area $E$ as the remaining area contained
+on the chip. For a point $(x, y)$, define the distance to the edge of
+the chip to be $(Δx, Δy)$ for each axis. Then, the cutout areas $A$
+and $B$ are given by
+
+\[
+A = R² / 2 · (ϑ - \sin(ϑ_1))
+\]
+
+and
+
+\[
+B = R² / 2 · (ϑ - \sin(ϑ_2))
+\]
+
+where the angles $ϑ_1$ and $ϑ_2$ (see center of
+fig. [[fig:appendix:background_interp_cutoff_explanation]]) are related to
+the distances to the edge of the chip by
+
+\begin{align*}
+ϑ_1 &= 2 \arccos(Δx / R) \\
+ϑ_2 &= 2 \arccos(Δy / R).
+\end{align*}
+
+By subtracting areas $A$ and $B$ from the total area $F$, we remove
+too much however. So we need to add back:
+- another circle segment $D$, of the angle $α$ given by the lines
+  connecting to the ends up each cut off line (see the center row of
+  fig. [[fig:appendix:background_interp_cutoff_explanation]])
+- the area of the triangle $C$, see the bottom row of
+  fig. [[fig:appendix:background_interp_cutoff_explanation]].
+
+The angle $α$ relates to angles $θ_1$ and $θ_2$ via
+
+\[
+α = \frac{θ_2}{2} - \left(π - \frac{θ_1}{2}\right),
+\]
+
+see the center row of fig. [[fig:appendix:background_interp_cutoff_explanation]].
+
+To calculate the area $C$, we need the catheti of the triangle, $x'$
+and $y'$. See the bottom part of
+fig. [[fig:appendix:background_interp_cutoff_explanation]]. These are the
+distances from the /orthogonal/ cutoff line to the edge of the circle, as
+hopefully clear in the figure. Given that we know the center position
+of the circle (as that is the interpolation point), we can express
+$x'$ and $y'$ via the circle radius $R$ and the distances from the
+center to the chip in each axis, $Δx$ and $Δy$ (they may in theory be
+negative if the center is outside the chip).
+
+They are thus
+
+\begin{align*}
+x' &= \cos β · R - Δx \\
+y' &= \cos γ · R - Δy,
+\end{align*}
+
+where $γ$ is the same angle as in the middle row of the schematic and
+$β$ is the equivalent for $θ_2$, $β = \frac{θ_2}{2} - \frac{π}{2}$.
+
+In combination then the area $E$ can then be expressed as:
+
+\[
+E = F - A - B + C + D,
+\]
+
+with $F$ being the total area of the circle.
+
+This finally means to correct the background interpolation at a point
+close to the chip edges, we adjust $I$ by
+
+\[
+I'(x,y) = I · \frac{F}{E(x,y)},
+\]
+
+where we emphasize that $E(x,y)$ depends on the position, before normalizing with the weight $W$.
+
+#+CAPTION: Explanation of the different areas appearing in the calculation. We want
+#+CAPTION: to calculate area $E$, the area remaining on the chip. Subtracting $A$ and
+#+CAPTION: $B$ makes us subtract areas $C$ and $D$ twice.
+#+NAME: fig:appendix:background_interp_cutoff_explanation
+#+ATTR_LATEX: :width 1.0\linewidth
+[[~/phd/Figs/circleCutout/circle_cutout_explanation.pdf]]
 
 * Solar tracking candidates [/]                                    :Appendix:
 :PROPERTIES:
