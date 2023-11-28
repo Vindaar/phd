@@ -37251,25 +37251,37 @@ interpolation, as explained in sec. [[#sec:limit:ingredients:candidates]].
 
 We compute expected limits for different parameters, due to the signal
 efficiency penalties that these imply. In a first rough 'scan' of
-expected limits we compute an expected limit based on $\num{2500}$ toy
-limits for all setups we consider. Then we narrow it down and compute
-$\num{15000}$ toy limits for the best few setups. Finally, we compute
-$\num{30000}$ toys for the best setup we find. The resulting setup is
-the one for which we unblind the solar tracking data. 
+we compute an expected limits based on a smaller number of toy
+candidates. The exact number depends on the particular setup.
 
+- $\num{1000}$ toys for setups using only a classifier without any
+  vetoes. Due to the much more background towards the corners (see
+  sec. [[#sec:background:all_vetoes_combined]]), many more candidates are
+  sampled making computation significantly slower
+- $\num{2500}$ toys for setups with the line and septem veto. Much
+  fewer total expected number of candidates, and hence much faster.
+
+Then we narrow it down and compute $\num{15000}$ toy limits for the
+best few setups. Finally, we compute $\num{50000}$ toys for the best
+setup we find. The resulting setup is the one for which we unblind the
+solar tracking data. 
 
 Tab. [[tab:limit:expected_limits]] shows the different setups with their
-respective expected limits. It can be seen as an extension of
-tab. [[tab:background:background_rate_eff_comparisons]] in
+respective expected limits. Some setups appear multiple times for the
+different number of toy candidates that were run. It can be seen as an
+extension of tab. [[tab:background:background_rate_eff_comparisons]] in
 sec. [[#sec:background:all_vetoes_combined]]. Also shown is the limit
-achieved in case no candidate is present in the signal sensitive region,
-as a theoretical lower bound on the limit. This 'no candidate' limit
-scales down with the total efficiency, as one would expect. All limits
-are given as limits on $g_{ae}·g_{aγ}$ based on a fixed $g_{aγ} =
-\SI{1e-12}{GeV⁻¹}$. The table does not show all setups that were
-initially considered. Further considerations of other possible
-parameters were excluded in preliminary studies on their effect on the
-expected limit.
+achieved in case no candidate is present in the signal sensitive
+region, as a theoretical lower bound on the limit. This 'no candidate'
+limit scales down with the total efficiency, as one would expect. All
+limits are given as limits on $g_{ae}·g_{aγ}$ based on a fixed $g_{aγ}
+= \SI{1e-12}{GeV⁻¹}$. Finally, it shows a standard variation
+corresponding to how the expected limit varies when bootstrapping new
+sets of limits (standard deviation of $\num{1000}$ bootstrapped
+expected limits sampling $\num{10000}$ limits from the input). The
+table does not show all setups that were initially considered. Further
+considerations of other possible parameters were excluded in
+preliminary studies on their effect on the expected limit.
 
 In particular:
 - the scintillator veto is always used. It does not come with an
@@ -37283,94 +37295,78 @@ In particular:
   gains do not outweigh the positive effect on the expected limit in
   practice.
 
-Further, the table shows a few cases multiple times, with more or less
-statistics (~nmc~ column). The reason is simply that it highlights
-that $\num{2500}$ toy sets is not enough to make a rigorous estimate of
-the expected limit. Compare row 2 with row 3 (MLP at $\SI{95.23}{\%}$
-efficiency with $\num{2500}$ and $\num{15000}$ toys) for an example of a
-better expected limit at low statistics. 
-
 Based on this study, the MLP produces the best expected limit,
-surprisingly without any vetoes at a software efficiency of
-*XXX* $\SI{92.89}{\%}$. However, for this case we did not run any more toy
-limits, because not having any of the septem or line means there are a
-large number of candidates towards the chip corners. These slow down
-the calculation, making it too costly to run. In any case, given the
-small difference in the expected limit between this case and the
-second best, the MLP at $\SI{95.23}{\%}$ with the line veto, we prefer
-to use the second best instead. The very inhomogeneous background
-rates are problematic, as they make the result much more strongly
-dependent on the value of the systematic position uncertainty. Also,
-for other limit calculations with larger raytracing images, a lower
-background over a larger area at the cost of lower total efficiency is
-more valuable.
+surprisingly without any vetoes at software efficiencies of
+$\SI{98.04}{\%}$, $\SI{90.59}{\%}$ and $\SI{95.23}{\%}$. However, for
+these case we did not run any more toy limits, because not having any
+of the septem or line means there are a large number of candidates
+towards the chip corners. These slow down the calculation, making it
+too costly to run. In any case, given the small difference in the
+expected limit between this case and the first including vetoes, the
+MLP at $\SI{95.23}{\%}$ with the line veto, we prefer to stick with
+the addition of vetoes. The very inhomogeneous background rates are
+problematic, as they make the result much more strongly dependent on
+the value of the systematic position uncertainty. Also, for other
+limit calculations with larger raytracing images, a lower background
+over a larger area at the cost of lower total efficiency is more
+valuable.
 
-In this 'second best' case, software efficiency $ε_{\text{eff}}$
-corresponds to a target software efficiency based on the simulated
-X-ray data of $\SI{95}{\%}$. The total combined efficiency comes out
-to $\SI{79.69}{\%}$ (excluding the detection efficiency of
-course!). This is the setup we will mainly consider for the data
-unblinding. The expected limit for this setup is
+In this case with the line veto, the software efficiency
+$ε_{\text{eff}}$ corresponds to a target software efficiency based on
+the simulated X-ray data of $\SI{95}{\%}$. The total combined
+efficiency comes out to $\SI{79.69}{\%}$ (excluding the detection
+efficiency of course!). This is the setup we will mainly consider for
+the data unblinding. The expected limit for this setup is
 
 \[
-g_{ae} · g_{aγ} = \SI{7.88e-23}{GeV^{-1}},
+\left(g_{ae} · g_{aγ}\right)_{\text{expected}} = \SI{7.88e-23}{GeV^{-1}},
 \]
 
 based on the $\num{50 000}$ toy limits.
 
 \footnotesize
-#+CAPTION: The FADC veto is always in use at an efficiency of $ε_{\text{FADC}} = 0.98$ and so is the
+#+CAPTION: The FADC veto is always in use (if either the septem or line veto are active) at an efficiency of $ε_{\text{FADC}} = 0.98$ and so is the
 #+CAPTION: scintillator veto. These settings were defined in preliminary studies of the expected limits.
 #+CAPTION: Note the efficiencies associated with the septem veto $ε_{\text{septem}} = \SI{83.11}{\%}$ and the line veto
 #+CAPTION: $ε_{\text{line}} = \SI{85.39}{\%}$ and combined $ε_{\text{septem+line}} = \SI{78.63}{\%}$, which are implicitly
-#+CAPTION: included based on the 'Septem' and 'Line' column values into the total efficiency.
+#+CAPTION: included based on the 'Septem' and 'Line' column values into the total efficiency $ε_{\text{total}}$.
+#+CAPTION: 'No signal' is the limit without any candidates, 'Exp. $σ$' the bootstrapped standard deviation.
 #+NAME: tab:limit:expected_limits
-#+ATTR_LATEX: :booktabs t :environment longtable :align lrllllll
-|   ε_eff |   nmc | Type | Septem | Line  | ε_total | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] |
-|--------+-------+------+--------+-------+--------+------------------------+-----------------------|
-| 0.9289 |  2500 | MLP  | false  | false | 0.9289 |             5.9292e-23 |             7.726e-23 |
-| 0.9695 |  2500 | MLP  | false  | true  | 0.8113 |             6.3004e-23 |            7.7883e-23 |
-| 0.9695 | 15000 | MLP  | false  | true  | 0.8113 |             6.3004e-23 |            7.8065e-23 |
-| 0.9695 |  2500 | MLP  | false  | false | 0.9695 |             5.7283e-23 |            7.8254e-23 |
-| 0.9901 |  2500 | MLP  | false  | false | 0.9901 |             5.7262e-23 |            7.8257e-23 |
-| 0.9901 | 15000 | MLP  | false  | true  | 0.8285 |             6.2085e-23 |             7.831e-23 |
-| 0.9901 |  2500 | MLP  | false  | true  | 0.8285 |             6.2085e-23 |            7.8389e-23 |
-| 0.9289 |  2500 | MLP  | false  | true  | 0.7773 |             6.4676e-23 |             7.883e-23 |
-| 0.8814 |  2500 | MLP  | false  | false | 0.8814 |             5.9715e-23 |            7.8952e-23 |
-| 0.9289 | 15000 | MLP  | false  | true  | 0.7773 |             6.4676e-23 |            7.9022e-23 |
-| 0.9695 |  2500 | MLP  | true   | true  | 0.7471 |             6.5825e-23 |            8.0276e-23 |
-| 0.9901 |  2500 | MLP  | true   | true  | 0.7629 |             6.4351e-23 |            8.0461e-23 |
-| 0.9695 |  2500 | MLP  | true   | false | 0.7896 |             6.4186e-23 |            8.0536e-23 |
-| 0.9695 | 15000 | MLP  | true   | true  | 0.7471 |             6.5825e-23 |            8.0599e-23 |
-| 0.9695 | 15000 | MLP  | true   | false | 0.7896 |             6.4186e-23 |            8.0654e-23 |
-| 0.9901 | 15000 | MLP  | true   | true  | 0.7629 |             6.4351e-23 |            8.0678e-23 |
-| 0.8814 |  2500 | MLP  | false  | true  | 0.7375 |             6.5444e-23 |            8.0683e-23 |
-| 0.9901 |  2500 | MLP  | true   | false | 0.8064 |             6.3062e-23 |            8.0704e-23 |
-| 0.8814 | 15000 | MLP  | false  | true  | 0.7375 |             6.5444e-23 |            8.0779e-23 |
-| 0.9901 | 15000 | MLP  | true   | false | 0.8064 |             6.3062e-23 |            8.0812e-23 |
-| 0.9289 |  2500 | MLP  | true   | false | 0.7566 |             6.5332e-23 |            8.1152e-23 |
-| 0.9289 | 15000 | MLP  | true   | false | 0.7566 |             6.5332e-23 |            8.1388e-23 |
-| 0.9289 | 15000 | MLP  | true   | true  | 0.7158 |              6.659e-23 |            8.1721e-23 |
-| 0.9289 |  2500 | MLP  | true   | true  | 0.7158 |              6.659e-23 |            8.2018e-23 |
-|    0.9 |  2500 | LnL  | false  | true  | 0.7531 |             6.4097e-23 |            8.2171e-23 |
-| 0.8814 |  2500 | MLP  | true   | false | 0.7178 |             6.7542e-23 |            8.2809e-23 |
-| 0.8814 | 15000 | MLP  | true   | false | 0.7178 |             6.7542e-23 |            8.2886e-23 |
-| 0.8814 | 15000 | MLP  | true   | true  | 0.6791 |              6.872e-23 |            8.2968e-23 |
-| 0.8814 |  2500 | MLP  | true   | true  | 0.6791 |              6.872e-23 |            8.3403e-23 |
-|    0.9 |  2500 | LnL  | true   | true  | 0.6935 |             6.7386e-23 |            8.4274e-23 |
-|    0.8 |  2500 | LnL  | false  | true  | 0.6695 |             6.9115e-23 |            8.4993e-23 |
-|    0.9 |  2500 | LnL  | false  | false |    0.9 |             5.9862e-23 |            8.5786e-23 |
-|    0.8 |  2500 | LnL  | false  | false |    0.8 |             6.3885e-23 |            8.7385e-23 |
-|    0.8 |  2500 | LnL  | true   | true  | 0.6165 |             7.1705e-23 |             8.747e-23 |
-|    0.7 |  2500 | LnL  | false  | true  | 0.5858 |             7.4553e-23 |            8.9298e-23 |
-|    0.7 |  2500 | LnL  | false  | false |    0.7 |             6.7647e-23 |            9.0856e-23 |
-|    0.7 |  2500 | LnL  | true   | true  | 0.5394 |             7.7018e-23 |            9.2565e-23 |
+#+ATTR_LATEX: :booktabs t :environment longtable :align lrlllllll
+|   ε_eff |   nmc | Type | Septem | Line  | ε_total | No signal [GeV⁻¹] | Expected [GeV⁻¹] | Exp. σ [GeV⁻¹] |
+|--------+-------+--------+--------+-------+--------+------------------+-----------------+---------------|
+| 0.9804 |  1000 | MLP    | false  | false | 0.9804 |        5.739e-23 |       7.805e-23 |    3.6807e-25 |
+| 0.9059 |  1000 | MLP    | false  | false | 0.9059 |       6.0109e-23 |       7.856e-23 |     4.301e-25 |
+| 0.9523 |  1000 | MLP    | false  | false | 0.9523 |       5.7685e-23 |      7.8599e-23 |    5.1078e-25 |
+| 0.9523 |  2500 | MLP    | false  | true  | 0.7969 |       6.3874e-23 |      7.8615e-23 |    2.9482e-25 |
+| 0.9523 | 50000 | MLP    | false  | true  | 0.7969 |       6.3874e-23 |      7.8782e-23 |    6.4635e-26 |
+| 0.9804 |  2500 | MLP    | false  | true  | 0.8204 |       6.1992e-23 |      7.8833e-23 |    2.9977e-25 |
+| 0.8587 |  1000 | MLP    | false  | false | 0.8587 |       6.1067e-23 |      7.9597e-23 |    5.0781e-25 |
+| 0.9059 |  2500 | MLP    | false  | true  | 0.7581 |       6.4704e-23 |      7.9886e-23 |    2.6437e-25 |
+| 0.9804 |  2500 | MLP    | true   | true  | 0.7554 |       6.5492e-23 |      8.0852e-23 |    2.9225e-25 |
+| 0.9523 |  2500 | MLP    | true   | false | 0.7756 |       6.4906e-23 |      8.1135e-23 |    3.5689e-25 |
+| 0.9523 |  2500 | MLP    | true   | true  | 0.7338 |       6.6833e-23 |      8.1251e-23 |    3.0965e-25 |
+| 0.9804 |  2500 | MLP    | true   | false | 0.7985 |       6.2664e-23 |      8.1314e-23 |    3.1934e-25 |
+| 0.8587 |  2500 | MLP    | false  | true  | 0.7186 |       6.8094e-23 |      8.1561e-23 |    2.9893e-25 |
+| 0.9059 |  2500 | MLP    | true   | false | 0.7378 |       6.5184e-23 |      8.2169e-23 |    2.8767e-25 |
+|    0.9 |  2500 | LnL    | false  | true  | 0.7531 |       6.4097e-23 |      8.2171e-23 |    3.7248e-25 |
+| 0.9059 |  2500 | MLP    | true   | true  | 0.6981 |       6.8486e-23 |      8.2868e-23 |    3.2593e-25 |
+| 0.8587 |  2500 | MLP    | true   | false | 0.6994 |       6.7322e-23 |      8.4007e-23 |    2.9498e-25 |
+|    0.9 |  2500 | LnL    | true   | true  | 0.6935 |       6.7386e-23 |      8.4274e-23 |    3.3644e-25 |
+| 0.8587 |  2500 | MLP    | true   | true  | 0.6617 |       6.9981e-23 |      8.4589e-23 |    3.4966e-25 |
+|    0.8 |  2500 | LnL    | false  | true  | 0.6695 |       6.9115e-23 |      8.4993e-23 |    3.1983e-25 |
+|    0.9 |  2500 | LnL    | false  | false |    0.9 |       5.9862e-23 |      8.5786e-23 |    3.7241e-25 |
+|    0.8 |  2500 | LnL    | false  | false |    0.8 |       6.3885e-23 |      8.7385e-23 |     3.903e-25 |
+|    0.8 |  2500 | LnL    | true   | true  | 0.6165 |       7.1705e-23 |       8.747e-23 |     4.099e-25 |
+|    0.7 |  2500 | LnL    | false  | true  | 0.5858 |       7.4553e-23 |      8.9298e-23 |    4.0495e-25 |
+|    0.7 |  2500 | LnL    | false  | false |    0.7 |       6.7647e-23 |      9.0856e-23 |    3.3235e-25 |
+|    0.7 |  2500 | LnL    | true   | true  | 0.5394 |       7.7018e-23 |      9.2565e-23 |    3.4573e-25 |
 \normalsize
 
 The distribution of all toy limits for this best setup can be seen in
 fig. [[fig:limit:expected_limits:toy_limit_histogram]]. It shows both the
 limit for the case without any candidates (red line, equivalent to
-'Limit no signal' in the table above) as well as the expected limit
+'No signal' in the table above) as well as the expected limit
 (blue line). Depending on the number of candidates that are inside the
 signal sensitive region (in regions of the solar axion image with
 significant flux expectation) based on $\ln(1 + s_i/b_i) > 0.5$, the
@@ -37388,12 +37384,12 @@ cutoff. For the red line literally _no candidates_ at all are
 considered and the limit is based purely on the
 $\exp(-s_{\text{tot}})$ term of the likelihood.
 
-#+CAPTION: Distribution of toy limits resulting in the best expected limit based on $\num{30000}$
-#+CAPTION: toy limits. The expected limit -- the median -- is shown as a blue line. The red line
+#+CAPTION: Distribution of toy limits resulting in the best expected limit based on $\num{50000}$
+#+CAPTION: toy limits. The expected limit -- the median -- is shown as the blue line. The red line
 #+CAPTION: shows the limit for the case without any candidates. The different colored histograms correspond
 #+CAPTION: to toy sets with a different number of toy candidates in the signal sensitive region, defined
 #+CAPTION: by $\ln(1 + s_i/b_i) > 0.5$. The most likely number of candidates in the sensitive region
-#+CAPTION: seems to be 1 or 2.
+#+CAPTION: seems to be 0, 1 or 2.
 #+NAME: fig:limit:expected_limits:toy_limit_histogram
 #+ATTR_LATEX: :width 0.85\textwidth
 [[~/phd/Figs/limit/mc_limit_lkMCMC_skInterpBackground_nmc_50000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500_nmc_50k_pretty.pdf]]
@@ -37404,6 +37400,21 @@ $\exp(-s_{\text{tot}})$ term of the likelihood.
   -> Check note somewhere else here about using c_i = rational number
   for expected counts based on ~expCount~. Could that work? I think
   so.
+
+- [ ] *THINK ABOUT* bootstrapped samples:
+  - should we sample the same number of limits for each input
+    (i.e. independent of ~nmc~) or always sample ~nmc~ for each input?
+  - [ ] *CURRENTLY TEXT AND TABLE DISAGREE THERE!*
+
+old paragraph:
+#+begin_quote
+The reason is simply that it highlights
+that $\num{2500}$ toy sets is not enough to make a rigorous estimate of
+the expected limit. Compare row 2 with row 3 (MLP at $\SI{95.23}{\%}$
+efficiency with $\num{2500}$ and $\num{15000}$ toys) for an example of a
+better expected limit at low statistics. 
+#+end_quote
+ 
 
 Old table:
 \footnotesize
@@ -37458,12 +37469,13 @@ reproduce the total $s_{\text{tot}}$ term, while producing sensible numbers.
 The details of this verification are left out of the main thesis, but
 can be found in the extended version after this section.
 
+**** TODOs for this section [/]                                 :noexport:  
+
 - [ ] *INSERT REFERENCE TO THE SANITY CHECKS*
+  -> We'll probably really not place them into the appendix, right?
+  Well, we'll decide later after cleaning the output up a bit. 
 
-*** Limit sanity checks                                          :optional:
-
-- [ ] *INSERT DISCUSSION* Of the sanity checks here!
-
+- [ ] *INSERT DISCUSSION* Of the sanity checks here!  
 
 *** TODOs for this section [/] :noexport:
 - [ ] *SHOW DIFFERENT EXPECTED LIMITS*
@@ -37505,78 +37517,54 @@ File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.9_lnL_scinti_fadc_septem_line_vQ_0.99.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.7_lnL_scinti_fadc_septem_line_vQ_0.99.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.9_lnL_scinti_fadc_line_vQ_0.99.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.7_lnL.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_line_vQ_0.99.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_50000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0278_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0278_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0278_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty_ukUncertain_σs_0.0278_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0285_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0288_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-|   ε_eff |     nmc | Type | Scinti | FADC  | ε_FADC | Septem | Line  | eccLineCut | ε_Septem |  ε_Line | ε_SeptemLine | ε_total | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] | Exp. limit variance [GeV⁻²] | Exp. limit σ [GeV⁻¹] |
-|--------+---------+------+--------+-------+-------+--------+-------+------------+---------+--------+-------------+--------+------------------------+-----------------------+----------------------------+---------------------|
-| 0.9289 |    2500 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9289 |             5.9292e-23 |             7.726e-23 |                 9.8665e-50 |          3.1411e-25 |
-| 0.9695 |    2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8113 |             6.3004e-23 |            7.7883e-23 |                  8.664e-50 |          2.9435e-25 |
-| 0.9695 | 1.5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8113 |             6.3004e-23 |            7.8065e-23 |                 1.5774e-50 |          1.2559e-25 |
-| 0.9695 |    2500 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9695 |             5.7283e-23 |            7.8254e-23 |                 5.7107e-50 |          2.3897e-25 |
-| 0.9901 |    2500 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9901 |             5.7262e-23 |            7.8257e-23 |                  8.141e-50 |          2.8533e-25 |
-| 0.9901 | 1.5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8285 |             6.2085e-23 |             7.831e-23 |                 1.4117e-50 |          1.1881e-25 |
-| 0.9901 |    2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8285 |             6.2085e-23 |            7.8389e-23 |                 7.7519e-50 |          2.7842e-25 |
-| 0.9523 |   5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7969 |             6.3874e-23 |            7.8782e-23 |                 4.1777e-51 |          6.4635e-26 |
-| 0.9289 |    2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7773 |             6.4676e-23 |             7.883e-23 |                 9.0575e-50 |          3.0096e-25 |
-| 0.8814 |    2500 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.8814 |             5.9715e-23 |            7.8952e-23 |                 7.4909e-50 |           2.737e-25 |
-| 0.9289 | 1.5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7773 |             6.4676e-23 |            7.9022e-23 |                 1.3433e-50 |           1.159e-25 |
-| 0.9695 |    2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7471 |             6.5825e-23 |            8.0276e-23 |                 7.0785e-50 |          2.6605e-25 |
-| 0.9901 |    2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7629 |             6.4351e-23 |            8.0461e-23 |                  7.485e-50 |          2.7359e-25 |
-| 0.9695 |    2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7896 |             6.4186e-23 |            8.0536e-23 |                 1.2304e-49 |          3.5077e-25 |
-| 0.9695 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7471 |             6.5825e-23 |            8.0599e-23 |                 1.4784e-50 |          1.2159e-25 |
-| 0.9695 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7896 |             6.4186e-23 |            8.0654e-23 |                   1.94e-50 |          1.3928e-25 |
-| 0.9901 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7629 |             6.4351e-23 |            8.0678e-23 |                 1.5616e-50 |          1.2496e-25 |
-| 0.8814 |    2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7375 |             6.5444e-23 |            8.0683e-23 |                 1.0737e-49 |          3.2767e-25 |
-| 0.9901 |    2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.8064 |             6.3062e-23 |            8.0704e-23 |                  1.005e-49 |          3.1702e-25 |
-| 0.8814 | 1.5e+04 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7375 |             6.5444e-23 |            8.0779e-23 |                 1.5191e-50 |          1.2325e-25 |
-| 0.9901 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.8064 |             6.3062e-23 |            8.0812e-23 |                 1.5197e-50 |          1.2328e-25 |
-| 0.9289 |    2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7566 |             6.5332e-23 |            8.1152e-23 |                  9.078e-50 |           3.013e-25 |
-| 0.9289 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7566 |             6.5332e-23 |            8.1388e-23 |                 1.5455e-50 |          1.2432e-25 |
-| 0.9289 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7158 |              6.659e-23 |            8.1721e-23 |                 1.5226e-50 |          1.2339e-25 |
-| 0.9289 |    2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7158 |              6.659e-23 |            8.2018e-23 |                 9.4224e-50 |          3.0696e-25 |
-|    0.9 |    2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7531 |             6.4097e-23 |            8.2171e-23 |                 1.3874e-49 |          3.7248e-25 |
-| 0.8814 |    2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7178 |             6.7542e-23 |            8.2809e-23 |                 6.6106e-50 |          2.5711e-25 |
-| 0.8814 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7178 |             6.7542e-23 |            8.2886e-23 |                 1.8639e-50 |          1.3652e-25 |
-| 0.8814 | 1.5e+04 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6791 |              6.872e-23 |            8.2968e-23 |                 1.1619e-50 |          1.0779e-25 |
-| 0.8814 |    2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6791 |              6.872e-23 |            8.3403e-23 |                 1.0232e-49 |          3.1987e-25 |
-|    0.9 |    2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6935 |             6.7386e-23 |            8.4274e-23 |                 1.1319e-49 |          3.3644e-25 |
-|    0.8 |    2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.6695 |             6.9115e-23 |            8.4993e-23 |                 1.0229e-49 |          3.1983e-25 |
-|    0.9 |    2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.9 |             5.9862e-23 |            8.5786e-23 |                 1.3869e-49 |          3.7241e-25 |
-|    0.8 |    2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.8 |             6.3885e-23 |            8.7385e-23 |                 1.5233e-49 |           3.903e-25 |
-|    0.8 |    2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6165 |             7.1705e-23 |             8.747e-23 |                 1.6802e-49 |           4.099e-25 |
-|    0.7 |    2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.5858 |             7.4553e-23 |            8.9298e-23 |                 1.6399e-49 |          4.0495e-25 |
-|    0.7 |    2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.7 |             6.7647e-23 |            9.0856e-23 |                 1.1046e-49 |          3.3235e-25 |
-|    0.7 |    2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.5394 |             7.7018e-23 |            9.2565e-23 |                 1.1953e-49 |          3.4573e-25 |
+File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+File: mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+|   ε_eff |   nmc | Type | Scinti | FADC  | ε_FADC | Septem | Line  | eccLineCut | ε_Septem |  ε_Line | ε_SeptemLine | ε_total | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] | Exp. limit variance [GeV⁻²] | Exp. limit σ [GeV⁻¹] |
+|--------+-------+------+--------+-------+-------+--------+-------+------------+---------+--------+-------------+--------+------------------------+-----------------------+----------------------------+---------------------|
+| 0.9804 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9804 |              5.739e-23 |             7.805e-23 |                 1.3548e-49 |          3.6807e-25 |
+| 0.9059 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9059 |             6.0109e-23 |             7.856e-23 |                 1.8498e-49 |           4.301e-25 |
+| 0.9523 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9523 |             5.7685e-23 |            7.8599e-23 |                  2.609e-49 |          5.1078e-25 |
+| 0.9523 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7969 |             6.3874e-23 |            7.8615e-23 |                 8.6918e-50 |          2.9482e-25 |
+| 0.9523 | 50000 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7969 |             6.3874e-23 |            7.8782e-23 |                 4.1777e-51 |          6.4635e-26 |
+| 0.9804 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8204 |             6.1992e-23 |            7.8833e-23 |                 8.9862e-50 |          2.9977e-25 |
+| 0.8587 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.8587 |             6.1067e-23 |            7.9597e-23 |                 2.5787e-49 |          5.0781e-25 |
+| 0.9059 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7581 |             6.4704e-23 |            7.9886e-23 |                  6.989e-50 |          2.6437e-25 |
+| 0.9804 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7554 |             6.5492e-23 |            8.0852e-23 |                 8.5409e-50 |          2.9225e-25 |
+| 0.9523 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7756 |             6.4906e-23 |            8.1135e-23 |                 1.2737e-49 |          3.5689e-25 |
+| 0.9523 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7338 |             6.6833e-23 |            8.1251e-23 |                 9.5886e-50 |          3.0965e-25 |
+| 0.9804 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7985 |             6.2664e-23 |            8.1314e-23 |                 1.0198e-49 |          3.1934e-25 |
+| 0.8587 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7186 |             6.8094e-23 |            8.1561e-23 |                 8.9356e-50 |          2.9893e-25 |
+| 0.9059 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7378 |             6.5184e-23 |            8.2169e-23 |                 8.2755e-50 |          2.8767e-25 |
+|    0.9 |  2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7531 |             6.4097e-23 |            8.2171e-23 |                 1.3874e-49 |          3.7248e-25 |
+| 0.9059 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6981 |             6.8486e-23 |            8.2868e-23 |                 1.0623e-49 |          3.2593e-25 |
+| 0.8587 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.6994 |             6.7322e-23 |            8.4007e-23 |                 8.7013e-50 |          2.9498e-25 |
+|    0.9 |  2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6935 |             6.7386e-23 |            8.4274e-23 |                 1.1319e-49 |          3.3644e-25 |
+| 0.8587 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6617 |             6.9981e-23 |            8.4589e-23 |                 1.2226e-49 |          3.4966e-25 |
+|    0.8 |  2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.6695 |             6.9115e-23 |            8.4993e-23 |                 1.0229e-49 |          3.1983e-25 |
+|    0.9 |  2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.9 |             5.9862e-23 |            8.5786e-23 |                 1.3869e-49 |          3.7241e-25 |
+|    0.8 |  2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.8 |             6.3885e-23 |            8.7385e-23 |                 1.5233e-49 |           3.903e-25 |
+|    0.8 |  2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6165 |             7.1705e-23 |             8.747e-23 |                 1.6802e-49 |           4.099e-25 |
+|    0.7 |  2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.5858 |             7.4553e-23 |            8.9298e-23 |                 1.6399e-49 |          4.0495e-25 |
+|    0.7 |  2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.7 |             6.7647e-23 |            9.0856e-23 |                 1.1046e-49 |          3.3235e-25 |
+|    0.7 |  2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.5394 |             7.7018e-23 |            9.2565e-23 |                 1.1953e-49 |          3.4573e-25 |
 
 :end:
 
@@ -37762,19 +37750,15 @@ fig. sref:fig:limit:rate_candidates_background.
 
 Fig. [[fig:limit:candidates]] shows all solar tracking candidates that are
 observed with the method yielding the best expected limit. Their
-energy is color coded and written above each cluster within the center
+energy is color coded and written above each cluster within a
 $\SI{85}{pixel}$ radius of the chip center. The axion image is
 underlaid to provide a visual reference of the importance of each
 cluster. Very few candidates of relevant energies are seen within the
 region of interest. Based on the previously mentioned $\ln(1 +
-s_i/b_i) > 0.5$ condition it is in fact 0 candidates in the sensitive
+s_i/b_i) > 0.5$ condition it is 1 candidate in the sensitive
 region. See fig. sref:fig:limit:candidates_s_b for an overview of the
-weighting of each candidate in this way.
-
-The candidates that are obtained for other setups of those shown in
-tab. [[tab:limit:expected_limits]], see appendix
-[[sec:appendix:solar_candidates]] and the full version of the thesis for
-even more detail.
+weighting of each candidate in this way, with only the single cluster
+near coordinate $(x,y) = (105,125)$ crossing the threshold of $\num{0.5}$.
 
 #+CAPTION: Overview of all solar tracking candidates given the MLP@\SI{95}{\%} setup
 #+CAPTION: including all vetoes except the septem veto. $\num{850}$ clusters are observed,
@@ -37798,7 +37782,7 @@ even more detail.
          (subref "fig:limit:candidates_s_b")
          ": Weighting of each candidate based on " ($ "\\ln(1 + s_i/b_i)") "."
          " The largest weight given is for the \\SI{2.96}{keV} cluster seen in fig. "
-         (subref "fig:limit:candidates") 
+         (ref "fig:limit:candidates") 
          " near pixel " ($ "(105,125)") " and tops out at slighlty above " ($ "\\num{0.5}") ". "
          (subref "fig:limit:rate_candidates_background")
          ": Rate of background and candidate clusters over the entire chip as a log plot. Rates are
@@ -37808,7 +37792,7 @@ even more detail.
 
 [fn:expected_clusters] The background model contains $\num{16630}$
 clusters in this case. $\SI{3156.8}{h}$ of background data and
-$\SI{160.375}{h}$ of tracking data yields a
+$\SI{160.375}{h}$ of tracking data yields
 $\num{16630}·\frac{160.375}{3156.8} \approx 845$ clusters.
 
 [fn:data_unblinding] The actual data unblinding of the candidates
@@ -37819,6 +37803,18 @@ members of the CAST collaboration to ascertain that our analysis
 appears sound.
 
 *** TODO for this section [/]                                    :noexport:
+
+- [ ] *NOTE* Do we even want to compute other candidates?
+Old paragraph:
+#+begin_quote
+The candidates that are obtained for other setups of those shown in
+tab. [[tab:limit:expected_limits]], see appendix
+[[sec:appendix:solar_candidates]] and the full version of the thesis for
+even more detail.
+#+end_quote
+
+- [ ] *NOTE: THE REFERENCE IN THE SUBFIGURE* is broken, because we
+  currently don't export using custom identifiers only.
 
 - [X] Create a time series plot of all tracking candidates to verify
   that indeed their timestamp indicates that they were part of
@@ -38513,7 +38509,8 @@ sec. [[#sec:limit:observed_axion_electron]].
 
 Afterwards, we will also shortly present the limits achievable by this
 detector, dataset and methodology on the axion-photon coupling
-$g_{aγ}$ as well as the Chameleon coupling constant $β$.
+$g_{aγ}$, sec. [[#sec:limit:observed_axion_photon]], as well as the
+Chameleon coupling constant $β$, sec. [[#sec:limit:observed_chameleon]].
 
 *** Axion-electron coupling
 :PROPERTIES:
@@ -38524,49 +38521,63 @@ Based on the candidates presented in sec. [[#sec:limit:candidates]] we
 compute an observed limit of
 
 \[
-g_{ae} · g_{aγ} = \SI{7.36e-23}{GeV⁻¹},
+\left(g_{ae} · g_{aγ}\right)_{\text{observed}} = \SI{7.36e-23}{GeV⁻¹},
 \]
 
-which is approaching the best possible limit achievable given this
-setup, due to the distribution of candidates and absence of any highly
-significant candidates. The expected limit for this case was
-$\left(g_{ae} · g_{aγ}\right)_{\text{exp}} = \SI{7.56e-23}{GeV⁻¹}$ and the limit
+which is lower than the expected limit, due to the distribution of
+candidates and absence of any highly significant candidates. The
+expected limit for this case was $\left(g_{ae} ·
+g_{aγ}\right)_{\text{expected}} = \SI{7.88e-23}{GeV⁻¹}$ and the limit
 without any candidates at all $\left(g_{ae} · g_{aγ}\right)_{\text{no
-candidates}} = \SI{5.96e-23}{GeV⁻¹}$.
+candidates}} = \SI{6.39e-23}{GeV⁻¹}$.
 
 This is in contrast to the current observed best limit by CAST in 2013
 cite:Barth_2013, which achieved
 
 \[
-\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} = \SI{8.1e-23}{GeV⁻¹}.
+\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} = \SI{8.1e-23}{GeV⁻¹},
 \]
+
+a good improvement. Unfortunately, [[cite:&Barth_2013]] does not provide
+an expected limit to compare to. [fn:likely_expected] 
 
 Fig. [[fig:limit:observed_axion_electron]] shows the marginal posterior
 likelihood function for the observed solar tracking candidates. The
 limit is at the $95^{\text{th}}$ percentile of the histogram, shown by
 the intersection of the blue and red filling. In addition the yellow
 line shows values based on a numerical integration using Romberg's
-method *CITE ME* at 10 different coupling constants. This is a cross
+method [[cite:&romberg_integration]] at 20 different coupling constants. This is a cross
 validation of the MCMC result. [fn:romberg_integration_performance] 
 
-- [ ] *REPLACE THIS FIG BY VERSION WITH g_ae·g_aγ!!!*
-- [ ] *ALSO PRODUCE A χ² PLOT OF THE SPACE!*  
 #+CAPTION: The marginal posterior likelihood function for the solar candidates
 #+CAPTION: with the observed limit at the intersection between the blue and
 #+CAPTION: red filling. Also shown is a line based on a numerical integration of
-#+CAPTION: the 4-fold integral at 10 steps as a cross check of the MCMC.
+#+CAPTION: the 4-fold integral at 20 steps as a cross check of the MCMC. The x-axis
+#+CAPTION: is the parameter we sample, namely $g²_{ae}$. Limit at
+#+CAPTION: $g² \approx \num{5.4e-21} ⇒ g \approx \num{7.36e-11}$.
 #+NAME: fig:limit:observed_axion_electron
-[[~/org/Figs/statusAndProgress/trackingCandidates/mcmc_real_limit_likelihood_g_ae2_with_numerical_int.pdf]] 
+[[~/phd/Figs/trackingCandidates/mcmc_real_limit_likelihood_g_ae2.pdf]]
+
+[fn:likely_expected] Judging by the $χ²$ distribution in
+[[cite:&Barth_2013]] fig. 6 having a minimum for negative $g²_{ae}g²{gγ}$
+values potentially implies a better observed limit than expected. 
 
 [fn:romberg_integration_performance] Note though, while the
 calculation of the observed limit via the MCMC takes about
 $\SI{10}{s}$, the numerical integration using Romberg's method took
-$\sim\SI{1.5}{h}$ for only 10 points. And that is only using a
-integration level of 5 (one often uses 8 for Romberg for
-accuracy). This highlights the need for Monte Carlo methods,
-_especially_ for expected limits.
+$\sim\SI{1.5}{h}$ for only 20 points. And that is only using an
+integration level of 5 (a parameter of the Romberg method, one often
+uses 8 for Romberg for accuracy). This highlights the need for Monte
+Carlo methods, _especially_ for expected limits.
 
-**** TODOs for this section [/] 
+**** TODOs for this section [/]                                 :noexport:
+
+- [X] *REPLACE THIS FIG BY VERSION WITH g_ae·g_aγ!!!*
+  -> But they look extremely different! So no.
+- [ ] *ALSO PRODUCE A χ² PLOT OF THE SPACE!*  
+
+
+
 For limit:  
 - [ ] *likelihood space* of the real candidates as plot
 - [ ] try to fit an exponential to the likelihood and provide
@@ -38610,8 +38621,13 @@ mcmc_limit_calculation \
 -> The plot looks exactly like the one already in the thesis? Surely
 they should be switched around x/y?
 
-*** Axion-photon coupling
+The log file:
+[[~/phd/Figs/trackingCandidates/real_candidates_limit.log]]
 
+*** Axion-photon coupling
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:observed_axion_photon
+:END:
 - [ ] Show differential solar flux
 - [ ] Show axion image for Primakoff origin
 
@@ -38619,28 +38635,42 @@ they should be switched around x/y?
   -> Figure out, just need that!
   
 *** Chameleon coupling
-
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:observed_chameleon
+:END:
 - [ ] For chameleon mainly just need to look at how Christoph sampled
   from the solar radius to compute the axion image in his case. We can
   then plug that into the raytracer.
 
-** Comparison to 2013 limit (using their method)
+** Comparison to 2013 limit (using their method)                  :extended:
 
-** Calculate expected limits                                      :noexport:
+Some years ago I attempted to reproduce the limit calculation of the
+CAST 2013 axion-electron limit paper [[cite:&Barth_2013]]. Given that
+their main approach is a binned likelihood approach I thought it
+should be rather simple to reproduce by extracting the background
+rates and candidates from the figures in the paper and implementing
+the likelihood function.
 
-- [ ] *MOVE THIS* to appropriate section above.
+I did this in
+[[file:~/org/Doc/StatusAndProgress.org::#sec:limit:reproduce_2013]] and
+was not fully able to reproduce the numbers shown there. In particular
+the $χ²$ minimum was at values near $\sim 40$ instead of $\sim 22$.
 
-Running the ~runLimits~ code with ~nmc = 100~ took
+However, at the time I was just learning about limit calculations and
+I had a lot of misunderstandings, especially given the negative
+coupling constants as well as generally how to compute a limit using
+the $χ²$ approach.
 
-#+begin_src sh
-Computing all limits took 2297.087612867355 s
-#+end_src
+Still, I would like to see the numbers reproduced. At this time I do
+have access to the code that was supposedly used to calculate the
+numbers of that paper. I have yet to run them myself, but given the
+limit calculation is so simple, reproducing the numbers should anyhow
+be very easy.
 
-so a bit more than half an hour. This implies in a single day we can
-get about 4800 MC samples essentially.
+*** TODOs for this section                                       :noexport:
 
-
-
+- [ ] Try to extract the limit calculation from statusAndProgress and
+  see if there's something wrong in our current code?
 
 * Outlook                                                             :Part5:
 :PROPERTIES:
