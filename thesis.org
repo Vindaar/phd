@@ -37800,7 +37800,7 @@ took place first inside our own group and later with the relevant
 members of the CAST collaboration to ascertain that our analysis
 appears sound.
 
-*** TODO for this section [/]                                    :noexport:
+*** TODO for this section [1/4]                                  :noexport:
 
 - [ ] *NOTE* Do we even want to compute other candidates?
 Old paragraph:
@@ -38675,30 +38675,155 @@ be very easy.
 :CUSTOM_ID: sec:outlook
 :END:
 
-- [ ] *OUTLOOK* in terms of *DETECTOR*
-- [ ] *OUTLOOK* in terms of *ANALYSIS*
-  -> Combine this thesis data with other searches!  
+Having computed a new best limit on the axion-electron coupling
+constant as well as competitive limits for the axion-photon 
+and chameleon couplings, let us think about the next steps that should
+be taken from here.
 
-Timepix3 based detector will be big improvement, as long readout times
-without time information are probably the biggest issue (and partially
-biggest mistake) in the data taking campaign. Further, not requiring
-any analog readout parts like an FADC is a big help as handling EMI
-properly is complex.
+The first obvious step would be computing a combined limit of the
+dataset from this thesis with the GridPix data from 2014/15
+[[cite:&krieger2018search]]. As the old detector used the same readout
+system, the entire analysis framework used in this thesis is directly
+compatible with the old data. This would be straightforward and should
+lead to a decent improvement on the limit, in particular due to the
+good expected limits for the MLP classifier at high software
+efficiencies, as there are no vetoes available for the old detector.
 
-- [ ] *MENTION THAT DUE TO TOA INFORMATION A GRIDPIX3 DETECTOR WITH
+Secondly, a combined limit of all GridPix data with all Micromegas
+data should be computed. At least at the likelihood level -- meaning to
+multiply the posterior likelihood functions for each detector and
+dataset -- would be little work and could lead to another limit
+improvement. While this would imply exclusion of systematic
+uncertainties for non GridPix data, in theory one could even attempt
+to compute limits with the MCMC code written for this thesis. GridPix
+and Micromegas detector differ, but fundamentally at the level of the
+limit calculation both work with cluster center positions and
+energies. This would require the corresponding systematic
+uncertainties and detection efficiencies.
+
+Focusing on a new detector, there are two major improvements on the
+horizon. First of all a future detector is likely going to be built
+from for radiopure materials. This should reduce the inherent
+background seen in the detector significantly. In addition such a
+detector will be built on top of the Timepix3 instead of the
+Timepix. This comes with massive improvements in terms of achievable
+background rates at higher signal efficiencies. The Timepix3 can be
+read out in a stream-based fashion. Therefore, there is no more dead
+time associated with a readout and long shutter times are a thing of
+the past. More importantly, this means for a 7-GridPix detector
+layout, the very high random coincidence rates seen for the current
+detector (see sec. [[#sec:background:estimate_veto_efficiency]]) are
+completely removed. For a Timepix3 based detector the septem veto and
+line veto can be used /without any efficiency penalty/. Combined with
+an MLP classifier as used in this thesis and without considering
+radiopure materials, background rates in the
+$\SIrange{5e-6}{7e-6}{keV^{-1}.cm^{-2}.s^{-1}}$ range are achievable
+at software efficiencies around the $\SI{95}{\%}$ mark (see
+tab. [[tab:background:background_rate_eff_comparisons]] and
+tab. [[tab:limit:expected_limits]]). This alone would lead to a
+significant improvement in limit calculations. Furthermore, the
+Timepix3 supports reading out the Time over Threshold values /in
+addition to/ the Time of Arrival (ToA) values. At that point the FADC
+is not needed anymore to provide time information nor to act as a
+readout trigger. All noise related issues due to dealing with analogue
+signals in such an experiment are side-stepped. Further, the
+availability of pixel-wise ToA values allows to reconstruct events in
+three dimensions, making the equivalent of the rise time veto for the
+FADC much more accurate. Indeed, in a prototype Timepix3 based
+detector utilizing an upper cut on the ToA values of clusters already
+shows promising results [[cite:&schiffer_phd]].
+
+One positive aspect of a new Timepix3 based detector is that the full
+analysis procedure explained in the context of this thesis is already
+written with Timepix3 based detectors in mind. While some additions
+will likely be desired, the basis is already there and given a dataset
+for a Timepix3 based detector a limit calculation could be done in a
+matter of days. [fn:reproducible]
+
+In terms of a possible setup of such a Timepix3 based detector at
+BabyIAXO in the future, a few things are important. Firstly, a much
+improved scintillator veto setup will greatly reduce the possible
+background due to muons or X-ray fluorescence. One thing to consider
+for this though, is to move away from a purely discriminator based
+system. The scintillators used in this thesis were much less useful
+than initially hoped, due to lack of interpretability of the data and
+less than ideal calibrations. Ideally, the analogue signals of each
+scintillators are read out so that discriminator thresholds can be
+applied offline during data analysis (while this introduces analogue
+signals back into the system, the highly amplified nature makes this
+significantly easier to deal with). This makes the system much more
+flexible and less error prone in terms of choosing the wrong
+parameters for a data taking campaign.
+
+Next, given that a Timepix3 based detector will surely need a cooling
+system as well, time should be invested in characterizing its
+performance and possibly even working towards a temperature stabilized
+system. Generally, more sensors should be installed, both for
+temperature measurements in different places, as well as pressures to
+make correlating detector behaviors with external parameters easier.
+
+On the data calibration side, more importance should be placed on
+measurements behind an X-ray tube. Data quality in the CAST Detector
+Lab (CDL) data for this detector was unfortunately not ideal and generally
+more statistics should be available. While probably unreasonable,
+BabyIAXO should have a calibration source installed on the opposite
+side of the magnet, which can produce different X-ray energies. This
+would allow calibrations both through the X-ray telescope for more
+frequent alignment measurements as well as X-ray calibration data
+taken at the same conditions as the background and tracking data. The
+discrepancy between CAST data detector behavior and CDL data is larger
+than I would like.
+
+Moreover, simulations of a future detector should be higher priority
+in the future. Both in terms of general background studies and
+electric field simulations, as well as event simulations. Having more
+realistic synthetic datasets would be invaluable for better
+developments of classifiers /without/ the need to rely on real
+datasets. This was already very successful with the comparatively
+simple synthetic X-rays in this thesis, but could be extended for
+background data in the future for pure synthetically trained machine
+learning classifiers. In this vein more powerful approaches would
+become feasible, especially if more calibration data were available
+as well. Convolutional Neural Networks are a promising candidate to
+investigate, especially also for the 3D cluster data of a Timepix3
+detector. 
+
+And hey, maybe soon we can also compute a limit on the Axio-Chameleon
+cite:brax2023axiochameleons?
+
+[fn:reproducible] This is also one additional reason why I felt it
+important to provide a thesis that is fully reproducible in order to
+make it easier for other people to actually the developed methods.
+
+** TODOs for this section [/]                                     :noexport:
+
+- [X] *OUTLOOK* in terms of *ANALYSIS*
+  -> Combine this thesis data with other searches!
+- [X] ToA -> no more noise issues due to analogue parts of FADC
+
+- [X] *MENTION THAT DUE TO TOA INFORMATION A GRIDPIX3 DETECTOR WITH
   SEPTEMBOARD COULD USE SEPTEM VETO WITHOUT SIGNAL EFFICIENCY
   PENALTY!!!*
-- [ ] *NOT BIGGEST MISTAKE, BECAUSE TIMERS?*  
+  -> *TOA 2 PURPOSES*
+  1. ToA as a cut itself
+  2. No random coincidences for Septemboard vetoes. Extremely
+     important for an ultra high efficiency classifier. MLP @ 95% plus
+     septem veto + line veto a possibility!
+     Could mean that alone yields 5e-6 background rate *at 95%*
+     software efficiency!
 
+For the setup at BabyIAXO .... (scintis + sensors)
+
+- [X] *OUTLOOK* in terms of *DETECTOR*
+
+- [ ] For IAXO detector, better simulation of X-rays would be useful
+  also for MLP training
+- [ ] *MORE* CDL data!  
+
+
+  
 - [ ] *REWRITE ME*
   -> then refer to Tobi thesis 
-In a test background run using a GridPix3, which was pointed towards
-the zenith, 50 clusters remained after the likelihood cut. Using the
-duration of the clusters, another 15 could be removed, showing the
-usefulness of the approach. For more information on this see the upcoming
-cite:schiffer_phd. 
-
-*TODO: get correct numbers!*
 
 Radiopure materials will also help to further reduce the background
 that is still present in the detector of this thesis.
@@ -38710,24 +38835,141 @@ Finally, a new setup should make sure to at the very least have
 multiple temperature sensors, but more importantly likely use some
 kind of temperature control to avoid strong gas gain variations.
 
-One positive aspect of a new Timepix3 based detector is that the full
-analysis procedure explained in the context of this thesis is already
-written with Timepix3 based detectors in mind. While some additions
-will likely be desired, the basis is already there and given a dataset
-for a Timepix3 based detector a limit calculation could be done in a
-matter of days.
+     
 
-This is also one additional reason why I felt it important to provide
-a thesis that is fully reproducible in order to make it easier for
-other people to actually use it as such.
+- [X] *NOT BIGGEST MISTAKE, BECAUSE TIMERS?*
+  -> Refers to ToA not used in this detector
+     
 
-And hey, maybe soon we can compute a limit on the Axio-Chameleon cite:brax2023axiochameleons?
+- [X] *TODO: get correct numbers!*
+  -> No, we leave that out.
+#+begin_quote
+In a test background run using a GridPix3, which was pointed towards
+the zenith, 50 clusters remained after the likelihood cut. Using the
+duration of the clusters, another 15 could be removed, showing the
+usefulness of the approach. For more information on this see the upcoming
+cite:schiffer_phd. 
+#+end_quote
 
+#+begin_quote
+Timepix3 based detector will be big improvement, as long readout times
+without time information are probably the biggest issue (and partially
+biggest mistake) in the data taking campaign. Further, not requiring
+any analog readout parts like an FADC is a big help as handling EMI
+properly is complex.
+#+end_quote
 
 * Summary & conclusion                                                :Part5:
 :PROPERTIES:
 :CUSTOM_ID: sec:summary
 :END:
+
+In this thesis we have presented the data taking campaign of the
+7-GridPix 'Septemboard' detector used at CAST in 2017/18, its data
+analysis and limit calculations for different coupling constants.
+
+In total about $\SI{3150}{h}$ of active background and $\SI{160}{h}$
+of active solar tracking data were taken at CAST with this
+detector. Generally, detector performance was very stable, with a few
+issues likely relating to varying operating conditions. There were
+some other minor setbacks during CAST data taking, most notably a
+ruptured window, which delayed data taking by a short amount. Also the
+FADC setup was partially affected by significant noise, which was
+fixed by changing amplifier settings. In addition the scintillator
+data was not recorded correctly in the Run-2 data taking period (Oct
+2017 to Apr 2018) and temperature log files of the detector were
+mostly lost. In the grand scheme of things these issues are minor and
+do not affect the physics potential of the data much.
+
+We have shown that the additional detector features are an extremely
+valuable addition. Most notably the Septemboard itself, in the form of
+the 'septem veto' and 'line veto', provide a large improvement to the
+backgrounds seen over the majority of the center GridPix. While the
+improvements to the center \goldArea region are not as large, over the
+entire chip background is suppressed by almost an order of magnitude.
+
+Further, novel ideas were implemented to improve the reliability in
+the form of interpolating the reference datasets the likelihood cut
+classifier is based on. More interestingly though, a machine learning
+approach using a small multi-layer perceptron (MLP) was implemented trained
+entirely on synthetic X-ray data and background data of the outer
+chips. This yields a classifier is fully defined by data unrelated to
+its main application (background and tracking datasets) and
+verification (\cefe calibration and X-ray tube data). This MLP
+classifier achieves comparable performance to the likelihood cut at
+its default $ε_{\ln\mathcal{L}} = \SI{80}{\%}$ using a software efficiency of
+$\SI{95}{\%}$. Significant improvements to the limit calculation are
+possible as a result.
+
+Following the 2017 CAST Nature paper [[cite:&cast_nature]], an unbinned
+Bayesian likelihood method for limit calculation was implemented to
+compute limits on the axion-electron coupling $g_{ae}$, the
+axion-photon coupling $g_{aγ}$ and the chameleon coupling $β$. This
+limit calculation requires a description of the irreducible background
+during data taking and several inputs to calculate the expected number
+of axion induced X-rays during the solar tracking time. The background
+is obtained from the application of the classifier (\lnL or MLP) to
+the background dataset.
+
+To calculate the expected number of axion induced X-rays during the
+solar tracking dataset, the differential solar axion flux and the
+radial emission profile in the Sun is needed (in addition to the
+losses expected due to the detector window losses and gas
+transmission). To properly characterize the expected 'axion image' on
+the detector, a raytracing simulation taking these into account is
+needed. Such a simulation was implemented in the context of this
+thesis and verified against PANTER measurements of the LLNL telescope.
+
+Despite the additional detector features producing a more homogeneous
+background rate over the entire central chip, an interpolation of the
+background rate at each point is still required. Such an interpolation
+was developed based on a normal distribution weighted nearest neighbor
+approach, producing smooth results.
+
+Further, the limit calculation method of [[cite:&cast_nature]] was
+extended to allow the inclusion of systematic uncertainties into the
+likelihood function by usage of four nuisance parameters. As these
+need to be integrated out to obtain the posterior likelihood function
+from which a limit is computed, a Markov Chain Monte Carlo (MCMC)
+approach was developed to sample from the likelihood function
+efficiently. This is needed, because different choices of parameters
+(detector vetoes, software efficiencies and so on) are evaluated based
+on their resulting expected limit. Expected limits are computed by
+sampling toy candidate sets from the background distribution and
+computing their limits. The expected limit then is defined by the
+median of all such limits.
+
+The expected limit for the best method based on $\num{50 000}$ toy
+candidate sets came out to
+
+\[
+\left(g_{ae} · g_{aγ}\right)_{\text{expected}} = \SI{7.88e-23}{GeV^{-1}},
+\]
+
+while the observed limit was computed to
+
+\[
+\left(g_{ae} · g_{aγ}\right)_{\text{observed}} = \SI{7.36e-23}{GeV⁻¹}.
+\]
+
+This is a good improvement over the current best limit obtained by CAST in 2013
+[[cite:&Barth_2013]] of
+
+\[
+\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} = \SI{8.1e-23}{GeV⁻¹}.
+\]
+
+For the other coupling constants we obtained
+
+*WRITE ME*
+
+
+
+
+
+
+
+
 
 #+BIBLIOGRAPHY: references
 
@@ -38742,6 +38984,10 @@ And hey, maybe soon we can compute a limit on the Axio-Chameleon cite:brax2023ax
 # #+LATEX: \minitoc
 
 # TODO: need backend specific sections here I think
+
+** TODOs for this section [/]                                     :noexport:
+
+- [ ] *EXTEND FOR OTHER COUPLING CONSTANT LIMITS!*
 
 * Bibliography                                                         :html:
 
