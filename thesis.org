@@ -2402,7 +2402,7 @@ In principle the conversion probability contains
 with the osciallation length
 
 \[
-L_{\text{osc}} = \frac{π}{\sqrt{ \left( \frac{q}{2} \right)² + Δ² }
+L_{\text{osc}} = \frac{π}{\sqrt{ \left( \frac{q}{2} \right)² + Δ² } }
 \]
 
 I assume we can safely drop the term $Δ²$, as it is likely orders of
@@ -13785,7 +13785,7 @@ https://www.amptek.com/internal-products/obsolete-products/cool-x-pyroelectric-x
 - Initial installation 2017 ::
   - ref:
     https://espace.cern.ch/cast-share/elog/Lists/Posts/Post.aspx?ID=3420
-    and [[file:~/org/Documents/InGrid_calibration_installation_2017_elog.pdf]]
+    and =~/org/Documents/InGrid_calibration_installation_2017_elog.pdf=
   - June/July detector brought to CERN
   - before <2017-07-07 Fri> alignment of LLNL telescope by Jaime
   - <2017-07-07 Fri> laser alignment (see [[file:~/org/Figs/CAST_Alignment/laser_alignment_IMG_20170707_121738.jpg]])
@@ -16362,7 +16362,7 @@ This, tab. [[tab:cast:total_data_time_extended]], is an extended version
 #+CAPTION: [[tab:cast:data_stats_overview]] for more precise numbers including the
 #+CAPTION: time the detector was active (shutter open).
 #+NAME: tab:cast:total_data_time_extended
-#+ATTR_LATEX: :align lrrrrrrr :booktabs t
+#+ATTR_LATEX: :align lrrrrrrrr :booktabs t
 |       | Solar tracking [h] | Background [h] | Active tracking [h] | Active tracking (eventDuration) [h] | Active background [h] | Total time [h] | Active time [h] | Active [%] |
 |-------+--------------------+----------------+---------------------+-------------------------------------+-----------------------+----------------+-----------------+------------|
 | Run-2 |            106.006 |        2391.16 |             93.3689 |                             93.3689 |               2144.12 |        2497.16 |         2238.78 | 0.89653046 |
@@ -34132,13 +34132,13 @@ outside of the radius either in x/y or in (scaled) energy.
 
 \begin{align*}
 I(\vec{x}_e, E_e) &= Σ_i \exp \left[ -\frac{1}{2} \left( \mathcal{D'}((\vec{x}_e, E_e), (\vec{x}_i, E_i)) \right)² / σ² \right] \\
-I(\vec{x}_e, E_e) &= Σ_i \exp \left[ -\frac{1}{2} \mathcal{D'}² / σ² \right] \text{ for clarity w/o arguments}\\
-I(\vec{x}_e, E_e) &= Σ_i \mathcal{M}(\vec{x}_i, E_i) \\
-\text{where we introduce }&\mathcal{M}\text{ to refer to the measure we use.}
+I(\vec{x}_e, E_e) &= Σ_i \exp \left[ -\frac{1}{2} \mathcal{D}^{'2} / σ² \right] \text{ for clarity w/o arguments} \\
+I(\vec{x}_e, E_e) &= Σ_i \mathcal{M}(\vec{x}_i, E_i) 
 \end{align*}
-where =i= runs over all clusters ($\mathcal{D'}$ takes care of only
-allowing points in the radius to contribute) and the subscript =e= stands
-for the evaluation point. $σ$ is the sigma of the (non-normalized!)
+where we introduce $\mathcal{M}$ to refer to the measure we use and
+=i= runs over all clusters ($\mathcal{D'}$ takes care of only allowing
+points in the radius to contribute) and the subscript =e= stands for
+the evaluation point. $σ$ is the sigma of the (non-normalized!)
 Gaussian distribution for the weights, which is set to $σ =
 \frac{R}{3}$.
 
@@ -34197,14 +34197,14 @@ $R$, as we intuitively assumed to be for a trivial measure.
 
 For our actual measure we use:
 \[
-\mathcal{M}(\vec{x}_i, E_i) = \exp \left[ - \frac{1}{2} \mathcal{D'}²((\vec{x}_e, E_e), (\vec{x}_i, E_i)) / σ² \right]
+\mathcal{M}(\vec{x}_i, E_i) = \exp \left[ - \frac{1}{2} \mathcal{D}^{'2}((\vec{x}_e, E_e), (\vec{x}_i, E_i)) / σ² \right]
 \]
 the procedure follows in the exact same fashion (we leave out the
 arguments to $\mathcal{D}$ in the further part:
 \begin{align*}
 W &= \int_{x² + y² < R²} \mathcal{M}(x', y')\, \mathrm{d}x \mathrm{d}y \\
- &= \int_{x² + y² < R²} \exp \left[ - \frac{1}{2} \mathcal{D'}² / σ² \right] \, \mathrm{d}x \mathrm{d}y \\
- &= \int_0^R \int_0^{2 π} r \exp \left[ - \frac{1}{2} \mathcal{D'}² / σ² \right]\, \mathrm{d}r \mathrm{d}φ 
+ &= \int_{x² + y² < R²} \exp \left[ - \frac{1}{2} \mathcal{D}^{'2} / σ² \right] \, \mathrm{d}x \mathrm{d}y \\
+ &= \int_0^R \int_0^{2 π} r \exp \left[ - \frac{1}{2} \mathcal{D}^{'2} / σ² \right]\, \mathrm{d}r \mathrm{d}φ 
 \end{align*}
 which can be integrated using standard procedures or just using
 SageMath, ...:
@@ -35467,10 +35467,10 @@ proc readFile(fname: string): DataFrame =
     .rename(f{"Energy / eV" <- "PhotonEnergy(eV)"})
     .mutate(f{"E / keV" ~ c"Energy / eV" / 1000.0})
 
-let sinDf = readFile("../resources/Si3N4_density_3.44_thickness_0.3microns.txt")
+let sinDf = readFile("/home/basti/org/resources/Si3N4_density_3.44_thickness_0.3microns.txt")
   .mutate(f{float: "T310" ~ pow(`Transmission`, 310.0 / 300.0)})
   .mutate(f{float: "T290" ~ pow(`Transmission`, 290.0 / 300.0)})
-var sin1Mu = readFile("../resources/Si3N4_density_3.44_thickness_1microns.txt")
+var sin1Mu = readFile("/home/basti/org/resources/Si3N4_density_3.44_thickness_1microns.txt")
 .mutate(f{float: "Transmission" ~ pow(`Transmission`, 0.3 / 1.0)})
 sin1Mu["Setup"] = "T300_from1μm"
 var winDf = sinDf.gather(["Transmission", "T310", "T290"], key = "Setup", value = "Transmission")
@@ -35484,8 +35484,6 @@ ggplot(winDf, aes("E / keV", "Transmission", color = "Setup")) +
     "from 1μm via power law T₃₀₀ = T₁₀₀₀^{0.3/1}") + 
   ggsave("/home/basti/org/Figs/statusAndProgress/window_uncertainty_transmission.pdf", width = 853, height = 480)
 #+end_src
-
-#+RESULTS:
 
 Plot
 
