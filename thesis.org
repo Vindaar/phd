@@ -9381,6 +9381,8 @@ calibration function used in ~TimepixAnalysis~.
 :CUSTOM_ID: sec:daq:polya_distribution_threshold
 :END:
 
+In sec. [[#sec:theory:gas_gain_polya]] we introduced the Pólya
+distribution 
 - [ ] *DON'T NEED TO MENTION THL AND ACTIVATION THRESHOLD THL HERE*
 - [ ] *THIS NEEDS A GOOD REWRITE STILL!*
 - [ ] The additional threshold discussion can be moved to the appendix
@@ -11261,14 +11263,6 @@ at least for energy calibration, we will refer to section later
 
 - [X] *MENTION INGRID DATABASE STORING TOT CALIB DATA*
 
-**** ~InGridDatabase~ [0/1]                                     :optional:
-(or :noexport: ?)
-- [ ] introduce database including the data structure needed to add a
-  detector to the database?
-
-- [ ] *OR SHOULD THIS BE PART OF THE APPENDIX ABOUT SOFTWARE AND IN
-  SECTION ABOVE WE MENTOIN AND REFER TO THAT?*
-
 **** Example of data calibration [/]                            :extended:
 
 The following three commands perform the three calibration steps
@@ -11337,17 +11331,6 @@ d(t_{\text{clocks}}) = \frac{t_{\text{clocks}} · 46}{40 · \num{1000000}}.
 - [ ] *HERE OR IN CAST SECTION: WHAT SHUTTER LENGTHS WERE ACTUALLY USED?*    
 
 - [ ] *MOVE THIS TO EARLIER?*
-
-*** InGrid database                                              :optional:
-
-Section about InGrid database (or maybe :noexport: instead
-of :optional: ?), which explains the idea of storing the chip
-calibration data in a single HDF5 file, which can then be easily
-accessed from the reconstruction / calibration
-
-**** TODO                                                       :noexport:
-
-- [ ] *THIS* is the second such section already!
 
 ** FADC [/]
 :PROPERTIES:
@@ -38787,393 +38770,6 @@ interlock systems and their corresponding members are shown.
 #+ATTR_LATEX: :width 1\textwidth :options angle=90
 [[~/org/Doc/Detector/figs/detector_system2017.png]]
 
-** CAST log files [/]
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:cast_log_files
-:END:
-
-The CAST experiment is controlled by a central computer running a slow
-control system written in LabVIEW [fn:labview]. It receives data from
-all sensors installed at CAST (vacuum pressures, temperatures, magnet
-current, magnet position and so on). A separate LabVIEW program is
-responsible for controlling the magnet position, either by moving the
-magnet to a specific coordinate or by following the Sun, if it is in
-reach of the magnet.
-
-The slow control software records all sensor data and presents it in a
-multitude of graphs. All data is also written to log files. There are
-two different kinds of log files of interest in the context of the
-septemboard detector at CAST.
-
-1. The general slow control log file is a versioned space separated
-   values file (similar to a comma separated value (CSV) or tab
-   separated value (TSV) file, except using spaces as delimiters). The
-   filename contains the version number, which decides the columns
-   contained in the file and their order. A ~Version.idx~ file maps
-   version numbers to file columns for easy access. These slow control
-   log files normally contain one entry every minute. For the
-   Septemboard detector of interest in this file are mainly the magnet
-   current, relevant vacuum pressure sensors and the state of the gate
-   valve ~VT3~.
-2. The second kind of log files are the tracking log files. These are
-   also space separated value files with fields describing the
-   pointing location of the magnet as well as whether the magnet is
-   currently tracking the Sun.
-
-Both of these log files need to be read by the analysis software to
-decide whether one or multiple trackings took place in a given
-background run and if so extract the exact start and end time for a
-precise data splitting and calculation of background / solar tracking
-time.
-
-Generally the latter log files are all that is needed to determine the
-existence of a solar tracking. However, the slow control log file can
-be used as a further sanity check to make sure the gate valve was
-actually open and the magnet under current during the solar tracking.
-
-This is implemented in the ~cast_log_reader~ program part of
-~TimepixAanlysis~. See sec. [[#sec:appendix:software:cast_log_reader]] for
-more details on the program. The program first parses the log files and
-determines valid solar trackings. Then, given an HDF5 data file
-containing the background data each solar tracking is mapped to a
-background run. One background run may have zero or more solar
-trackings attached to it. In the final step the solar tracking start
-and stop information is added to each run as additional meta
-data. During the later stages of processing this meta data is then
-used to only consider background (non tracking) or solar tracking data
-(starting from the computation of background rates).
-
-[fn:labview] https://www.ni.com/labview
-
-*** TODOs for this section [/]                                   :noexport:
-
-- [ ] in the above we simply state the number of trackings etc. Of
-  course realistically that is simply not enough. We need the slow
-  control and tracking files to compute when a tracking starts and
-  stops.
-  I think this implies it needs to go before the summary!
-- [X] INSERT FOOTNOTE LINK TO LABVIEW  
-
-- [ ] *LINK TO CODE!*
-
-*** Add tracking log information to background files             :extended:
-
-The code dealing with the log files is [[file:~/CastData/ExternCode/TimepixAnalysis/LogReader/cast_log_reader.nim]]
-
-In case previous log information is available we first have to remove
-that information. This is done by just calling the program just with
-the H5 file as an input:
-#+begin_src sh
-cast_log_reader h5file -f ~/CastData/data/DataRuns2017_Reco.h5
-cast_log_reader h5file -f ~/CastData/data/DataRuns2018_Reco.h5
-#+end_src
-
-With an 'empty' (in terms of tracking information) HDF5 file we can
-then go ahead and add all tracking information to them. This of course
-requires the tracking log files:
-
-#+begin_src sh
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2017_Reco.h5
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2018_Reco.h5
-#+end_src
-
-One can also run it without any output H5 file ~--h5out~ to simply get
-information about the runs. In particular all runs
-
-#+begin_src sh
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --startTime 2017/09/01 --endTime 2018/12/30
-#+end_src
-:RESULTS:
-FILTERING TO DATE: 2017-09-01T02:00:00+02:00 and 2018-12-30T01:00:00+01:00
-<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>
-<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>
-<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>
-<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>
-<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>
-<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>
-<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>
-<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>
-<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>
-<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>
-<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>
-<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>
-<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>
-<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>
-<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>
-<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>
-<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>
-<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>
-<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>
-<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>
-<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>
-<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>
-<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>
-<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>
-<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>
-<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>
-<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>
-<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>
-<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>
-<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>
-<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>
-<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>
-<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>
-<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>
-<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>
-<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>
-<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>
-<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>
-<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>
-<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>
-<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>
-<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>
-<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
-<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
-<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>
-<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>
-<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>
-<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>
-<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>
-<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>
-<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>
-<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>
-<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>
-<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>
-<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>
-<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>
-<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>
-<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>
-<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>
-<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>
-<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>
-<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>
-<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>
-<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>
-<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>
-<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>
-<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>
-<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>
-<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>
-<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>
-<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
-<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>
-<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>
-<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>
-<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>
-<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>
-<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>
-<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
-<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>
-<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>
-<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>
-<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>
-<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>
-<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>
-<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>
-<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>
-<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>
-<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>
-<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>
-<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>
-<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>
-<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>
-<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>
-<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>
-<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>
-<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>
-<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>
-<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
-<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>
-<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>
-<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>
-<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>
-<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>
-<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>
-<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>
-<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>
-<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>
-<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>
-<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>
-<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>
-<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>
-<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>
-<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>
-<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>
-<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>
-<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>
-<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>
-<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>
-<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>
-<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>
-There are 120 solar trackings found in the log file directory
-The total time of all trackings: 186 h (exact: 1 week, 18 hours, 46 minutes, and 19 seconds)
-Total time the magnet was on (> 1 T): 0 h h
-:END:
-
-This lists 5 runs that were *not* part of our data taking, meaning we
-lost them.
-
-
-And finally (and most useful for information purposes) we can run the
-log reader over the files and do a fake insert (aka dry run) of
-inserting the files, which only outputs the run information including
-which runs were missed:
-#+begin_src sh
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
-                  --startTime 2017/09/01 --endTime 2018/05/01 \
-                  --h5out ~/CastData/data/DataRuns2017_Reco.h5 --dryRun
-#+end_src
-:RESULTS:
-There are 70 solar trackings found in the log file directory
-The total time of all trackings: 109 h (exact: 4 days, 13 hours, 3 minutes, and 22 seconds)
-Total time the magnet was on (> 1 T): 0 h h
-Filtering tracking logs to date: 2017-09-01T02:00:00+02:00 and 2018-05-01T02:00:00+02:00
-========== Logs mapped to trackings in the output file: ==========
-<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>  for run: 76
-<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>  for run: 77
-<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>  for run: 78
-<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>  for run: 79
-<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>  for run: 80
-<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>  for run: 81
-<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>  for run: 82
-<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>  for run: 82
-<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>  for run: 84
-<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>  for run: 86
-<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>  for run: 87
-<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>  for run: 87
-<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>  for run: 89
-<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>  for run: 90
-<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>  for run: 91
-<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>  for run: 92
-<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>  for run: 94
-<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>  for run: 95
-<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>  for run: 97
-<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>  for run: 98
-<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>  for run: 99
-<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>  for run: 100
-<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>  for run: 101
-<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>  for run: 103
-<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>  for run: 104
-<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>  for run: 106
-<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>  for run: 105
-<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>  for run: 107
-<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>  for run: 109
-<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>  for run: 112
-<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>  for run: 112
-<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>  for run: 114
-<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>  for run: 113
-<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>  for run: 115
-<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>  for run: 117
-<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>  for run: 119
-<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>  for run: 121
-<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>  for run: 123
-<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>  for run: 124
-<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>  for run: 124
-<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>  for run: 125
-<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>  for run: 127
-<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>  for run: 146
-<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>  for run: 150
-<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>  for run: 148
-<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>  for run: 152
-<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>  for run: 154
-<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>  for run: 156
-<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>  for run: 158
-<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>  for run: 160
-<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>  for run: 162
-<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>  for run: 162
-<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>  for run: 162
-<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>  for run: 164
-<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>  for run: 164
-<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>  for run: 166
-<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>  for run: 170
-<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>  for run: 172
-<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>  for run: 174
-<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>  for run: 176
-<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>  for run: 178
-<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>  for run: 178
-<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>  for run: 178
-<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>  for run: 178
-<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>  for run: 178
-<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>  for run: 180
-<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>  for run: 182
-<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>  for run: 182
-==================================================================
-
-========== Logs *not* mapped to a run ============================
-<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
-<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
-==================================================================
-:END:
-
-And for 2018:
-#+begin_src sh
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
-                  --startTime 2018/05/01 --endTime 2018/12/31 \
-                  --h5out ~/CastData/data/DataRuns2018_Reco.h5 --dryRun
-#+end_src
-:RESULTS:
-There are 50 solar trackings found in the log file directory
-The total time of all trackings: 77 h (exact: 3 days, 5 hours, 42 minutes, and 57 seconds)
-Total time the magnet was on (> 1 T): 0 h h
-Filtering tracking logs to date: 2018-05-01T02:00:00+02:00 and 2018-12-31T01:00:00+01:00
-========== Logs mapped to trackings in the output file: ==========
-<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>  for run: 240
-<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>  for run: 242
-<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>  for run: 244
-<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>  for run: 246
-<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>  for run: 248
-<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>  for run: 250
-<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>  for run: 254
-<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>  for run: 256
-<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>  for run: 258
-<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>  for run: 261
-<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>  for run: 261
-<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>  for run: 261
-<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>  for run: 263
-<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>  for run: 265
-<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>  for run: 268
-<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>  for run: 270
-<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>  for run: 270
-<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>  for run: 272
-<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>  for run: 272
-<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>  for run: 272
-<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>  for run: 274
-<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>  for run: 274
-<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>  for run: 274
-<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>  for run: 276
-<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>  for run: 276
-<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>  for run: 279
-<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>  for run: 279
-<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>  for run: 281
-<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>  for run: 283
-<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>  for run: 283
-<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>  for run: 283
-<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>  for run: 285
-<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>  for run: 285
-<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>  for run: 287
-<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>  for run: 289
-<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>  for run: 291
-<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>  for run: 291
-<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>  for run: 293
-<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>  for run: 295
-<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>  for run: 297
-<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>  for run: 297
-<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>  for run: 298
-<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>  for run: 299
-<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>  for run: 301
-<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>  for run: 301
-<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>  for run: 303
-<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>  for run: 306
-==================================================================
-
-========== Logs *not* mapped to a run ============================
-<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
-<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
-<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
-==================================================================
-:END:
-  
-
 ** Interlock systems
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:interlock_systems
@@ -39567,7 +39163,7 @@ This way the system is safely flushed with nitrogen. This helps to
 pump faster after a short maintenance, because less humidity can enter
 the system.
 
-** COMMENT Gas supply
+** Gas supply
 
 If the requirements of the gas supply interlock are satisfied
 (cf. sec. [[Gas supply interlock]]), it is possible to flush the detector
@@ -39579,7 +39175,7 @@ with gas. For that, follow these steps:
    $\SIrange{960}{980}{\milli\bar}$.
 2. Outside the building, open the main valve of the currently active
    gas bottle (check the arrow on the bottle selector mechanism). See
-   fig. [[fig:gas-bottle-outside]].
+   fig. [[sref:fig:gas-bottle-outside]].
 3. Open the second valve near the bottle.
 4. Pressure values should be:
    - gas bottle: $\sim\SIrange{30}{100}{\bar}$
@@ -39587,14 +39183,14 @@ with gas. For that, follow these steps:
    - line pressure: $\sim\SI{0.45}{\bar}$
 5. Activate the gas supply at the interlock box by turning the key to
    =Security on= and pressing the large button. See
-   fig. [[fig:interlock-box]].
+   fig. [[sref:fig:interlock-box]].
 6. Go to the airport side of the magnet. Open the valve on the InGrid
    gas panel below the telescope platform. See
    fig. [[fig:ingrid-gas-panel]].
 7. Slowly open the needle valve on the flow meter on the previous
    panel. Increase gas flow up to $\sim\SI{2}{\liter\per\hour}$.
 8. Open the needle valve on the gas supply line on the side of the
-   platform (see fig. [[fig:gas-needle-valve]]).
+   platform.
 9. After $\SIrange{5}{10}{\minute}$ the pressure controller on the
    InGrid-PLC computer should report $\SI{1050}{\milli\bar}$.
 # 7. Make sure the electrovalves on the second gas panel (see
@@ -39607,18 +39203,30 @@ Now the detector should be flushed with $\ce{Ar} /
 \ce{iC_4H_{10}}$. Before turning on the HV, make sure to flush for at
 least $\SI{12}{\hour}$ to be on the safe side.
 
-#+CAPTION: Location of the Argon-Isobutane bottle and the main valves outside the building.
-#+NAME: fig:gas-bottle-outside
-[[file:~/org/Doc/Detector/figs/gas_bottles_outside.jpg]]
-
-
-#+CAPTION: Location of the gas interlock box
-#+NAME: fig:interlock-box
-[[file:~/org/Doc/Detector/figs/gas_interlock_box.jpg]]
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Gas bottle") (label "fig:gas-bottle-outside")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/gas_bottles_outside.jpg"))
+        (subfigure (linewidth 0.5) (caption "Interlock box") (label "fig:interlock-box")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/gas_interlock_box.jpg"))
+        (caption
+         (subref "fig:gas-bottle-outside")
+          ": Location of the Argon-Isobutane bottle and the main valves outside the building."
+         (subref "fig:cast:electrovalve-outside")
+          ": Location of the gas interlock box")
+        (label "fig:cast:bottle_valve_outside"))
+#+end_src
 
 #+CAPTION: Location of the InGrid gas panel below the telescope platform on the airport side.
 #+NAME: fig:ingrid-gas-panel
+#+ATTR_LATEX: :width 0.6\textwidth
 [[file:~/org/Doc/Detector/figs/gas_panel.jpg]]
+
+*** TODOs for this section                                       :noexport:
+
+It turns out I never took a good picture of the electrovalve I think :)
 
 #+CAPTION: Location of the needle valve on the gas supply line
 #+NAME: fig:gas-needle-valve
@@ -39631,45 +39239,448 @@ open the nitrogen line, 5 valves need to be opened. The line ends in a
 copper pipe on the airport side, which is usually there rolled up (the
 copper is somewhat flexible).
 1. Open the lever on the nitrogen bottle outside the building (see
-   fig. [[fig:nitrogen-bottle-outside]]).
+   fig. [[sref:fig:nitrogen-bottle-outside]]).
 2. Open the valve next to the bottle.
 3. Go to the gas lines next to the control room. The right most line
-   (see fig. [[fig:valves-control-room]] and
-   fig. [[fig:nitrogen-valve-control-room]]) is the nitrogen line. Open
+   (see fig. [[sref:fig:valves-control-room]] and
+   fig. [[sref:fig:nitrogen-valve-control-room]]) is the nitrogen line. Open
    the valve.
 4. Open the needle valve on the flow meter to the right of the
    previous valve.
-5. Open the needle valve on the airport side of the magnet (see
-   fig. [[fig:nitrogen-airport-side]]).
+5. Open the needle valve on the airport side of the magnet.
 This should be all to open the nitrogen line. The flow through the
 pipe is not too large, but it should be large enough to feel it on the
 back of the hand.
 
-#+CAPTION: Location of the Nitrogen bottle and the main valves outside the building.
-#+NAME: fig:nitrogen-bottle-outside
-[[file:~/org/Doc/Detector/figs/nitrogen_bottle.jpg]]
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Nitrogen bottle") (label "fig:nitrogen-bottle-outside")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/nitrogen_bottle.jpg"))
+        (subfigure (linewidth 0.5) (caption "Control room") (label "fig:valves-control-room")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/nitrogen_valve_location.jpg"))
+        (caption
+         (subref "fig:nitrogen-bottle-outside")
+          ": Location of the Nitrogen bottle and the main valves outside the building."
+         (subref "fig:valves-control-room")
+          ": Location of the valves next to the control room")
+        (label "fig:nitrogen_bottle_valve"))
+#+end_src
 
-#+CAPTION: Location of the valves next to the control room
-#+NAME: fig:valves-control-room
-[[file:~/org/Doc/Detector/figs/nitrogen_valve_location.jpg]]
-
-#+CAPTION: The actual nitrogen valve on the set of valves near the control room.
-#+NAME: fig:nitrogen-valve-control-room
-[[file:~/org/Doc/Detector/figs/nitrogen_valve.jpg]]
-
-
-#+CAPTION: Location of the flow meter near the valve next to the control room
-#+NAME: fig:nitrogen-flow-meter-control-room
-[[file:~/org/Doc/Detector/figs/nitrogen_flow_meter.jpg]]
-
-#+CAPTION: Location of the needle valve on the airport side
-#+NAME: fig:nitrogen-airport-side
-<file to be inserted>
-
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Nitrogen valve") (label "fig:nitrogen-valve-control-room")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/nitrogen_valve.jpg"))
+        (subfigure (linewidth 0.5) (caption "") (label "fig:nitrogen-flow-meter-control-room")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/nitrogen_flow_meter.jpg"))
+        (caption
+         (subref "fig:nitrogen-valve-control-room")
+          ": The actual nitrogen valve on the set of valves near the control room."
+         (subref "fig:nitrogen-flow-meter-control-room")
+          ": Location of the flow meter near the valve next to the control room")
+        (label "fig:cast:nitrogen_flow_meter_valve"))
+#+end_src
 
 #+BEGIN_EXPORT latex
 \newpage
 #+END_EXPORT
+
+*** TODOs for this section                                       :noexport:
+
+For the needle valve on the airport side, I do have a picture, but no
+need I think...
+
+
+** CAST log files [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:cast_log_files
+:END:
+
+The CAST experiment is controlled by a central computer running a slow
+control system written in LabVIEW [fn:labview]. It receives data from
+all sensors installed at CAST (vacuum pressures, temperatures, magnet
+current, magnet position and so on). A separate LabVIEW program is
+responsible for controlling the magnet position, either by moving the
+magnet to a specific coordinate or by following the Sun, if it is in
+reach of the magnet.
+
+The slow control software records all sensor data and presents it in a
+multitude of graphs. All data is also written to log files. There are
+two different kinds of log files of interest in the context of the
+septemboard detector at CAST.
+
+1. The general slow control log file is a versioned space separated
+   values file (similar to a comma separated value (CSV) or tab
+   separated value (TSV) file, except using spaces as delimiters). The
+   filename contains the version number, which decides the columns
+   contained in the file and their order. A ~Version.idx~ file maps
+   version numbers to file columns for easy access. These slow control
+   log files normally contain one entry every minute. For the
+   Septemboard detector of interest in this file are mainly the magnet
+   current, relevant vacuum pressure sensors and the state of the gate
+   valve ~VT3~.
+2. The second kind of log files are the tracking log files. These are
+   also space separated value files with fields describing the
+   pointing location of the magnet as well as whether the magnet is
+   currently tracking the Sun.
+
+Both of these log files need to be read by the analysis software to
+decide whether one or multiple trackings took place in a given
+background run and if so extract the exact start and end time for a
+precise data splitting and calculation of background / solar tracking
+time.
+
+Generally the latter log files are all that is needed to determine the
+existence of a solar tracking. However, the slow control log file can
+be used as a further sanity check to make sure the gate valve was
+actually open and the magnet under current during the solar tracking.
+
+This is implemented in the ~cast_log_reader~ program part of
+~TimepixAanlysis~. See sec. [[#sec:appendix:software:cast_log_reader]] for
+more details on the program. The program first parses the log files and
+determines valid solar trackings. Then, given an HDF5 data file
+containing the background data each solar tracking is mapped to a
+background run. One background run may have zero or more solar
+trackings attached to it. In the final step the solar tracking start
+and stop information is added to each run as additional meta
+data. During the later stages of processing this meta data is then
+used to only consider background (non tracking) or solar tracking data
+(starting from the computation of background rates).
+
+[fn:labview] https://www.ni.com/labview
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] in the above we simply state the number of trackings etc. Of
+  course realistically that is simply not enough. We need the slow
+  control and tracking files to compute when a tracking starts and
+  stops.
+  I think this implies it needs to go before the summary!
+- [X] INSERT FOOTNOTE LINK TO LABVIEW  
+
+- [ ] *LINK TO CODE!*
+
+*** Add tracking log information to background files             :extended:
+
+The code dealing with the log files is [[file:~/CastData/ExternCode/TimepixAnalysis/LogReader/cast_log_reader.nim]]
+
+In case previous log information is available we first have to remove
+that information. This is done by just calling the program just with
+the H5 file as an input:
+#+begin_src sh
+cast_log_reader h5file -f ~/CastData/data/DataRuns2017_Reco.h5
+cast_log_reader h5file -f ~/CastData/data/DataRuns2018_Reco.h5
+#+end_src
+
+With an 'empty' (in terms of tracking information) HDF5 file we can
+then go ahead and add all tracking information to them. This of course
+requires the tracking log files:
+
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2017_Reco.h5
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2018_Reco.h5
+#+end_src
+
+One can also run it without any output H5 file ~--h5out~ to simply get
+information about the runs. In particular all runs
+
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --startTime 2017/09/01 --endTime 2018/12/30
+#+end_src
+:RESULTS:
+FILTERING TO DATE: 2017-09-01T02:00:00+02:00 and 2018-12-30T01:00:00+01:00
+<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>
+<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>
+<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>
+<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>
+<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>
+<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>
+<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>
+<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>
+<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>
+<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>
+<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>
+<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>
+<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>
+<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>
+<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>
+<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>
+<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>
+<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>
+<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>
+<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>
+<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>
+<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>
+<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>
+<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>
+<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>
+<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>
+<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>
+<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>
+<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>
+<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>
+<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>
+<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>
+<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>
+<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>
+<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>
+<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>
+<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>
+<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>
+<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>
+<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>
+<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>
+<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>
+<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
+<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
+<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>
+<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>
+<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>
+<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>
+<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>
+<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>
+<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>
+<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>
+<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>
+<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>
+<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>
+<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>
+<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>
+<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>
+<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>
+<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>
+<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>
+<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>
+<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>
+<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>
+<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>
+<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>
+<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>
+<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>
+<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>
+<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>
+<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
+<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>
+<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>
+<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>
+<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>
+<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>
+<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>
+<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
+<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>
+<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>
+<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>
+<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>
+<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>
+<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>
+<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>
+<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>
+<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>
+<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>
+<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>
+<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>
+<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>
+<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>
+<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>
+<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>
+<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>
+<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>
+<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>
+<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
+<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>
+<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>
+<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>
+<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>
+<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>
+<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>
+<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>
+<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>
+<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>
+<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>
+<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>
+<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>
+<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>
+<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>
+<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>
+<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>
+<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>
+<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>
+<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>
+<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>
+<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>
+<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>
+There are 120 solar trackings found in the log file directory
+The total time of all trackings: 186 h (exact: 1 week, 18 hours, 46 minutes, and 19 seconds)
+Total time the magnet was on (> 1 T): 0 h h
+:END:
+
+This lists 5 runs that were *not* part of our data taking, meaning we
+lost them.
+
+
+And finally (and most useful for information purposes) we can run the
+log reader over the files and do a fake insert (aka dry run) of
+inserting the files, which only outputs the run information including
+which runs were missed:
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
+                  --startTime 2017/09/01 --endTime 2018/05/01 \
+                  --h5out ~/CastData/data/DataRuns2017_Reco.h5 --dryRun
+#+end_src
+:RESULTS:
+There are 70 solar trackings found in the log file directory
+The total time of all trackings: 109 h (exact: 4 days, 13 hours, 3 minutes, and 22 seconds)
+Total time the magnet was on (> 1 T): 0 h h
+Filtering tracking logs to date: 2017-09-01T02:00:00+02:00 and 2018-05-01T02:00:00+02:00
+========== Logs mapped to trackings in the output file: ==========
+<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>  for run: 76
+<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>  for run: 77
+<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>  for run: 78
+<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>  for run: 79
+<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>  for run: 80
+<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>  for run: 81
+<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>  for run: 82
+<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>  for run: 82
+<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>  for run: 84
+<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>  for run: 86
+<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>  for run: 87
+<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>  for run: 87
+<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>  for run: 89
+<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>  for run: 90
+<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>  for run: 91
+<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>  for run: 92
+<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>  for run: 94
+<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>  for run: 95
+<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>  for run: 97
+<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>  for run: 98
+<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>  for run: 99
+<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>  for run: 100
+<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>  for run: 101
+<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>  for run: 103
+<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>  for run: 104
+<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>  for run: 106
+<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>  for run: 105
+<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>  for run: 107
+<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>  for run: 109
+<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>  for run: 112
+<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>  for run: 112
+<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>  for run: 114
+<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>  for run: 113
+<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>  for run: 115
+<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>  for run: 117
+<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>  for run: 119
+<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>  for run: 121
+<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>  for run: 123
+<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>  for run: 124
+<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>  for run: 124
+<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>  for run: 125
+<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>  for run: 127
+<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>  for run: 146
+<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>  for run: 150
+<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>  for run: 148
+<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>  for run: 152
+<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>  for run: 154
+<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>  for run: 156
+<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>  for run: 158
+<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>  for run: 160
+<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>  for run: 162
+<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>  for run: 162
+<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>  for run: 162
+<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>  for run: 164
+<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>  for run: 164
+<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>  for run: 166
+<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>  for run: 170
+<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>  for run: 172
+<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>  for run: 174
+<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>  for run: 176
+<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>  for run: 178
+<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>  for run: 178
+<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>  for run: 178
+<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>  for run: 178
+<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>  for run: 178
+<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>  for run: 180
+<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>  for run: 182
+<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>  for run: 182
+==================================================================
+
+========== Logs *not* mapped to a run ============================
+<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
+<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
+==================================================================
+:END:
+
+And for 2018:
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
+                  --startTime 2018/05/01 --endTime 2018/12/31 \
+                  --h5out ~/CastData/data/DataRuns2018_Reco.h5 --dryRun
+#+end_src
+:RESULTS:
+There are 50 solar trackings found in the log file directory
+The total time of all trackings: 77 h (exact: 3 days, 5 hours, 42 minutes, and 57 seconds)
+Total time the magnet was on (> 1 T): 0 h h
+Filtering tracking logs to date: 2018-05-01T02:00:00+02:00 and 2018-12-31T01:00:00+01:00
+========== Logs mapped to trackings in the output file: ==========
+<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>  for run: 240
+<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>  for run: 242
+<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>  for run: 244
+<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>  for run: 246
+<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>  for run: 248
+<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>  for run: 250
+<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>  for run: 254
+<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>  for run: 256
+<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>  for run: 258
+<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>  for run: 261
+<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>  for run: 261
+<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>  for run: 261
+<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>  for run: 263
+<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>  for run: 265
+<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>  for run: 268
+<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>  for run: 270
+<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>  for run: 270
+<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>  for run: 272
+<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>  for run: 272
+<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>  for run: 272
+<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>  for run: 274
+<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>  for run: 274
+<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>  for run: 274
+<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>  for run: 276
+<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>  for run: 276
+<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>  for run: 279
+<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>  for run: 279
+<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>  for run: 281
+<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>  for run: 283
+<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>  for run: 283
+<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>  for run: 283
+<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>  for run: 285
+<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>  for run: 285
+<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>  for run: 287
+<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>  for run: 289
+<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>  for run: 291
+<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>  for run: 291
+<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>  for run: 293
+<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>  for run: 295
+<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>  for run: 297
+<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>  for run: 297
+<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>  for run: 298
+<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>  for run: 299
+<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>  for run: 301
+<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>  for run: 301
+<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>  for run: 303
+<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>  for run: 306
+==================================================================
+
+========== Logs *not* mapped to a run ============================
+<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
+<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
+<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
+==================================================================
+:END:
+  
+
 
 
 * CAST data taking run list                                        :Appendix:
@@ -42381,6 +42392,13 @@ in fig. [[cdl_logL_no_interp]].
 
 - [ ] Possibly more background rate plots?
 
+- [ ] *IMPORTANT*
+
+- [ ] Background rate plots for MLP best case 95% plus line veto  
+- [ ] Background rates over the entire chip for different veto setups!
+  Emphasizes even more effect of vetoes!
+- [ ] Raw data rate without any classifier or vetoes!
+- [ ]     
 
 * Background interpolation chip cutout correction                  :Appendix:
 :PROPERTIES:
@@ -42563,7 +42581,18 @@ one and simply have these as the introductory part of the chapter.
 - explain data structure needed to add to DB
 - show how to add    
 
+Section about InGrid database (or maybe :noexport: instead
+of :optional: ?), which explains the idea of storing the chip
+calibration data in a single HDF5 file, which can then be easily
+accessed from the reconstruction / calibration
 
+
+(or :noexport: ?)
+- [ ] introduce database including the data structure needed to add a
+  detector to the database?
+
+- [ ] *OR SHOULD THIS BE PART OF THE APPENDIX ABOUT SOFTWARE AND IN
+  SECTION ABOVE WE MENTOIN AND REFER TO THAT?*
 
 *** =raw_data_manipulation=
 
