@@ -9528,16 +9528,6 @@ tab. [[tab:daq:common_dac_values]].
 | BuffAnalogB |        127 |
 |-------------+------------|
 
-Further, figure [[fig:daq:thl_optimized_distributinons]] shows the
-optimized =THL= distributions of all chips after threshold
-equalization for run 2 (left) and 3 (right).
-
-#+CAPTION: Distributions of the =THL= values of all Septemboard (board H) chips
-#+CAPTION: at the noise peak with the calibration for for run 2 on the left and
-#+CAPTION: run 3 on the right.
-#+ATTR_LATEX: :width 1\textwidth
-#+NAME: fig:daq:thl_optimized_distributinons
-[[~/phd/Figs/detector/calibration/sepemboard_all_thl_optimized.pdf]]
 
 **** TODOs for this section [1/6]                               :noexport:
 
@@ -13683,380 +13673,6 @@ be presented.
 - [X] *FIX REFERENCE TO FADC NOISE LATER*
   -> The section exists but is not written as of <2023-10-19 Thu 14:09>.
 
-** High voltage supply [/]
-
-The high voltage supply is an iseg HV module, which is located in the
-VME crate on the airport side of the magnet. The HV is controlled via
-a USB connection to the VME crate, which it shares with the FADC. The
-veto scintillator however has its own HV supply, since it needs a
-positive HV, instead of a negative one.
-
-The detector uses $\num{7}$ different high voltages. $\num{5}$ of
-these are for the detector itself, $\num{1}$ for the SiPM and the last
-for the veto scintillator on top. Their voltages are shown in
-tab. [[tab:cast:high_voltage]]. 
-
-#+CAPTION: Table of high voltages in use for the Septemboard detector.
-#+CAPTION: Note that the veto scintillator is not controlled via
-#+CAPTION: the iseg module, but by a CAEN N470.
-#+NAME: tab:cast:high_voltage
-#+ATTR_LATEX: :booktabs t
-|-------------+---------+-------------+------------------|
-| Description | Channel | Voltage / V | TripCurrent / mA |
-|-------------+---------+-------------+------------------|
-| grid        |       0 |        -300 |            0.050 |
-| anode       |       1 |        -375 |            0.050 |
-| cathode     |       2 |       -1875 |            0.050 |
-| ring 1      |       3 |        -415 |            0.100 |
-| ring 29     |       4 |       -1830 |            0.100 |
-| veto scinti |       5 |       +1200 |                2 |
-| SiPM        |       6 |       -65.6 |             0.05 |
-|-------------+---------+-------------+------------------|
-
-The voltages actually used are defined in [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]].
-
-The HV cables in use are red cables with LEMO HV connectors. They run
-from the detector to an iseg HV module sitting in a VME crate on the
-airport side of the magnet. The cables are marked with zip ties and
-the same names as in tab. [[tab:cast:high_voltage]]. 
-
-The interlock system for the high voltage supply is detailed in
-section [[#sec:cast:hv_interlock]], together with the other interlock
-systems in place.
-
-*** TODOs for this section [/]                                   :noexport:
-
-- [X] *MOVE SOME OF THIS TO THE DAQ SECTION WHERE WE HAVE A HV SECTION*
-  -> The table is now also part of the detector chapter
-  [[#sec:operation_calibration:high_voltage]].
-
-- [ ] *ONCE FINAL: REFERENCE A RELATIVE LINK TO THE TOS REPOSITORY*
-  -> Or to Github.
-
-
-** Vacuum system [/]
-:PROPERTIES:
-:CUSTOM_ID: sec:cast:vacuum_system
-:END:
-
-This section covers the vacuum system of the detector. It is pumped
-via a single primary membrane pump and two turbo pumps. One turbo pump
-is used to pump the main vacuum vessel of the beam pipe, while the
-second small turbo pump is used to pump the interstage part of our
-X-ray source manipulator to reduce leakage during movement of the
-source.
-
-Fig. [[fig:cast:vacuum-schematic]] shows a schematic of the whole vacuum
-system including all interlock systems and the pressure sensors. The
-pressures of the sensors P3 and P-MM are used as an interlock for VT3
-and the gas supply, respectively.
-
-#+CAPTION: Schematic of the vacuum system behind the LLNL telescope including
-#+CAPTION: interlocks and pressure sensors.
-#+NAME: fig:cast:vacuum-schematic
-#+ATTR_LATEX: :width 1\textwidth :options angle=90
-[[file:~/phd/Figs/detector/vacuum_system2017.png]]
-
-*** TODOs for this section [/]                                   :noexport:
-
-- [X] *EXPLAIN INTERLOCKS HERE OR IN APPENDIX?*
-  -> This entire thing will be in the appendix later. :)
-
-** Watercooling system & gas supply
-
-In this section the watercooling system as well as the gas supply is
-discussed. In section [[#sec:cast:water_gas_schematic]] a combined
-schematic of both systems is shown.
-
-*** Watercooling 
-
-In order to keep the detector cool enough to avoid noise and damage to
-the septemboard, a watercooling system is used. This section describes
-the relevant information for the system as used at CAST.
-
-To readout the temperature two PT1000 temperature sensors are
-installed on the detector. One is located on the bottomside of the
-intermediate board (outside of the detector volume), while the other
-is located on the bottom side of the Septemboard. This temperature
-$T_{\text{Septem}}$ is also included in the schematic
-[[fig:detector-schematic]] below, because it was intended to be part of
-the HV interlock, as described in [[#sec:cast:hv_interlock]]. In the end
-it was not due to lack of time for proper testing. [fn:data_loss]
-
-Fig. sref:fig:cast:water_cooling_system shows the main part of the system including the
-pump, reservoir and radiator. The tubing is specifically chosen in
-*blue* to clear up potential confusion with other tubes used in the
-detector system. [fn:cooling_colors] These tubes use special Festo quick couplings, which
-cannot be connected to the connectors of the gas supply, to avoid
-potential accidents. The tubes have zipties installed on them, which
-label the tubes as well, with the naming convention as it is used in
-fig. [[fig:detector-schematic]].
-
-- Maintenance :: At the end of every shift it should be checked,
-  whether the water level in the reservoir is still above the red line
-  seen in Fig. [[sref:fig:cast:water_cooling_reservoir]]. If not, water
-  should be added by the shift coordinator (or trusted shifters).
-
-#+begin_src subfigure
-(figure ()
-        (subfigure (linewidth 0.36) (caption "Reservior") (label "fig:cast:water_cooling_reservoir")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/CAST_water_cooling_reservoir.jpg"))
-        (subfigure (linewidth 0.64) (caption "Water cooling system") (label "fig:cast:water_cooling_system")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/CAST_water_cooling_system.jpg"))
-        (caption
-         (subref "fig:cast:water_cooling_reservoir")
-          "shows a closeup of the water cooling reservoir with indicated markings to
-           be checked for safe water levels."
-         (subref "fig:cast:water_cooling_system")
-          "is a look from the ground floor at the water cooling system including radiator, pump
-           and reservoir.")
-        (label "fig:cast:water_cooling_overview"))
-#+end_src
-
-[fn:data_loss] As mentioned in a previous footnote, the decision to
-take it out of the HV interlock is the reason for loss of temperature
-logging data.
-
-[fn:cooling_colors] This change was made after the 'window accident'.
-
-
-*** Gas supply
-
-The gas supply uses red tubing (in parts where flexible tubing is
-used) to differentiate itself from the watercooling
-system. Additionally, the tubes have zipties showing which tube is
-which. These are located on both ends of the tubes. The naming
-convention is the same as in [[fig:detector-schematic]]. The connectors of
-the gas line are standard Swagelok connectors.
-
-As can be seen in the schematic, the gas supply has 4 valves on the
-inlet side and 2 on the outlet side. In addition a buffer gas volume
-is installed before the detector for better flow control. 
-
-It follows a short explanation of the different valves:
-
-- $V_{\text{in, 1}}$ is the main electrovalve installed right after the gas
-  bottle outside the CAST hall. 
-- $V_{\text{interlock}}$ is installed is the electrovalve installed
-  below the platform where the beamline is located. This valve is part
-  of the gas supply interlock, as described in section [[#sec:cast:gas_supply_interlock]].
-- $V_{\text{in, 2}}$ is the manual valve located on the second gas
-  supply mounting below the beamline. 
-- $V_{\text{in, N1}}$ is the first needle valve, which is located on
-  the sceond gas supply mounting below the beamline. It is the one
-  part of the flow meter placed there.
-- $V_{\text{P}}$ is the valve inside the pressure controller, which is
-  placed roughly below the telescope (on the platform), while
-  $P_{\text{Detector}}$ is the pressure gauge inside this controller.
-
-*** Combined schematic (water & gas)
-:PROPERTIES:
-:CUSTOM_ID: sec:cast:water_gas_schematic
-:END:
-
-Fig. [[fig:detector-schematic]] shows a combined schematic of both the
-watercooling system and the gas supply. Additionally, the relevant
-interlock systems and their corresponding members are shown.
-
-#+CAPTION: Combined schematic of the detector system, consisting of the
-#+CAPTION: water cooling system and the gas supply. The interlock systems
-#+CAPTION: are shown with dashed lines. See section [[#sec:cast:interlock_systems]]
-#+CAPTION: regarding explanations of when the interlock is activated.
-#+NAME: fig:detector-schematic
-#+ATTR_LATEX: :width 1\textwidth :options angle=90
-[[~/org/Doc/Detector/figs/detector_system2017.png]]
-
-** Interlock systems
-:PROPERTIES:
-:CUSTOM_ID: sec:cast:interlock_systems
-:END:
-
-This section describes the interlock systems, which are related to the
-detector. There are 3 interlock systems to speak of. 
-- The CAST magnet interlock, which prohibits the gate valve VT3 to be
-  opened, if the pressure in the vacuum system is not good enough.
-- A gas supply interlock, which makes sure the detector is only
-  flushed with gas, if all other parameters are considered nominal
-  (mainly a good vacuum in the system).
-- A HV interlock, which makes sure the detector is only under HV, if
-  the temperature of the detector is still good (otherwise a lot of
-  sparks are produced) and the currents on the HV lines are nominal.
-
-*** HV interlock
-:PROPERTIES:
-:CUSTOM_ID: sec:cast:hv_interlock
-:END:
-
-#+begin_quote
-This section describes the high voltage interlock as it was
-intended. But as mentioned multiple times previously it was
-deactivated for final data taking due to several bugs causing it do
-trigger under non intended circumstances.
-#+end_quote
-
-The HV system is part of an interlock, which tracks the following
-properties:
-- detector temperature
-- currents on HV lines
-- TO BE IMPLEMENTED: gas pressure inside the detector [fn:gas_pressure]
-
-The detector temperature is measured at two points by PT1000
-sensors. One of these is located on the bottom side of the
-intermediate board (and thus is more a measure the the temperature
-surrounding the detector), while the second is located on the bottom
-side of the septemboard. The second is the best possible measure for
-the temperature of the InGrids. However, there is still a PCB
-separating the sensor from the actual InGrids. This means there is
-probably a temperature difference of a minimum of $\SI{10}{\celsius}$
-between the measured value and the actual temperature of the InGrids. 
-
-Whenever the TOS is configured to use the FADC readout and control the
-HV (note: the two are intertwined, since both sit in the same VME
-crate, which is controlled via a single USB connection), a background
-process which monitors the temperature is started. If the temperature
-exceeds the following boundaries
-
-\[
-\SI{0}{\celsius} \leq T \leq \SI{60}{\celsius}
-\]
-
-on the lower side of the septemboard, the HV is shut down
-immediately. The lower bound is of less practical value in a physical
-sense, but in case of sensor problems negative temperature values may
-be reported. As the upper bound a value is taken at which sparks and
-general noise seen on the pixels becomes noticeable. 
-
-The interlock currents at which the HV trips are already shown in
-tab. [[[[tab:cast:high_voltage]]. During ramp up of the HV, these trip
-currents are set higher to avoid trips, while capacitors are being
-charged.
-
-The gas pressure within the detector was intended to be included into
-the interlock system to shut down the HV if the pressure inside the
-detector leaves a certain safe boundary, since this could indicate a
-leak in the detector or an empty gas bottle.
-
-[fn:gas_pressure] The gas pressure inside the detector was intended to
-be added to the HV interlock as well, but also due to lack of time it
-never was.
-
-*** Gas supply interlock
-:PROPERTIES:
-:CUSTOM_ID: sec:cast:gas_supply_interlock
-:END:
-
-The gas supply is also part of an interlock system. In case of a
-window rupture the potential amount of gas that might enter the vacuum
-system should be limited by electrovalves. Ideally the pressure inside
-the detector had been included into the gas supply interlock. This
-could have made sure the gas inlet and outlet are closed in case the pressure
-inside the detector drops (which might indicate a leak somewhere or an
-empty gas bottle) or in case of rising pressure.
-
-The latter is not as important though, because a pressure controller is
-already installed behind the detector, which controls the flow such
-that the pressure stays at $\SI{1050}{\milli \bar}$. While a failure
-of the controller is thinkable, potentially leading to a pressure
-increase inside the detector, it is questionable whether this could be
-dealt with using this interlock system. That is because the pressure
-sensor used is part of the pressure controller.
-
-Three electrovalves are placed on the gas line of the detector. One,
-$V_{\text{in}}$, is outside of the building next to the gas bottles
-(see fig. [[sref:fig:cast:electrovalve-outside]]). The second valve
-$V_{\text{interlock}}$ is located right before the buffer volume, next
-to the watercooling system, below the shielding platform,
-fig. sref:fig:cast:electrovalve-V-interlock. The final electrovalve
-$V_{\text{out}}$ is located after the pressure controller on a blue
-beam, which supports the optical table below the telescope (see
-fig. [[sref:fig:cast:electrovalve-V-out]]). These valves are normally closed,
-i.e. in case of power loss they automatically close. They are open if
-a voltage is applied to them.
-
-The valves are connected to the pressure sensor $P_{\text{MM}}$ (see
-fig. [[fig:cast:vacuum-schematic]]). The pressures to activate the interlock
-system is defined by upper and lower thresholds asymmetrically. They
-are as follows:
-
-\begin{align*}
-P_{\text{MM, Gas enable}} \leq \SI{9.9e-3}{\milli \bar}
-\end{align*}
-
-and 
-
-\begin{align*}
-P_{\text{MM, Gas disable}} \leq \SI{2e-2}{\milli \bar}
-\end{align*}
-
-#+begin_src subfigure
-(figure ()
-        (subfigure (linewidth 0.33) (caption "Outside $V_{\\text{in}}$") (label "fig:cast:electrovalve-outside")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/org/Doc/Detector/figs/electrovalve_outside.jpg"))
-        (subfigure (linewidth 0.33) (caption "Below $V_{\\text{interlock}}$") (label "fig:cast:electrovalve-V-interlock")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/org/Doc/Detector/figs/electrovalve_V_interlock.jpg"))
-        (subfigure (linewidth 0.33) (caption "Output $V_{\\text{out}}$") (label "fig:cast:electrovalve-V-out")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/org/Doc/Detector/figs/electrovalve_V_out.jpg"))
-        (caption
-         (subref "fig:cast:electrovalve-outside")
-          ": Location of the electrovalve $V_{\\text{in}}$ located outside the building."
-         (subref "fig:cast:electrovalve-outside")
-          ": Location of the electrovalve $V_{\\text{interlock}}$ next to the 
-           watercooling system below the shielding table."
-         (subref "fig:cast:electrovalve-outside")
-          ": Location of the electrovalve $V_{\\text{out}}$ connected to the beam
-           supporting the optical table, on which the telescope is mounted.")
-        (label "fig:cast:interlock_electrovalves"))
-#+end_src
-
-
-**** TODOs for this section [/]                                 :noexport:
-
-#+BEGIN_COMMENT
-*CHECK THESE VALUES, they are still wrong I believe*.
-#+END_COMMENT
-
-- [X] *MERGE IMAGES INTO ONE SUBFIG*
-
-**** Note on pressures of interlock                             :extended:
-
-It's possible the exact numbers are slightly wrong. At this point I'm
-not certain anymore, but I had a note to cross check them in the
-document the above was initially in (a document about the detector &
-operation for CERN).
-
-*** CAST magnet interlock
-:PROPERTIES:
-:CUSTOM_ID: sec:cast:cast_magnet_interlock
-:END:
-
-The main CAST magnet interlock, as it is relevant to our detector, is
-as follows. The gate valve VT3 separating the magnet volume from the
-telescope volume is interlocked. Only if the vacuum in the telescope
-volume is good enough, VT3 can be opened while the interlock is
-activated. 
-
-For this the pressure of $P_{\text{3}}$ is considered relevant
-(cmp. fig. [[fig:cast:vacuum-schematic]]). The upper and lower thresholds which
-activate and deactivate the interlock are asymmetric and as follows:
-
-\begin{align*}
-P_{\text{3, VT3 enable}} &\leq \SI{1e-5}{\milli\bar}
-\end{align*}
-
-while
-
-\begin{align*}
-P_{\text{3, VT3 disable}} &\leq \SI{8e-5}{\milli\bar}.
-\end{align*}
-
-This is to make sure there can be no rapid toggling between the two
-states during pumping or flushing the system. 
-
 ** X-ray finger runs [/]                                          :noexport:
 
 - [X] should this go to the alignment part? I suppose we could mention
@@ -14082,388 +13698,6 @@ to adjust the ray tracing.
 - [X] *ONE RUN NOW PART OF ALIGNMENT, OTHER IS MISSING ON MY LAPTOP*
   -> Both found in [[file:~/CastData/data/XrayFingerRuns/]]
   
-** CAST log files [/]
-
-The CAST experiment is controlled by a central computer running a slow
-control system written in LabVIEW [fn:labview]. It receives data from
-all sensors installed at CAST (vacuum pressures, temperatures, magnet
-current, magnet position and so on). A separate LabVIEW program is
-responsible for controlling the magnet position, either by moving the
-magnet to a specific coordinate or by following the Sun, if it is in
-reach of the magnet.
-
-The slow control software records all sensor data and presents it in a
-multitude of graphs. All data is also written to log files. There are
-two different kinds of log files of interest in the context of the
-septemboard detector at CAST.
-
-1. The general slow control log file is a versioned space separated
-   values file (similar to a comma separated value (CSV) or tab
-   separated value (TSV) file, except using spaces as delimiters). The
-   filename contains the version number, which decides the columns
-   contained in the file and their order. A ~Version.idx~ file maps
-   version numbers to file columns for easy access. These slow control
-   log files normally contain one entry every minute. For the
-   Septemboard detector of interest in this file are mainly the magnet
-   current, relevant vacuum pressure sensors and the state of the gate
-   valve ~VT3~.
-2. The second kind of log files are the tracking log files. These are
-   also space separated value files with fields describing the
-   pointing location of the magnet as well as whether the magnet is
-   currently tracking the Sun.
-
-Both of these log files need to be read by the analysis software to
-decide whether one or multiple trackings took place in a given
-background run and if so extract the exact start and end time for a
-precise data splitting and calculation of background / solar tracking
-time.
-
-Generally the latter log files are all that is needed to determine the
-existence of a solar tracking. However, the slow control log file can
-be used as a further sanity check to make sure the gate valve was
-actually open and the magnet under current during the solar tracking.
-
-This is implemented in the ~cast_log_reader~ program part of
-~TimepixAanlysis~. See sec. [[#sec:appendix:software:cast_log_reader]] for
-more details on the program. The program first parses the log files and
-determines valid solar trackings. Then, given an HDF5 data file
-containing the background data each solar tracking is mapped to a
-background run. One background run may have zero or more solar
-trackings attached to it. In the final step the solar tracking start
-and stop information is added to each run as additional meta
-data. During the later stages of processing this meta data is then
-used to only consider background (non tracking) or solar tracking data
-(starting from the computation of background rates).
-
-[fn:labview] https://www.ni.com/labview
-
-*** TODOs for this section [/]                                   :noexport:
-
-- [ ] in the above we simply state the number of trackings etc. Of
-  course realistically that is simply not enough. We need the slow
-  control and tracking files to compute when a tracking starts and
-  stops.
-  I think this implies it needs to go before the summary!
-- [X] INSERT FOOTNOTE LINK TO LABVIEW  
-
-- [ ] *LINK TO CODE!*
-
-*** Add tracking log information to background files             :extended:
-
-The code dealing with the log files is [[file:~/CastData/ExternCode/TimepixAnalysis/LogReader/cast_log_reader.nim]]
-
-In case previous log information is available we first have to remove
-that information. This is done by just calling the program just with
-the H5 file as an input:
-#+begin_src sh
-cast_log_reader h5file -f ~/CastData/data/DataRuns2017_Reco.h5
-cast_log_reader h5file -f ~/CastData/data/DataRuns2018_Reco.h5
-#+end_src
-
-With an 'empty' (in terms of tracking information) HDF5 file we can
-then go ahead and add all tracking information to them. This of course
-requires the tracking log files:
-
-#+begin_src sh
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2017_Reco.h5
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2018_Reco.h5
-#+end_src
-
-One can also run it without any output H5 file ~--h5out~ to simply get
-information about the runs. In particular all runs
-
-#+begin_src sh
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --startTime 2017/09/01 --endTime 2018/12/30
-#+end_src
-:RESULTS:
-FILTERING TO DATE: 2017-09-01T02:00:00+02:00 and 2018-12-30T01:00:00+01:00
-<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>
-<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>
-<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>
-<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>
-<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>
-<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>
-<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>
-<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>
-<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>
-<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>
-<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>
-<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>
-<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>
-<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>
-<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>
-<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>
-<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>
-<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>
-<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>
-<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>
-<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>
-<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>
-<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>
-<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>
-<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>
-<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>
-<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>
-<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>
-<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>
-<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>
-<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>
-<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>
-<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>
-<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>
-<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>
-<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>
-<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>
-<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>
-<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>
-<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>
-<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>
-<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>
-<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
-<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
-<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>
-<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>
-<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>
-<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>
-<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>
-<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>
-<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>
-<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>
-<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>
-<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>
-<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>
-<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>
-<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>
-<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>
-<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>
-<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>
-<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>
-<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>
-<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>
-<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>
-<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>
-<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>
-<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>
-<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>
-<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>
-<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>
-<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
-<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>
-<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>
-<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>
-<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>
-<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>
-<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>
-<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
-<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>
-<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>
-<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>
-<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>
-<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>
-<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>
-<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>
-<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>
-<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>
-<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>
-<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>
-<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>
-<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>
-<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>
-<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>
-<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>
-<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>
-<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>
-<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>
-<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
-<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>
-<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>
-<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>
-<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>
-<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>
-<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>
-<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>
-<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>
-<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>
-<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>
-<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>
-<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>
-<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>
-<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>
-<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>
-<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>
-<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>
-<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>
-<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>
-<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>
-<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>
-<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>
-There are 120 solar trackings found in the log file directory
-The total time of all trackings: 186 h (exact: 1 week, 18 hours, 46 minutes, and 19 seconds)
-Total time the magnet was on (> 1 T): 0 h h
-:END:
-
-This lists 5 runs that were *not* part of our data taking, meaning we
-lost them.
-
-
-And finally (and most useful for information purposes) we can run the
-log reader over the files and do a fake insert (aka dry run) of
-inserting the files, which only outputs the run information including
-which runs were missed:
-#+begin_src sh
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
-                  --startTime 2017/09/01 --endTime 2018/05/01 \
-                  --h5out ~/CastData/data/DataRuns2017_Reco.h5 --dryRun
-#+end_src
-:RESULTS:
-There are 70 solar trackings found in the log file directory
-The total time of all trackings: 109 h (exact: 4 days, 13 hours, 3 minutes, and 22 seconds)
-Total time the magnet was on (> 1 T): 0 h h
-Filtering tracking logs to date: 2017-09-01T02:00:00+02:00 and 2018-05-01T02:00:00+02:00
-========== Logs mapped to trackings in the output file: ==========
-<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>  for run: 76
-<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>  for run: 77
-<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>  for run: 78
-<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>  for run: 79
-<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>  for run: 80
-<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>  for run: 81
-<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>  for run: 82
-<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>  for run: 82
-<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>  for run: 84
-<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>  for run: 86
-<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>  for run: 87
-<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>  for run: 87
-<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>  for run: 89
-<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>  for run: 90
-<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>  for run: 91
-<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>  for run: 92
-<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>  for run: 94
-<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>  for run: 95
-<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>  for run: 97
-<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>  for run: 98
-<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>  for run: 99
-<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>  for run: 100
-<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>  for run: 101
-<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>  for run: 103
-<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>  for run: 104
-<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>  for run: 106
-<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>  for run: 105
-<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>  for run: 107
-<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>  for run: 109
-<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>  for run: 112
-<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>  for run: 112
-<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>  for run: 114
-<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>  for run: 113
-<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>  for run: 115
-<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>  for run: 117
-<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>  for run: 119
-<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>  for run: 121
-<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>  for run: 123
-<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>  for run: 124
-<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>  for run: 124
-<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>  for run: 125
-<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>  for run: 127
-<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>  for run: 146
-<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>  for run: 150
-<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>  for run: 148
-<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>  for run: 152
-<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>  for run: 154
-<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>  for run: 156
-<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>  for run: 158
-<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>  for run: 160
-<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>  for run: 162
-<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>  for run: 162
-<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>  for run: 162
-<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>  for run: 164
-<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>  for run: 164
-<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>  for run: 166
-<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>  for run: 170
-<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>  for run: 172
-<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>  for run: 174
-<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>  for run: 176
-<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>  for run: 178
-<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>  for run: 178
-<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>  for run: 178
-<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>  for run: 178
-<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>  for run: 178
-<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>  for run: 180
-<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>  for run: 182
-<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>  for run: 182
-==================================================================
-
-========== Logs *not* mapped to a run ============================
-<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
-<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
-==================================================================
-:END:
-
-And for 2018:
-#+begin_src sh
-./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
-                  --startTime 2018/05/01 --endTime 2018/12/31 \
-                  --h5out ~/CastData/data/DataRuns2018_Reco.h5 --dryRun
-#+end_src
-:RESULTS:
-There are 50 solar trackings found in the log file directory
-The total time of all trackings: 77 h (exact: 3 days, 5 hours, 42 minutes, and 57 seconds)
-Total time the magnet was on (> 1 T): 0 h h
-Filtering tracking logs to date: 2018-05-01T02:00:00+02:00 and 2018-12-31T01:00:00+01:00
-========== Logs mapped to trackings in the output file: ==========
-<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>  for run: 240
-<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>  for run: 242
-<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>  for run: 244
-<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>  for run: 246
-<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>  for run: 248
-<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>  for run: 250
-<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>  for run: 254
-<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>  for run: 256
-<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>  for run: 258
-<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>  for run: 261
-<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>  for run: 261
-<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>  for run: 261
-<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>  for run: 263
-<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>  for run: 265
-<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>  for run: 268
-<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>  for run: 270
-<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>  for run: 270
-<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>  for run: 272
-<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>  for run: 272
-<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>  for run: 272
-<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>  for run: 274
-<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>  for run: 274
-<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>  for run: 274
-<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>  for run: 276
-<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>  for run: 276
-<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>  for run: 279
-<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>  for run: 279
-<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>  for run: 281
-<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>  for run: 283
-<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>  for run: 283
-<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>  for run: 283
-<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>  for run: 285
-<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>  for run: 285
-<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>  for run: 287
-<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>  for run: 289
-<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>  for run: 291
-<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>  for run: 291
-<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>  for run: 293
-<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>  for run: 295
-<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>  for run: 297
-<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>  for run: 297
-<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>  for run: 298
-<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>  for run: 299
-<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>  for run: 301
-<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>  for run: 301
-<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>  for run: 303
-<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>  for run: 306
-==================================================================
-
-========== Logs *not* mapped to a run ============================
-<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
-<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
-<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
-==================================================================
-:END:
 
 ** Summary of CAST data taking [7/15]
 :PROPERTIES:
@@ -39394,6 +38628,1105 @@ Then use [[file:PyS_mm_veto_szinti_calib.py]] to plot the data.
 A threshold of $\SI{-110}{\milli\volt}$ was selected, after analysis.
 
 
+* CAST operation procedures                                        :Appendix:
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:cast_operations
+:END:
+
+This chapter provides some guidance about typical operations necessary
+during maintenance or installation of the detector / vacuum system.
+
+- [ ] *YEAH*
+
+We start with the CAST log files in sec. [[#sec:appendix:cast_log_files]],
+because these are the most important aspect in terms of performing
+data analysis with the data taken at cast (magnetic field, solar
+tracking and more).
+
+Starting with the safety interlock systems in place for the different
+components (high voltage, vacuum and gas), sec. [[#sec:cast:hv_interlock]].
+
+- [ ] *FINISH ME*
+
+** CAST terminology
+
+- [ ] *HAVE A SCHEMATIC OF SORTS THAT SHOWS WHAT AIRPORT, JURA,
+  SUNRISE, SUNSET MEANS*
+  -> We don't have the time, but it would be fun to experiment with
+  gaussian splatting based on all the CAST pictures we have to see if
+  we could get an interactive 3D view of the CAST hall, haha.
+  -> Realistically: do a simple schematic showing CAST magnet, tracks,
+  telescope side etc and annotate.
+
+** High voltage supply [/]
+
+The high voltage supply is an iseg HV module, which is located in the
+VME crate on the airport side of the magnet. The HV is controlled via
+a USB connection to the VME crate, which it shares with the FADC. The
+veto scintillator however has its own HV supply, since it needs a
+positive HV, instead of a negative one.
+
+The detector uses $\num{7}$ different high voltages. $\num{5}$ of
+these are for the detector itself, $\num{1}$ for the SiPM and the last
+for the veto scintillator on top. Their voltages are shown in
+tab. [[tab:cast:high_voltage]]. 
+
+#+CAPTION: Table of high voltages in use for the Septemboard detector.
+#+CAPTION: Note that the veto scintillator is not controlled via
+#+CAPTION: the iseg module, but by a CAEN N470.
+#+NAME: tab:cast:high_voltage
+#+ATTR_LATEX: :booktabs t
+|-------------+---------+-------------+------------------|
+| Description | Channel | Voltage / V | TripCurrent / mA |
+|-------------+---------+-------------+------------------|
+| grid        |       0 |        -300 |            0.050 |
+| anode       |       1 |        -375 |            0.050 |
+| cathode     |       2 |       -1875 |            0.050 |
+| ring 1      |       3 |        -415 |            0.100 |
+| ring 29     |       4 |       -1830 |            0.100 |
+| veto scinti |       5 |       +1200 |                2 |
+| SiPM        |       6 |       -65.6 |             0.05 |
+|-------------+---------+-------------+------------------|
+
+The voltages actually used are defined in [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]].
+
+The HV cables in use are red cables with LEMO HV connectors. They run
+from the detector to an iseg HV module sitting in a VME crate on the
+airport side of the magnet. The cables are marked with zip ties and
+the same names as in tab. [[tab:cast:high_voltage]]. 
+
+The interlock system for the high voltage supply is detailed in
+section [[#sec:cast:hv_interlock]], together with the other interlock
+systems in place.
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [X] *MOVE SOME OF THIS TO THE DAQ SECTION WHERE WE HAVE A HV SECTION*
+  -> The table is now also part of the detector chapter
+  [[#sec:operation_calibration:high_voltage]].
+
+- [ ] *ONCE FINAL: REFERENCE A RELATIVE LINK TO THE TOS REPOSITORY*
+  -> Or to Github.
+
+** Vacuum system [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:vacuum_system
+:END:
+
+This section covers the vacuum system of the detector. It is pumped
+via a single primary membrane pump and two turbo pumps. One turbo pump
+is used to pump the main vacuum vessel of the beam pipe, while the
+second small turbo pump is used to pump the interstage part of our
+X-ray source manipulator to reduce leakage during movement of the
+source.
+
+Fig. [[fig:cast:vacuum-schematic]] shows a schematic of the whole vacuum
+system including all interlock systems and the pressure sensors. The
+pressures of the sensors P3 and P-MM are used as an interlock for VT3
+and the gas supply, respectively.
+
+#+CAPTION: Schematic of the vacuum system behind the LLNL telescope including
+#+CAPTION: interlocks and pressure sensors.
+#+NAME: fig:cast:vacuum-schematic
+#+ATTR_LATEX: :width 1\textwidth :options angle=90
+[[file:~/phd/Figs/detector/vacuum_system2017.png]]
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [X] *EXPLAIN INTERLOCKS HERE OR IN APPENDIX?*
+  -> This entire thing will be in the appendix later. :)
+
+** Watercooling system & gas supply
+
+In this section the watercooling system as well as the gas supply is
+discussed. In section [[#sec:cast:water_gas_schematic]] a combined
+schematic of both systems is shown.
+
+*** Watercooling 
+
+In order to keep the detector cool enough to avoid noise and damage to
+the septemboard, a watercooling system is used. This section describes
+the relevant information for the system as used at CAST.
+
+To readout the temperature two PT1000 temperature sensors are
+installed on the detector. One is located on the bottomside of the
+intermediate board (outside of the detector volume), while the other
+is located on the bottom side of the Septemboard. This temperature
+$T_{\text{Septem}}$ is also included in the schematic
+[[fig:detector-schematic]] below, because it was intended to be part of
+the HV interlock, as described in [[#sec:cast:hv_interlock]]. In the end
+it was not due to lack of time for proper testing. [fn:data_loss]
+
+Fig. sref:fig:cast:water_cooling_system shows the main part of the system including the
+pump, reservoir and radiator. The tubing is specifically chosen in
+*blue* to clear up potential confusion with other tubes used in the
+detector system. [fn:cooling_colors] These tubes use special Festo quick couplings, which
+cannot be connected to the connectors of the gas supply, to avoid
+potential accidents. The tubes have zipties installed on them, which
+label the tubes as well, with the naming convention as it is used in
+fig. [[fig:detector-schematic]].
+
+- Maintenance :: At the end of every shift it should be checked,
+  whether the water level in the reservoir is still above the red line
+  seen in Fig. [[sref:fig:cast:water_cooling_reservoir]]. If not, water
+  should be added by the shift coordinator (or trusted shifters).
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.36) (caption "Reservior") (label "fig:cast:water_cooling_reservoir")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/CAST_water_cooling_reservoir.jpg"))
+        (subfigure (linewidth 0.64) (caption "Water cooling system") (label "fig:cast:water_cooling_system")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/CAST_water_cooling_system.jpg"))
+        (caption
+         (subref "fig:cast:water_cooling_reservoir")
+          "shows a closeup of the water cooling reservoir with indicated markings to
+           be checked for safe water levels."
+         (subref "fig:cast:water_cooling_system")
+          "is a look from the ground floor at the water cooling system including radiator, pump
+           and reservoir.")
+        (label "fig:cast:water_cooling_overview"))
+#+end_src
+
+[fn:data_loss] As mentioned in a previous footnote, the decision to
+take it out of the HV interlock is the reason for loss of temperature
+logging data.
+
+[fn:cooling_colors] This change was made after the 'window accident'.
+
+
+*** Gas supply
+
+The gas supply uses red tubing (in parts where flexible tubing is
+used) to differentiate itself from the watercooling
+system. Additionally, the tubes have zipties showing which tube is
+which. These are located on both ends of the tubes. The naming
+convention is the same as in [[fig:detector-schematic]]. The connectors of
+the gas line are standard Swagelok connectors.
+
+As can be seen in the schematic, the gas supply has 4 valves on the
+inlet side and 2 on the outlet side. In addition a buffer gas volume
+is installed before the detector for better flow control. 
+
+It follows a short explanation of the different valves:
+
+- $V_{\text{in, 1}}$ is the main electrovalve installed right after the gas
+  bottle outside the CAST hall. 
+- $V_{\text{interlock}}$ is installed is the electrovalve installed
+  below the platform where the beamline is located. This valve is part
+  of the gas supply interlock, as described in section [[#sec:cast:gas_supply_interlock]].
+- $V_{\text{in, 2}}$ is the manual valve located on the second gas
+  supply mounting below the beamline. 
+- $V_{\text{in, N1}}$ is the first needle valve, which is located on
+  the sceond gas supply mounting below the beamline. It is the one
+  part of the flow meter placed there.
+- $V_{\text{P}}$ is the valve inside the pressure controller, which is
+  placed roughly below the telescope (on the platform), while
+  $P_{\text{Detector}}$ is the pressure gauge inside this controller.
+
+*** Combined schematic (water & gas)
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:water_gas_schematic
+:END:
+
+Fig. [[fig:detector-schematic]] shows a combined schematic of both the
+watercooling system and the gas supply. Additionally, the relevant
+interlock systems and their corresponding members are shown.
+
+#+CAPTION: Combined schematic of the detector system, consisting of the
+#+CAPTION: water cooling system and the gas supply. The interlock systems
+#+CAPTION: are shown with dashed lines. See section [[#sec:cast:interlock_systems]]
+#+CAPTION: regarding explanations of when the interlock is activated.
+#+NAME: fig:detector-schematic
+#+ATTR_LATEX: :width 1\textwidth :options angle=90
+[[~/org/Doc/Detector/figs/detector_system2017.png]]
+
+** CAST log files [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:cast_log_files
+:END:
+
+The CAST experiment is controlled by a central computer running a slow
+control system written in LabVIEW [fn:labview]. It receives data from
+all sensors installed at CAST (vacuum pressures, temperatures, magnet
+current, magnet position and so on). A separate LabVIEW program is
+responsible for controlling the magnet position, either by moving the
+magnet to a specific coordinate or by following the Sun, if it is in
+reach of the magnet.
+
+The slow control software records all sensor data and presents it in a
+multitude of graphs. All data is also written to log files. There are
+two different kinds of log files of interest in the context of the
+septemboard detector at CAST.
+
+1. The general slow control log file is a versioned space separated
+   values file (similar to a comma separated value (CSV) or tab
+   separated value (TSV) file, except using spaces as delimiters). The
+   filename contains the version number, which decides the columns
+   contained in the file and their order. A ~Version.idx~ file maps
+   version numbers to file columns for easy access. These slow control
+   log files normally contain one entry every minute. For the
+   Septemboard detector of interest in this file are mainly the magnet
+   current, relevant vacuum pressure sensors and the state of the gate
+   valve ~VT3~.
+2. The second kind of log files are the tracking log files. These are
+   also space separated value files with fields describing the
+   pointing location of the magnet as well as whether the magnet is
+   currently tracking the Sun.
+
+Both of these log files need to be read by the analysis software to
+decide whether one or multiple trackings took place in a given
+background run and if so extract the exact start and end time for a
+precise data splitting and calculation of background / solar tracking
+time.
+
+Generally the latter log files are all that is needed to determine the
+existence of a solar tracking. However, the slow control log file can
+be used as a further sanity check to make sure the gate valve was
+actually open and the magnet under current during the solar tracking.
+
+This is implemented in the ~cast_log_reader~ program part of
+~TimepixAanlysis~. See sec. [[#sec:appendix:software:cast_log_reader]] for
+more details on the program. The program first parses the log files and
+determines valid solar trackings. Then, given an HDF5 data file
+containing the background data each solar tracking is mapped to a
+background run. One background run may have zero or more solar
+trackings attached to it. In the final step the solar tracking start
+and stop information is added to each run as additional meta
+data. During the later stages of processing this meta data is then
+used to only consider background (non tracking) or solar tracking data
+(starting from the computation of background rates).
+
+[fn:labview] https://www.ni.com/labview
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] in the above we simply state the number of trackings etc. Of
+  course realistically that is simply not enough. We need the slow
+  control and tracking files to compute when a tracking starts and
+  stops.
+  I think this implies it needs to go before the summary!
+- [X] INSERT FOOTNOTE LINK TO LABVIEW  
+
+- [ ] *LINK TO CODE!*
+
+*** Add tracking log information to background files             :extended:
+
+The code dealing with the log files is [[file:~/CastData/ExternCode/TimepixAnalysis/LogReader/cast_log_reader.nim]]
+
+In case previous log information is available we first have to remove
+that information. This is done by just calling the program just with
+the H5 file as an input:
+#+begin_src sh
+cast_log_reader h5file -f ~/CastData/data/DataRuns2017_Reco.h5
+cast_log_reader h5file -f ~/CastData/data/DataRuns2018_Reco.h5
+#+end_src
+
+With an 'empty' (in terms of tracking information) HDF5 file we can
+then go ahead and add all tracking information to them. This of course
+requires the tracking log files:
+
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2017_Reco.h5
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2018_Reco.h5
+#+end_src
+
+One can also run it without any output H5 file ~--h5out~ to simply get
+information about the runs. In particular all runs
+
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --startTime 2017/09/01 --endTime 2018/12/30
+#+end_src
+:RESULTS:
+FILTERING TO DATE: 2017-09-01T02:00:00+02:00 and 2018-12-30T01:00:00+01:00
+<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>
+<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>
+<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>
+<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>
+<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>
+<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>
+<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>
+<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>
+<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>
+<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>
+<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>
+<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>
+<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>
+<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>
+<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>
+<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>
+<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>
+<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>
+<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>
+<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>
+<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>
+<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>
+<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>
+<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>
+<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>
+<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>
+<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>
+<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>
+<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>
+<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>
+<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>
+<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>
+<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>
+<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>
+<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>
+<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>
+<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>
+<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>
+<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>
+<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>
+<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>
+<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>
+<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
+<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
+<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>
+<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>
+<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>
+<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>
+<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>
+<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>
+<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>
+<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>
+<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>
+<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>
+<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>
+<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>
+<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>
+<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>
+<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>
+<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>
+<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>
+<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>
+<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>
+<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>
+<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>
+<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>
+<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>
+<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>
+<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>
+<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>
+<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
+<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>
+<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>
+<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>
+<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>
+<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>
+<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>
+<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
+<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>
+<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>
+<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>
+<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>
+<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>
+<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>
+<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>
+<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>
+<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>
+<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>
+<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>
+<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>
+<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>
+<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>
+<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>
+<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>
+<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>
+<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>
+<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>
+<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
+<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>
+<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>
+<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>
+<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>
+<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>
+<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>
+<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>
+<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>
+<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>
+<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>
+<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>
+<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>
+<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>
+<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>
+<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>
+<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>
+<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>
+<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>
+<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>
+<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>
+<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>
+<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>
+There are 120 solar trackings found in the log file directory
+The total time of all trackings: 186 h (exact: 1 week, 18 hours, 46 minutes, and 19 seconds)
+Total time the magnet was on (> 1 T): 0 h h
+:END:
+
+This lists 5 runs that were *not* part of our data taking, meaning we
+lost them.
+
+
+And finally (and most useful for information purposes) we can run the
+log reader over the files and do a fake insert (aka dry run) of
+inserting the files, which only outputs the run information including
+which runs were missed:
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
+                  --startTime 2017/09/01 --endTime 2018/05/01 \
+                  --h5out ~/CastData/data/DataRuns2017_Reco.h5 --dryRun
+#+end_src
+:RESULTS:
+There are 70 solar trackings found in the log file directory
+The total time of all trackings: 109 h (exact: 4 days, 13 hours, 3 minutes, and 22 seconds)
+Total time the magnet was on (> 1 T): 0 h h
+Filtering tracking logs to date: 2017-09-01T02:00:00+02:00 and 2018-05-01T02:00:00+02:00
+========== Logs mapped to trackings in the output file: ==========
+<2017-10-31 Tue 6:37>    <2017-10-31 Tue 8:10>  for run: 76
+<2017-11-02 Thu 6:39>    <2017-11-02 Thu 8:14>  for run: 77
+<2017-11-03 Fri 6:41>    <2017-11-03 Fri 8:15>  for run: 78
+<2017-11-04 Sat 6:42>    <2017-11-04 Sat 8:17>  for run: 79
+<2017-11-05 Sun 6:43>    <2017-11-05 Sun 8:18>  for run: 80
+<2017-11-06 Mon 6:45>    <2017-11-06 Mon 8:20>  for run: 81
+<2017-11-07 Tue 6:47>    <2017-11-07 Tue 8:23>  for run: 82
+<2017-11-08 Wed 6:48>    <2017-11-08 Wed 8:24>  for run: 82
+<2017-11-09 Thu 6:49>    <2017-11-09 Thu 8:26>  for run: 84
+<2017-11-10 Fri 6:51>    <2017-11-10 Fri 8:28>  for run: 86
+<2017-11-11 Sat 6:52>    <2017-11-11 Sat 8:30>  for run: 87
+<2017-11-12 Sun 6:54>    <2017-11-12 Sun 8:31>  for run: 87
+<2017-11-13 Mon 6:55>    <2017-11-13 Mon 8:33>  for run: 89
+<2017-11-14 Tue 6:56>    <2017-11-14 Tue 8:34>  for run: 90
+<2017-11-15 Wed 6:57>    <2017-11-15 Wed 8:36>  for run: 91
+<2017-11-17 Fri 7:00>    <2017-11-17 Fri 8:39>  for run: 92
+<2017-11-18 Sat 7:01>    <2017-11-18 Sat 8:41>  for run: 94
+<2017-11-19 Sun 7:02>    <2017-11-19 Sun 8:43>  for run: 95
+<2017-11-25 Sat 7:10>    <2017-11-25 Sat 8:53>  for run: 97
+<2017-11-26 Sun 7:11>    <2017-11-26 Sun 8:54>  for run: 98
+<2017-11-27 Mon 7:12>    <2017-11-27 Mon 8:56>  for run: 99
+<2017-11-28 Tue 7:14>    <2017-11-28 Tue 8:57>  for run: 100
+<2017-11-29 Wed 7:15>    <2017-11-29 Wed 8:59>  for run: 101
+<2017-11-30 Thu 7:16>    <2017-11-30 Thu 9:00>  for run: 103
+<2017-12-01 Fri 7:17>    <2017-12-01 Fri 9:01>  for run: 104
+<2017-12-03 Sun 7:19>    <2017-12-03 Sun 8:58>  for run: 106
+<2017-12-02 Sat 7:18>    <2017-12-02 Sat 8:59>  for run: 105
+<2017-12-04 Mon 7:20>    <2017-12-04 Mon 9:01>  for run: 107
+<2017-12-05 Tue 7:21>    <2017-12-05 Tue 8:59>  for run: 109
+<2017-12-07 Thu 7:22>    <2017-12-07 Thu 9:02>  for run: 112
+<2017-12-09 Sat 7:25>    <2017-12-09 Sat 9:05>  for run: 112
+<2017-12-11 Mon 7:27>    <2017-12-11 Mon 9:00>  for run: 114
+<2017-12-10 Sun 7:26>    <2017-12-10 Sun 9:01>  for run: 113
+<2017-12-12 Tue 7:28>    <2017-12-12 Tue 9:02>  for run: 115
+<2017-12-13 Wed 7:28>    <2017-12-13 Wed 9:00>  for run: 117
+<2017-12-14 Thu 7:29>    <2017-12-14 Thu 8:59>  for run: 119
+<2017-12-15 Fri 7:29>    <2017-12-15 Fri 9:00>  for run: 121
+<2017-12-16 Sat 7:30>    <2017-12-16 Sat 9:01>  for run: 123
+<2017-12-17 Sun 7:31>    <2017-12-17 Sun 9:01>  for run: 124
+<2017-12-18 Mon 7:31>    <2017-12-18 Mon 9:01>  for run: 124
+<2017-12-19 Tue 7:32>    <2017-12-19 Tue 9:02>  for run: 125
+<2017-12-20 Wed 7:33>    <2017-12-20 Wed 9:02>  for run: 127
+<2018-02-18 Sun 6:57>    <2018-02-18 Sun 8:28>  for run: 146
+<2018-02-20 Tue 6:53>    <2018-02-20 Tue 8:24>  for run: 150
+<2018-02-19 Mon 6:56>    <2018-02-19 Mon 8:26>  for run: 148
+<2018-02-21 Wed 6:52>    <2018-02-21 Wed 8:22>  for run: 152
+<2018-02-22 Thu 6:50>    <2018-02-22 Thu 8:20>  for run: 154
+<2018-02-23 Fri 6:48>    <2018-02-23 Fri 8:18>  for run: 156
+<2018-02-24 Sat 6:47>    <2018-02-24 Sat 8:16>  for run: 158
+<2018-02-28 Wed 6:40>    <2018-02-28 Wed 8:09>  for run: 160
+<2018-03-02 Fri 6:36>    <2018-03-02 Fri 8:05>  for run: 162
+<2018-03-03 Sat 6:35>    <2018-03-03 Sat 8:03>  for run: 162
+<2018-03-04 Sun 6:33>    <2018-03-04 Sun 8:01>  for run: 162
+<2018-03-05 Mon 6:31>    <2018-03-05 Mon 7:59>  for run: 164
+<2018-03-06 Tue 6:29>    <2018-03-06 Tue 7:57>  for run: 164
+<2018-03-07 Wed 6:27>    <2018-03-07 Wed 7:55>  for run: 166
+<2018-03-14 Wed 6:14>    <2018-03-14 Wed 7:41>  for run: 170
+<2018-03-15 Thu 6:12>    <2018-03-15 Thu 7:39>  for run: 172
+<2018-03-16 Fri 6:10>    <2018-03-16 Fri 7:37>  for run: 174
+<2018-03-17 Sat 6:08>    <2018-03-17 Sat 7:35>  for run: 176
+<2018-03-18 Sun 6:07>    <2018-03-18 Sun 7:33>  for run: 178
+<2018-03-19 Mon 6:05>    <2018-03-19 Mon 7:31>  for run: 178
+<2018-03-20 Tue 6:03>    <2018-03-20 Tue 7:29>  for run: 178
+<2018-03-21 Wed 6:01>    <2018-03-21 Wed 7:27>  for run: 178
+<2018-03-22 Thu 5:59>    <2018-03-22 Thu 7:25>  for run: 178
+<2018-03-24 Sat 5:55>    <2018-03-24 Sat 7:21>  for run: 180
+<2018-03-25 Sun 6:53>    <2018-03-25 Sun 8:20>  for run: 182
+<2018-03-26 Mon 5:51>    <2018-03-26 Mon 7:18>  for run: 182
+==================================================================
+
+========== Logs *not* mapped to a run ============================
+<2018-02-15 Thu 7:01>    <2018-02-15 Thu 8:33>
+<2018-02-16 Fri 7:00>    <2018-02-16 Fri 8:31>
+==================================================================
+:END:
+
+And for 2018:
+#+begin_src sh
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs \
+                  --startTime 2018/05/01 --endTime 2018/12/31 \
+                  --h5out ~/CastData/data/DataRuns2018_Reco.h5 --dryRun
+#+end_src
+:RESULTS:
+There are 50 solar trackings found in the log file directory
+The total time of all trackings: 77 h (exact: 3 days, 5 hours, 42 minutes, and 57 seconds)
+Total time the magnet was on (> 1 T): 0 h h
+Filtering tracking logs to date: 2018-05-01T02:00:00+02:00 and 2018-12-31T01:00:00+01:00
+========== Logs mapped to trackings in the output file: ==========
+<2018-10-22 Mon 6:24>    <2018-10-22 Mon 7:55>  for run: 240
+<2018-10-23 Tue 6:26>    <2018-10-23 Tue 7:57>  for run: 242
+<2018-10-24 Wed 6:27>    <2018-10-24 Wed 7:58>  for run: 244
+<2018-10-25 Thu 6:28>    <2018-10-25 Thu 8:00>  for run: 246
+<2018-10-26 Fri 6:30>    <2018-10-26 Fri 8:02>  for run: 248
+<2018-10-27 Sat 6:31>    <2018-10-27 Sat 8:03>  for run: 250
+<2018-10-29 Mon 6:34>    <2018-10-29 Mon 8:06>  for run: 254
+<2018-10-30 Tue 6:35>    <2018-10-30 Tue 8:08>  for run: 256
+<2018-11-01 Thu 6:38>    <2018-11-01 Thu 8:11>  for run: 258
+<2018-11-02 Fri 6:39>    <2018-11-02 Fri 8:13>  for run: 261
+<2018-11-03 Sat 6:40>    <2018-11-03 Sat 8:16>  for run: 261
+<2018-11-04 Sun 6:43>    <2018-11-04 Sun 8:17>  for run: 261
+<2018-11-05 Mon 6:44>    <2018-11-05 Mon 8:19>  for run: 263
+<2018-11-06 Tue 6:45>    <2018-11-06 Tue 8:21>  for run: 265
+<2018-11-09 Fri 6:49>    <2018-11-09 Fri 8:26>  for run: 268
+<2018-11-10 Sat 6:51>    <2018-11-10 Sat 8:27>  for run: 270
+<2018-11-11 Sun 6:52>    <2018-11-11 Sun 8:29>  for run: 270
+<2018-11-12 Mon 6:53>    <2018-11-12 Mon 8:31>  for run: 272
+<2018-11-13 Tue 6:54>    <2018-11-13 Tue 8:32>  for run: 272
+<2018-11-14 Wed 6:56>    <2018-11-14 Wed 8:34>  for run: 272
+<2018-11-15 Thu 6:57>    <2018-11-15 Thu 8:36>  for run: 274
+<2018-11-16 Fri 6:58>    <2018-11-16 Fri 8:37>  for run: 274
+<2018-11-17 Sat 7:00>    <2018-11-17 Sat 8:39>  for run: 274
+<2018-11-18 Sun 7:01>    <2018-11-18 Sun 8:41>  for run: 276
+<2018-11-19 Mon 7:02>    <2018-11-19 Mon 8:42>  for run: 276
+<2018-11-25 Sun 7:09>    <2018-11-25 Sun 8:52>  for run: 279
+<2018-11-26 Mon 7:10>    <2018-11-26 Mon 8:53>  for run: 279
+<2018-11-27 Tue 7:11>    <2018-11-27 Tue 8:55>  for run: 281
+<2018-11-29 Thu 7:14>    <2018-11-29 Thu 8:58>  for run: 283
+<2018-11-30 Fri 7:15>    <2018-11-30 Fri 8:59>  for run: 283
+<2018-12-01 Sat 7:16>    <2018-12-01 Sat 9:00>  for run: 283
+<2018-12-02 Sun 7:17>    <2018-12-02 Sun 9:02>  for run: 285
+<2018-12-03 Mon 7:18>    <2018-12-03 Mon 9:03>  for run: 285
+<2018-12-05 Wed 8:55>    <2018-12-05 Wed 9:04>  for run: 287
+<2018-12-06 Thu 7:22>    <2018-12-06 Thu 9:04>  for run: 289
+<2018-12-07 Fri 7:23>    <2018-12-07 Fri 9:03>  for run: 291
+<2018-12-08 Sat 7:24>    <2018-12-08 Sat 9:04>  for run: 291
+<2018-12-10 Mon 7:25>    <2018-12-10 Mon 9:03>  for run: 293
+<2018-12-11 Tue 7:26>    <2018-12-11 Tue 9:02>  for run: 295
+<2018-12-12 Wed 7:27>    <2018-12-12 Wed 9:03>  for run: 297
+<2018-12-13 Thu 7:28>    <2018-12-13 Thu 9:03>  for run: 297
+<2018-12-14 Fri 7:29>    <2018-12-14 Fri 9:06>  for run: 298
+<2018-12-15 Sat 7:30>    <2018-12-15 Sat 9:01>  for run: 299
+<2018-12-16 Sun 7:30>    <2018-12-16 Sun 9:00>  for run: 301
+<2018-12-17 Mon 7:31>    <2018-12-17 Mon 9:01>  for run: 301
+<2018-12-18 Tue 7:32>    <2018-12-18 Tue 9:01>  for run: 303
+<2018-12-20 Thu 7:33>    <2018-12-20 Thu 9:03>  for run: 306
+==================================================================
+
+========== Logs *not* mapped to a run ============================
+<2018-10-19 Fri 6:21>    <2018-10-19 Fri 7:51>
+<2018-10-28 Sun 5:32>    <2018-10-28 Sun 7:05>
+<2018-11-24 Sat 7:08>    <2018-11-24 Sat 7:30>
+==================================================================
+:END:
+  
+
+** Interlock systems
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:interlock_systems
+:END:
+
+This section describes the interlock systems, which are related to the
+detector. There are 3 interlock systems to speak of. 
+- The CAST magnet interlock, which prohibits the gate valve VT3 to be
+  opened, if the pressure in the vacuum system is not good enough.
+- A gas supply interlock, which makes sure the detector is only
+  flushed with gas, if all other parameters are considered nominal
+  (mainly a good vacuum in the system).
+- A HV interlock, which makes sure the detector is only under HV, if
+  the temperature of the detector is still good (otherwise a lot of
+  sparks are produced) and the currents on the HV lines are nominal.
+
+*** HV interlock
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:hv_interlock 
+:END:
+
+#+begin_quote
+This section describes the high voltage interlock as it was
+intended. But as mentioned multiple times previously it was
+deactivated for final data taking due to several bugs causing it do
+trigger under non intended circumstances.
+#+end_quote
+
+The HV system is part of an interlock, which tracks the following
+properties:
+- detector temperature
+- currents on HV lines
+- TO BE IMPLEMENTED: gas pressure inside the detector [fn:gas_pressure]
+
+The detector temperature is measured at two points by PT1000
+sensors. One of these is located on the bottom side of the
+intermediate board (and thus is more a measure the the temperature
+surrounding the detector), while the second is located on the bottom
+side of the septemboard. The second is the best possible measure for
+the temperature of the InGrids. However, there is still a PCB
+separating the sensor from the actual InGrids. This means there is
+probably a temperature difference of a minimum of $\SI{10}{\celsius}$
+between the measured value and the actual temperature of the InGrids. 
+
+Whenever the TOS is configured to use the FADC readout and control the
+HV (note: the two are intertwined, since both sit in the same VME
+crate, which is controlled via a single USB connection), a background
+process which monitors the temperature is started. If the temperature
+exceeds the following boundaries
+
+\[
+\SI{0}{\celsius} \leq T \leq \SI{60}{\celsius}
+\]
+
+on the lower side of the septemboard, the HV is shut down
+immediately. The lower bound is of less practical value in a physical
+sense, but in case of sensor problems negative temperature values may
+be reported. As the upper bound a value is taken at which sparks and
+general noise seen on the pixels becomes noticeable. 
+
+The interlock currents at which the HV trips are already shown in
+tab. [[[[tab:cast:high_voltage]]. During ramp up of the HV, these trip
+currents are set higher to avoid trips, while capacitors are being
+charged.
+
+The gas pressure within the detector was intended to be included into
+the interlock system to shut down the HV if the pressure inside the
+detector leaves a certain safe boundary, since this could indicate a
+leak in the detector or an empty gas bottle.
+
+[fn:gas_pressure] The gas pressure inside the detector was intended to
+be added to the HV interlock as well, but also due to lack of time it
+never was.
+
+*** Gas supply interlock
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:gas_supply_interlock
+:END:
+
+The gas supply is also part of an interlock system. In case of a
+window rupture the potential amount of gas that might enter the vacuum
+system should be limited by electrovalves. Ideally the pressure inside
+the detector had been included into the gas supply interlock. This
+could have made sure the gas inlet and outlet are closed in case the pressure
+inside the detector drops (which might indicate a leak somewhere or an
+empty gas bottle) or in case of rising pressure.
+
+The latter is not as important though, because a pressure controller is
+already installed behind the detector, which controls the flow such
+that the pressure stays at $\SI{1050}{\milli \bar}$. While a failure
+of the controller is thinkable, potentially leading to a pressure
+increase inside the detector, it is questionable whether this could be
+dealt with using this interlock system. That is because the pressure
+sensor used is part of the pressure controller.
+
+Three electrovalves are placed on the gas line of the detector. One,
+$V_{\text{in}}$, is outside of the building next to the gas bottles
+(see fig. [[sref:fig:cast:electrovalve-outside]]). The second valve
+$V_{\text{interlock}}$ is located right before the buffer volume, next
+to the watercooling system, below the shielding platform,
+fig. sref:fig:cast:electrovalve-V-interlock. The final electrovalve
+$V_{\text{out}}$ is located after the pressure controller on a blue
+beam, which supports the optical table below the telescope (see
+fig. [[sref:fig:cast:electrovalve-V-out]]). These valves are normally closed,
+i.e. in case of power loss they automatically close. They are open if
+a voltage is applied to them.
+
+The valves are connected to the pressure sensor $P_{\text{MM}}$ (see
+fig. [[fig:cast:vacuum-schematic]]). The pressures to activate the interlock
+system is defined by upper and lower thresholds asymmetrically. They
+are as follows:
+
+\begin{align*}
+P_{\text{MM, Gas enable}} \leq \SI{9.9e-3}{\milli \bar}
+\end{align*}
+
+and 
+
+\begin{align*}
+P_{\text{MM, Gas disable}} \leq \SI{2e-2}{\milli \bar}
+\end{align*}
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.33) (caption "Outside $V_{\\text{in}}$") (label "fig:cast:electrovalve-outside")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/electrovalve_outside.jpg"))
+        (subfigure (linewidth 0.33) (caption "Below $V_{\\text{interlock}}$") (label "fig:cast:electrovalve-V-interlock")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/electrovalve_V_interlock.jpg"))
+        (subfigure (linewidth 0.33) (caption "Output $V_{\\text{out}}$") (label "fig:cast:electrovalve-V-out")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/electrovalve_V_out.jpg"))
+        (caption
+         (subref "fig:cast:electrovalve-outside")
+          ": Location of the electrovalve $V_{\\text{in}}$ located outside the building."
+         (subref "fig:cast:electrovalve-outside")
+          ": Location of the electrovalve $V_{\\text{interlock}}$ next to the 
+           watercooling system below the shielding table."
+         (subref "fig:cast:electrovalve-outside")
+          ": Location of the electrovalve $V_{\\text{out}}$ connected to the beam
+           supporting the optical table, on which the telescope is mounted.")
+        (label "fig:cast:interlock_electrovalves"))
+#+end_src
+
+
+**** TODOs for this section [/]                                 :noexport:
+
+#+BEGIN_COMMENT
+*CHECK THESE VALUES, they are still wrong I believe*.
+#+END_COMMENT
+
+- [X] *MERGE IMAGES INTO ONE SUBFIG*
+
+**** Note on pressures of interlock                             :extended:
+
+It's possible the exact numbers are slightly wrong. At this point I'm
+not certain anymore, but I had a note to cross check them in the
+document the above was initially in (a document about the detector &
+operation for CERN).
+
+*** CAST magnet interlock
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:cast_magnet_interlock
+:END:
+
+The main CAST magnet interlock, as it is relevant to our detector, is
+as follows. The gate valve VT3 separating the magnet volume from the
+telescope volume is interlocked. Only if the vacuum in the telescope
+volume is good enough, VT3 can be opened while the interlock is
+activated. 
+
+For this the pressure of $P_{\text{3}}$ is considered relevant
+(cmp. fig. [[fig:cast:vacuum-schematic]]). The upper and lower thresholds which
+activate and deactivate the interlock are asymmetric and as follows:
+
+\begin{align*}
+P_{\text{3, VT3 enable}} &\leq \SI{1e-5}{\milli\bar}
+\end{align*}
+
+while
+
+\begin{align*}
+P_{\text{3, VT3 disable}} &\leq \SI{8e-5}{\milli\bar}.
+\end{align*}
+
+This is to make sure there can be no rapid toggling between the two
+states during pumping or flushing the system. 
+  
+
+** Ramping the HV
+
+The high voltage supply can be controlled in two different
+ways. Besides differing in usability terms (one is manual, the other
+automatic), the main difference between the two is the HV interlock,
+which is only partially usable in case of the manual HV control.
+1. in the manual way using the Linux software supplied by iseg. On the
+   InGrid-DAQ computer it is located in
+   [[file:/home/ingrid/src/isegControl/isegControl][~/src/isegControl/isegControl]]. Depending on the setup of the
+   machine, the software may need superuser rights to access the USB
+   connection. With the software the given channel as shown in
+   tab. [[tab:hv]] can be set up and the HV can be ramped up. Note: one
+   needs to activate SetKillEnable such that the HV is shut down in
+   case of a current trip (exceeding of specified current). One should
+   then set 'groups' of different channels, so that grid, anode and
+   ring 1 are shut down at the same time, in case of a current trip,
+   as well as ring 29 and the cathode! In addition the trip current
+   needs to be manually set about a factor 5 higher during ramping,
+   because of capacitors, which need to be charged first. Otherwise
+   the channels trip immediately. In this case the HV interlock is
+   restricted to basic current restrictions. Anything detector related
+   is not included!
+2. in the automatic way via the TOS. The TOS takes care of everything
+   mentioned above. To use the TOS for the HV control (and thus also
+   use the complete HV interlock, as it exists at the moment), perform
+   the following steps:
+   1. check [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]] and compare with tab. [[tab:hv]]
+      whether settings seem reasonable
+   2. after starting TOS and setting up the chips, call
+      #+BEGIN_SRC sh
+      > ActivateHFM
+      #+END_SRC
+      which will set up TOS to use the combined HV and FADC (due to
+      both inside the same VME crate, they are intertwined). This
+      configures the FADC and reads the desired HV settings, but does
+      not set the HV settings on the module yet.
+   3. to write the HV to the HV module, call
+      #+BEGIN_SRC sh
+      > InitHV
+      #+END_SRC
+      which will write the HV settings from HFM_settings.ini to the HV
+      module. At the end it will ask the user, whether the HV should
+      be ramped up:
+      #+BEGIN_SRC sh
+      Do you wish to ramp up the channels now? (Y / n)
+      #+END_SRC
+      If yes, the ramping progress will be shown via calls to the
+      CheckModuleIsRamping() function (which can also be called
+      manually in TOS). 
+   This should properly ramp up all channels. It is possible that TOS
+   fails to connect to the VME crate and hence is not able to ramp up
+   the channels. The most likely reason for this is that the
+   isegControl software is still open, since only one application can
+   access a single USB interface at the same time.
+
+** Vacuum
+
+The vacuum system as described in sec. [[#sec:cast:vacuum_system]] usually does not
+require manual intervention during normal operation.
+
+For maintenance the following two sections describe how to pump the
+system safely as well as how to flush it with nitrogen. Both processes
+are rather delicate due to the sensitive $\ce{Si_x N_y}$
+window. Pumping needs to be done slowly, $O(\SI{1}{\milli\bar \per
+\second})$. To be able to do this, the needle valve
+$V_{\text{Needle}}$ (cf. fig. [[fig:cast:vacuum-schematic]]) is installed. One
+may separate the vacuum volume into two separate vacua. A bad vacuum
+before the primary pump and after the turbo pumps T1 and T2 and a good
+vacuum before the turbo pump T2. There are three connections from the
+good vacuum to the bad one. 
+1. through T2, closable via $V_{\text{T2}}$, $\SI{40}{\mm}$ tubing
+2. through the needle valve $V_{\text{needle}}$, $\SI{16}{\mm}$ tubing
+3. through T1 via the manipulator interstage, normally closed (see the
+  note below), $\SI{25}{\mm}$ tubing
+3 is mainly irrelevant for pumping purposes, since there is no valve
+to open or close; it is always closed by a 2-O-ring seal to the good
+vacuum. While 1 is the main path for pumping during operation, it is 2
+which is used during a pumping down or flushing of the system, since
+it can be controlled very granularly. 
+
+For both explanations below, it is very important to always think
+about each step (are the correct valves open / closed? etc.). A small
+mistake can lead to severe damage of the hardware (turbo pumps can
+break, the window can rupture).
+
+_Note_: There is a third very small vacuum volume before T1, which is
+the volume up to the manipulator interstage. This volume is separate
+from the main good vacuum chamber, due to a 2-O-ring seal on both ends
+of the manipulator. Compare with fig. [[fig:cast:vacuum-schematic]] at the
+location of the two clamped flanges 'above' the manipulator. One
+2-O-ring seal is at the upper flange and one at the lower. This is
+because the manipulator part furthest from the beampipe is under
+air. In order to seal the air and the vacuum especially during
+movement of the source, these seals are in place. However, while the
+2-O-ring seals provide decent sealing, it is not perfect. This is why
+the small turbo pump T1 is in place at all, to reduce the amount of
+air, which might enter the system during source manipulation. Another
+aspect to keep in mind is potential air, which can get trapped in
+between the two O-rings. This air will be released during movement of
+the seals. Especially after the system was open to air, it is expected
+that a small pressure increase on $P_{\text{MM}}$ can be seen during
+operation, despite T1 being in place. After several movement cycles,
+$O(10)$, these peaks should be negligible.
+
+*** Pumping the vacuum
+
+Before pumping it is a good idea to connect two linear gauges to the
+two $P_{\text{Linear}}$ pressure sensors.
+To pump the system safely, perform the following steps:
+1. Make sure every pump is turned off.
+2. Make sure every valve in the system is closed:
+   1. $V_{\text{Primary}}$
+   2. $V_{\text{Leak}}$
+   3. $V_{\text{T2}}$
+   4. $V_{\text{Needle}}$
+3. Connect a linear gauge to $P_{\text{P, Linear}}$ on the primary pump line.
+4. Start the primary pump. Tubing up to $V_{\text{Primary}}$ will be
+   pumped, visible on linear gauge connected to
+   $P_{\text{P, Linear}}$. Check that the second linear gauge remains
+   unchanged, if not $V_{\text{Primary}}$ and $V_{\text{Needle}}$ is
+   open!
+5. Once $P_{\text{P, Linear}}$ shows $\leq \SI{10}{\milli bar}$,
+   slowly open $V_{\text{Primary}}$, again checking $P_{\text{N,
+   Linear}}$ remains unchanged. This will increase the pressure on
+   $P_{\text{P, Linear}}$ again until the volume is pumped.
+6. This step is the most crucial. With $V_{\text{T2}}$ still closed,
+   very carefully open $V_{\text{Needle}}$, while keeping an eye on
+   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
+   locking mechanisms. The knob at the end with the analog indicator
+   and a general lock in front of that. While the analog indicator
+   shows =000=, open the general lock. Then slowly start turning the
+   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
+   slowly start to decrease. Keep turning the knob until you reach a
+   pump rate of $O(\SI{1}{\milli \bar \per \second})$. You will have
+   to keep opening the needle valve further, the lower the pressure is
+   to keep the pump rate constant.
+7. Once both linear gauges have equalized (up to different offsets),
+   close the needle valve again.
+8. Open $V_{\text{T2}}$.
+9. Start T2 by turning on the power and pressing the right most
+   button. Use the arrow buttons to select the 'actual RPM' setting to
+   see that the turbo is spinning up. Final speed should be set to
+   $\SI{1500}{\Hz}$.
+10. While T2 is spinning up, start T1 by turning on the power at the
+    back. There is no additional button to be pressed.
+
+The system should now be in the following state:
+- $V_{\text{Leak}}$ closed
+- $V_{\text{Needle}}$ closed
+- $V_{\text{T2}}$ open
+- $V_{\text{Primary}}$ open
+- T2 & T1 running
+- Primary pump running
+If so, the system is now pumping. Note that it may take several days
+to reach a vacuum good enough to satisfy the interlock.
+
+*** Flushing the system
+
+Flushing the system is somewhat of a reverse of pumping the
+system. Follow these steps to safely flush the system with
+nitrogen. See section [[Nitrogen supply]] for an explanation of which
+valves need to be operated to open the nitrogen line.
+Before flushing the system connect two linear gauges to both
+$P_{\text{Linear}}$ sensors.
+1. Make sure the turbo pumps are turned off, if not yet turn both off
+   and wait for them to have come to a halt.
+2. Turn off the primary pump.
+3. Close $V_{\text{T2}}$. $V_{\text{Leak}}$ and $V_{\text{Needle}}$
+   should already be closed, while $V_{\text{T2}}$ and
+   $V_{\text{Primary}}$ should still be open.
+4. Connect the nitrogen line to the blind flange before
+   $V_{\text{Leak}}$. 
+5. Slowly open $V_{\text{Leak}}$, while checking both linear
+   gauges. Make sure only the pressure on $P_{\text{P, Linear}}$
+   increases, while $P_{\text{N, Linear}}$ remains under vacuum. If
+   not, another valve is still open. Close $V_{\text{Leak}}$
+   immediately again!
+6. Keep flushing nitrogen, until $P_{\text{P, Linear}}$ gets close to
+   $\SI{1000}{\milli\bar}$ (the sensors will never actually reach
+   that value).
+7. Close $V_{\text{Leak}}$ again to make sure you do not put the
+   system over one atmosphere of pressure.
+8. This step is the most crucial. With $V_{\text{T2}}$ still closed,
+   very carefully open $V_{\text{Needle}}$, while keeping an eye on
+   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
+   locking mechanisms. The knob at the end with the analog indicator
+   and a general lock in front of that. While the analog indicator
+   shows =000=, open the general lock. Then slowly start turning the
+   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
+   slowly start to increase. Keep turning the knob until you reach a
+   pump rate of $O(\SI{1}{\milli \bar \per \second})$.
+9. You will notice that the pressure on $P_{\text{P, Linear}}$ will
+   start to decrease, since the air will distribute in a larger
+   volume. Open $V_{\text{Leak}}$ again slightly to keep $P_{\text{P,
+   Linear}}$ roughly constant.
+10. Keep flushing with $\SI{1}{\milli\bar\per\second}$ until both
+    sensors read $O(\SI{1000}{\milli\bar})$.
+11. Close all valves in the system again.
+
+This way the system is safely flushed with nitrogen. This helps to
+pump faster after a short maintenance, because less humidity can enter
+the system.
+
+** COMMENT Gas supply
+
+If the requirements of the gas supply interlock are satisfied
+(cf. sec. [[Gas supply interlock]]), it is possible to flush the detector
+with gas. For that, follow these steps:
+1. Make sure the pressure controller is connected and running. Check
+   InGrid-PLC computer in control room and see if pressure control
+   software is running. If gas supply is currently closed, reported
+   pressure inside the detector is usually reported to
+   $\SIrange{960}{980}{\milli\bar}$.
+2. Outside the building, open the main valve of the currently active
+   gas bottle (check the arrow on the bottle selector mechanism). See
+   fig. [[fig:gas-bottle-outside]].
+3. Open the second valve near the bottle.
+4. Pressure values should be:
+   - gas bottle: $\sim\SIrange{30}{100}{\bar}$
+   - pre-line pressure: $\sim\SI{7}{\bar}$
+   - line pressure: $\sim\SI{0.45}{\bar}$
+5. Activate the gas supply at the interlock box by turning the key to
+   =Security on= and pressing the large button. See
+   fig. [[fig:interlock-box]].
+6. Go to the airport side of the magnet. Open the valve on the InGrid
+   gas panel below the telescope platform. See
+   fig. [[fig:ingrid-gas-panel]].
+7. Slowly open the needle valve on the flow meter on the previous
+   panel. Increase gas flow up to $\sim\SI{2}{\liter\per\hour}$.
+8. Open the needle valve on the gas supply line on the side of the
+   platform (see fig. [[fig:gas-needle-valve]]).
+9. After $\SIrange{5}{10}{\minute}$ the pressure controller on the
+   InGrid-PLC computer should report $\SI{1050}{\milli\bar}$.
+# 7. Make sure the electrovalves on the second gas panel (see
+#    fig. NOT HERE. NO PANEL) are open. THESE VALVES CANNOT BE CHECKED
+#    EXPLICITLY. IF INTERLOCK BOX IS ACTIVE, WILL BE OPEN?! MAYBE CHECK
+#    BOX POWER SUPPLY? NO LED I THINK.
+
+
+Now the detector should be flushed with $\ce{Ar} /
+\ce{iC_4H_{10}}$. Before turning on the HV, make sure to flush for at
+least $\SI{12}{\hour}$ to be on the safe side.
+
+#+CAPTION: Location of the Argon-Isobutane bottle and the main valves outside the building.
+#+NAME: fig:gas-bottle-outside
+[[file:~/org/Doc/Detector/figs/gas_bottles_outside.jpg]]
+
+
+#+CAPTION: Location of the gas interlock box
+#+NAME: fig:interlock-box
+[[file:~/org/Doc/Detector/figs/gas_interlock_box.jpg]]
+
+#+CAPTION: Location of the InGrid gas panel below the telescope platform on the airport side.
+#+NAME: fig:ingrid-gas-panel
+[[file:~/org/Doc/Detector/figs/gas_panel.jpg]]
+
+#+CAPTION: Location of the needle valve on the gas supply line
+#+NAME: fig:gas-needle-valve
+<file to be inserted>
+
+** Nitrogen supply
+
+Nitrogen is supplied by a nitrogen bottle outside the building. To
+open the nitrogen line, 5 valves need to be opened. The line ends in a
+copper pipe on the airport side, which is usually there rolled up (the
+copper is somewhat flexible).
+1. Open the lever on the nitrogen bottle outside the building (see
+   fig. [[fig:nitrogen-bottle-outside]]).
+2. Open the valve next to the bottle.
+3. Go to the gas lines next to the control room. The right most line
+   (see fig. [[fig:valves-control-room]] and
+   fig. [[fig:nitrogen-valve-control-room]]) is the nitrogen line. Open
+   the valve.
+4. Open the needle valve on the flow meter to the right of the
+   previous valve.
+5. Open the needle valve on the airport side of the magnet (see
+   fig. [[fig:nitrogen-airport-side]]).
+This should be all to open the nitrogen line. The flow through the
+pipe is not too large, but it should be large enough to feel it on the
+back of the hand.
+
+#+CAPTION: Location of the Nitrogen bottle and the main valves outside the building.
+#+NAME: fig:nitrogen-bottle-outside
+[[file:~/org/Doc/Detector/figs/nitrogen_bottle.jpg]]
+
+#+CAPTION: Location of the valves next to the control room
+#+NAME: fig:valves-control-room
+[[file:~/org/Doc/Detector/figs/nitrogen_valve_location.jpg]]
+
+#+CAPTION: The actual nitrogen valve on the set of valves near the control room.
+#+NAME: fig:nitrogen-valve-control-room
+[[file:~/org/Doc/Detector/figs/nitrogen_valve.jpg]]
+
+
+#+CAPTION: Location of the flow meter near the valve next to the control room
+#+NAME: fig:nitrogen-flow-meter-control-room
+[[file:~/org/Doc/Detector/figs/nitrogen_flow_meter.jpg]]
+
+#+CAPTION: Location of the needle valve on the airport side
+#+NAME: fig:nitrogen-airport-side
+<file to be inserted>
+
+
+#+BEGIN_EXPORT latex
+\newpage
+#+END_EXPORT
+
+
 * CAST data taking run list                                        :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:cast_run_list
@@ -40419,332 +40752,6 @@ There are also pictures of every shift form in my googlo photos.
 |        301 | <2018-12-17 Mon 06:26> |    45.03 |                                                |
 |        303 | <2018-12-18 Tue 06:52> |    44.69 |                                                |
 |        306 | <2018-12-20 Thu 06:30> |    40.04 |                                                |
-
-
-* CAST operation procedures                                        :Appendix:
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:cast_operations
-:END:
-
-This chapter provides some guidance about typical operations necessary
-during maintenance or installation of the detector / vacuum system.
-
-** CAST terminology
-
-- [ ] *HAVE A SCHEMATIC OF SORTS THAT SHOWS WHAT AIRPORT, JURA,
-  SUNRISE, SUNSET MEANS*
-  -> We don't have the time, but it would be fun to experiment with
-  gaussian splatting based on all the CAST pictures we have to see if
-  we could get an interactive 3D view of the CAST hall, haha.
-  -> Realistically: do a simple schematic showing CAST magnet, tracks,
-  telescope side etc and annotate.
-
-** Ramping the HV
-
-The high voltage supply can be controlled in two different
-ways. Besides differing in usability terms (one is manual, the other
-automatic), the main difference between the two is the HV interlock,
-which is only partially usable in case of the manual HV control.
-1. in the manual way using the Linux software supplied by iseg. On the
-   InGrid-DAQ computer it is located in
-   [[file:/home/ingrid/src/isegControl/isegControl][~/src/isegControl/isegControl]]. Depending on the setup of the
-   machine, the software may need superuser rights to access the USB
-   connection. With the software the given channel as shown in
-   tab. [[tab:hv]] can be set up and the HV can be ramped up. Note: one
-   needs to activate SetKillEnable such that the HV is shut down in
-   case of a current trip (exceeding of specified current). One should
-   then set 'groups' of different channels, so that grid, anode and
-   ring 1 are shut down at the same time, in case of a current trip,
-   as well as ring 29 and the cathode! In addition the trip current
-   needs to be manually set about a factor 5 higher during ramping,
-   because of capacitors, which need to be charged first. Otherwise
-   the channels trip immediately. In this case the HV interlock is
-   restricted to basic current restrictions. Anything detector related
-   is not included!
-2. in the automatic way via the TOS. The TOS takes care of everything
-   mentioned above. To use the TOS for the HV control (and thus also
-   use the complete HV interlock, as it exists at the moment), perform
-   the following steps:
-   1. check [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]] and compare with tab. [[tab:hv]]
-      whether settings seem reasonable
-   2. after starting TOS and setting up the chips, call
-      #+BEGIN_SRC sh
-      > ActivateHFM
-      #+END_SRC
-      which will set up TOS to use the combined HV and FADC (due to
-      both inside the same VME crate, they are intertwined). This
-      configures the FADC and reads the desired HV settings, but does
-      not set the HV settings on the module yet.
-   3. to write the HV to the HV module, call
-      #+BEGIN_SRC sh
-      > InitHV
-      #+END_SRC
-      which will write the HV settings from HFM_settings.ini to the HV
-      module. At the end it will ask the user, whether the HV should
-      be ramped up:
-      #+BEGIN_SRC sh
-      Do you wish to ramp up the channels now? (Y / n)
-      #+END_SRC
-      If yes, the ramping progress will be shown via calls to the
-      CheckModuleIsRamping() function (which can also be called
-      manually in TOS). 
-   This should properly ramp up all channels. It is possible that TOS
-   fails to connect to the VME crate and hence is not able to ramp up
-   the channels. The most likely reason for this is that the
-   isegControl software is still open, since only one application can
-   access a single USB interface at the same time.
-
-** Vacuum
-
-The vacuum system as described in sec. [[#sec:cast:vacuum_system]] usually does not
-require manual intervention during normal operation.
-
-For maintenance the following two sections describe how to pump the
-system safely as well as how to flush it with nitrogen. Both processes
-are rather delicate due to the sensitive $\ce{Si_x N_y}$
-window. Pumping needs to be done slowly, $O(\SI{1}{\milli\bar \per
-\second})$. To be able to do this, the needle valve
-$V_{\text{Needle}}$ (cf. fig. [[fig:cast:vacuum-schematic]]) is installed. One
-may separate the vacuum volume into two separate vacua. A bad vacuum
-before the primary pump and after the turbo pumps T1 and T2 and a good
-vacuum before the turbo pump T2. There are three connections from the
-good vacuum to the bad one. 
-1. through T2, closable via $V_{\text{T2}}$, $\SI{40}{\mm}$ tubing
-2. through the needle valve $V_{\text{needle}}$, $\SI{16}{\mm}$ tubing
-3. through T1 via the manipulator interstage, normally closed (see the
-  note below), $\SI{25}{\mm}$ tubing
-3 is mainly irrelevant for pumping purposes, since there is no valve
-to open or close; it is always closed by a 2-O-ring seal to the good
-vacuum. While 1 is the main path for pumping during operation, it is 2
-which is used during a pumping down or flushing of the system, since
-it can be controlled very granularly. 
-
-For both explanations below, it is very important to always think
-about each step (are the correct valves open / closed? etc.). A small
-mistake can lead to severe damage of the hardware (turbo pumps can
-break, the window can rupture).
-
-_Note_: There is a third very small vacuum volume before T1, which is
-the volume up to the manipulator interstage. This volume is separate
-from the main good vacuum chamber, due to a 2-O-ring seal on both ends
-of the manipulator. Compare with fig. [[fig:cast:vacuum-schematic]] at the
-location of the two clamped flanges 'above' the manipulator. One
-2-O-ring seal is at the upper flange and one at the lower. This is
-because the manipulator part furthest from the beampipe is under
-air. In order to seal the air and the vacuum especially during
-movement of the source, these seals are in place. However, while the
-2-O-ring seals provide decent sealing, it is not perfect. This is why
-the small turbo pump T1 is in place at all, to reduce the amount of
-air, which might enter the system during source manipulation. Another
-aspect to keep in mind is potential air, which can get trapped in
-between the two O-rings. This air will be released during movement of
-the seals. Especially after the system was open to air, it is expected
-that a small pressure increase on $P_{\text{MM}}$ can be seen during
-operation, despite T1 being in place. After several movement cycles,
-$O(10)$, these peaks should be negligible.
-
-*** Pumping the vacuum
-
-Before pumping it is a good idea to connect two linear gauges to the
-two $P_{\text{Linear}}$ pressure sensors.
-To pump the system safely, perform the following steps:
-1. Make sure every pump is turned off.
-2. Make sure every valve in the system is closed:
-   1. $V_{\text{Primary}}$
-   2. $V_{\text{Leak}}$
-   3. $V_{\text{T2}}$
-   4. $V_{\text{Needle}}$
-3. Connect a linear gauge to $P_{\text{P, Linear}}$ on the primary pump line.
-4. Start the primary pump. Tubing up to $V_{\text{Primary}}$ will be
-   pumped, visible on linear gauge connected to
-   $P_{\text{P, Linear}}$. Check that the second linear gauge remains
-   unchanged, if not $V_{\text{Primary}}$ and $V_{\text{Needle}}$ is
-   open!
-5. Once $P_{\text{P, Linear}}$ shows $\leq \SI{10}{\milli bar}$,
-   slowly open $V_{\text{Primary}}$, again checking $P_{\text{N,
-   Linear}}$ remains unchanged. This will increase the pressure on
-   $P_{\text{P, Linear}}$ again until the volume is pumped.
-6. This step is the most crucial. With $V_{\text{T2}}$ still closed,
-   very carefully open $V_{\text{Needle}}$, while keeping an eye on
-   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
-   locking mechanisms. The knob at the end with the analog indicator
-   and a general lock in front of that. While the analog indicator
-   shows =000=, open the general lock. Then slowly start turning the
-   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
-   slowly start to decrease. Keep turning the knob until you reach a
-   pump rate of $O(\SI{1}{\milli \bar \per \second})$. You will have
-   to keep opening the needle valve further, the lower the pressure is
-   to keep the pump rate constant.
-7. Once both linear gauges have equalized (up to different offsets),
-   close the needle valve again.
-8. Open $V_{\text{T2}}$.
-9. Start T2 by turning on the power and pressing the right most
-   button. Use the arrow buttons to select the 'actual RPM' setting to
-   see that the turbo is spinning up. Final speed should be set to
-   $\SI{1500}{\Hz}$.
-10. While T2 is spinning up, start T1 by turning on the power at the
-    back. There is no additional button to be pressed.
-
-The system should now be in the following state:
-- $V_{\text{Leak}}$ closed
-- $V_{\text{Needle}}$ closed
-- $V_{\text{T2}}$ open
-- $V_{\text{Primary}}$ open
-- T2 & T1 running
-- Primary pump running
-If so, the system is now pumping. Note that it may take several days
-to reach a vacuum good enough to satisfy the interlock.
-
-*** Flushing the system
-
-Flushing the system is somewhat of a reverse of pumping the
-system. Follow these steps to safely flush the system with
-nitrogen. See section [[Nitrogen supply]] for an explanation of which
-valves need to be operated to open the nitrogen line.
-Before flushing the system connect two linear gauges to both
-$P_{\text{Linear}}$ sensors.
-1. Make sure the turbo pumps are turned off, if not yet turn both off
-   and wait for them to have come to a halt.
-2. Turn off the primary pump.
-3. Close $V_{\text{T2}}$. $V_{\text{Leak}}$ and $V_{\text{Needle}}$
-   should already be closed, while $V_{\text{T2}}$ and
-   $V_{\text{Primary}}$ should still be open.
-4. Connect the nitrogen line to the blind flange before
-   $V_{\text{Leak}}$. 
-5. Slowly open $V_{\text{Leak}}$, while checking both linear
-   gauges. Make sure only the pressure on $P_{\text{P, Linear}}$
-   increases, while $P_{\text{N, Linear}}$ remains under vacuum. If
-   not, another valve is still open. Close $V_{\text{Leak}}$
-   immediately again!
-6. Keep flushing nitrogen, until $P_{\text{P, Linear}}$ gets close to
-   $\SI{1000}{\milli\bar}$ (the sensors will never actually reach
-   that value).
-7. Close $V_{\text{Leak}}$ again to make sure you do not put the
-   system over one atmosphere of pressure.
-8. This step is the most crucial. With $V_{\text{T2}}$ still closed,
-   very carefully open $V_{\text{Needle}}$, while keeping an eye on
-   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
-   locking mechanisms. The knob at the end with the analog indicator
-   and a general lock in front of that. While the analog indicator
-   shows =000=, open the general lock. Then slowly start turning the
-   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
-   slowly start to increase. Keep turning the knob until you reach a
-   pump rate of $O(\SI{1}{\milli \bar \per \second})$.
-9. You will notice that the pressure on $P_{\text{P, Linear}}$ will
-   start to decrease, since the air will distribute in a larger
-   volume. Open $V_{\text{Leak}}$ again slightly to keep $P_{\text{P,
-   Linear}}$ roughly constant.
-10. Keep flushing with $\SI{1}{\milli\bar\per\second}$ until both
-    sensors read $O(\SI{1000}{\milli\bar})$.
-11. Close all valves in the system again.
-
-This way the system is safely flushed with nitrogen. This helps to
-pump faster after a short maintenance, because less humidity can enter
-the system.
-
-** COMMENT Gas supply
-
-If the requirements of the gas supply interlock are satisfied
-(cf. sec. [[Gas supply interlock]]), it is possible to flush the detector
-with gas. For that, follow these steps:
-1. Make sure the pressure controller is connected and running. Check
-   InGrid-PLC computer in control room and see if pressure control
-   software is running. If gas supply is currently closed, reported
-   pressure inside the detector is usually reported to
-   $\SIrange{960}{980}{\milli\bar}$.
-2. Outside the building, open the main valve of the currently active
-   gas bottle (check the arrow on the bottle selector mechanism). See
-   fig. [[fig:gas-bottle-outside]].
-3. Open the second valve near the bottle.
-4. Pressure values should be:
-   - gas bottle: $\sim\SIrange{30}{100}{\bar}$
-   - pre-line pressure: $\sim\SI{7}{\bar}$
-   - line pressure: $\sim\SI{0.45}{\bar}$
-5. Activate the gas supply at the interlock box by turning the key to
-   =Security on= and pressing the large button. See
-   fig. [[fig:interlock-box]].
-6. Go to the airport side of the magnet. Open the valve on the InGrid
-   gas panel below the telescope platform. See
-   fig. [[fig:ingrid-gas-panel]].
-7. Slowly open the needle valve on the flow meter on the previous
-   panel. Increase gas flow up to $\sim\SI{2}{\liter\per\hour}$.
-8. Open the needle valve on the gas supply line on the side of the
-   platform (see fig. [[fig:gas-needle-valve]]).
-9. After $\SIrange{5}{10}{\minute}$ the pressure controller on the
-   InGrid-PLC computer should report $\SI{1050}{\milli\bar}$.
-# 7. Make sure the electrovalves on the second gas panel (see
-#    fig. NOT HERE. NO PANEL) are open. THESE VALVES CANNOT BE CHECKED
-#    EXPLICITLY. IF INTERLOCK BOX IS ACTIVE, WILL BE OPEN?! MAYBE CHECK
-#    BOX POWER SUPPLY? NO LED I THINK.
-
-
-Now the detector should be flushed with $\ce{Ar} /
-\ce{iC_4H_{10}}$. Before turning on the HV, make sure to flush for at
-least $\SI{12}{\hour}$ to be on the safe side.
-
-#+CAPTION: Location of the Argon-Isobutane bottle and the main valves outside the building.
-#+NAME: fig:gas-bottle-outside
-[[file:~/org/Doc/Detector/figs/gas_bottles_outside.jpg]]
-
-
-#+CAPTION: Location of the gas interlock box
-#+NAME: fig:interlock-box
-[[file:~/org/Doc/Detector/figs/gas_interlock_box.jpg]]
-
-#+CAPTION: Location of the InGrid gas panel below the telescope platform on the airport side.
-#+NAME: fig:ingrid-gas-panel
-[[file:~/org/Doc/Detector/figs/gas_panel.jpg]]
-
-#+CAPTION: Location of the needle valve on the gas supply line
-#+NAME: fig:gas-needle-valve
-<file to be inserted>
-
-** Nitrogen supply
-
-Nitrogen is supplied by a nitrogen bottle outside the building. To
-open the nitrogen line, 5 valves need to be opened. The line ends in a
-copper pipe on the airport side, which is usually there rolled up (the
-copper is somewhat flexible).
-1. Open the lever on the nitrogen bottle outside the building (see
-   fig. [[fig:nitrogen-bottle-outside]]).
-2. Open the valve next to the bottle.
-3. Go to the gas lines next to the control room. The right most line
-   (see fig. [[fig:valves-control-room]] and
-   fig. [[fig:nitrogen-valve-control-room]]) is the nitrogen line. Open
-   the valve.
-4. Open the needle valve on the flow meter to the right of the
-   previous valve.
-5. Open the needle valve on the airport side of the magnet (see
-   fig. [[fig:nitrogen-airport-side]]).
-This should be all to open the nitrogen line. The flow through the
-pipe is not too large, but it should be large enough to feel it on the
-back of the hand.
-
-#+CAPTION: Location of the Nitrogen bottle and the main valves outside the building.
-#+NAME: fig:nitrogen-bottle-outside
-[[file:~/org/Doc/Detector/figs/nitrogen_bottle.jpg]]
-
-#+CAPTION: Location of the valves next to the control room
-#+NAME: fig:valves-control-room
-[[file:~/org/Doc/Detector/figs/nitrogen_valve_location.jpg]]
-
-#+CAPTION: The actual nitrogen valve on the set of valves near the control room.
-#+NAME: fig:nitrogen-valve-control-room
-[[file:~/org/Doc/Detector/figs/nitrogen_valve.jpg]]
-
-
-#+CAPTION: Location of the flow meter near the valve next to the control room
-#+NAME: fig:nitrogen-flow-meter-control-room
-[[file:~/org/Doc/Detector/figs/nitrogen_flow_meter.jpg]]
-
-#+CAPTION: Location of the needle valve on the airport side
-#+NAME: fig:nitrogen-airport-side
-<file to be inserted>
-
-
-#+BEGIN_EXPORT latex
-\newpage
-#+END_EXPORT
 
 * Cabling & software setup [/]                                     :Appendix:
 :PROPERTIES:
