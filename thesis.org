@@ -9230,417 +9230,6 @@ These calibrations are mainly explained to give context for the used
 detector calibrations at CAST. All calibrations can be found in
 appendix *APPEND CALIBRATIONS*.
 
-*** =THS= optimization and threshold equalization
-:PROPERTIES:
-:CUSTOM_ID: sec:operation_calibration:ths_opt_equalization
-:END:
-
-For an optimal operation of a Timepix based detector, each pixel
-should ideally have the same threshold. While all pixels are
-theoretically identical, imperfections in the production process will
-always lead to slight differences, either locally (transistor
-threshold voltage or current mismatches
-cite:LLOPART2007485_timepix,pelgrom1989matching ) or global effects
-like small supply voltage instabilities. Therefore, each pixel has 4
-independently selectable current sources to minimize the spread of
-threshold values
-cite:timepix_manual,LLOPART2007485_timepix. Together all 4 sources
-act as an effective 4-bit DAC to slightly adjust the threshold. The
-absolute current for the 4 sources is dependent on the global =THS=
-DAC, allowing currents in the range of $\SIrange{0}{40}{nA}$.
-
-To achieve a good calibration for a homogeneous threshold, first the
-=THS= DAC has to be set correctly. This is referred to as the =THS=
-optimization. Once the correct value is found, the 4-bit DAC on each
-pixel can be adjusted to minimize the spread of threshold values of
-all pixels together.
-
-If the =THS= DAC is set too high, the 4-bit DAC on each pixel will be
-too coarse for a fine adjustment (as the 'current steps' will be too
-large). If it is too low, not enough range will be available to adjust
-each pixel to an equal noise / sensitivity level (not enough current
-available via the 4 current sources). The goal of the =THS=
-optimization is therefore to find just the right value, as to provide
-a range of values such that all values can be shifted to the same
-threshold of the threshold DAC =THL=.
-
-The algorithm scans a range of =THL= values through a subset of
-$\num{4096}$ pixels using different 4-bit DAC values. First 0 for all
-pixels and then the maximum value of 15. At each =THL= and 4-bit
-value the number of hits due to pure noise is recorded for each
-pixel. The weighted mean of the =THL= values, using the number of hits
-as weight, is the value of interest for each pixel and each 4-bit DAC
-value: the effective =THL= noise value for that pixel. For each of the
-two cases (4-bit value 0 and 15) we can then compute a histogram of the
-number of pixels at each =THL= value. The resulting histogram will be
-a normal distribution around a specific =THL= value. The stopping
-criterion, which defines the final =THS= value, is such that these two
-distributions overlap at the 3 RMS level. This is performed by
-comparing the means of the 0 and 15 value distribution at a starting
-=THS= value and again at half of that =THS= value. Using linear
-regression of the two differences, the optimal =THS= value is
-computed.
-
-With a suitable =THS= value set, the actual threshold equalization can
-start. The algorithm used is fundamentally very similar to the logic
-of the =THS= optimization. Each pixel of the chip is scanned for a
-range of =THL= values and the weighted =THL= noise mean is computed
-both at a 4-bit DAC value of 0 and at 15. The normalized deviation of
-each pixel's =THL= value to the mean =THL= value of all pixels is
-computed. Using a linear regression the optimal required shift (in
-units of the 4-bit DAC) yields the final 4-bit DAC value for each
-pixel.
-
-An example of the 0 and 15 value distributions as well as the
-distribution using the final 4-bit DAC values for each pixel is shown
-in fig. [[sref:fig:daq:optimal_ths_distribution]]. [fn:daq_histo_source] Each
-of the distributions represent different 4-bit DAC settings of all
-pixels of the chip. Orange ("min") represents all pixels using a 4-bit
-DAC value of 0, purple ("max") of 15. In green is the same
-distribution for the case where every pixel uses its optimal 4-bit DAC
-value. The threshold equalization thus yields a very strong reduction
-in the =THL= spread of all pixels. Fig. [[sref:fig:daq:4bit_dac_distribution]]
-shows how all pixels are spread in the values of the 4-bit DAC. The
-narrow equalized line of fig. [[sref:fig:daq:optimal_ths_distribution]] is
-achieved by a normal distribution around $\num{8}$ of the 4-bit DAC
-values, with only very few at the edges of the DAC ($\num{0}$ and
-$\num{15}$). Finally, fig. [[fig:daq:4bit_dac_heatmap]] shows a heatmap of
-an entire chip with its 4-bit DAC values after equalization.
-
-#+begin_src subfigure
-(figure ()
-        (subfigure (linewidth 0.5) (caption "THL distributions") (label "fig:daq:optimal_ths_distribution")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf"))
-        (subfigure (linewidth 0.5) (caption "4-bit distributions") (label "fig:daq:4bit_dac_distribution")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf"))
-        (caption
-         (subref "fig:daq:optimal_ths_distribution")
-          "Distributions of different 4-bit DAC settings of all
-          pixels of the chip. Orange (\"min\"): all pixels using a 4-bit
-          DAC value of 0, purple (\"max\"): 15. Green: every pixel uses the
-          optimal 4-bit DAC value after equalization. The result is a significant
-          in =THL= value spread of all pixels."
-         (subref "fig:daq:4bit_dac_distribution")
-          "Distribution of all 4-bit DAC values for the pixels after the
-          threshold equalization. A normal distribution around a middle
-          value is expected to largest likelihood of achieving a flat
-          threshold around the whole chip. Very few pixels are either in 
-          value \\num{0} or \\num{15}, implying few pixels likely outside their
-          range to adjust to the required threshold. In this example
-          represented is the center chip of the Septemboard with its calibration
-          from July 2018.")
-        (label "fig:daq:thl_and_4bit_distr"))
-#+end_src
-
-#+CAPTION: Heatmap of the distribution of the 4-bit DAC values of all chips
-#+CAPTION: as they are spread over the full Timepix. In this example
-#+CAPTION: represented is the center chip of the Septemboard with its calibration
-#+CAPTION: from July 2018.
-#+NAME: fig:daq:4bit_dac_heatmap
-[[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_example.pdf]]
-
-[fn:daq_histo_source] The plot is generated from the
-=thresholdMeans.txt= file created as part of the equalization
-procedure in TOS.
-
-[fn:daq_tos_code_quality] Having to check out the TOS code to verify
-the logic of the THS optimization and equalization procedures reminded
-me of the abhorrent code quality of that code base. Holy moly...
-
-**** TODOs for this section [/]                                 :noexport:
-
-- [ ] Maybe move heatmap of equalization to extended version?
-
-- [X] *I THINK THS OPT DOES NOT!! USE TEST PULSES* Yes, pretty sure
-  now. The THS optimization (and obviously threshold equalization)
-  does not use test pulses
-
-- [ ] *INTRODUCE THE NAME 'PIXEL DAC' INSTEAD 4-BIT DAC?*  
-
-- [ ] *MAYBE REPHRASE THE FOLLOWING. BUT THIS IS WHAT'S HAPPENING. THE TOS CODE IS PRETTY SIMPLE, JUST BLOATED AND UGLY*
-
-- [X] *FIRST EXPLAIN THS OPT, THEN EQ, BOTH USING THE PLOT*  
-
-- [X] *REWRITE BELOW FOLLOWING THE ABOVE NOW*
-- [X] *MENTION THIS IS TO MAKE EQUALIZATION OF EACH PIXEL DAC NICE*
-
-- [ ] *PSEUDO CODE ALGORITHM? I THINK IT WOULD CLARIFY THE EXPLANATION QUITE A BIT. ESPECIALLY BECAUSE IT'S NOT DIFFICULT. JUST TOS IS
-  UGLY*
-
-- [X] *PLOT OF THESE TWO HISTOGRAMS. SHOW MAYBE IDEALIZED EXAMPLE OF BAD THS
-  AND GOOD THS VALUE*
-
-- [X] *LOOK AT TOS CODE AGAIN*
-  
-- [X] *LOOK AT TOS CODE FOR EQUALIZATION AGAIN*
-
-- [X] *CROSS CHECK THE NAMES ETC*
-
-**** Generate the plot for the THS optimization result :noexport:
-
-#+begin_src nim :tangle code/ths_optimization.nim
-import ggplotnim
-
-proc main(fname: string) =
-  var df = readCsv(fname, sep = '\t', colNames = @["x", "y", "min", "max", "bit", "opt"])
-  let breaks = linspace(-0.5, 15.5, 17).toSeq1D
-  echo breaks
-  ggplot(df, aes("bit")) +
-    geom_histogram(breaks = breaks, hdKind = hdOutline) +
-    scale_x_continuous() +
-    xlim(-0.5, 16.5) +
-    xlab("4-bit DAC") + 
-    ggtitle("Distribution of all equalization bits after optimization") + 
-    ggsave("/home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf",
-           useTeX = true, standalone = true)
-  df = df.gather(["min", "max", "opt"], "type", "THL")
-  ggplot(df.filter(f{`THL` > 330.0 and `THL` < 460.0}), aes("THL", fill = "type")) +
-    geom_histogram(binWidth = 1.0, position = "identity", hdKind = hdOutline, alpha = 0.7) +
-    ggtitle("THL distributions for all equalization bits at 0, 15 and optimized") +
-    #xlim(330, 460) + 
-    ggsave("/home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf",
-           useTeX = true, standalone = true)
-when isMainModule:
-  import cligen
-  dispatch main
-#+end_src
-
-Laptop:
-#+begin_src sh
-./code/ths_optimization -f ~/septemH_calibration/SeptemH_FullCalib_2018_2/chip3/thresholdMeans3.txt
-#+end_src
-Desktop / Laptop:
-#+begin_src sh
-./code/ths_optimization -f ~/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/Run3/chip3/thresholdMeans3.txt
-#+end_src
-
-#+RESULTS:
-| @[-0.5,    | 0.5,                                                                                 | 1.5,              | 2.5,                                      | 3.5,                                                                                 | 4.5, | 5.5, | 6.5, | 7.5, | 8.5, | 9.5, | 10.5, | 11.5, | 12.5, | 13.5, | 14.5, | 15.5] |
-| [INFO]     | TeXDaemon                                                                            | ready             | for                                       | input.                                                                               |      |      |      |      |      |      |       |       |       |       |       |       |
-| shellCmd:  | command                                                                              | -v                | xelatex                                   |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
-| shellCmd:  | xelatex                                                                              | -output-directory | /home/basti/phd/Figs/detector/calibration | /home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.tex    |      |      |      |      |      |      |       |       |       |       |       |       |
-| Generated: | /home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf    |                   |                                           |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
-| [INFO]     | TeXDaemon                                                                            | ready             | for                                       | input.                                                                               |      |      |      |      |      |      |       |       |       |       |       |       |
-| shellCmd:  | command                                                                              | -v                | xelatex                                   |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
-| shellCmd:  | xelatex                                                                              | -output-directory | /home/basti/phd/Figs/detector/calibration | /home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.tex |      |      |      |      |      |      |       |       |       |       |       |       |
-| Generated: | /home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf |                   |                                           |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
-
-#+begin_src nim :tangle code/threshold_equalization_heatmap.nim
-import ggplotnim
-import std / [sequtils, strutils]
-
-proc main(fname: string) =
-  let aranged = toSeq(0 .. 255).mapIt($it)
-  var df = readCsv(fname, sep = '\t', colNames = aranged)
-  df["y"] = toSeq(0 .. 255)
-  df = df.gather(aranged, "x", "4-bit DAC")
-    .mutate(f{"x" ~ `x`.parseInt})
-  echo df
-  
-  ggplot(df, aes("x", "y", fill = "4-bit DAC")) +
-    geom_raster() + 
-    #scale_x_continuous() +
-    #xlim(-0.5, 16.5) +
-    xlim(0, 255) + ylim(0, 255) + 
-    ggtitle("Heatmap of all equalization bits after optimization") + 
-    ggsave("/home/basti/phd/Figs/detector/calibration/heatmap_threshold_equalization_example.pdf",
-           useTeX = true, standalone = true)
-
-when isMainModule:
-  import cligen
-  dispatch main
-#+end_src
-
-#+begin_src sh
-./code/threshold_equalization_heatmap -f ~/septemH_calibration/SeptemH_FullCalib_2018_2/chip3/threshold3.txt
-#+end_src
-
-**** Relevant code for calculation of mean values from TOS :noexport:
-
-Filling of =sum= in =THscan=. =array_pos= is effectively the =THL=
-value currently being scanned. =pix_tempdata= is the response matrix
-of each pixel (contains hit counter for each pixel). Also fills
-=hit_counter=, which is simply the counts.
-#+begin_src c++
-    fpga->DataFPGAPC(pix_tempdata2,chp); //!!!only one chip!!!
-    for(short y=step;y<256;y+=(256/pix_per_row)){
-	for(short x=0;x<256;x++){
-	    if(pix_tempdata2[y][x]>=20 and pix_tempdata2[y][x]!=11810){
-		//if (pix_tempdata2[y][x]>=200) {std::cout << "hits for thl " << thl <<" :" << pix_tempdata2[y][x] << std::endl;}
-		p3DArray[y][x][array_pos] = pix_tempdata2[y][x];
-		//if(LFSR_LookUpTable[(*VecData)[chp][y][x]]>=20 and LFSR_LookUpTable[(*VecData)[chp][y][x]]!=11810){
-		//p3DArray[y][x][array_pos] = LFSR_LookUpTable[(*VecData)[chp][y][x]];
-		sum[y][x]+=p3DArray[y][x][array_pos]*(array_pos);
-		hit_counter[y][x]+=p3DArray[y][x][array_pos];
-	    }
-	    else{
-		p3DArray[y][x][array_pos] = 0;
-		sum[y][x]+=0;
-		hit_counter[y][x]+=0;
-	    }
-	}
-    }
-#+end_src
-And in the =THSopt= the code to compute the mean:
-
-#+begin_src c++
-	for(y=0;y<256;y++){
-	    for(x=0;x<256;x++){
-		if (hit_counter0[y][x]!=0){
-		    mean0[y][x] = sum0[y][x]/hit_counter0[y][x];
-		    mean0entries += 1;
-		    summean0 += mean0[y][x];
-		}
-		if (hit_counter15[y][x]!=0){
-		    mean15[y][x] = sum15[y][x]/hit_counter15[y][x];
-		    mean15entries += 1;
-		    summean15 += mean15[y][x];
-		}
-	    }
-	}
-#+end_src
-
-Length of shutter used is
-#+begin_src c++
-    // calling CountingTime with second argument == 1
-    // corresponds to n = 1, power of 256
-    fpga->CountingTime(10, 1);
-#+end_src
-(could compute the length, but not important right now)
-
-Given that the =THscan= is run for each THL value (and thus summing up
-all contributions of all THL values for =sum0=), the algorithm
-effectively computes:
-#+begin_src
-mean = Σ_i #hits_i * THL_i / Σ_i #hits_i
-#+end_src
-which is simply *the weighted mean of the =THL= value, weighted by the
-number of hits.* Essentially we compute the THL value with the most
-dominant noise? In a sense it makes sense as changing the 4-bit DAC
-will move around the position of that noise effectively. The 
-
-The point of interest then here is the fact that the number of hits
-depends on the THL value strongly. We only see the number of injected
-test pulses, if we're above the noise. Ideally we don't want to see
-any noise due to too low =THL= range. Therefore let's check what is
-used in TOS.
-
-We will verify this by computing the same value for an S-curve
-calibration file:
-#+begin_src nim
-import ggplotnim
-
-const path = "/home/basti/septemH_calibration/SCurve/chip_3/voltage_100.txt"
-let df = readCsv(path, sep = '\t', header = "#", colNames = @["THL", "counts"])
-  .filter(f{`THL` > 424})
-echo df
-let thls = df["THL", float]
-let counts = df["counts", float]
-var sum = 0.0
-var hits = 0.0
-for (thl, count) in zip(thls, counts):
-  sum += count * thl
-  hits += count
-echo "Mean value = ", sum / hits
-#+end_src
-
-#+RESULTS:
-| DataFrame |  with |      2 |           columns | and | 175 | rows: |
-|       Idx |   THL | counts |                   |     |     |       |
-|    dtype: |   int |    int |                   |     |     |       |
-|         0 |   425 |   1000 |                   |     |     |       |
-|         1 |   426 |   1000 |                   |     |     |       |
-|         2 |   427 |   1000 |                   |     |     |       |
-|         3 |   428 |   1000 |                   |     |     |       |
-|         4 |   429 |   1000 |                   |     |     |       |
-|         5 |   430 |   1000 |                   |     |     |       |
-|         6 |   431 |   1000 |                   |     |     |       |
-|         7 |   432 |   1000 |                   |     |     |       |
-|         8 |   433 |   1000 |                   |     |     |       |
-|         9 |   434 |   1000 |                   |     |     |       |
-|        10 |   435 |   1000 |                   |     |     |       |
-|        11 |   436 |   1000 |                   |     |     |       |
-|        12 |   437 |   1000 |                   |     |     |       |
-|        13 |   438 |   1000 |                   |     |     |       |
-|        14 |   439 |   1000 |                   |     |     |       |
-|        15 |   440 |   1000 |                   |     |     |       |
-|        16 |   441 |   1000 |                   |     |     |       |
-|        17 |   442 |   1000 |                   |     |     |       |
-|        18 |   443 |   1000 |                   |     |     |       |
-|        19 |   444 |   1000 |                   |     |     |       |
-|           |       |        |                   |     |     |       |
-|      Mean | value |      = | 463.8075954222876 |     |     |       |
-
-which results in a mean value of 463.8. Given the range of data
-that's, surprise, what we would expect from a weighted mean with the
-hit counter used.
-
-Of course, in the =THS= optimization the input is purely noise and not
-a fixed set of test pulses.
-
-*** Final =THL= (threshold) DAC value selection [0/0]
-
-Once the detector is =THS= optimized and threshold equalized, the
-final threshold value of the =THL= DAC can be determined for the data
-taking. While measurements like an S-Curve scan (see
-sec. [[#sec:operation_calibration:scurve_scan]]) can be used to understand
-where the noise level of the chip is in terms of =THL= values, it is
-typically not a reliable measure as the real noise depends strongly on
-the shutter length. If an experiment -- like a low rate experiment as
-CAST -- requires long shutter lengths, the best way to determine the
-lowest possible noise-free =THL= value is to perform a simple scan
-through all =THL= values using the shutter length in use for the
-experiment. 
-
-For a correctly equalized chip a sharp drop off of noisy pixels should
-be visible at a certain threshold. In principle the =THL= value at
-which no more pixels are noisy is the ideal =THL= value.
-
-TOS first performs a quick scan in a range ~THL~ range given by the
-user using short shutter lengths. The determined drop values that
-still see some noise to a noise-free range is used as a basis for a
-long shutter length scan using a shutter length given by the user. For
-safe noise free operation one should choose a ~THL~ value 2 or 3 above
-the first noise-free THL value at the target shutter
-length. Especially for long shutter lengths it is important to perform
-this calibration without any high voltage applied to the detector as
-otherwise cosmic background starts to affect the data.
-
-**** TODOs for this section [/]                                 :noexport:
-
-Old paragraph for above:
-#+begin_quote
-- [ ] *REPHRASE AND NOT TALK ABOUT ENC HERE?*
-Each Timepix pixel has an electronic noise charge (ENC) of *CHECK
-THIS* electrons. Of course the behavior of the charges on the pixels
-are statistically distributed. For the different calibrations
-typically very short shutter opening times are used to get fast
-calibrations. For practical data takings at experiments like CAST,
-very long shutter times on the order of $\mathcal{O}(> \SI{1}{\s})$
-are used however. Due to the statistical nature of noise, a =THL=
-value that is noise less may not be fully noise free for long
-shutters. Therefore, one often uses =THL= values that are slightly
-larger (i.e. ~3 values larger of the 10 bit DAC).
-
-In this sense the S-Curve scan is a good cross check for whether the
-=THL= value seems sensible, but in practice a =THL= scan with a longer
-shutter time is more useful.
-#+end_quote
-
-
-
-... THL scan at desired shutter length! Semi automatically. Scan a
-take no noise + 2
-
-- [ ] *CHECK ENC VALUE OF TIMEPIX AND CITE TIMEPIX PAPER*
-  -> ENC is ~100 (timepix paper), but the ENC isn't the relevant
-  property here. I think I misunderstood what the ENC really is.
-- [ ] *FOR THE SECTION ABOVE I THINK ONLY THE MINIMALLY DETECTABLE
-  CHARGE IS RELEVANT?*
-- [X] *REWRITE FULL SECTION WITH A CLEAR HEAD*  
-
 *** ToT calibration
 :PROPERTIES:
 :CUSTOM_ID: sec:operation_calibration:tot_calibration
@@ -9750,322 +9339,15 @@ calibration function used in ~TimepixAnalysis~.
   ##                           4*(a*b*t + a*c - a*t*ToT[clock cycles]) ) )
 #+end_src
 
-*** S-Curve scan [0/0]                                           :extended:
-:PROPERTIES:
-:CUSTOM_ID: sec:operation_calibration:scurve_scan
-:END:
-
-The S-Curve scan is one of 2 different ways to determine the optimal
-=THL= value.
-
-The purpose of the S-curve scan is to understand the relationship
-between injected charges in electron and the =THL= DAC values by
-providing a ${\text{\# } e^-}/\mathtt{THL}\text{ step}$ number (or
-without a =ToT= calibration $\mathtt{ToT}/\mathtt{THL}$). 
-
-It works by injecting charges onto each pixel and checking the pixel
-response of each pixel at different =THL= values. Below a certain
-=THL= value all pixels will respond to the injected charge. At some
-point certain pixels will be insensitive to the induced charge and a
-90° rotated "S" will form. By fitting an error function to this S an
-ideal =THL= value can be deduced.
-
-By calculating =THL= value at which half of all test pulses are
-recorded, we can compute the number of electrons corresponding to that
-=THL= DAC value, as we know the amplitude of the test pulse and thus
-number of injected electrons.
-
-Fig. [[fig:daq:s_curve_examples]] shows an S-Curve scan of chip 0 of the
-Septemboard using the calibration from July 2018. The center peak in
-the middle is the noise peak of the detector at the shutter length
-used for the S-Curve scan. The symmetrical shape is due to specific
-implementation details of how the pixels function, the upper side is
-the one of interest. The falling edge of each curve can be fit by the
-cumulative distribution function of a normal distribution. The center
-point (half way between both plateaus) corresponds to the effective
-threshold of the detector at that injected charge.
-
-#+NAME: eq:daq:s_curve_fit_function  
-\begin{equation}
-f(μ, σ, N) = \frac{N}{2} · \text{erfc}((x - μ) / (σ · \sqrt{2}))
-\end{equation}
-
-where the parameter $N$ is simply a scaling factor and $μ$ represents
-the x value of the half-amplitude point. $σ$ is the spread of the drop
-and $\text{erfc}$ is the complementary error function $\text{erfc}(x)
-= 1 - \text{erf}(x)$. The error function is of course just the
-integral over a normal distribution up to the evaluation point $x$:
-
-\[
-\text{erf}(x) = \frac{2}{\sqrt{π}} ∫_0^{x} e^{-t²} dt
-\]
-
-Given that the number of injected electrons is known for each test
-pulse amplitude (see sec. [[#sec:operation_calibration:tot_calibration]]), we can compute
-the relationship of the number of electrons per =THL= value step. This
-is called the =THL= calibration and an example corresponding to
-fig. [[fig:daq:s_curves_examples]] is shown in
-fig. [[fig:daq:thl_calibration_example]], where the =THL= values used
-correspond to the $μ$ parameters of
-eq. [[eq:daq:s_curve_fit_function]]. The resulting fit is useful, as it
-allows to easily convert a given =THL= DAC value into an effective
-number of electrons, which then corresponds to the effective threshold
-in electrons required to activate a pixel on average. When looking at
-the distribution of charges in a dataset, that cutoff in electrons is
-of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
-
-#+CAPTION: S-Curve scan of chip 0 of the Septemboard using the calibration from
-#+CAPTION: July 2018. The scan works by injecting \num{1000} test pulses at different
-#+CAPTION: amplitudes onto the pixels. Each line represents one such measurement
-#+CAPTION: and each point is the mean number of counted hits for all pixels with injected
-#+CAPTION: test pulses.
-#+CAPTION: The center peak in the middle is the noise peak of the
-#+CAPTION: detector. The symmetrical shape is due to specific implementation
-#+CAPTION: details of how the pixels function. The upper side is the one of
-#+CAPTION: interest. The falling edge of each curve can be fit by the complement of the
-#+CAPTION: cumulative distribution function of a normal distribution. The center point
-#+CAPTION: (half way between both plateaus) corresponds to the effective threshold 
-#+CAPTION: of the detector at that injected charge. The fit parameters for all calibrations
-#+CAPTION: are shown in tab. *INSERT*.
-#+NAME: fig:daq:s_curves_example
-[[~/phd/Figs/detector/calibration/s_curves_0_lX_200.0_lY_3750.0.pdf]]
-
-#+CAPTION: The =THL= calibration can be used to gauge the 'threshold gain' the
-#+CAPTION: =THL= DAC has on the number of electrons required to cross the threshold.
-#+CAPTION: The =THL= DAC in the Timepix normally adjusts the threshold by about
-#+CAPTION: \num{25} electrons per DAC value cite:timepix_manual, which is reproduced
-#+CAPTION: well here (parameter $1/m$). The root of the linear fit (written as
-#+CAPTION: $f⁻¹(y=0)$ in the annotation) corresponds to the position of the noise peak
-#+CAPTION: in fig. [[fig:daq:s_curves_example]]. *THIS IS INVERTED OR THE PLOT IS WRONG!*
-#+NAME: fig:daq:thl_calibration_example
-[[~/phd/Figs/detector/calibration/thl_calibration_chip_0_lX_422.0_lY_3550.0.pdf]]
-
-
-**** TODOs for this section [5/18]                              :noexport:
-
-- [ ] *REWRITE THE CAPTION OF THL PLOT*
-
-- [ ] *TURN INTO IF ELSE FUNCTION FOR z* (defined in seqmath)
-  #+begin_src nim
-  let z = (x - x0) / (sigma * sqrt(2.0))
-  if z > 1.0:
-    result = 0.5 * erfc(z)
-  else:
-    result = 0.5 * (1.0 - erf(z))
-  #+end_src
-
-- [ ] *MAIN PURPOSE IS NOT!! THL VALUE DETERMINATION*
-- [ ] *LIKELY MOVE THIS EITHER TO APPENDIX OR EVEN EXTENDED THESIS*  
-
-- [ ] *ADD FIT FUNCTION FOR SCURVE*
-
-- [ ] *REFER TO THE CODE THAT DOES THE FIT*
-  https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibration/calib_fitting.nim#L111
-
-- [X] *FIX UP TYPESETTING OF FIT PARAMETERS IN THL PLOT*
-
-- [ ] *INSERT AND REFERENCE TABLE OF ALL FIT PARAMETERS FOR THE SCURVES*
-
-- [ ] *CHECK WHAT 25e/THL IS CALLED IN TABLE OF TIMEPIX MANUAL*
-
-- [X] *FIX PARAMETERS OF THL CALIBRATION. THEY ARE NONSENSICAL AND NOT ALIGNED*
-  
-- [X] *ADD THAT AT EVEN LOWER VALUE WE JUST SEE NOISE AND THEN DUE TO
-  IMPLEMENTATION DETAILS THE WHOLE THING INVERTS*
-
-- [X] *ADD ITS OWN SHORT SECTION ABOUT THRESHOLD SCANNING WITH BELOW
-  REWRITTEN TEXT*
-
-- [ ] *ADD NUMBER OF EXPECTED ELECTRONS AS THRESHOLD AS MENTIONED IN TIMEPIX ORIGINAL PAPER*
-
-- [X] *PLOT OF SCURVE SCANS*
-
-- [ ] *APPENDIX ALL SCURVE SCANS FOR CAST DATA TAKING*
-  -> If anything only for the extended thesis. We don't use them for
-  literally anything.
-
-- [ ] *UNDERSTAND HOW WE CAN USE SCURVE TO DEDUCE THRESHOLD AND EXPLAIN IT*
-- [ ] *S-CURVE CAN BE USED TO DETERMINE #electron / THL DAC VALUE*
-  (first gets THL value against pulse height of course)
-- [ ] *MAKE THAT FIT AND SHOW EXAMPLE*
-  -> That's the fit in [[fig:daq:thl_calibration_example]] no?
-
-- [ ] *ADD EQUATION FOR MINIMUM DETECTABLE CHARGE AND GIVE A NUMBER*  
-
-**** Compute electrons per THL DAC value [0/2]                  :extended:
-
-- [ ] *FIGURE OUT WHY 2017 CALIBRATION HAS ABOUT 50e/THL COMPARED TO
-  25e/THL!*
-
-- [ ] *REPLACE BELOW BY =plotCalibration= CALL?* That already handles
-  it, even though currently via plotly.
-
-For the S-Curve plot 
-#+begin_src sh
-plotCalibration --scurve --chip 0 --runPeriod Run3 --useTeX --legendX 200.0 --legendY 3750 --outpath ~/phd/Figs/detector/calibration
-#+end_src
-
-and for the THL calibration:
-#+begin_src sh
-plotCalibration --scurve --chip 0 --runPeriod Run3 --useTeX --legendX 422.0 --legendY 3550 --outpath ~/phd/Figs/detector/calibration
-#+end_src
-
-the only difference being the legend placement (as the coordinates are
-applied to both plots).
-
-The following is essentially the main code required to plot the
-SCurves, determine the middle point and fit THL calib (not the SCurve
-fit though):
-#+begin_src nim :tangle /home/basti/phd/code/s_curve_electrons_per_thl.nim
-import std / [strutils, strscans, os, strformat] 
-import ggplotnim
-import unchained
-
-proc charge(voltage: mV): UnitLess =
-  ## Returns the number of electrons given a voltage pulse of amplitude `voltage`
-  ## at the 8.fF capacitor of the Timepix1
-  result = 8.fF * voltage / e
-
-#const path = "/home/basti/septemH_calibration/SCurve/chip_3/voltage_*.txt"
-#const path = "/home/basti/septemH_calibration/CalibJul2018/SCurves/chip_1/voltage_*.txt"
-const path = "/home/basti/septemH_calibration/SeptemH_FullCalib_InGridDatabase/chip3/SCurve/voltage_*.txt"
-#const path = "/home/basti/septemH_calibration/SeptemH_FullCalib_2018_2/chip0/SCurve/voltage_*.txt"
-var charges = newSeq[float]()
-var thls = newSeq[int]()
-for file in walkFiles(path):
-  let (success, _, voltage) = scanTuple(file.extractFilename, "$*_$i.txt$.")
-  if voltage == 0: continue # skip 0
-  charges.add charge(voltage.mV)
-  ## we'll do the simplest approach to get the correct THL value:
-  ## - strip everything before noise peak (to have single THL value)
-  ## - compute
-  var df = readCsv(file, sep = '\t', header = "#", colNames = @["THL", "counts"])
-  let thlAtMax = df.filter(f{int: `counts` == `counts`.max})["THL", int][0] # must be single element
-  const TestPulses = 1000
-  df = df.filter(f{`THL` > thlAtMax})
-    .mutate(f{int: "DiffHalf" ~ abs(`counts` - TestPulses div 2)})
-    .filter(f{int: `DiffHalf` == min(col("DiffHalf"))}) # f{int: `DiffHalf` < 200})
-  thls.add df["THL", int][0] # must be single element
-
-import polynumeric
-let fit = polyFit(thls.toTensor.asType(float),
-                  charges.toTensor,
-                  polyOrder = 1)
-echo fit
-proc linear(x, m, b: float): float = m * x + b
-
-let thlFit = linspace(thls.min, thls.max, 10)
-let chargesFit = linspace(charges.min, charges.max, 10)
-var dfFit = toDf({ "thls" : thlFit,
-                   "charges" : thlFit.map_inline(linear(x, fit[1], fit[0])) })
-echo dfFit
-let df = toDf(thls, charges)
-
-ggplot(df, aes("thls", "charges")) + 
-  geom_point() +
-  geom_line(data = dfFit, aes = aes("thls", "charges"), color = parseHex("FF00FF")) +
-  xlab("THL DAC") + ylab("Injected charge [e⁻]") + 
-  ggtitle(&"Fit parameters: m = {fit[1]:.2f} e⁻/THL, b = {fit[0]:.2f} e⁻") +
-  ggsave("/home/basti/phd/Figs/charge_per_thl.pdf")
-#+end_src
-
-#+RESULTS:
-
-**** Compute minimally detectable charge                        :extended:
-
-Ref:
-- cite:LLOPART2007485_timepix Timepix paper
-- cite:LlopartCudie_1056683 Llopert PhD thesis
-
-The following quotes explain how to compute the effective threshold:
-
-page 5/10:
-#+begin_quote
-The electronic noise and effective threshold can be measured using the
-s-curve method [8] when the pixel is set in counting mode.
-#+end_quote
-
-page 5/10:
-#+begin_quote
-The effective threshold is at 50% of this s-curve. The charge
-difference between the 97.75% and 2.25% of the s- curve is four times
-the RMS noise of the front end assuming a gaussian distributed noise.
-#+end_quote
-
-#+begin_quote
-The measured electronic noise is 99:4 ± 3:8 e⁻ rms for hole
-collection and 104:8 ± 6 e⁻ rms for electron collection.  The
-measured DAC step gain is 24:7 ± 0:7 e⁻ =step for hole collection
-and 25:4 ± 1:2 e⁻ =step for electron collection.
-#+end_quote
-
-page 7/10:
-#+begin_quote
-The threshold variation before equalization is
-~240 e⁻ rms and after equalization the achieved noise free
-threshold variation is ~35 e⁻ rms for both polarities.
-#+end_quote
-
-page 7/10:
-#+begin_quote
-The minimum detectable charge can be calculated by quadratically
-adding the measured electronic noise and the threshold variation
-because both measurements are uncorrelated.
-#+end_quote
-
-#+begin_quote
-Before equalization the minimum detectable charge for the full matrix
-is ~1600 e⁻ and after equalization is ~650 e⁻ for both polarities.
-#+end_quote
-
-This means:
-- [ ] compute the 97.75 ⇔ 2.25% range of the S-curve. Yields 4 times
-  RMS noise. Width in THL of that can be converted to #e⁻ using THL
-  calibration.
-  -> electronic noise $N_e$
-- [ ] compute width of optimized threshold variation based on
-  histogram. Fit gaussian (?) to optimized threshold variation. σ of
-  that gaussian is width in THL. Convert THL to electrons.
-  -> threshold variation $N_t$
-
-- [ ] *CHECK IF THIS IS CORRECT*:
-  If I'm not mistaken, the noise peak we see in the S-curve scan is
-  essentially the same as the optimized distribution from the
-  threshold equalization.
-
-Then with those two parameters we compute the effective detectable
-charge as:
-
-\[
-N_d = √(N_e² + N_t²)
-\]
-
-which for the numbers listed above yields
-
-\[
-N_d = √(105² + 35²) = 110
-\]
-
-which is not close to the expected 650 e⁻!
-
-Checking in the PhD thesis of Llopert, page 115, equation 4.5 is:
-
-\[
-\text{MinDetect}Q = 6·\sqrt{ ENC² + σ_{\text{dist}}²}
-\]
-which then works out nicely (110·6 = 660 is close enough)!
-
-So in theory we can compute this for all our chips and all
-calibrations.
-
-- [ ] *CALCULATE FOR ALL CHIPS AND PUT INTO APPENDIX*
-
 *** Pólya distribution & gas gain [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:daq:polya_distribution_threshold
 :END:
 
 - [ ] *DON'T NEED TO MENTION THL AND ACTIVATION THRESHOLD THL HERE*
+- [ ] *THIS NEEDS A GOOD REWRITE STILL!*
+- [ ] The additional threshold discussion can be moved to the appendix
+  I think  
 
 In a gaseous detector the gas amplification (see
 sec. [[#sec:theory:gas_gain_polya]]) allows to easily exceed the minimum
@@ -39171,6 +38453,771 @@ exceeds one frame per second significantly.
 :CUSTOM_ID: sec:appendix:calibration
 :END:
 
+This appendix explains the different calibrations that need to be
+performed for the Timepix to bring it into its operating window,
+sec. [[#sec:appendix:calibration:timepix]], and present the results mostly
+focused on the center chip. Then in
+sec. [[#sec:appendix:septemboard_calibrations]] we present additional
+calibrations for all chips.
+
+** Timepix calibrations
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:calibration:timepix
+:END:
+
+Before a Timepix based detector can be used for data taking, different
+calibrations have to be performed. We will discuss those calibrations,
+which are performed before any data taking here.
+
+First, the =THS= optimization and threshold equalization
+(sec. [[#sec:operation_calibration:ths_opt_equalization]]). These two are
+calibrations that are used to set different DACs on the Timepix to
+good working points. 
+
+The very important ToT calibration was already introduced in the main
+body, section [[#sec:operation_calibration:tot_calibration]]. Its purpose
+is to interpret the ToT values in amount of charge of recorded
+electrons.
+
+In principle there are many other calibrations one could perform, as
+the Timepix has 13 different DACs. Most are used with
+default values that are seen in tab. [[tab:daq:common_dac_values]].
+
+For an introduction to S-Curve scans see the extended
+version of the thesis.
+
+Important references for the Timepix in general and for the
+calibration procedures explained below are
+cite:LLOPART2007485_timepix,LlopartCudie_1056683,timepix_manual,lupberger2016pixel.
+
+*** TODOs for this section [/] :noexport:
+
+- [ ] *THINK ABOUT KEEPING SCURVE HERE, GIVEN THAT APPENDIX NOW*
+
+*** =THS= optimization and threshold equalization
+:PROPERTIES:
+:CUSTOM_ID: sec:operation_calibration:ths_opt_equalization
+:END:
+
+For an optimal operation of a Timepix based detector, each pixel
+should ideally have the same threshold. While all pixels are
+theoretically identical, imperfections in the production process will
+always lead to slight differences, either locally (transistor
+threshold voltage or current mismatches
+cite:LLOPART2007485_timepix,pelgrom1989matching ) or global effects
+like small supply voltage instabilities. Therefore, each pixel has 4
+independently selectable current sources to minimize the spread of
+threshold values
+cite:timepix_manual,LLOPART2007485_timepix. Together all 4 sources
+act as an effective 4-bit DAC to slightly adjust the threshold. The
+absolute current for the 4 sources is dependent on the global =THS=
+DAC, allowing currents in the range of $\SIrange{0}{40}{nA}$.
+
+To achieve a good calibration for a homogeneous threshold, first the
+=THS= DAC has to be set correctly. This is referred to as the =THS=
+optimization. Once the correct value is found, the 4-bit DAC on each
+pixel can be adjusted to minimize the spread of threshold values of
+all pixels together.
+
+If the =THS= DAC is set too high, the 4-bit DAC on each pixel will be
+too coarse for a fine adjustment (as the 'current steps' will be too
+large). If it is too low, not enough range will be available to adjust
+each pixel to an equal noise / sensitivity level (not enough current
+available via the 4 current sources). The goal of the =THS=
+optimization is therefore to find just the right value, as to provide
+a range of values such that all values can be shifted to the same
+threshold of the threshold DAC =THL=.
+
+The algorithm scans a range of =THL= values through a subset of
+$\num{4096}$ pixels using different 4-bit DAC values. First 0 for all
+pixels and then the maximum value of 15. At each =THL= and 4-bit
+value the number of hits due to pure noise is recorded for each
+pixel. The weighted mean of the =THL= values, using the number of hits
+as weight, is the value of interest for each pixel and each 4-bit DAC
+value: the effective =THL= noise value for that pixel. For each of the
+two cases (4-bit value 0 and 15) we can then compute a histogram of the
+number of pixels at each =THL= value. The resulting histogram will be
+a normal distribution around a specific =THL= value. The stopping
+criterion, which defines the final =THS= value, is such that these two
+distributions overlap at the 3 RMS level. This is performed by
+comparing the means of the 0 and 15 value distribution at a starting
+=THS= value and again at half of that =THS= value. Using linear
+regression of the two differences, the optimal =THS= value is
+computed.
+
+With a suitable =THS= value set, the actual threshold equalization can
+start. The algorithm used is fundamentally very similar to the logic
+of the =THS= optimization. Each pixel of the chip is scanned for a
+range of =THL= values and the weighted =THL= noise mean is computed
+both at a 4-bit DAC value of 0 and at 15. The normalized deviation of
+each pixel's =THL= value to the mean =THL= value of all pixels is
+computed. Using a linear regression the optimal required shift (in
+units of the 4-bit DAC) yields the final 4-bit DAC value for each
+pixel.
+
+An example of the 0 and 15 value distributions as well as the
+distribution using the final 4-bit DAC values for each pixel is shown
+in fig. [[sref:fig:daq:optimal_ths_distribution]]. [fn:daq_histo_source] Each
+of the distributions represent different 4-bit DAC settings of all
+pixels of the chip. Orange ("min") represents all pixels using a 4-bit
+DAC value of 0, purple ("max") of 15. In green is the same
+distribution for the case where every pixel uses its optimal 4-bit DAC
+value. The threshold equalization thus yields a very strong reduction
+in the =THL= spread of all pixels. Fig. [[sref:fig:daq:4bit_dac_distribution]]
+shows how all pixels are spread in the values of the 4-bit DAC. The
+narrow equalized line of fig. [[sref:fig:daq:optimal_ths_distribution]] is
+achieved by a normal distribution around $\num{8}$ of the 4-bit DAC
+values, with only very few at the edges of the DAC ($\num{0}$ and
+$\num{15}$). Finally, fig. [[fig:daq:4bit_dac_heatmap]] shows a heatmap of
+an entire chip with its 4-bit DAC values after equalization.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "THL distributions") (label "fig:daq:optimal_ths_distribution")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf"))
+        (subfigure (linewidth 0.5) (caption "4-bit distributions") (label "fig:daq:4bit_dac_distribution")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf"))
+        (caption
+         (subref "fig:daq:optimal_ths_distribution")
+          "Distributions of different 4-bit DAC settings of all
+          pixels of the chip. Orange (\"min\"): all pixels using a 4-bit
+          DAC value of 0, purple (\"max\"): 15. Green: every pixel uses the
+          optimal 4-bit DAC value after equalization. The result is a significant
+          in =THL= value spread of all pixels."
+         (subref "fig:daq:4bit_dac_distribution")
+          "Distribution of all 4-bit DAC values for the pixels after the
+          threshold equalization. A normal distribution around a middle
+          value is expected to largest likelihood of achieving a flat
+          threshold around the whole chip. Very few pixels are either in 
+          value \\num{0} or \\num{15}, implying few pixels likely outside their
+          range to adjust to the required threshold. In this example
+          represented is the center chip of the Septemboard with its calibration
+          from July 2018.")
+        (label "fig:daq:thl_and_4bit_distr"))
+#+end_src
+
+#+CAPTION: Heatmap of the distribution of the 4-bit DAC values of all pixels
+#+CAPTION: as they are spread over the full Timepix. In this example
+#+CAPTION: represented is the center chip of the Septemboard with its calibration
+#+CAPTION: from July 2018.
+#+NAME: fig:daq:4bit_dac_heatmap
+[[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_example.pdf]]
+
+[fn:daq_histo_source] The plot is generated from the
+=thresholdMeans.txt= file created as part of the equalization
+procedure in TOS.
+
+[fn:daq_tos_code_quality] Having to check out the TOS code to verify
+the logic of the THS optimization and equalization procedures reminded
+me of the abhorrent code quality of that code base. Holy moly...
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] Maybe move heatmap of equalization to extended version?
+
+- [X] *I THINK THS OPT DOES NOT!! USE TEST PULSES* Yes, pretty sure
+  now. The THS optimization (and obviously threshold equalization)
+  does not use test pulses
+
+- [ ] *INTRODUCE THE NAME 'PIXEL DAC' INSTEAD 4-BIT DAC?*  
+
+- [ ] *MAYBE REPHRASE THE FOLLOWING. BUT THIS IS WHAT'S HAPPENING. THE TOS CODE IS PRETTY SIMPLE, JUST BLOATED AND UGLY*
+
+- [X] *FIRST EXPLAIN THS OPT, THEN EQ, BOTH USING THE PLOT*  
+
+- [X] *REWRITE BELOW FOLLOWING THE ABOVE NOW*
+- [X] *MENTION THIS IS TO MAKE EQUALIZATION OF EACH PIXEL DAC NICE*
+
+- [ ] *PSEUDO CODE ALGORITHM? I THINK IT WOULD CLARIFY THE EXPLANATION QUITE A BIT. ESPECIALLY BECAUSE IT'S NOT DIFFICULT. JUST TOS IS
+  UGLY*
+
+- [X] *PLOT OF THESE TWO HISTOGRAMS. SHOW MAYBE IDEALIZED EXAMPLE OF BAD THS
+  AND GOOD THS VALUE*
+
+- [X] *LOOK AT TOS CODE AGAIN*
+  
+- [X] *LOOK AT TOS CODE FOR EQUALIZATION AGAIN*
+
+- [X] *CROSS CHECK THE NAMES ETC*
+
+**** Generate the plot for the THS optimization result :noexport:
+
+#+begin_src nim :tangle code/ths_optimization.nim
+import ggplotnim
+
+proc main(fname: string) =
+  var df = readCsv(fname, sep = '\t', colNames = @["x", "y", "min", "max", "bit", "opt"])
+  let breaks = linspace(-0.5, 15.5, 17).toSeq1D
+  echo breaks
+  ggplot(df, aes("bit")) +
+    geom_histogram(breaks = breaks, hdKind = hdOutline) +
+    scale_x_continuous() +
+    xlim(-0.5, 16.5) +
+    xlab("4-bit DAC") + 
+    ggtitle("Distribution of all equalization bits after optimization") + 
+    ggsave("/home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf",
+           useTeX = true, standalone = true)
+  df = df.gather(["min", "max", "opt"], "type", "THL")
+  ggplot(df.filter(f{`THL` > 330.0 and `THL` < 460.0}), aes("THL", fill = "type")) +
+    geom_histogram(binWidth = 1.0, position = "identity", hdKind = hdOutline, alpha = 0.7) +
+    ggtitle("THL distributions for all equalization bits at 0, 15 and optimized") +
+    #xlim(330, 460) + 
+    ggsave("/home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf",
+           useTeX = true, standalone = true)
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+Laptop:
+#+begin_src sh
+./code/ths_optimization -f ~/septemH_calibration/SeptemH_FullCalib_2018_2/chip3/thresholdMeans3.txt
+#+end_src
+Desktop / Laptop:
+#+begin_src sh
+./code/ths_optimization -f ~/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/Run3/chip3/thresholdMeans3.txt
+#+end_src
+
+#+RESULTS:
+| @[-0.5,    | 0.5,                                                                                 | 1.5,              | 2.5,                                      | 3.5,                                                                                 | 4.5, | 5.5, | 6.5, | 7.5, | 8.5, | 9.5, | 10.5, | 11.5, | 12.5, | 13.5, | 14.5, | 15.5] |
+| [INFO]     | TeXDaemon                                                                            | ready             | for                                       | input.                                                                               |      |      |      |      |      |      |       |       |       |       |       |       |
+| shellCmd:  | command                                                                              | -v                | xelatex                                   |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
+| shellCmd:  | xelatex                                                                              | -output-directory | /home/basti/phd/Figs/detector/calibration | /home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.tex    |      |      |      |      |      |      |       |       |       |       |       |       |
+| Generated: | /home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf    |                   |                                           |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
+| [INFO]     | TeXDaemon                                                                            | ready             | for                                       | input.                                                                               |      |      |      |      |      |      |       |       |       |       |       |       |
+| shellCmd:  | command                                                                              | -v                | xelatex                                   |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
+| shellCmd:  | xelatex                                                                              | -output-directory | /home/basti/phd/Figs/detector/calibration | /home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.tex |      |      |      |      |      |      |       |       |       |       |       |       |
+| Generated: | /home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf |                   |                                           |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
+
+#+begin_src nim :tangle code/threshold_equalization_heatmap.nim
+import ggplotnim
+import std / [sequtils, strutils]
+
+proc main(fname: string) =
+  let aranged = toSeq(0 .. 255).mapIt($it)
+  var df = readCsv(fname, sep = '\t', colNames = aranged)
+  df["y"] = toSeq(0 .. 255)
+  df = df.gather(aranged, "x", "4-bit DAC")
+    .mutate(f{"x" ~ `x`.parseInt})
+  echo df
+  
+  ggplot(df, aes("x", "y", fill = "4-bit DAC")) +
+    geom_raster() + 
+    #scale_x_continuous() +
+    #xlim(-0.5, 16.5) +
+    xlim(0, 255) + ylim(0, 255) + 
+    ggtitle("Heatmap of all equalization bits after optimization") + 
+    ggsave("/home/basti/phd/Figs/detector/calibration/heatmap_threshold_equalization_example.pdf",
+           useTeX = true, standalone = true)
+
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+#+begin_src sh
+./code/threshold_equalization_heatmap -f ~/septemH_calibration/SeptemH_FullCalib_2018_2/chip3/threshold3.txt
+#+end_src
+
+**** Relevant code for calculation of mean values from TOS :noexport:
+
+Filling of =sum= in =THscan=. =array_pos= is effectively the =THL=
+value currently being scanned. =pix_tempdata= is the response matrix
+of each pixel (contains hit counter for each pixel). Also fills
+=hit_counter=, which is simply the counts.
+#+begin_src c++
+    fpga->DataFPGAPC(pix_tempdata2,chp); //!!!only one chip!!!
+    for(short y=step;y<256;y+=(256/pix_per_row)){
+	for(short x=0;x<256;x++){
+	    if(pix_tempdata2[y][x]>=20 and pix_tempdata2[y][x]!=11810){
+		//if (pix_tempdata2[y][x]>=200) {std::cout << "hits for thl " << thl <<" :" << pix_tempdata2[y][x] << std::endl;}
+		p3DArray[y][x][array_pos] = pix_tempdata2[y][x];
+		//if(LFSR_LookUpTable[(*VecData)[chp][y][x]]>=20 and LFSR_LookUpTable[(*VecData)[chp][y][x]]!=11810){
+		//p3DArray[y][x][array_pos] = LFSR_LookUpTable[(*VecData)[chp][y][x]];
+		sum[y][x]+=p3DArray[y][x][array_pos]*(array_pos);
+		hit_counter[y][x]+=p3DArray[y][x][array_pos];
+	    }
+	    else{
+		p3DArray[y][x][array_pos] = 0;
+		sum[y][x]+=0;
+		hit_counter[y][x]+=0;
+	    }
+	}
+    }
+#+end_src
+And in the =THSopt= the code to compute the mean:
+
+#+begin_src c++
+	for(y=0;y<256;y++){
+	    for(x=0;x<256;x++){
+		if (hit_counter0[y][x]!=0){
+		    mean0[y][x] = sum0[y][x]/hit_counter0[y][x];
+		    mean0entries += 1;
+		    summean0 += mean0[y][x];
+		}
+		if (hit_counter15[y][x]!=0){
+		    mean15[y][x] = sum15[y][x]/hit_counter15[y][x];
+		    mean15entries += 1;
+		    summean15 += mean15[y][x];
+		}
+	    }
+	}
+#+end_src
+
+Length of shutter used is
+#+begin_src c++
+    // calling CountingTime with second argument == 1
+    // corresponds to n = 1, power of 256
+    fpga->CountingTime(10, 1);
+#+end_src
+(could compute the length, but not important right now)
+
+Given that the =THscan= is run for each THL value (and thus summing up
+all contributions of all THL values for =sum0=), the algorithm
+effectively computes:
+#+begin_src
+mean = Σ_i #hits_i * THL_i / Σ_i #hits_i
+#+end_src
+which is simply *the weighted mean of the =THL= value, weighted by the
+number of hits.* Essentially we compute the THL value with the most
+dominant noise? In a sense it makes sense as changing the 4-bit DAC
+will move around the position of that noise effectively. The 
+
+The point of interest then here is the fact that the number of hits
+depends on the THL value strongly. We only see the number of injected
+test pulses, if we're above the noise. Ideally we don't want to see
+any noise due to too low =THL= range. Therefore let's check what is
+used in TOS.
+
+We will verify this by computing the same value for an S-curve
+calibration file:
+#+begin_src nim
+import ggplotnim
+
+const path = "/home/basti/septemH_calibration/SCurve/chip_3/voltage_100.txt"
+let df = readCsv(path, sep = '\t', header = "#", colNames = @["THL", "counts"])
+  .filter(f{`THL` > 424})
+echo df
+let thls = df["THL", float]
+let counts = df["counts", float]
+var sum = 0.0
+var hits = 0.0
+for (thl, count) in zip(thls, counts):
+  sum += count * thl
+  hits += count
+echo "Mean value = ", sum / hits
+#+end_src
+
+#+RESULTS:
+| DataFrame |  with |      2 |           columns | and | 175 | rows: |
+|       Idx |   THL | counts |                   |     |     |       |
+|    dtype: |   int |    int |                   |     |     |       |
+|         0 |   425 |   1000 |                   |     |     |       |
+|         1 |   426 |   1000 |                   |     |     |       |
+|         2 |   427 |   1000 |                   |     |     |       |
+|         3 |   428 |   1000 |                   |     |     |       |
+|         4 |   429 |   1000 |                   |     |     |       |
+|         5 |   430 |   1000 |                   |     |     |       |
+|         6 |   431 |   1000 |                   |     |     |       |
+|         7 |   432 |   1000 |                   |     |     |       |
+|         8 |   433 |   1000 |                   |     |     |       |
+|         9 |   434 |   1000 |                   |     |     |       |
+|        10 |   435 |   1000 |                   |     |     |       |
+|        11 |   436 |   1000 |                   |     |     |       |
+|        12 |   437 |   1000 |                   |     |     |       |
+|        13 |   438 |   1000 |                   |     |     |       |
+|        14 |   439 |   1000 |                   |     |     |       |
+|        15 |   440 |   1000 |                   |     |     |       |
+|        16 |   441 |   1000 |                   |     |     |       |
+|        17 |   442 |   1000 |                   |     |     |       |
+|        18 |   443 |   1000 |                   |     |     |       |
+|        19 |   444 |   1000 |                   |     |     |       |
+|           |       |        |                   |     |     |       |
+|      Mean | value |      = | 463.8075954222876 |     |     |       |
+
+which results in a mean value of 463.8. Given the range of data
+that's, surprise, what we would expect from a weighted mean with the
+hit counter used.
+
+Of course, in the =THS= optimization the input is purely noise and not
+a fixed set of test pulses.
+
+*** Final =THL= (threshold) DAC value selection [0/0]
+
+Once the detector is =THS= optimized and threshold equalized, the
+final threshold value of the =THL= DAC can be determined for the data
+taking. While measurements like an S-Curve scan (see
+sec. [[#sec:operation_calibration:scurve_scan]]) can be used to understand
+where the noise level of the chip is in terms of =THL= values, it is
+typically not a reliable measure as the real noise depends strongly on
+the shutter length. If an experiment -- like a low rate experiment as
+CAST -- requires long shutter lengths, the best way to determine the
+lowest possible noise-free =THL= value is to perform a simple scan
+through all =THL= values using the shutter length in use for the
+experiment. 
+
+For a correctly equalized chip a sharp drop off of noisy pixels should
+be visible at a certain threshold. In principle the =THL= value at
+which no more pixels are noisy is the ideal =THL= value.
+
+TOS first performs a quick scan in a range ~THL~ range given by the
+user using short shutter lengths. The determined drop values that
+still see some noise to a noise-free range is used as a basis for a
+long shutter length scan using a shutter length given by the user. For
+safe noise free operation one should choose a ~THL~ value 2 or 3 above
+the first noise-free THL value at the target shutter
+length. Especially for long shutter lengths it is important to perform
+this calibration without any high voltage applied to the detector as
+otherwise cosmic background starts to affect the data.
+
+**** TODOs for this section [/]                                 :noexport:
+
+Old paragraph for above:
+#+begin_quote
+- [ ] *REPHRASE AND NOT TALK ABOUT ENC HERE?*
+Each Timepix pixel has an electronic noise charge (ENC) of *CHECK
+THIS* electrons. Of course the behavior of the charges on the pixels
+are statistically distributed. For the different calibrations
+typically very short shutter opening times are used to get fast
+calibrations. For practical data takings at experiments like CAST,
+very long shutter times on the order of $\mathcal{O}(> \SI{1}{\s})$
+are used however. Due to the statistical nature of noise, a =THL=
+value that is noise less may not be fully noise free for long
+shutters. Therefore, one often uses =THL= values that are slightly
+larger (i.e. ~3 values larger of the 10 bit DAC).
+
+In this sense the S-Curve scan is a good cross check for whether the
+=THL= value seems sensible, but in practice a =THL= scan with a longer
+shutter time is more useful.
+#+end_quote
+
+
+
+... THL scan at desired shutter length! Semi automatically. Scan a
+take no noise + 2
+
+- [ ] *CHECK ENC VALUE OF TIMEPIX AND CITE TIMEPIX PAPER*
+  -> ENC is ~100 (timepix paper), but the ENC isn't the relevant
+  property here. I think I misunderstood what the ENC really is.
+- [ ] *FOR THE SECTION ABOVE I THINK ONLY THE MINIMALLY DETECTABLE
+  CHARGE IS RELEVANT?*
+- [X] *REWRITE FULL SECTION WITH A CLEAR HEAD*  
+
+
+
+*** S-Curve scan [0/0]                                           :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:operation_calibration:scurve_scan
+:END:
+
+The S-Curve scan is one of 2 different ways to determine the optimal
+=THL= value.
+
+The purpose of the S-curve scan is to understand the relationship
+between injected charges in electron and the =THL= DAC values by
+providing a ${\text{\# } e^-}/\mathtt{THL}\text{ step}$ number (or
+without a =ToT= calibration $\mathtt{ToT}/\mathtt{THL}$). 
+
+It works by injecting charges onto each pixel and checking the pixel
+response of each pixel at different =THL= values. Below a certain
+=THL= value all pixels will respond to the injected charge. At some
+point certain pixels will be insensitive to the induced charge and a
+90° rotated "S" will form. By fitting an error function to this S an
+ideal =THL= value can be deduced.
+
+By calculating =THL= value at which half of all test pulses are
+recorded, we can compute the number of electrons corresponding to that
+=THL= DAC value, as we know the amplitude of the test pulse and thus
+number of injected electrons.
+
+Fig. [[fig:daq:s_curve_examples]] shows an S-Curve scan of chip 0 of the
+Septemboard using the calibration from July 2018. The center peak in
+the middle is the noise peak of the detector at the shutter length
+used for the S-Curve scan. The symmetrical shape is due to specific
+implementation details of how the pixels function, the upper side is
+the one of interest. The falling edge of each curve can be fit by the
+cumulative distribution function of a normal distribution. The center
+point (half way between both plateaus) corresponds to the effective
+threshold of the detector at that injected charge.
+
+#+NAME: eq:daq:s_curve_fit_function  
+\begin{equation}
+f(μ, σ, N) = \frac{N}{2} · \text{erfc}((x - μ) / (σ · \sqrt{2}))
+\end{equation}
+
+where the parameter $N$ is simply a scaling factor and $μ$ represents
+the x value of the half-amplitude point. $σ$ is the spread of the drop
+and $\text{erfc}$ is the complementary error function $\text{erfc}(x)
+= 1 - \text{erf}(x)$. The error function is of course just the
+integral over a normal distribution up to the evaluation point $x$:
+
+\[
+\text{erf}(x) = \frac{2}{\sqrt{π}} ∫_0^{x} e^{-t²} dt
+\]
+
+Given that the number of injected electrons is known for each test
+pulse amplitude (see sec. [[#sec:operation_calibration:tot_calibration]]), we can compute
+the relationship of the number of electrons per =THL= value step. This
+is called the =THL= calibration and an example corresponding to
+fig. [[fig:daq:s_curves_examples]] is shown in
+fig. [[fig:daq:thl_calibration_example]], where the =THL= values used
+correspond to the $μ$ parameters of
+eq. [[eq:daq:s_curve_fit_function]]. The resulting fit is useful, as it
+allows to easily convert a given =THL= DAC value into an effective
+number of electrons, which then corresponds to the effective threshold
+in electrons required to activate a pixel on average. When looking at
+the distribution of charges in a dataset, that cutoff in electrons is
+of interest (see sec. [[#sec:daq:polya_distribution_threshold]]).
+
+#+CAPTION: S-Curve scan of chip 0 of the Septemboard using the calibration from
+#+CAPTION: July 2018. The scan works by injecting \num{1000} test pulses at different
+#+CAPTION: amplitudes onto the pixels. Each line represents one such measurement
+#+CAPTION: and each point is the mean number of counted hits for all pixels with injected
+#+CAPTION: test pulses.
+#+CAPTION: The center peak in the middle is the noise peak of the
+#+CAPTION: detector. The symmetrical shape is due to specific implementation
+#+CAPTION: details of how the pixels function. The upper side is the one of
+#+CAPTION: interest. The falling edge of each curve can be fit by the complement of the
+#+CAPTION: cumulative distribution function of a normal distribution. The center point
+#+CAPTION: (half way between both plateaus) corresponds to the effective threshold 
+#+CAPTION: of the detector at that injected charge. The fit parameters for all calibrations
+#+CAPTION: are shown in tab. *INSERT*.
+#+NAME: fig:daq:s_curves_example
+[[~/phd/Figs/detector/calibration/s_curves_0_lX_200.0_lY_3750.0.pdf]]
+
+#+CAPTION: The =THL= calibration can be used to gauge the 'threshold gain' the
+#+CAPTION: =THL= DAC has on the number of electrons required to cross the threshold.
+#+CAPTION: The =THL= DAC in the Timepix normally adjusts the threshold by about
+#+CAPTION: \num{25} electrons per DAC value cite:timepix_manual, which is reproduced
+#+CAPTION: well here (parameter $1/m$). The root of the linear fit (written as
+#+CAPTION: $f⁻¹(y=0)$ in the annotation) corresponds to the position of the noise peak
+#+CAPTION: in fig. [[fig:daq:s_curves_example]]. *THIS IS INVERTED OR THE PLOT IS WRONG!*
+#+NAME: fig:daq:thl_calibration_example
+[[~/phd/Figs/detector/calibration/thl_calibration_chip_0_lX_422.0_lY_3550.0.pdf]]
+
+
+**** TODOs for this section [5/18]                              :noexport:
+
+- [ ] *REWRITE THE CAPTION OF THL PLOT*
+
+- [ ] *TURN INTO IF ELSE FUNCTION FOR z* (defined in seqmath)
+  #+begin_src nim
+  let z = (x - x0) / (sigma * sqrt(2.0))
+  if z > 1.0:
+    result = 0.5 * erfc(z)
+  else:
+    result = 0.5 * (1.0 - erf(z))
+  #+end_src
+
+- [ ] *MAIN PURPOSE IS NOT!! THL VALUE DETERMINATION*
+- [ ] *LIKELY MOVE THIS EITHER TO APPENDIX OR EVEN EXTENDED THESIS*  
+
+- [ ] *ADD FIT FUNCTION FOR SCURVE*
+
+- [ ] *REFER TO THE CODE THAT DOES THE FIT*
+  https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/calibration/calib_fitting.nim#L111
+
+- [X] *FIX UP TYPESETTING OF FIT PARAMETERS IN THL PLOT*
+
+- [ ] *INSERT AND REFERENCE TABLE OF ALL FIT PARAMETERS FOR THE SCURVES*
+
+- [ ] *CHECK WHAT 25e/THL IS CALLED IN TABLE OF TIMEPIX MANUAL*
+
+- [X] *FIX PARAMETERS OF THL CALIBRATION. THEY ARE NONSENSICAL AND NOT ALIGNED*
+  
+- [X] *ADD THAT AT EVEN LOWER VALUE WE JUST SEE NOISE AND THEN DUE TO
+  IMPLEMENTATION DETAILS THE WHOLE THING INVERTS*
+
+- [X] *ADD ITS OWN SHORT SECTION ABOUT THRESHOLD SCANNING WITH BELOW
+  REWRITTEN TEXT*
+
+- [ ] *ADD NUMBER OF EXPECTED ELECTRONS AS THRESHOLD AS MENTIONED IN TIMEPIX ORIGINAL PAPER*
+
+- [X] *PLOT OF SCURVE SCANS*
+
+- [ ] *APPENDIX ALL SCURVE SCANS FOR CAST DATA TAKING*
+  -> If anything only for the extended thesis. We don't use them for
+  literally anything.
+
+- [ ] *UNDERSTAND HOW WE CAN USE SCURVE TO DEDUCE THRESHOLD AND EXPLAIN IT*
+- [ ] *S-CURVE CAN BE USED TO DETERMINE #electron / THL DAC VALUE*
+  (first gets THL value against pulse height of course)
+- [ ] *MAKE THAT FIT AND SHOW EXAMPLE*
+  -> That's the fit in [[fig:daq:thl_calibration_example]] no?
+
+- [ ] *ADD EQUATION FOR MINIMUM DETECTABLE CHARGE AND GIVE A NUMBER*  
+
+**** Compute electrons per THL DAC value [0/2]                  :extended:
+
+- [ ] *FIGURE OUT WHY 2017 CALIBRATION HAS ABOUT 50e/THL COMPARED TO
+  25e/THL!*
+
+- [ ] *REPLACE BELOW BY =plotCalibration= CALL?* That already handles
+  it, even though currently via plotly.
+
+For the S-Curve plot 
+#+begin_src sh
+plotCalibration --scurve --chip 0 --runPeriod Run3 --useTeX --legendX 200.0 --legendY 3750 --outpath ~/phd/Figs/detector/calibration
+#+end_src
+
+and for the THL calibration:
+#+begin_src sh
+plotCalibration --scurve --chip 0 --runPeriod Run3 --useTeX --legendX 422.0 --legendY 3550 --outpath ~/phd/Figs/detector/calibration
+#+end_src
+
+the only difference being the legend placement (as the coordinates are
+applied to both plots).
+
+The following is essentially the main code required to plot the
+SCurves, determine the middle point and fit THL calib (not the SCurve
+fit though):
+#+begin_src nim :tangle /home/basti/phd/code/s_curve_electrons_per_thl.nim
+import std / [strutils, strscans, os, strformat] 
+import ggplotnim
+import unchained
+
+proc charge(voltage: mV): UnitLess =
+  ## Returns the number of electrons given a voltage pulse of amplitude `voltage`
+  ## at the 8.fF capacitor of the Timepix1
+  result = 8.fF * voltage / e
+
+#const path = "/home/basti/septemH_calibration/SCurve/chip_3/voltage_*.txt"
+#const path = "/home/basti/septemH_calibration/CalibJul2018/SCurves/chip_1/voltage_*.txt"
+const path = "/home/basti/septemH_calibration/SeptemH_FullCalib_InGridDatabase/chip3/SCurve/voltage_*.txt"
+#const path = "/home/basti/septemH_calibration/SeptemH_FullCalib_2018_2/chip0/SCurve/voltage_*.txt"
+var charges = newSeq[float]()
+var thls = newSeq[int]()
+for file in walkFiles(path):
+  let (success, _, voltage) = scanTuple(file.extractFilename, "$*_$i.txt$.")
+  if voltage == 0: continue # skip 0
+  charges.add charge(voltage.mV)
+  ## we'll do the simplest approach to get the correct THL value:
+  ## - strip everything before noise peak (to have single THL value)
+  ## - compute
+  var df = readCsv(file, sep = '\t', header = "#", colNames = @["THL", "counts"])
+  let thlAtMax = df.filter(f{int: `counts` == `counts`.max})["THL", int][0] # must be single element
+  const TestPulses = 1000
+  df = df.filter(f{`THL` > thlAtMax})
+    .mutate(f{int: "DiffHalf" ~ abs(`counts` - TestPulses div 2)})
+    .filter(f{int: `DiffHalf` == min(col("DiffHalf"))}) # f{int: `DiffHalf` < 200})
+  thls.add df["THL", int][0] # must be single element
+
+import polynumeric
+let fit = polyFit(thls.toTensor.asType(float),
+                  charges.toTensor,
+                  polyOrder = 1)
+echo fit
+proc linear(x, m, b: float): float = m * x + b
+
+let thlFit = linspace(thls.min, thls.max, 10)
+let chargesFit = linspace(charges.min, charges.max, 10)
+var dfFit = toDf({ "thls" : thlFit,
+                   "charges" : thlFit.map_inline(linear(x, fit[1], fit[0])) })
+echo dfFit
+let df = toDf(thls, charges)
+
+ggplot(df, aes("thls", "charges")) + 
+  geom_point() +
+  geom_line(data = dfFit, aes = aes("thls", "charges"), color = parseHex("FF00FF")) +
+  xlab("THL DAC") + ylab("Injected charge [e⁻]") + 
+  ggtitle(&"Fit parameters: m = {fit[1]:.2f} e⁻/THL, b = {fit[0]:.2f} e⁻") +
+  ggsave("/home/basti/phd/Figs/charge_per_thl.pdf")
+#+end_src
+
+#+RESULTS:
+
+**** Compute minimally detectable charge                        :extended:
+
+Ref:
+- cite:LLOPART2007485_timepix Timepix paper
+- cite:LlopartCudie_1056683 Llopert PhD thesis
+
+The following quotes explain how to compute the effective threshold:
+
+page 5/10:
+#+begin_quote
+The electronic noise and effective threshold can be measured using the
+s-curve method [8] when the pixel is set in counting mode.
+#+end_quote
+
+page 5/10:
+#+begin_quote
+The effective threshold is at 50% of this s-curve. The charge
+difference between the 97.75% and 2.25% of the s- curve is four times
+the RMS noise of the front end assuming a gaussian distributed noise.
+#+end_quote
+
+#+begin_quote
+The measured electronic noise is 99:4 ± 3:8 e⁻ rms for hole
+collection and 104:8 ± 6 e⁻ rms for electron collection.  The
+measured DAC step gain is 24:7 ± 0:7 e⁻ =step for hole collection
+and 25:4 ± 1:2 e⁻ =step for electron collection.
+#+end_quote
+
+page 7/10:
+#+begin_quote
+The threshold variation before equalization is
+~240 e⁻ rms and after equalization the achieved noise free
+threshold variation is ~35 e⁻ rms for both polarities.
+#+end_quote
+
+page 7/10:
+#+begin_quote
+The minimum detectable charge can be calculated by quadratically
+adding the measured electronic noise and the threshold variation
+because both measurements are uncorrelated.
+#+end_quote
+
+#+begin_quote
+Before equalization the minimum detectable charge for the full matrix
+is ~1600 e⁻ and after equalization is ~650 e⁻ for both polarities.
+#+end_quote
+
+This means:
+- [ ] compute the 97.75 ⇔ 2.25% range of the S-curve. Yields 4 times
+  RMS noise. Width in THL of that can be converted to #e⁻ using THL
+  calibration.
+  -> electronic noise $N_e$
+- [ ] compute width of optimized threshold variation based on
+  histogram. Fit gaussian (?) to optimized threshold variation. σ of
+  that gaussian is width in THL. Convert THL to electrons.
+  -> threshold variation $N_t$
+
+- [ ] *CHECK IF THIS IS CORRECT*:
+  If I'm not mistaken, the noise peak we see in the S-curve scan is
+  essentially the same as the optimized distribution from the
+  threshold equalization.
+
+Then with those two parameters we compute the effective detectable
+charge as:
+
+\[
+N_d = √(N_e² + N_t²)
+\]
+
+which for the numbers listed above yields
+
+\[
+N_d = √(105² + 35²) = 110
+\]
+
+which is not close to the expected 650 e⁻!
+
+Checking in the PhD thesis of Llopert, page 115, equation 4.5 is:
+
+\[
+\text{MinDetect}Q = 6·\sqrt{ ENC² + σ_{\text{dist}}²}
+\]
+which then works out nicely (110·6 = 660 is close enough)!
+
+So in theory we can compute this for all our chips and all
+calibrations.
+
+- [ ] *CALCULATE FOR ALL CHIPS AND PUT INTO APPENDIX*
+
+
 ** Septemboard calibration [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:septemboard_calibrations
@@ -39183,7 +39230,21 @@ That means, for all chips:
 - [ ] equalized matrix of all pixels  
 - [ ] ~ToT~ calibration
 - [ ] S-curves
-- [ ] fit to 50% point of S-curves to get #electrons / THL DAC value    
+- [ ] fit to 50% point of S-curves to get #electrons / THL DAC value
+
+*** THL calibration
+
+Figure [[fig:daq:thl_optimized_distributinons]] shows the optimized =THL=
+distributions of all chips after threshold equalization for run 2
+(left) and 3 (right).
+
+#+CAPTION: Distributions of the =THL= values of all Septemboard (board H) chips
+#+CAPTION: at the noise peak with the calibration for for run 2 on the left and
+#+CAPTION: run 3 on the right.
+#+ATTR_LATEX: :width 1\textwidth
+#+NAME: fig:daq:thl_optimized_distributinons
+[[~/phd/Figs/detector/calibration/sepemboard_all_thl_optimized.pdf]]
+
 
 ** Calibration measurements of the veto scintillator paddle
 :PROPERTIES:
