@@ -10567,18 +10567,23 @@ The exact threshold used *FIND A VALUE OR REPHRASE*.
 
 #+LATEX: \minitoc
 
-As discussed in the previous chapter, in particular section
-[[#sec:daq:tos_output_format]], the output data format of the Septemboard data
-acquisition software is ASCII based. We will now go through the
-general data reconstruction based on recorded data for each of the
-detector components. Motivations for the type of reconstructions
-performed, will be given where necessary.
+We will now go through the general data reconstruction for data taken
+with the Septemboard detector. Starting with a short introduction to
+the data analysis framework ~TimepixAnalysis~ developed for this
+thesis, sec. [[#sec:reco:tpa]]. Then we cover the data parsing of the
+ASCII based data format produced by TOS (see appendix
+[[#sec:daq:tos_output_format]] for a description of the data format) in
+sec. [[#sec:reco:tos_data_parsing]]. At this point we shortly discuss our
+expectation of the data properties recorded with the detector,
+sec. [[#sec:reco:event_shape]], as it motivates the kind of reconstruction
+that is performed. From here the explanation of the data
+reconstruction starts, sec. [[#sec:reco:data_reconstruction]]]], including
+cluster finding (sec. [[#sec:reco:cluster_finding]]) and calculation of
+geometric properties, sec. [[#sec:reco:cluster_geometry]].
 
-Starting with the GridPix data in section [[#sec:reco:gridpix_data]] as it
-is the main component. The type of reconstruction is motivated by the
-expected data properties, sec. [[#sec:reco:event_shape]]. The FADC data
-reconstruction follows in section [[#sec:reco:fadc_data]]. Finally the
-scintillators are mentioned in section [[#sec:reco:scintillators_data]].
+The FADC data reconstruction follows in section
+[[#sec:reco:fadc_data]]. Finally, the scintillators are mentioned in
+section [[#sec:reco:scintillator_data]].
 
 There is an additional long section in the appendix
 [[#sec:appendix:software]] that goes through the software used for the
@@ -11807,21 +11812,22 @@ In this chapter we will cover the data taking with the Septemboard
 detector at the CAST experiment. We will begin with a timeline of the
 important events and the different data taking periods to give some
 reference and put certain things into perspective,
-sec. [[#sec:cast:timeline]]. After that we will provide an overview of the
-technical aspects (vacuum system, operations, etc.) in section
-[[#sec:cast:operation]]. This is followed by further details on different
-aspects mentioned in the timeline, which require further details,
-sections [[#sec:cast:X]] *WHAT SECTIONS*. In the second to last section
-[[#sec:cast:data_overview]] we will provide an overview of the total data
-taken with the Septemboard detector. The final section
-[[#sec:cast:problems_lessons]] finishes by discussing different issues
-encountered and lessons learned.  
+sec. [[#sec:cast:timeline]]. We continue with the detector alignment in
+sec. [[#sec:cast:alignment]], as this is important for the position
+uncertainty in the limit calculation. Then we discuss the detector
+setup behind the LLNL telescope, sec. [[#sec:cast:detector_setup]]. Two
+sections follow focusing on where things did not go according to our
+plans, a window accident in sec. [[#sec:cast:window_accident]] and general
+issues encountered in each run period in
+sec. [[#sec:cast:data_taking_woes]]. We conclude with an overview of the
+of the total data taken at CAST, sec. [[#sec:cast:data_taking_campaigns]].
 
-The appendix contains an additional chapter
-[[#sec:appendix:cast_operations]], which contains details about the
-operating procedures with respect to the gas supply and vacuum
-system. As the details of that are not particularly relevant after
-shutdown of the experiment, it is not discussed here.
+For an overview of the technical aspects of the CAST setup and
+operation see the appendix [[#sec:appendix:cast_operations]]. It contains
+details about the operating procedures with respect to the gas supply
+and vacuum system, interlocks and more. As the details of that are not
+particularly relevant after shutdown of the experiment, it is not
+discussed here.
 
 ** TODOs for this section [0/4]                                   :noexport:
 
@@ -11943,9 +11949,8 @@ With the end of 2018 the data taking campaign of the Septemboard was
 at an end. The detector was moved over from CAST to the CAST Detector
 Lab (CDL) on <2019-02-14> for a measurement campaign behind an X-ray
 tube for calibration purposes. Data was taken until <2019-02-21> with
-a variety of targets and filters (see sec. [[#sec:calibration:cdl]] in the
-next chapter for a deeper overview). Afterwards the detector was
-dismounted and taken back to Bonn.
+a variety of targets and filters (covered in sec. [[#sec:cdl]]
+later). Afterwards the detector was dismounted and taken back to Bonn.
 
 For the results of the different alignments, further see section
 [[#sec:cast:alignment]].
@@ -13759,12 +13764,16 @@ taking campaign (one of them was aborted after 30 min).
 
 *** TODOs for this section [/]                                   :noexport:
 
-- [ ] *VERIFY EXACT SHUTTER TIMES*
+- [ ] *PRESENT AN ENERGY SPECTRUM WITHOUT ANY CUTS WHATSOEVER*
+  *ALSO MAYBE OCCUPANCY OR AT LEAST REFERENCE APPENDIX OF OCCUPANCIES!*
+
+
+- [X] *VERIFY EXACT SHUTTER TIMES*
 
 - [ ] *UNIFORMLY DECIDE TO EITHER USE ~Run-2~ or ~Run 2~ STYLE*
 - [ ] table for number of shifts in each run, column for number of
   trackings
-- [ ] table of temperatures recovered from the shift logs!  
+- [X] table of temperatures recovered from the shift logs!  
 - [X] number of X-ray finger runs  
 - [X] table of total time taking in each run
 - [X] link to appendix containing total run list!  
@@ -14233,15 +14242,16 @@ column and total sum row):
 #+LATEX: \minitoc
 
 With the roughly $\SI{3500}{h}$ of data recorded at CAST it is time to
-discuss the final calibrations [fn:calibration_term] necessary for the calculation of a
-physics result. On the side of the septemboard detector this means the
-'energy calibration'; the calculation of the energy of each event
-recorded with the septemboard detector. This necessarily needs to
-include a discussion of detector variability both due to external
-factors as well as differing detector calibrations and
-setups. Similarly, for the FADC the impact of the noise seen during
-data taking and resulting differing amplifier settings will be discussed.
-
+discuss the final calibrations [fn:calibration_term] necessary for the
+calculation of a physics result. On the side of the Septemboard
+detector this means the 'energy calibration',
+sec. [[#sec:calibration:energy]]; the calculation of the energy of each
+event recorded with the Septemboard detector. This necessarily needs
+to include a discussion of detector variability both due to external
+factors as well as differing detector calibrations and setups,
+sec. [[#sec:calib:detector_behavior_over_time]]. Similarly, for the FADC
+the impact of the noise seen during data taking and resulting
+differing amplifier settings will be discussed in sec. [[#sec:calib:fadc]].
 
 [fn:calibration_term] Note that the term 'calibration' is a heavily
 loaded term implying very different things depending on context. This can at
@@ -14314,8 +14324,6 @@ and charge calibration), still needs to be calibrated in energy.
 The charge calibration [[#sec:operation_calibration:tot_calibration]]
 computes the number of electrons recorded on each GridPix pixel in an
 event from the ~ToT~ counts.
-
-- [ ] GAS GAIN?
 
 In order to calculate an equivalent energy based on a certain amount
 of charge -- which depends on the gas gain -- the data recorded using
@@ -16507,10 +16515,10 @@ meant multiple changes to the amplifier settings to mitigate this.
 
 We will now go over what the FADC noise looks like and explain our
 noise filter used to determine if an FADC event is noisy (to ignore
-it), in sec. [[sec:calibration:fadc_noise]]. Then we check the impact of
-the different amplification settings on the FADC data and finally
-discuss the impact of the FADC data quality on the rest of the
-detector data in sec. .....
+it), in sec. [[#sec:calibration:fadc_noise]]. Then we check the impact of
+the different amplification settings on the FADC data and discuss the
+impact of the FADC data quality on the rest of the detector data in
+sec. [[#sec:calib:fadc:amplifier_settings]].
 
 *** TODOs for this section [/]                                   :noexport:
 
@@ -17822,37 +17830,51 @@ work. We can plot some funny plots explaining how it works.
 
 With the CAST data fully reconstructed and energy calibrated it is
 time to define the methods used to extract axion candidates and derive
-a background rate from the data sec. [[#sec:background:likelihood_method]]
-and sec. [[#sec:background:mlp]]. A few extra inputs are necessary,
-sec. [[#sec:cdl]]. Next apply it to the data
-(sec. [[#sec:background:likelihood_cut]]) and then improve it further
-using additional detector features (sec. *???*). Finally, we compare
-the resulting background rate to other detectors and try to understand
-the remaining background (sec. *???*).
+a background rate from the data. We first introduce the likelihood cut
+method in sec. [[#sec:background:likelihood_method]] to motivate the need
+for reference X-ray data from an X-ray tube. Such data, taken at the
+CAST Detector Lab (CDL) will be discussed in depth in
+sec. [[#sec:cdl]]. We then see how the reference data is used in the
+likelihood method to act as an event classifier in
+sec. [[#sec:background:likelihood_cut]]. As an alternative to the
+likelihood cut, we will introduce another classifier in the form of a
+simple artificial neural network in sec. [[#sec:background:mlp]]. This is
+another in depth discussion, as the selection of the training data and
+verification is non-trivial. With both classifiers discussed, it is
+time to include all other Septemboard detector features as additional
+vetoes in sec. [[#sec:background:additional_vetoes]]. At the very end we
+will look at background rates for different cases,
+sec. [[#sec:background:all_vetoes_combined]], motivating the approach of
+our limit calculation in the next chapter.
 
+#+begin_quote
 The methods discussed in this chapter are generally classifiers that
 predict how 'signal-like' a cluster is. Based on this prediction we
 will usually define a cut value as to keep a cluster as a potential
 signal. This means that if we apply the method to background data
 (that is, CAST data taken outside of solar trackings) we recover the
 'background rate'; the irreducible amount of background left (at a
-certain efficiency), which is appears signal-like. If instead we apply
-the same methods to CAST solar tracking data we get instead a set of
+certain efficiency), which is signal-like. If instead we apply the
+same methods to CAST solar tracking data we get instead a set of
 'axion induced X-ray candidates'. [fn:candidates_contain_background]
 In the context of the chapter we commonly talk about "background
 rates", but the equivalent meaning in terms of tracking data and
 candidates should be kept in mind.
-
-- [ ] *REFER TO CAST DATA SUMMARY TABLE AND PRESENT AN ENERGY SPECTRUM
-  WITHOUT ANY CUTS WHATSOEVER*
-
-Likelihood method demands info about X-ray properties, hence:
+#+end_quote
 
 [fn:candidates_contain_background] Of course the set of candidates
 contains background itself. The terminology 'candidate' intends
 to communicate that each candidate may be a background event or
 potentially a signal due to axions. But that is part of chapter
-[[#sec:limit]]. 
+[[#sec:limit]].
+
+*** TODOs for this section                                       :noexport:
+
+- [X] *REFER TO CAST DATA SUMMARY TABLE AND PRESENT AN ENERGY SPECTRUM
+  WITHOUT ANY CUTS WHATSOEVER*
+  -> Raw data plots into CAST summary chapter!
+
+Likelihood method demands info about X-ray properties, hence:
   
 ** Likelihood method [/]
 :PROPERTIES:
@@ -19206,10 +19228,6 @@ density estimation should be used. However, the latter is slightly
 problematic due to the integer effects in the low energies of the
 fraction in transverse RMS variable.
 
-See appendix [[#sec:appendix:cdl_reference_distributions]] for an overview
-of the distributions with each histogram in a separate plot.
-- [ ] *Do we want this?*
-
 The summarized 'recipe' of the approach is therefore:
 1. apply cleaning cuts according to tab. [[tab:cdl:cdl_cleaning_cuts]],
 2. perform fits according to tab. [[tab:cdl:fit_func_charge]],
@@ -19236,11 +19254,14 @@ to a lesser extent), so lower energy events are more sparse.
 
 **** TODOs for the above section [/]                            :noexport:
 
-- [ ] mention what kind of binning we use
-  
+See appendix [[#sec:appendix:cdl_reference_distributions]] for an overview
+of the distributions with each histogram in a separate plot.
+- [ ] *Do we want this?*!!!
 - [ ] *ADD THAT APPENDIX*
   -> Appendix about all the individual histograms
 
+
+- [ ] mention what kind of binning we use
 
 - [X] present plot of reference distributions. How?
   -> ridge line of all targets & then show one property?
@@ -38398,6 +38419,82 @@ calibrations.
 
 - [ ] *CALCULATE FOR ALL CHIPS AND PUT INTO APPENDIX*
 
+*** Pólya distribution for threshold detection
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:calibration:polya_distribution_threshold
+:END:
+
+In a gaseous detector the gas amplification (see
+sec. [[#sec:theory:gas_gain_polya]]) allows to easily exceed the minimum
+detectable charge of $\mathcal{O}(\SIrange{500}{1000}{e^-})$. The
+typically used =THL= threshold will be quite a bit higher than the
+'theoretical limit' however for multiple reasons. One can either
+compute the effective threshold in use based on the =THL= calibration
+as explained in sec. [[#sec:operation_calibration:scurve_scan]], or use an
+experimental approach by utilizing the Pólya distribution as
+introduced in sec. [[#sec:theory:gas_gain_polya]] and
+[[#sec:daq:polya_distribution]]. By taking data over a certain period of
+time and computing a histogram of the charge values recorded by each
+pixel, a Pólya distribution naturally arises.
+
+The Pólya distribution can be used to determine the actual activation
+threshold by simply checking what the lowest charge is that sees
+significant statistics.
+
+An example of such a Pólya distribution with a very obvious cutoff at
+low charges is seen in fig. [[fig:daq:polya_example_chip0]]. We see
+chip 0 using the same calibration from July 2018 as in the
+figures in the previous section
+[[#sec:operation_calibration:scurve_scan]]. The data is a $\SI{30}{min}$
+interval of background data at CAST. The pink line represents the fit of
+the Pólya distribution to the data. The dashed part of the line was
+not used for the fit and is only an extension using the final fit
+parameters. The cutoff at the lower end due to the chip's threshold is
+clearly visible. The fit determines a gas gain of about $\num{2700}$,
+compared to the mean of the data yielding about $\num{2430}$.
+
+Based on the data a threshold value of -- very roughly -- $\num{1000}$ can
+be estimated. Using the =THL= calibration of the chip as shown in
+fig. [[fig:daq:thl_calibration_example]] yields a value of
+
+\[
+Q(\text{THL} = 419) = 26.8 · 419 - 10300 = 929.2
+\]
+
+where we used the fit parameters as printed on the plot ($1/m$ and
+$f⁻¹(y=0)$) and the =THL= DAC value of $\num{419}$ as used during the
+data taking for this chip. Indeed, the real threshold is in the same
+range, but clearly a bit higher than the theoretical limit for this
+chip. This matches our expectation.
+
+#+CAPTION: An example of a Pólya distribution of chip 0 using the calibration
+#+CAPTION: of July 2018 based on \SI{30}{min} of background data.
+#+CAPTION: The lower cutoff is easily visible. The pink line represents the
+#+CAPTION: fit of the Pólya distribution to the data. In the dashed region the
+#+CAPTION: line was extended using the final fit parameters.
+#+NAME: fig:daq:polya_example_chip0
+[[~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf]]
+
+**** TODOs for this section                                     :noexport:
+
+- [ ] *REWRITE BELOW, OUTDATED REFERENCES*
+- [X] *DON'T NEED TO MENTION THL AND ACTIVATION THRESHOLD THL HERE*
+- [X] *THIS NEEDS A GOOD REWRITE STILL!*
+- [X] The additional threshold discussion can be moved to the appendix
+  I think
+
+**** Generate Polya plot for chip 0, run period 3 [0/1]         :extended:
+
+The current placeholder polya distribution (although it's the right
+chip and calibration) is:
+#+begin_src sh
+basti at void in /mnt/1TB/CAST/2018_2/out/DataRuns2018_Raw_2020-04-28_16-13-28 λ
+  cp gas_gain_run_306_chip_0_5_30_min_1545294386.pdf \
+     ~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf
+#+end_src
+
+- [ ] *REPLACE BY BETTER PLOT. USING 90MIN AMONG OTHER THINGS*
+  
 
 ** Septemboard calibration [/]
 :PROPERTIES:
