@@ -6613,7 +6613,7 @@ field is constant, leading to the following simplification:
 :END:
 
 In order to turn the individual electrons into a measurable signal,
-gaseous detectors use some kind of gas amplification stage. Details
+gaseous detectors use some form of gas amplification stage. Details
 vary, but it is usually a region in the gas volume close to the
 readout with a very strong electric field (multiple $\si{kV.cm^{-1}}$)
 such that each electron causes many secondary ionizations, leading to
@@ -6684,12 +6684,14 @@ G = e^{α x}
 as the number increases by $α$ after each step $\mathrm{d}x$.
 
 The statistical distribution describing the number of electrons after
-gas amplification is the Polya distribution
+gas amplification is the Pólya distribution
 
-\[
+
+#+NAME: eq:theory:polya_distribution
+\begin{equation}
 p(x) = \frac{N}{G} \frac{(1 + θ)^{1 + θ}}{Γ(1 + θ)}
 \left(\frac{x}{G}\right)^θ \exp\left[- \frac{(1 + θ) x}{G}\right]
-\]
+\end{equation}
 
 where $N$ is a normalization constant, $θ$ is another parameter
 performing scaling of the distribution and $G$ is the effective gas
@@ -6704,16 +6706,13 @@ be taken when performing numerical fits to data with this function
 optimization routines instead of a normal Levenberg-Marquardt
 non-linear least squares approach).
 
-
-- [ ] *REVISIT THE BELOW TWO PARAGRAPHS AFTER INSERTING MORE DETAILS ABOVE!*
-
-The largest impacts on the expected gas amplification have the
-electric field, the choice of gas and the temperature of the
-gas. While the former two parameters are comparatively easy to
-control, the temperature in the amplification region may vary and is
-hard to measure. As such depending on the detector details and
-application, gas gain variations are expected and corrections based on
-a running gas gain value may be necessary.
+Based on eq. [[eq:theory:townsend_coefficient]] the largest impacts on the
+expected gas amplification have the electric field, the choice of gas
+and the temperature of the gas. While the former two parameters are
+comparatively easy to control, the temperature in the amplification
+region may vary and is hard to measure. As such depending on the
+detector details and application, gas gain variations are expected and
+corrections based on a running gas gain value may be necessary.
 
 As the large number of interactions in the amplification region can
 excite many atoms of the (typically) noble gas, UV photons can be
@@ -6722,14 +6721,17 @@ size of the amplification region. They can start further avalanches,
 potentially away from the location of the initial avalanche start,
 lowering spatial resolution and increasing apparent primary electron
 counts. Molecular gases are added in small fractions to the gas
-mixture to provide non UV photon producing ways to absorb energy. In
-this context the molecular additions are called 'quencher gases'.
+mixture to provide rotational or vibrational modes to dissipate energy
+without emitting UV photons. In this context the molecular additions
+are called 'quencher gases'. 
 
 [fn:usefulness] This will be a useful reference later when discussing
 possible temperature effects of the detector operated at CAST.
 
 **** TODOs for this section                                     :noexport:
 
+
+- [X] *REVISIT THE BELOW TWO PARAGRAPHS AFTER INSERTING MORE DETAILS ABOVE!*
 
 - [ ] *FIX TYPING OF POLYA DISTRIBUTION*
   -> ?
@@ -6747,21 +6749,19 @@ possible temperature effects of the detector operated at CAST.
 
 *** TODO Mobility in a gas and mean free path in amplification region :noexport:
 
-- [ ] Delete this subsection?
+- [X] Delete this subsection? Yes
 
 - [X] This is now covered in the gas gain chapter!
-
-
 
 
 - [ ] Not sure if I want to include this. For now I guess I
   don't. Will depend on when I reread the detector behavior part.
 
-
 *NOTE*: The first Townsend coefficient is α = 1/λ, where λ is the mean
 free path!
 
-
+-> In the end we're not talking about mobility, because of the better
+   understanding of Townsend coefficient etc.!
 - [ ] This is related to the GridPix variability in the gas gain &
   peak position.
   From PDG it reads "mobility" in gas is inversely proportional to
@@ -9410,71 +9410,42 @@ calibration function used in ~TimepixAnalysis~.
 :END:
 
 In sec. [[#sec:theory:gas_gain_polya]] we introduced the Pólya
-distribution 
-- [ ] *DON'T NEED TO MENTION THL AND ACTIVATION THRESHOLD THL HERE*
-- [ ] *THIS NEEDS A GOOD REWRITE STILL!*
-- [ ] The additional threshold discussion can be moved to the appendix
-  I think  
+distribution to describe the statistical distribution of the gas
+amplification stage. In the practical context of the Septemboard
+detector and the ToT calibration then, this is the histogram of all
+charge values recorded by the detector (and related of all ToT
+values). As the ToT calibration function is non-linear though, the
+histogram of the Pólya distribution has equal bin widths in ToT space,
+but increasing bin widths in charge space. 
 
-In a gaseous detector the gas amplification (see
-sec. [[#sec:theory:gas_gain_polya]]) allows to easily exceed the minimum
-detectable charge of $\mathcal{O}(\SIrange{500}{1000}{e^-})$. The
-typically used =THL= threshold will be quite a bit higher than the
-'theoretical limit' however for multiple reasons. One can either
-compute the effective threshold in use based on the =THL= calibration
-as explained in sec. [[#sec:operation_calibration:scurve_scan]], or use an experimental
-approach by utilizing the Pólya distribution as introduced in
-sec. [[#sec:theory:gas_gain_polya]]. By taking data over a certain period
-of time and computing a histogram of the charge values recorded by
-each pixel, a Pólya distribution naturally arises.
+Such a histogram can be seen in fig. [[fig:daq:polya_example_chip3]], for
+a $\SI{90}{min}$ slice of background data of the center chip of the
+Septemboard. The reasoning behind looking at a fixed time interval for
+the Pólya will be explained in section
+[[#sec:calib:gas_gain_time_binning]]. The pink line represents the fit of
+the Pólya distribution following eq. [[eq:theory:polya_distribution]] to
+the data. The dashed part of the line was not used for the fit and is
+only an extension using the final fit parameters. At the lower end of
+charge values, a cutoff due to the chip's activation threshold is
+clearly visible. Note also how the bin widths increase from low to
+high charge values. The fit determines a gas gain of about
+$\num{3604.3}$, compared to the mean of the data yielding about
+$\num{3171.0}$. Following [[cite:&krieger2018search]] any number for the gas
+gain used in the remainder of the thesis refers to the /mean of the
+data/ and not the fit parameter. We use the fit mainly as a
+verification of the general behavior.
 
-This Pólya distribution has two different use cases. First of all it
-is the source of the empirical gas gain the detector actually operated
-under. One of the parameters of the Pólya parametrization as
-introduced in section [[#sec:theory:gas_gain_polya]] is a measure for the
-gas gain. Alternatively, the mean of the histogram can also be used as
-a measure for the gas gain (which is the main number used in later
-chapters).
-
-Secondly, the Pólya can also be used to determine the actual
-activation threshold of the detector, by simply checking what the
-lowest charge is that sees significant statistics.
-
-- [ ] *REWRITE BELOW, OUTDATED REFERENCES*
-An example of such a Pólya distribution is seen in
-fig. [[fig:daq:polya_example_chip0]], where we see the same chip 0 using
-the same calibration from July 2018 as in the figures in the previous
-section [[#sec:operation_calibration:scurve_scan]]. The data is a \SI{30}{min} interval of
-background data at CAST. The reasoning behind looking at a fixed time
-interval for the Pólya will be explained in section [[#sec:calib:gas_gain_time_binning]].
-The pink line represents the fit of the Pólya
-distribution to the data. The dashed part of the line was not used for
-the fit and is only an extension using the final fit parameters. The
-cutoff at the lower end due to the chip's threshold is clearly
-visible. The fit determines a gas gain of about $\num{2700}$, compared
-to the mean of the data yielding about $\num{2430}$. 
-
-Based on the data a threshold value of -- very roughly -- $\num{1000}$ can
-be estimated. Using the =THL= calibration of the chip as shown in
-fig. [[fig:daq:thl_calibration_example]] yields a value of
-
-\[
-Q(\text{THL} = 419) = 26.8 · 419 - 10300 = 929.2
-\]
-
-where we used the fit parameters as printed on the plot ($1/m$ and
-$f⁻¹(y=0)$) and the =THL= DAC value of $\num{419}$ as used during the
-data taking for this chip. Indeed, the real threshold is in the same
-range, but clearly a bit higher than the theoretical limit for this
-chip. This matches our expectation.
-
-#+CAPTION: An example of a Pólya distribution of chip 0 using the calibration
-#+CAPTION: of July 2018 based on \SI{30}{min} of background data.
-#+CAPTION: The lower cutoff is easily visible. The pink line represents the
+#+CAPTION: An example of a Pólya distribution of chip 3 using the calibration
+#+CAPTION: of July 2018 based on \SI{90}{min} of background data.
+#+CAPTION: A cutoff at low charges is visible. The pink line represents the
 #+CAPTION: fit of the Pólya distribution to the data. In the dashed region the
 #+CAPTION: line was extended using the final fit parameters.
-#+NAME: fig:daq:polya_example_chip0
-[[~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf]]
+#+NAME: fig:daq:polya_example_chip3
+[[~/phd/Figs/gas_gain_run_267_chip_3_2_90_min_1541650002.pdf]]
+
+A secondary use case for the Pólya distribution is the determination
+of the activation threshold via the seen cutoff. More on this in
+appendix [[#sec:appendix:calibration:polya_distribution_threshold]].
 
 **** TODOs for this section [/]                                 :noexport:
 
@@ -9512,17 +9483,35 @@ chip. This matches our expectation.
 Explain how all charge values combined as a histogram generate a
 ~Pólya distribution from which we can deduce the gas gain.
 
-**** Generate Polya plot for chip 0, run period 3 [0/1]         :noexport:
+**** Generate Polya plot for chip 3, run period 3 [0/1]         :extended:
 
-The current placeholder polya distribution (although it's the right
-chip and calibration) is:
-#+begin_src sh
-basti at void in /mnt/1TB/CAST/2018_2/out/DataRuns2018_Raw_2020-04-28_16-13-28 λ
-  cp gas_gain_run_306_chip_0_5_30_min_1545294386.pdf \
-     ~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf
+We will produce a Pólya plot by performing the reconstruction of a
+single run. In principle during the entire reconstruction all gas gain
+plots are produced anyway, but that means we'd just copy over a single
+file. Better to showcase how they are produced in a standalone
+fashion.
+
+Say we use run 267 and it is in some directory:
+#+begin_src sh :results none
+cp ~/CastData/data/2018_2/Run_267_181108-02-05_rtBackground.tar.gz /tmp/Run_267_181108-02-05.tar.gz
+cd /tmp
+raw_data_manipulation -p Run_267_181108-02-05.tar.gz --runType background --out raw_267.h5
+reconstruction -i raw_267.h5 --out reco_267.h5
+reconstruction -i reco_267.h5 --only_charge
+reconstruction -i reco_267.h5 --only_gas_gain
 #+end_src
 
-- [ ] *REPLACE BY BETTER PLOT. USING 90MIN AMONG OTHER THINGS*
+where we first copy the raw data to ~/tmp~, parse it, reconstruct it,
+perform charge calibration and finally fit the gas gain data. That
+produces plots in [[file:/tmp/out/raw_267_2023-11-30_15-01-39/]].
+For the thesis we use:
+~gas_gain_run_267_chip_3_2_90_min_1541650002.pdf~
+
+The gas gain of the fit and from the data are both in the title of the
+plot.
+
+Fit: 3604.3
+Data: 3171.0
 
 *** Final Septemboard calibrations [0/0]
 :PROPERTIES:
