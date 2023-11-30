@@ -9266,7 +9266,7 @@ with a Timepix ASIC. This means introducing the Time over Threshold
 (ToT) calibration method used to interpret ToT values as recorded
 charges, sec. [[#sec:operation_calibration:tot_calibration]]. Further,
 based on recorded charge the gas gain can be determined. This is
-discussed in sec. [[#sec:daq:polya_distribution_threshold]].
+discussed in sec. [[#sec:daq:polya_distribution]].
 
 Important references for the Timepix in general and for the
 calibration procedures explained below and in the appendix are
@@ -9406,7 +9406,7 @@ calibration function used in ~TimepixAnalysis~.
 
 *** Pólya distribution & gas gain [/]
 :PROPERTIES:
-:CUSTOM_ID: sec:daq:polya_distribution_threshold
+:CUSTOM_ID: sec:daq:polya_distribution
 :END:
 
 In sec. [[#sec:theory:gas_gain_polya]] we introduced the Pólya
@@ -11229,7 +11229,7 @@ There are different calibrations to be performed:
 1. the charge calibration via the application of the ~ToT~ calibration
    as introduced in section [[#sec:operation_calibration:tot_calibration]].
 2. the calculation of the gas gain, introduced previously in section
-   [[#sec:daq:polya_distribution_threshold]].
+   [[#sec:daq:polya_distribution]].
 3. the energy calibration (see sec. [[#sec:calibration:energy]] and
    [[#sec:calib:final_energy_calibration]]).
 
@@ -12507,6 +12507,9 @@ sec. [[#sec:limit:candidates:septemboard_layout_transformations]].
 - [ ] Effect on systematic uncertainty!  
 
 ** Detector setup at CAST [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:detector_setup
+:END:
 
 The setup of the full beamline from the magnet end cap to the detector
 is shown in a render in fig. [[fig:cast:render_beamline_setup]]. The
@@ -17633,7 +17636,7 @@ that we ran in ~ToT~ mode).
 
 *** 4. (optional / required for analysis) compute gas gain
 
-- [X] [[#sec:daq:polya_distribution_threshold]]
+- [X] [[#sec:daq:polya_distribution]]
 
 Computing gas gain. Polya fit. Explain not fit parameter used, but
 mean of data.
@@ -20989,7 +20992,7 @@ To generate X-ray events with similar physical properties as those
 seen in a particular data taking run, we need the three inputs
 required: gas gain, gas diffusion and target energy. The determination
 of the gas gain is a well defined procedure, explained in sections
-[[#sec:daq:polya_distribution_threshold]] and
+[[#sec:daq:polya_distribution]] and
 [[#sec:calib:gas_gain_time_binning]]. The target energy is a matter of the
 purpose the generated data is for. The gas diffusion however is more
 complicated and requires explanation.
@@ -38096,8 +38099,7 @@ take no noise + 2
 - [X] *REWRITE FULL SECTION WITH A CLEAR HEAD*  
 
 
-
-*** S-Curve scan [0/0]                                           :extended:
+*** S-Curve scan [0/0]                                           
 :PROPERTIES:
 :CUSTOM_ID: sec:operation_calibration:scurve_scan
 :END:
@@ -38859,7 +38861,7 @@ be reported. As the upper bound a value is taken at which sparks and
 general noise seen on the pixels becomes noticeable. 
 
 The interlock currents at which the HV trips are already shown in
-tab. [[[[tab:cast:high_voltage]]. During ramp up of the HV, these trip
+tab. [[tab:cast:high_voltage]]. During ramp up of the HV, these trip
 currents are set higher to avoid trips, while capacitors are being
 charged.
 
@@ -38999,7 +39001,7 @@ which is only partially usable in case of the manual HV control.
    [[file:/home/ingrid/src/isegControl/isegControl][~/src/isegControl/isegControl]]. Depending on the setup of the
    machine, the software may need superuser rights to access the USB
    connection. With the software the given channel as shown in
-   tab. [[tab:hv]] can be set up and the HV can be ramped up. Note: one
+   tab. [[tab:cast:high_voltage]] can be set up and the HV can be ramped up. Note: one
    needs to activate SetKillEnable such that the HV is shut down in
    case of a current trip (exceeding of specified current). One should
    then set 'groups' of different channels, so that grid, anode and
@@ -39014,8 +39016,8 @@ which is only partially usable in case of the manual HV control.
    mentioned above. To use the TOS for the HV control (and thus also
    use the complete HV interlock, as it exists at the moment), perform
    the following steps:
-   1. check [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]] and compare with tab. [[tab:hv]]
-      whether settings seem reasonable
+   1. check [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]] and compare
+      with tab. [[tab:cast:high_voltage]] whether settings seem reasonable
    2. after starting TOS and setting up the chips, call
       #+BEGIN_SRC sh
       > ActivateHFM
