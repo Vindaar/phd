@@ -22,6 +22,30 @@
 # for mini table of contents for each chapter
 #+LATEX_HEADER: \usepackage{minitoc}
 
+#+LATEX_HEADER: \usepackage{slashed}
+
+# Update <2023-11-30 Thu 12:13>:
+# I've changed how to use fonts again, following
+# [[file:~/org/Misc/latex_fallback_fonts.tex]]
+# to use the `combofont` package for fallback fonts.
+#+LATEX_HEADER: \usepackage{combofont}
+#+LATEX_HEADER: % Define a combofont for every font in the family
+#+LATEX_HEADER: \setupcombofont{stix-dejavu-regular}{
+#+LATEX_HEADER:   {STIXTwoText:\combodefaultfeat} at #1pt,
+#+LATEX_HEADER:   {DejaVu Serif:\combodefaultfeat} at #1pt
+#+LATEX_HEADER: }{
+#+LATEX_HEADER:   {},
+#+LATEX_HEADER:   fallback
+#+LATEX_HEADER: }
+#+LATEX_HEADER: 
+#+LATEX_HEADER: % Now set up the family
+#+LATEX_HEADER: \DeclareFontFamily{TU}{stix-dejavu}{}
+#+LATEX_HEADER: \DeclareFontShape{TU}{stix-dejavu}{m}{n} {<->combo*stix-dejavu-regular}{}
+#+LATEX_HEADER: 
+#+LATEX_HEADER: \setmathfont[Path = "/usr/share/fonts/stix/static_otf/", Extension = ".otf"]{STIXTwoMath-Regular}
+#+LATEX_HEADER: 
+#+LATEX_HEADER: \renewcommand{\rmdefault}{stix-dejavu}
+
 # Note: Code font is changed in default LaTeX header in emacs (Fira Code)
 # config. This uses `fontspec`
 # NOTE: At this point <2023-09-14 Thu 18:04> compiling using Computer
@@ -32,29 +56,28 @@
 # STIX looks nice, but we have to set up the other versions (bold
 # etc.) and decide on a good line spacing.
 # #+LATEX_HEADER: \setmainfont[Path = "/usr/share/fonts/stix/static_otf/", Extension = ".otf"]{"STIXTwoText-Regular"}
-#+LATEX_HEADER: \setmainfont[
-#+LATEX_HEADER:   Path = "/usr/share/fonts/stix/static_otf/",
-#+LATEX_HEADER:   Extension      = .otf,
-#+LATEX_HEADER:   UprightFont    = *-Regular,
-#+LATEX_HEADER:   BoldFont       = *-Bold ,
-#+LATEX_HEADER:   ItalicFont     = *-Italic ,
-#+LATEX_HEADER:   BoldItalicFont = *-BoldItalic
-#+LATEX_HEADER: ]{STIXTwoText}
-#+LATEX_HEADER: \setmathfont[Path = "/usr/share/fonts/stix/static_otf/", Extension = ".otf"]{STIXTwoMath-Regular}
-
-# Now set up a fallback font, using DejaVu for some unicode characters
-# that are not in STIX (if we end up using STIX that is)
-#+LATEX_HEADER: \directlua{
-#+LATEX_HEADER:   luaotfload.add_fallback(
-#+LATEX_HEADER:   "FallbackFonts",
-#+LATEX_HEADER:   {
-#+LATEX_HEADER:         "DejaVu Serif:mode=harf;",
-#+LATEX_HEADER:         "DejaVu Sans Mono:mode=harf;",
-#+LATEX_HEADER:         % we could add many more fonts here optionally!
-#+LATEX_HEADER:     }
-#+LATEX_HEADER:   )
-#+LATEX_HEADER: }
-
+# #+LATEX_HEADER: \setmainfont[
+# #+LATEX_HEADER:   Path = "/usr/share/fonts/stix/static_otf/",
+# #+LATEX_HEADER:   Extension      = .otf,
+# #+LATEX_HEADER:   UprightFont    = *-Regular,
+# #+LATEX_HEADER:   BoldFont       = *-Bold ,
+# #+LATEX_HEADER:   ItalicFont     = *-Italic ,
+# #+LATEX_HEADER:   BoldItalicFont = *-BoldItalic
+# #+LATEX_HEADER: ]{STIXTwoText}
+# #+LATEX_HEADER: \setmathfont[Path = "/usr/share/fonts/stix/static_otf/", Extension = ".otf"]{STIXTwoMath-Regular}
+# 
+# # Now set up a fallback font, using DejaVu for some unicode characters
+# # that are not in STIX (if we end up using STIX that is)
+# #+LATEX_HEADER: \directlua{
+# #+LATEX_HEADER:   luaotfload.add_fallback(
+# #+LATEX_HEADER:   "FallbackFonts",
+# #+LATEX_HEADER:   {
+# #+LATEX_HEADER:         "DejaVu Serif:mode=harf;",
+# #+LATEX_HEADER:         "DejaVu Sans Mono:mode=harf;",
+# #+LATEX_HEADER:         % we could add many more fonts here optionally!
+# #+LATEX_HEADER:     }
+# #+LATEX_HEADER:   )
+# #+LATEX_HEADER: }
 
 # The following is the approach using `ucharclasses` but that ruins
 # code blocks of minted...
