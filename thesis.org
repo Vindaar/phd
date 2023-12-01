@@ -2189,7 +2189,7 @@ are ignored. The mass $m_γ$ refers to an effective photon mass that
 can appear in media, $ω$ is the frequency and $B_T$ the transverse
 magnetic field. The constant magnetic field $B_T$ appears, because we
 assume for our purpose the magnetic field is constant along $z$, the
-propagation direction of the photon and electric fields.
+propagation direction of the photon.
 
 By recognizing that the orthogonal component $A_{\perp}$ is decoupled
 from the other two, the problem reduces to a 2 dimensional
@@ -5626,7 +5626,9 @@ to the corresponding energy left at the surface (i.e. assuming no
 muons decay). Further the $\SI{300}{MeV}$ energy left is already well
 inside the energy range where a large number of muons would already decay.
 
-*** TODOs for this section                                       :noexport:
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] *THINK ABOUT PUTTING CALCULATION INTO APPENDIX*
 
 Because of their large energies, muons behave as minimally ionizing
 particles (MIPS), which means their mean energy loss is more or less
@@ -5642,9 +5644,10 @@ only the actual rate of muons is important.
 - [X] *MUON FLUX AT ZENITH*, *MUON FLUX UNDER ANGLE* (cos²)
 
 - [X] *REFERENCE TO MUON CHIRALITY OVER ELECTRON PROD*
+  -> Would need a literate rewrite, but maybe at least plots?
 
 
-*** Calculation of muon angular / energy dependence at surface   :noexport:
+*** Calculation of muon angular / energy dependence at surface   :extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:theory:calc_muon_angular_flux
 :END:
@@ -38455,7 +38458,289 @@ ggplot(df, aes("thls", "charges")) +
 
 #+RESULTS:
 
-***** All S-Curve and THL plots
+All plots are found under sec. [[#sec:appendix:septemboard_calibrations]].
+
+**** Compute minimally detectable charge                        :extended:
+
+Ref:
+- cite:LLOPART2007485_timepix Timepix paper
+- cite:LlopartCudie_1056683 Llopert PhD thesis
+
+The following quotes explain how to compute the effective threshold:
+
+page 5/10:
+#+begin_quote
+The electronic noise and effective threshold can be measured using the
+s-curve method [8] when the pixel is set in counting mode.
+#+end_quote
+
+page 5/10:
+#+begin_quote
+The effective threshold is at 50% of this s-curve. The charge
+difference between the 97.75% and 2.25% of the s- curve is four times
+the RMS noise of the front end assuming a gaussian distributed noise.
+#+end_quote
+
+#+begin_quote
+The measured electronic noise is 99:4 ± 3:8 e⁻ rms for hole
+collection and 104:8 ± 6 e⁻ rms for electron collection.  The
+measured DAC step gain is 24:7 ± 0:7 e⁻ =step for hole collection
+and 25:4 ± 1:2 e⁻ =step for electron collection.
+#+end_quote
+
+page 7/10:
+#+begin_quote
+The threshold variation before equalization is
+~240 e⁻ rms and after equalization the achieved noise free
+threshold variation is ~35 e⁻ rms for both polarities.
+#+end_quote
+
+page 7/10:
+#+begin_quote
+The minimum detectable charge can be calculated by quadratically
+adding the measured electronic noise and the threshold variation
+because both measurements are uncorrelated.
+#+end_quote
+
+#+begin_quote
+Before equalization the minimum detectable charge for the full matrix
+is ~1600 e⁻ and after equalization is ~650 e⁻ for both polarities.
+#+end_quote
+
+This means:
+- [ ] compute the 97.75 ⇔ 2.25% range of the S-curve. Yields 4 times
+  RMS noise. Width in THL of that can be converted to #e⁻ using THL
+  calibration.
+  -> electronic noise $N_e$
+- [ ] compute width of optimized threshold variation based on
+  histogram. Fit gaussian (?) to optimized threshold variation. σ of
+  that gaussian is width in THL. Convert THL to electrons.
+  -> threshold variation $N_t$
+
+- [ ] *CHECK IF THIS IS CORRECT*:
+  If I'm not mistaken, the noise peak we see in the S-curve scan is
+  essentially the same as the optimized distribution from the
+  threshold equalization.
+
+Then with those two parameters we compute the effective detectable
+charge as:
+
+\[
+N_d = √(N_e² + N_t²)
+\]
+
+which for the numbers listed above yields
+
+\[
+N_d = √(105² + 35²) = 110
+\]
+
+which is not close to the expected 650 e⁻!
+
+Checking in the PhD thesis of Llopert, page 115, equation 4.5 is:
+
+\[
+\text{MinDetect}Q = 6·\sqrt{ ENC² + σ_{\text{dist}}²}
+\]
+which then works out nicely (110·6 = 660 is close enough)!
+
+So in theory we can compute this for all our chips and all
+calibrations.
+
+- [ ] *CALCULATE FOR ALL CHIPS AND PUT INTO APPENDIX*
+
+*** Pólya distribution for threshold detection
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:calibration:polya_distribution_threshold
+:END:
+
+In a gaseous detector the gas amplification (see
+sec. [[#sec:theory:gas_gain_polya]]) allows to easily exceed the minimum
+detectable charge of $\mathcal{O}(\SIrange{500}{1000}{e^-})$. The
+typically used =THL= threshold will be quite a bit higher than the
+'theoretical limit' however for multiple reasons. One can either
+compute the effective threshold in use based on the =THL= calibration
+as explained in sec. [[#sec:operation_calibration:scurve_scan]], or use an
+experimental approach by utilizing the Pólya distribution as
+introduced in sec. [[#sec:theory:gas_gain_polya]] and
+[[#sec:daq:polya_distribution]]. By taking data over a certain period of
+time and computing a histogram of the charge values recorded by each
+pixel, a Pólya distribution naturally arises.
+
+The Pólya distribution can be used to determine the actual activation
+threshold by simply checking what the lowest charge is that sees
+significant statistics.
+
+An example of such a Pólya distribution with a very obvious cutoff at
+low charges is seen in fig. [[fig:daq:polya_example_chip0]]. We see
+chip 0 using the same calibration from July 2018 as in the
+figures in the previous section
+[[#sec:operation_calibration:scurve_scan]]. The data is a $\SI{30}{min}$
+interval of background data at CAST. The pink line represents the fit of
+the Pólya distribution to the data. The dashed part of the line was
+not used for the fit and is only an extension using the final fit
+parameters. The cutoff at the lower end due to the chip's threshold is
+clearly visible. The fit determines a gas gain of about $\num{2700}$,
+compared to the mean of the data yielding about $\num{2430}$.
+
+Based on the data a threshold value of -- very roughly -- $\num{1000}$ can
+be estimated. Using the =THL= calibration of the chip as shown in
+fig. [[fig:daq:thl_calibration_example]] yields a value of
+
+\[
+Q(\text{THL} = 419) = 26.8 · 419 - 10300 = 929.2
+\]
+
+where we used the fit parameters as printed on the plot ($1/m$ and
+$f⁻¹(y=0)$) and the =THL= DAC value of $\num{419}$ as used during the
+data taking for this chip. Indeed, the real threshold is in the same
+range, but clearly a bit higher than the theoretical limit for this
+chip. This matches our expectation.
+
+#+CAPTION: An example of a Pólya distribution of chip 0 using the calibration
+#+CAPTION: of July 2018 based on \SI{30}{min} of background data.
+#+CAPTION: The lower cutoff is easily visible. The pink line represents the
+#+CAPTION: fit of the Pólya distribution to the data. In the dashed region the
+#+CAPTION: line was extended using the final fit parameters.
+#+NAME: fig:daq:polya_example_chip0
+[[~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf]]
+
+**** TODOs for this section                                     :noexport:
+
+- [ ] *REWRITE BELOW, OUTDATED REFERENCES*
+- [X] *DON'T NEED TO MENTION THL AND ACTIVATION THRESHOLD THL HERE*
+- [X] *THIS NEEDS A GOOD REWRITE STILL!*
+- [X] The additional threshold discussion can be moved to the appendix
+  I think
+
+**** Generate Polya plot for chip 0, run period 3 [0/1]         :extended:
+
+The current placeholder polya distribution (although it's the right
+chip and calibration) is:
+#+begin_src sh
+basti at void in /mnt/1TB/CAST/2018_2/out/DataRuns2018_Raw_2020-04-28_16-13-28 λ
+  cp gas_gain_run_306_chip_0_5_30_min_1545294386.pdf \
+     ~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf
+#+end_src
+
+- [ ] *REPLACE BY BETTER PLOT. USING 90MIN AMONG OTHER THINGS*
+  
+
+** Septemboard calibration [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:septemboard_calibrations
+:END:
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [ ] Show all calibrations for each of the runs.
+
+That means, for all chips:
+- [X] THS optimization & equalization bits (extended)
+- [X] equalized matrix of all pixels (extended)
+  -> This is really not very insightful.
+- [ ] ~ToT~ calibration
+- [X] S-curves
+- [ ] fit to 50% point of S-curves to get #electrons / THL DAC value
+
+*** Generate all ToT calibration plots                           :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:calibration:gen_tot_calibration 
+:END:
+
+See sec. [[#sec:operation_calibration:gen_tot_calib_plot]] for the section
+producing the single plot used in the thesis.
+
+#+begin_src zsh :results append file :file tot_calibrations.org :output-dir resources
+# To generate fig:septem:tot_calibration_example
+for run in 2 3; do
+    for chip in {0..6}; do
+        plotCalibration --tot --chip $chip --runPeriod Run$run --useTeX --file ~/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/Run$run/chip$chip/TOTCalib$chip.txt --outpath ~/phd/Figs/detector/calibration --quiet &;
+    done
+done
+#+end_src
+
+#+RESULTS:
+[[file:resources/tot_calibrations.org]]
+
+*** All ToT calibrations                                         :extended:
+
+All plots without caption, too much repetition and the run period &
+chip number are in the title. Looking at these plots one of the things
+I've long thought is that the fit function is way too overspecified,
+given that usually one parameter (most of the time $t$) is just
+zero. The errors go crazy in Run-2 for chip 0, because the fit
+produces crazily large errors. Not quite sure why, but I guess it's
+just another reason of the function having too many parameters. :)
+
+- [[~/phd/Figs/detector/calibration/tot_calib_Run2_chip_0.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run2_chip_1.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run2_chip_2.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run2_chip_3.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run2_chip_4.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run2_chip_5.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run2_chip_6.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run3_chip_0.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run3_chip_1.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run3_chip_2.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run3_chip_3.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run3_chip_4.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run3_chip_5.pdf]]
+- [[~/phd/Figs/detector/calibration/tot_calib_Run3_chip_6.pdf]]
+
+**** Investigate fit alone of Run-2, chip 0
+
+#+begin_src sh :results drawer
+plotCalibration --tot --chip 0 --runPeriod Run2 --useTeX --file ~/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/Run2/chip0/TOTCalib0.txt \
+                --outpath /tmp/
+#+end_src
+
+#+RESULTS:
+:results:
+ testlinfit status = 1
+  χ²      = 0.00204322    (10 DOF)
+  χ²/dof  = 0.000204322
+  NPAR    = 4
+  NFREE   = 4
+  NPEGGED = 0
+  NITER   = 14
+  NFEV    = 68
+  P[0] = 0.371063 +/- 0.87745
+  P[1] = 46.5797  +/- 359.443
+  P[2] = 1605.21  +/- 34712.9
+  P[3] = -11.3109 +/- 512.982
+9 from ticks: 10 from scale: (low: 0.0, high: 450.0) and (low: 0.0, high: 450.0)
+[INFO] TeXDaemon ready for input.
+5 from ticks: 10 from scale: (low: 0.0, high: 250.0) and (low: 0.0, high: 250.0)
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /tmp /tmp//tot_calib_Run2_chip_0.tex
+Generated: /tmp//tot_calib_Run2_chip_0.pdf
+:end:
+
+See the crazy errors on parameters 1, 2 and 3?
+
+*** All plots of THS optimization and equalization               :extended: 
+
+Again, all plots without caption or anything. That's why they have
+titles, you know.
+
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run2_chip_0.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run2_chip_1.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run2_chip_2.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run2_chip_3.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run2_chip_4.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run2_chip_5.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run2_chip_6.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run3_chip_0.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run3_chip_1.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run3_chip_2.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run3_chip_3.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run3_chip_4.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run3_chip_5.pdf]]
+- [[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run3_chip_6.pdf]]
+
+
+*** All S-Curve and THL plots                                    :extended: 
 
 Excuse the mismatched order of the tables... I don't really expect
 anyone to be particularly interested in this, hence I didn't want to
