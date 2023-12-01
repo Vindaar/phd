@@ -8588,7 +8588,10 @@ after this if interested.
   -> This was after the "As the temperature is measured" ... sentence.
 
 
-*** Sparking behavior :noexport:
+*** Sparking behavior                                            :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:detector:sparking_behavior
+:END:
 
 See the mails containing "Septem F" (among other things) for the
 information about sparking behavior. From that we can also deduce the
@@ -9357,13 +9360,31 @@ fig. [[fig:septem:tot_calibration_example]].
 #+NAME: fig:septem:tot_calibration_example
 #+CAPTION: Example of a ToT calibration measurement for the chip H10 W69, the center
 #+CAPTION: chip of the Septemboard, as it was done for the CAST data taking period 2.
-[[~/phd/Figs/detector/calibration/tot_calib_3.pdf]]
+[[~/phd/Figs/detector/calibration/tot_calib_Run3_chip_3.pdf]]
 
 **** TODOs for this section [4/4]                               :noexport:
 
 - [X] add =--outpath= argument to =plotCalibration= and use it to
   place it where we read it from
-#+begin_src sh :exports none
+
+- [X] Required understanding for our charge calibration.
+
+- [X] Show function that is being fitted to it.
+
+- [X] *NOTE: AS FAR AS I CAN TELL, THE TOT CALIBRATION ALREADY
+  REQUIRES A CORRECT =THL= DAC VALUE!*
+
+**** Generate plots for the ToT calibration                     :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:operation_calibration:gen_tot_calib_plot
+:END:
+
+The plots for all calibrations (of this sort) are produced using the
+~plotCalibration~ tool,
+[[file:~/CastData/ExternCode/TimepixAnalysis/Plotting/plotCalibration/plotCalibration.nim]].
+For a single plot we can produce the plot (used for the thesis above)
+like this:
+#+begin_src sh :exports code
 # To generate fig:septem:tot_calibration_example
 plotCalibration --tot --runPeriod=Run2 --useTeX \
                 --file ~/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/Run2/chip3/TOTCalib3.txt \
@@ -9388,12 +9409,13 @@ plotCalibration --tot --runPeriod=Run2 --useTeX \
 | shellCmd:  | xelatex                                                    | -output-directory | /home/basti/phd/Figs/detector/calibration | /home/basti/phd/Figs/detector/calibration//tot_calib_3.tex |
 | Generated: | /home/basti/phd/Figs/detector/calibration//tot_calib_3.pdf |                   |                                           |                                                            |
 
-- [X] Required understanding for our charge calibration.
+Note that we hand the calibration data file and do not use the InGrid
+database. We could do either (if you pass a chip number and a run
+period instead of the ToT calib text file it would read from the
+database instead).
 
-- [X] Show function that is being fitted to it.
-
-- [X] *NOTE: AS FAR AS I CAN TELL, THE TOT CALIBRATION ALREADY
-  REQUIRES A CORRECT =THL= DAC VALUE!*
+See appendix section [[#sec:appendix:calibration:gen_tot_calibration]] for
+all ToT calibrations for all Septemboard chips.
 
 The following is the doc string of the function for the ToT
 calibration function used in ~TimepixAnalysis~. 
@@ -37810,14 +37832,17 @@ values, with only very few at the edges of the DAC ($\num{0}$ and
 $\num{15}$). Finally, fig. [[fig:daq:4bit_dac_heatmap]] shows a heatmap of
 an entire chip with its 4-bit DAC values after equalization.
 
+Similar plots for all other chips during both run periods can be found
+in the extended thesis.
+
 #+begin_src subfigure
 (figure ()
         (subfigure (linewidth 0.5) (caption "THL distributions") (label "fig:daq:optimal_ths_distribution")
                    (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf"))
+                                    "~/phd/Figs/detector/calibration/ths_optimization_distributions_Run2_chip_3.pdf"))
         (subfigure (linewidth 0.5) (caption "4-bit distributions") (label "fig:daq:4bit_dac_distribution")
                    (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf"))
+                                    "~/phd/Figs/detector/calibration/optimized_equalization_bits_Run2_chip_3.pdf"))
         (caption
          (subref "fig:daq:optimal_ths_distribution")
           "Distributions of different 4-bit DAC settings of all
@@ -37842,7 +37867,7 @@ an entire chip with its 4-bit DAC values after equalization.
 #+CAPTION: represented is the center chip of the Septemboard with its calibration
 #+CAPTION: from July 2018.
 #+NAME: fig:daq:4bit_dac_heatmap
-[[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_example.pdf]]
+[[~/phd/Figs/detector/calibration/heatmap_threshold_equalization_Run3_chip_3.pdf]]
 
 [fn:daq_histo_source] The plot is generated from the
 =thresholdMeans.txt= file created as part of the equalization
@@ -37884,9 +37909,10 @@ me of the abhorrent code quality of that code base. Holy moly...
 **** Generate the plot for the THS optimization result :noexport:
 
 #+begin_src nim :tangle code/ths_optimization.nim
+import std / strformat
 import ggplotnim
 
-proc main(fname: string) =
+proc main(fname, runPeriod: string, chip: int) =
   var df = readCsv(fname, sep = '\t', colNames = @["x", "y", "min", "max", "bit", "opt"])
   let breaks = linspace(-0.5, 15.5, 17).toSeq1D
   echo breaks
@@ -37895,15 +37921,15 @@ proc main(fname: string) =
     scale_x_continuous() +
     xlim(-0.5, 16.5) +
     xlab("4-bit DAC") + 
-    ggtitle("Distribution of all equalization bits after optimization") + 
-    ggsave("/home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf",
+    ggtitle(&"All equalization bits after optimization, {runPeriod}, chip {chip}") + 
+    ggsave(&"/home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_{runPeriod}_chip_{chip}.pdf",
            useTeX = true, standalone = true)
   df = df.gather(["min", "max", "opt"], "type", "THL")
   ggplot(df.filter(f{`THL` > 330.0 and `THL` < 460.0}), aes("THL", fill = "type")) +
     geom_histogram(binWidth = 1.0, position = "identity", hdKind = hdOutline, alpha = 0.7) +
-    ggtitle("THL distributions for all equalization bits at 0, 15 and optimized") +
+    ggtitle(&"All equalization bits at 0, 15 and optimized, {runPeriod}, chip {chip}") +
     #xlim(330, 460) + 
-    ggsave("/home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf",
+    ggsave(&"/home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_{runPeriod}_chip_{chip}.pdf",
            useTeX = true, standalone = true)
 when isMainModule:
   import cligen
@@ -37911,30 +37937,28 @@ when isMainModule:
 #+end_src
 
 Laptop:
-#+begin_src sh
-./code/ths_optimization -f ~/septemH_calibration/SeptemH_FullCalib_2018_2/chip3/thresholdMeans3.txt
+#+begin_src zsh
+for chip in {0..6}; do
+    ./code/ths_optimization -f ~/septemH_calibration/SeptemH_FullCalib_2018_2/chip$chip/thresholdMeans$chip.txt --runPeriod Run3 --chip $chip &;
+done
 #+end_src
 Desktop / Laptop:
-#+begin_src sh
-./code/ths_optimization -f ~/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/Run3/chip3/thresholdMeans3.txt
+#+begin_src zsh :results append file :file ths_optimization.org :output-dir resources
+for run in 2 3; do
+    for chip in {0..6}; do
+        ./code/ths_optimization -f ~/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/Run$run/chip$chip/thresholdMeans$chip.txt --runPeriod Run$run --chip $chip &;
+    done
+done
 #+end_src
 
 #+RESULTS:
-| @[-0.5,    | 0.5,                                                                                 | 1.5,              | 2.5,                                      | 3.5,                                                                                 | 4.5, | 5.5, | 6.5, | 7.5, | 8.5, | 9.5, | 10.5, | 11.5, | 12.5, | 13.5, | 14.5, | 15.5] |
-| [INFO]     | TeXDaemon                                                                            | ready             | for                                       | input.                                                                               |      |      |      |      |      |      |       |       |       |       |       |       |
-| shellCmd:  | command                                                                              | -v                | xelatex                                   |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
-| shellCmd:  | xelatex                                                                              | -output-directory | /home/basti/phd/Figs/detector/calibration | /home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.tex    |      |      |      |      |      |      |       |       |       |       |       |       |
-| Generated: | /home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_example.pdf    |                   |                                           |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
-| [INFO]     | TeXDaemon                                                                            | ready             | for                                       | input.                                                                               |      |      |      |      |      |      |       |       |       |       |       |       |
-| shellCmd:  | command                                                                              | -v                | xelatex                                   |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
-| shellCmd:  | xelatex                                                                              | -output-directory | /home/basti/phd/Figs/detector/calibration | /home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.tex |      |      |      |      |      |      |       |       |       |       |       |       |
-| Generated: | /home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_example.pdf |                   |                                           |                                                                                      |      |      |      |      |      |      |       |       |       |       |       |       |
+file:resources/ths_optimization.org
 
 #+begin_src nim :tangle code/threshold_equalization_heatmap.nim
 import ggplotnim
-import std / [sequtils, strutils]
+import std / [sequtils, strutils, strformat]
 
-proc main(fname: string) =
+proc main(fname, runPeriod: string, chip: int) =
   let aranged = toSeq(0 .. 255).mapIt($it)
   var df = readCsv(fname, sep = '\t', colNames = aranged)
   df["y"] = toSeq(0 .. 255)
@@ -37947,8 +37971,8 @@ proc main(fname: string) =
     #scale_x_continuous() +
     #xlim(-0.5, 16.5) +
     xlim(0, 255) + ylim(0, 255) + 
-    ggtitle("Heatmap of all equalization bits after optimization") + 
-    ggsave("/home/basti/phd/Figs/detector/calibration/heatmap_threshold_equalization_example.pdf",
+    ggtitle(&"Equalization bits after optimization, {runPeriod}, chip: {chip}") + 
+    ggsave(&"/home/basti/phd/Figs/detector/calibration/heatmap_threshold_equalization_{runPeriod}_chip_{chip}.pdf",
            useTeX = true, standalone = true)
 
 when isMainModule:
@@ -37959,6 +37983,19 @@ when isMainModule:
 #+begin_src sh
 ./code/threshold_equalization_heatmap -f ~/septemH_calibration/SeptemH_FullCalib_2018_2/chip3/threshold3.txt
 #+end_src
+
+#+begin_src zsh :results append file :file heatmap_threshold_equalization.org :output-dir resources
+for run in 2 3; do
+    for chip in {0..6}; do
+        ./code/threshold_equalization_heatmap -f ~/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/Run$run/chip$chip/threshold$chip.txt --runPeriod Run$run --chip $chip &;
+    done
+done
+#+end_src
+
+#+RESULTS:
+[[file:resources/heatmap_threshold_equalization.org]]
+
+All plots are found under sec. [[#sec:appendix:septemboard_calibrations]].
 
 **** Relevant code for calculation of mean values from TOS :noexport:
 
@@ -38598,186 +38635,6 @@ All tables:
 |    1 |     100 | Run2      |  1018 | 0.4941 | 452.2 | 0.006787 | 5.945 | 0.008457 |
 
 
-**** Compute minimally detectable charge                        :extended:
-
-Ref:
-- cite:LLOPART2007485_timepix Timepix paper
-- cite:LlopartCudie_1056683 Llopert PhD thesis
-
-The following quotes explain how to compute the effective threshold:
-
-page 5/10:
-#+begin_quote
-The electronic noise and effective threshold can be measured using the
-s-curve method [8] when the pixel is set in counting mode.
-#+end_quote
-
-page 5/10:
-#+begin_quote
-The effective threshold is at 50% of this s-curve. The charge
-difference between the 97.75% and 2.25% of the s- curve is four times
-the RMS noise of the front end assuming a gaussian distributed noise.
-#+end_quote
-
-#+begin_quote
-The measured electronic noise is 99:4 ± 3:8 e⁻ rms for hole
-collection and 104:8 ± 6 e⁻ rms for electron collection.  The
-measured DAC step gain is 24:7 ± 0:7 e⁻ =step for hole collection
-and 25:4 ± 1:2 e⁻ =step for electron collection.
-#+end_quote
-
-page 7/10:
-#+begin_quote
-The threshold variation before equalization is
-~240 e⁻ rms and after equalization the achieved noise free
-threshold variation is ~35 e⁻ rms for both polarities.
-#+end_quote
-
-page 7/10:
-#+begin_quote
-The minimum detectable charge can be calculated by quadratically
-adding the measured electronic noise and the threshold variation
-because both measurements are uncorrelated.
-#+end_quote
-
-#+begin_quote
-Before equalization the minimum detectable charge for the full matrix
-is ~1600 e⁻ and after equalization is ~650 e⁻ for both polarities.
-#+end_quote
-
-This means:
-- [ ] compute the 97.75 ⇔ 2.25% range of the S-curve. Yields 4 times
-  RMS noise. Width in THL of that can be converted to #e⁻ using THL
-  calibration.
-  -> electronic noise $N_e$
-- [ ] compute width of optimized threshold variation based on
-  histogram. Fit gaussian (?) to optimized threshold variation. σ of
-  that gaussian is width in THL. Convert THL to electrons.
-  -> threshold variation $N_t$
-
-- [ ] *CHECK IF THIS IS CORRECT*:
-  If I'm not mistaken, the noise peak we see in the S-curve scan is
-  essentially the same as the optimized distribution from the
-  threshold equalization.
-
-Then with those two parameters we compute the effective detectable
-charge as:
-
-\[
-N_d = √(N_e² + N_t²)
-\]
-
-which for the numbers listed above yields
-
-\[
-N_d = √(105² + 35²) = 110
-\]
-
-which is not close to the expected 650 e⁻!
-
-Checking in the PhD thesis of Llopert, page 115, equation 4.5 is:
-
-\[
-\text{MinDetect}Q = 6·\sqrt{ ENC² + σ_{\text{dist}}²}
-\]
-which then works out nicely (110·6 = 660 is close enough)!
-
-So in theory we can compute this for all our chips and all
-calibrations.
-
-- [ ] *CALCULATE FOR ALL CHIPS AND PUT INTO APPENDIX*
-
-*** Pólya distribution for threshold detection
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:calibration:polya_distribution_threshold
-:END:
-
-In a gaseous detector the gas amplification (see
-sec. [[#sec:theory:gas_gain_polya]]) allows to easily exceed the minimum
-detectable charge of $\mathcal{O}(\SIrange{500}{1000}{e^-})$. The
-typically used =THL= threshold will be quite a bit higher than the
-'theoretical limit' however for multiple reasons. One can either
-compute the effective threshold in use based on the =THL= calibration
-as explained in sec. [[#sec:operation_calibration:scurve_scan]], or use an
-experimental approach by utilizing the Pólya distribution as
-introduced in sec. [[#sec:theory:gas_gain_polya]] and
-[[#sec:daq:polya_distribution]]. By taking data over a certain period of
-time and computing a histogram of the charge values recorded by each
-pixel, a Pólya distribution naturally arises.
-
-The Pólya distribution can be used to determine the actual activation
-threshold by simply checking what the lowest charge is that sees
-significant statistics.
-
-An example of such a Pólya distribution with a very obvious cutoff at
-low charges is seen in fig. [[fig:daq:polya_example_chip0]]. We see
-chip 0 using the same calibration from July 2018 as in the
-figures in the previous section
-[[#sec:operation_calibration:scurve_scan]]. The data is a $\SI{30}{min}$
-interval of background data at CAST. The pink line represents the fit of
-the Pólya distribution to the data. The dashed part of the line was
-not used for the fit and is only an extension using the final fit
-parameters. The cutoff at the lower end due to the chip's threshold is
-clearly visible. The fit determines a gas gain of about $\num{2700}$,
-compared to the mean of the data yielding about $\num{2430}$.
-
-Based on the data a threshold value of -- very roughly -- $\num{1000}$ can
-be estimated. Using the =THL= calibration of the chip as shown in
-fig. [[fig:daq:thl_calibration_example]] yields a value of
-
-\[
-Q(\text{THL} = 419) = 26.8 · 419 - 10300 = 929.2
-\]
-
-where we used the fit parameters as printed on the plot ($1/m$ and
-$f⁻¹(y=0)$) and the =THL= DAC value of $\num{419}$ as used during the
-data taking for this chip. Indeed, the real threshold is in the same
-range, but clearly a bit higher than the theoretical limit for this
-chip. This matches our expectation.
-
-#+CAPTION: An example of a Pólya distribution of chip 0 using the calibration
-#+CAPTION: of July 2018 based on \SI{30}{min} of background data.
-#+CAPTION: The lower cutoff is easily visible. The pink line represents the
-#+CAPTION: fit of the Pólya distribution to the data. In the dashed region the
-#+CAPTION: line was extended using the final fit parameters.
-#+NAME: fig:daq:polya_example_chip0
-[[~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf]]
-
-**** TODOs for this section                                     :noexport:
-
-- [ ] *REWRITE BELOW, OUTDATED REFERENCES*
-- [X] *DON'T NEED TO MENTION THL AND ACTIVATION THRESHOLD THL HERE*
-- [X] *THIS NEEDS A GOOD REWRITE STILL!*
-- [X] The additional threshold discussion can be moved to the appendix
-  I think
-
-**** Generate Polya plot for chip 0, run period 3 [0/1]         :extended:
-
-The current placeholder polya distribution (although it's the right
-chip and calibration) is:
-#+begin_src sh
-basti at void in /mnt/1TB/CAST/2018_2/out/DataRuns2018_Raw_2020-04-28_16-13-28 λ
-  cp gas_gain_run_306_chip_0_5_30_min_1545294386.pdf \
-     ~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf
-#+end_src
-
-- [ ] *REPLACE BY BETTER PLOT. USING 90MIN AMONG OTHER THINGS*
-  
-
-** Septemboard calibration [/]
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:septemboard_calibrations
-:END:
-
-- [ ] Show all calibrations for each of the runs.
-
-That means, for all chips:
-- [ ] THS optimization & equalization bits
-- [ ] equalized matrix of all pixels  
-- [ ] ~ToT~ calibration
-- [ ] S-curves
-- [ ] fit to 50% point of S-curves to get #electrons / THL DAC value
-
 *** THL calibration
 
 Figure [[fig:daq:thl_optimized_distributinons]] shows the optimized =THL=
@@ -38945,32 +38802,65 @@ A threshold of $\SI{-110}{\milli\volt}$ was selected, after analysis.
 :CUSTOM_ID: sec:appendix:cast_operations
 :END:
 
-This chapter provides some guidance about typical operations necessary
-during maintenance or installation of the detector / vacuum system.
+This appendix provides some guidance about typical operations necessary
+during maintenance or installation of the detector, vacuum system and
+water cooling at CAST.
 
-- [ ] *YEAH*
+We first quickly look at the terminology to describe different areas
+in the CAST hall in sec. [[#sec:appendix:cast_operations:terminology]].
+Then we go over the different systems. Detector high voltage,
+sec. [[#sec:cast:high_voltage]], vacuum system
+sec. [[#sec:cast:vacuum_system]], water cooling and gas supply
+sec. [[#sec:cast:watercooling_gas]] and the safety interlock systems
+sec. [[#sec:cast:interlock_systems]]. 
 
-We start with the CAST log files in sec. [[#sec:appendix:cast_log_files]],
-because these are the most important aspect in terms of performing
-data analysis with the data taken at cast (magnetic field, solar
-tracking and more).
-
-Starting with the safety interlock systems in place for the different
-components (high voltage, vacuum and gas), sec. [[#sec:cast:hv_interlock]].
-
-- [ ] *FINISH ME*
+We finally end with the CAST log files in
+sec. [[#sec:appendix:cast_log_files]]. These are the most important aspect
+in terms of performing data analysis with the data taken at CAST
+(magnetic field, solar tracking and more).
 
 ** CAST terminology
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:cast_operations:terminology
+:END:
 
-- [ ] *HAVE A SCHEMATIC OF SORTS THAT SHOWS WHAT AIRPORT, JURA,
+In the CAST collaboration there is a common terminology in use to
+describe different parts of the hall / different bores and detector
+installations. Essentially the two magnet bores and areas 'behind'
+them (seen from the center of the magnet if you will) are named by
+their being closest to either the Geneva airport and by the Jura
+mountains on the other side.
+
+The magnet ends are named by whether a detector installed on that side
+observes the sunrise or the sunset. See
+fig. [[fig:appendix:cast_operations:terminology]] for a schematic.
+
+#+CAPTION: Schematic of the CAST hall with the magnet and the parts that give the
+#+CAPTION: names to different areas. The bores (and as an extension sides of the magnet)
+#+CAPTION: are named by the airport / Jura mountains and the magnet ends by whether
+#+CAPTION: a detector observes sunrise or sunset.
+#+NAME: fig:appendix:cast_operations:terminology
+[[~/phd/Figs/CAST_terminology/cast_terminology.pdf]]
+
+*** TODOs for this section                                       :noexport:
+
+- [X] *HAVE A SCHEMATIC OF SORTS THAT SHOWS WHAT AIRPORT, JURA,
   SUNRISE, SUNSET MEANS*
-  -> We don't have the time, but it would be fun to experiment with
-  gaussian splatting based on all the CAST pictures we have to see if
-  we could get an interactive 3D view of the CAST hall, haha.
   -> Realistically: do a simple schematic showing CAST magnet, tracks,
   telescope side etc and annotate.
 
+  -> We don't have the time, but it would be fun to experiment with
+  gaussian splatting based on all the CAST pictures we have to see if
+  we could get an interactive 3D view of the CAST hall, haha.
+  
+  *Hey*, you there! You seem like an interested reader. You should
+  make a Gaussian splatting 3D scene of CAST. Or whatever fancy tech
+  you have in your timeline!
+
 ** High voltage supply [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:high_voltage
+:END:
 
 The high voltage supply is an iseg HV module, which is located in the
 VME crate on the airport side of the magnet. The HV is controlled via
@@ -39020,6 +38910,65 @@ systems in place.
 - [ ] *ONCE FINAL: REFERENCE A RELATIVE LINK TO THE TOS REPOSITORY*
   -> Or to Github.
 
+
+*** Ramping the HV
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:ramping_high_voltage
+:END:
+
+The high voltage supply can be controlled in two different
+ways. Besides differing in usability terms (one is manual, the other
+automatic), the main difference between the two is the HV interlock,
+which is only partially usable in case of the manual HV control.
+1. in the manual way using the Linux software supplied by iseg. On the
+   InGrid-DAQ computer it is located in
+   [[file:/home/ingrid/src/isegControl/isegControl][~/src/isegControl/isegControl]]. Depending on the setup of the
+   machine, the software may need superuser rights to access the USB
+   connection. With the software the given channel as shown in
+   tab. [[tab:cast:high_voltage]] can be set up and the HV can be ramped up. Note: one
+   needs to activate SetKillEnable such that the HV is shut down in
+   case of a current trip (exceeding of specified current). One should
+   then set 'groups' of different channels, so that grid, anode and
+   ring 1 are shut down at the same time, in case of a current trip,
+   as well as ring 29 and the cathode! In addition the trip current
+   needs to be manually set about a factor 5 higher during ramping,
+   because of capacitors, which need to be charged first. Otherwise
+   the channels trip immediately. In this case the HV interlock is
+   restricted to basic current restrictions. Anything detector related
+   is not included!
+2. in the automatic way via the TOS. The TOS takes care of everything
+   mentioned above. To use the TOS for the HV control (and thus also
+   use the complete HV interlock, as it exists at the moment), perform
+   the following steps:
+   1. check [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]] and compare
+      with tab. [[tab:cast:high_voltage]] whether settings seem reasonable
+   2. after starting TOS and setting up the chips, call
+      #+BEGIN_SRC sh
+      > ActivateHFM
+      #+END_SRC
+      which will set up TOS to use the combined HV and FADC (due to
+      both inside the same VME crate, they are intertwined). This
+      configures the FADC and reads the desired HV settings, but does
+      not set the HV settings on the module yet.
+   3. to write the HV to the HV module, call
+      #+BEGIN_SRC sh
+      > InitHV
+      #+END_SRC
+      which will write the HV settings from HFM_settings.ini to the HV
+      module. At the end it will ask the user, whether the HV should
+      be ramped up:
+      #+BEGIN_SRC sh
+      Do you wish to ramp up the channels now? (Y / n)
+      #+END_SRC
+      If yes, the ramping progress will be shown via calls to the
+      CheckModuleIsRamping() function (which can also be called
+      manually in TOS). 
+   This should properly ramp up all channels. It is possible that TOS
+   fails to connect to the VME crate and hence is not able to ramp up
+   the channels. The most likely reason for this is that the
+   isegControl software is still open, since only one application can
+   access a single USB interface at the same time.
+   
 ** Vacuum system [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:vacuum_system
@@ -39048,7 +38997,159 @@ and the gas supply, respectively.
 - [X] *EXPLAIN INTERLOCKS HERE OR IN APPENDIX?*
   -> This entire thing will be in the appendix later. :)
 
+
+*** Vacuum operations
+
+The vacuum system as described in sec. [[#sec:cast:vacuum_system]] usually does not
+require manual intervention during normal operation.
+
+For maintenance the following two sections describe how to pump the
+system safely as well as how to flush it with nitrogen. Both processes
+are rather delicate due to the sensitive $\ce{Si_x N_y}$
+window. Pumping needs to be done slowly, $O(\SI{1}{\milli\bar \per
+\second})$. To be able to do this, the needle valve
+$V_{\text{Needle}}$ (cf. fig. [[fig:cast:vacuum-schematic]]) is installed. One
+may separate the vacuum volume into two separate vacua. A bad vacuum
+before the primary pump and after the turbo pumps T1 and T2 and a good
+vacuum before the turbo pump T2. There are three connections from the
+good vacuum to the bad one. 
+1. through T2, closable via $V_{\text{T2}}$, $\SI{40}{\mm}$ tubing
+2. through the needle valve $V_{\text{needle}}$, $\SI{16}{\mm}$ tubing
+3. through T1 via the manipulator interstage, normally closed (see the
+  note below), $\SI{25}{\mm}$ tubing
+3 is mainly irrelevant for pumping purposes, since there is no valve
+to open or close; it is always closed by a 2-O-ring seal to the good
+vacuum. While 1 is the main path for pumping during operation, it is 2
+which is used during a pumping down or flushing of the system, since
+it can be controlled very granularly. 
+
+For both explanations below, it is very important to always think
+about each step (are the correct valves open / closed? etc.). A small
+mistake can lead to severe damage of the hardware (turbo pumps can
+break, the window can rupture).
+
+_Note_: There is a third very small vacuum volume before T1, which is
+the volume up to the manipulator interstage. This volume is separate
+from the main good vacuum chamber, due to a 2-O-ring seal on both ends
+of the manipulator. Compare with fig. [[fig:cast:vacuum-schematic]] at the
+location of the two clamped flanges 'above' the manipulator. One
+2-O-ring seal is at the upper flange and one at the lower. This is
+because the manipulator part furthest from the beampipe is under
+air. In order to seal the air and the vacuum especially during
+movement of the source, these seals are in place. However, while the
+2-O-ring seals provide decent sealing, it is not perfect. This is why
+the small turbo pump T1 is in place at all, to reduce the amount of
+air, which might enter the system during source manipulation. Another
+aspect to keep in mind is potential air, which can get trapped in
+between the two O-rings. This air will be released during movement of
+the seals. Especially after the system was open to air, it is expected
+that a small pressure increase on $P_{\text{MM}}$ can be seen during
+operation, despite T1 being in place. After several movement cycles,
+$O(10)$, these peaks should be negligible.
+
+**** Pumping the vacuum
+
+Before pumping it is a good idea to connect two linear gauges to the
+two $P_{\text{Linear}}$ pressure sensors.
+To pump the system safely, perform the following steps:
+1. Make sure every pump is turned off.
+2. Make sure every valve in the system is closed:
+   1. $V_{\text{Primary}}$
+   2. $V_{\text{Leak}}$
+   3. $V_{\text{T2}}$
+   4. $V_{\text{Needle}}$
+3. Connect a linear gauge to $P_{\text{P, Linear}}$ on the primary pump line.
+4. Start the primary pump. Tubing up to $V_{\text{Primary}}$ will be
+   pumped, visible on linear gauge connected to
+   $P_{\text{P, Linear}}$. Check that the second linear gauge remains
+   unchanged, if not $V_{\text{Primary}}$ and $V_{\text{Needle}}$ is
+   open!
+5. Once $P_{\text{P, Linear}}$ shows $\leq \SI{10}{\milli bar}$,
+   slowly open $V_{\text{Primary}}$, again checking $P_{\text{N,
+   Linear}}$ remains unchanged. This will increase the pressure on
+   $P_{\text{P, Linear}}$ again until the volume is pumped.
+6. This step is the most crucial. With $V_{\text{T2}}$ still closed,
+   very carefully open $V_{\text{Needle}}$, while keeping an eye on
+   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
+   locking mechanisms. The knob at the end with the analog indicator
+   and a general lock in front of that. While the analog indicator
+   shows =000=, open the general lock. Then slowly start turning the
+   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
+   slowly start to decrease. Keep turning the knob until you reach a
+   pump rate of $O(\SI{1}{\milli \bar \per \second})$. You will have
+   to keep opening the needle valve further, the lower the pressure is
+   to keep the pump rate constant.
+7. Once both linear gauges have equalized (up to different offsets),
+   close the needle valve again.
+8. Open $V_{\text{T2}}$.
+9. Start T2 by turning on the power and pressing the right most
+   button. Use the arrow buttons to select the 'actual RPM' setting to
+   see that the turbo is spinning up. Final speed should be set to
+   $\SI{1500}{\Hz}$.
+10. While T2 is spinning up, start T1 by turning on the power at the
+    back. There is no additional button to be pressed.
+
+The system should now be in the following state:
+- $V_{\text{Leak}}$ closed
+- $V_{\text{Needle}}$ closed
+- $V_{\text{T2}}$ open
+- $V_{\text{Primary}}$ open
+- T2 & T1 running
+- Primary pump running
+If so, the system is now pumping. Note that it may take several days
+to reach a vacuum good enough to satisfy the interlock.
+
+**** Flushing the system
+
+Flushing the system is somewhat of a reverse of pumping the
+system. Follow these steps to safely flush the system with
+nitrogen. See section [[Nitrogen supply]] for an explanation of which
+valves need to be operated to open the nitrogen line.
+Before flushing the system connect two linear gauges to both
+$P_{\text{Linear}}$ sensors.
+1. Make sure the turbo pumps are turned off, if not yet turn both off
+   and wait for them to have come to a halt.
+2. Turn off the primary pump.
+3. Close $V_{\text{T2}}$. $V_{\text{Leak}}$ and $V_{\text{Needle}}$
+   should already be closed, while $V_{\text{T2}}$ and
+   $V_{\text{Primary}}$ should still be open.
+4. Connect the nitrogen line to the blind flange before
+   $V_{\text{Leak}}$. 
+5. Slowly open $V_{\text{Leak}}$, while checking both linear
+   gauges. Make sure only the pressure on $P_{\text{P, Linear}}$
+   increases, while $P_{\text{N, Linear}}$ remains under vacuum. If
+   not, another valve is still open. Close $V_{\text{Leak}}$
+   immediately again!
+6. Keep flushing nitrogen, until $P_{\text{P, Linear}}$ gets close to
+   $\SI{1000}{\milli\bar}$ (the sensors will never actually reach
+   that value).
+7. Close $V_{\text{Leak}}$ again to make sure you do not put the
+   system over one atmosphere of pressure.
+8. This step is the most crucial. With $V_{\text{T2}}$ still closed,
+   very carefully open $V_{\text{Needle}}$, while keeping an eye on
+   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
+   locking mechanisms. The knob at the end with the analog indicator
+   and a general lock in front of that. While the analog indicator
+   shows =000=, open the general lock. Then slowly start turning the
+   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
+   slowly start to increase. Keep turning the knob until you reach a
+   pump rate of $O(\SI{1}{\milli \bar \per \second})$.
+9. You will notice that the pressure on $P_{\text{P, Linear}}$ will
+   start to decrease, since the air will distribute in a larger
+   volume. Open $V_{\text{Leak}}$ again slightly to keep $P_{\text{P,
+   Linear}}$ roughly constant.
+10. Keep flushing with $\SI{1}{\milli\bar\per\second}$ until both
+    sensors read $O(\SI{1000}{\milli\bar})$.
+11. Close all valves in the system again.
+
+This way the system is safely flushed with nitrogen. This helps to
+pump faster after a short maintenance, because less humidity can enter
+the system.
+
 ** Watercooling system & gas supply
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:watercooling_gas
+:END:
 
 In this section the watercooling system as well as the gas supply is
 discussed. In section [[#sec:cast:water_gas_schematic]] a combined
@@ -39137,6 +39238,76 @@ It follows a short explanation of the different valves:
   placed roughly below the telescope (on the platform), while
   $P_{\text{Detector}}$ is the pressure gauge inside this controller.
 
+**** Gas system operations
+
+If the requirements of the gas supply interlock are satisfied
+(cf. sec. [[Gas supply interlock]]), it is possible to flush the detector
+with gas. For that, follow these steps:
+1. Make sure the pressure controller is connected and running. Check
+   InGrid-PLC computer in control room and see if pressure control
+   software is running. If gas supply is currently closed, reported
+   pressure inside the detector is usually reported to
+   $\SIrange{960}{980}{\milli\bar}$.
+2. Outside the building, open the main valve of the currently active
+   gas bottle (check the arrow on the bottle selector mechanism). See
+   fig. [[sref:fig:gas-bottle-outside]].
+3. Open the second valve near the bottle.
+4. Pressure values should be:
+   - gas bottle: $\sim\SIrange{30}{100}{\bar}$
+   - pre-line pressure: $\sim\SI{7}{\bar}$
+   - line pressure: $\sim\SI{0.45}{\bar}$
+5. Activate the gas supply at the interlock box by turning the key to
+   =Security on= and pressing the large button. See
+   fig. [[sref:fig:interlock-box]].
+6. Go to the airport side of the magnet. Open the valve on the InGrid
+   gas panel below the telescope platform. See
+   fig. [[fig:ingrid-gas-panel]].
+7. Slowly open the needle valve on the flow meter on the previous
+   panel. Increase gas flow up to $\sim\SI{2}{\liter\per\hour}$.
+8. Open the needle valve on the gas supply line on the side of the
+   platform.
+9. After $\SIrange{5}{10}{\minute}$ the pressure controller on the
+   InGrid-PLC computer should report $\SI{1050}{\milli\bar}$.
+# 7. Make sure the electrovalves on the second gas panel (see
+#    fig. NOT HERE. NO PANEL) are open. THESE VALVES CANNOT BE CHECKED
+#    EXPLICITLY. IF INTERLOCK BOX IS ACTIVE, WILL BE OPEN?! MAYBE CHECK
+#    BOX POWER SUPPLY? NO LED I THINK.
+
+
+Now the detector should be flushed with $\ce{Ar} /
+\ce{iC_4H_{10}}$. Before turning on the HV, make sure to flush for at
+least $\SI{12}{\hour}$ to be on the safe side.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Gas bottle") (label "fig:gas-bottle-outside")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/gas_bottles_outside.jpg"))
+        (subfigure (linewidth 0.5) (caption "Interlock box") (label "fig:interlock-box")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/gas_interlock_box.jpg"))
+        (caption
+         (subref "fig:gas-bottle-outside")
+          ": Location of the Argon-Isobutane bottle and the main valves outside the building."
+         (subref "fig:cast:electrovalve-outside")
+          ": Location of the gas interlock box")
+        (label "fig:cast:bottle_valve_outside"))
+#+end_src
+
+#+CAPTION: Location of the InGrid gas panel below the telescope platform on the airport side.
+#+NAME: fig:ingrid-gas-panel
+#+ATTR_LATEX: :width 0.6\textwidth
+[[file:~/org/Doc/Detector/figs/gas_panel.jpg]]
+
+***** TODOs for this section                                    :noexport:
+
+It turns out I never took a good picture of the electrovalve I think :)
+
+#+CAPTION: Location of the needle valve on the gas supply line
+#+NAME: fig:gas-needle-valve
+<file to be inserted>
+
+
 *** Combined schematic (water & gas)
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:water_gas_schematic
@@ -39153,6 +39324,68 @@ interlock systems and their corresponding members are shown.
 #+NAME: fig:detector-schematic
 #+ATTR_LATEX: :width 1\textwidth :options angle=90
 [[~/org/Doc/Detector/figs/detector_system2017.png]]
+
+*** Nitrogen supply
+
+Nitrogen is supplied by a nitrogen bottle outside the building. To
+open the nitrogen line, 5 valves need to be opened. The line ends in a
+copper pipe on the airport side, which is usually there rolled up (the
+copper is somewhat flexible).
+1. Open the lever on the nitrogen bottle outside the building (see
+   fig. [[sref:fig:nitrogen-bottle-outside]]).
+2. Open the valve next to the bottle.
+3. Go to the gas lines next to the control room. The right most line
+   (see fig. [[sref:fig:valves-control-room]] and
+   fig. [[sref:fig:nitrogen-valve-control-room]]) is the nitrogen line. Open
+   the valve.
+4. Open the needle valve on the flow meter to the right of the
+   previous valve.
+5. Open the needle valve on the airport side of the magnet.
+This should be all to open the nitrogen line. The flow through the
+pipe is not too large, but it should be large enough to feel it on the
+back of the hand.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Nitrogen bottle") (label "fig:nitrogen-bottle-outside")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/nitrogen_bottle.jpg"))
+        (subfigure (linewidth 0.5) (caption "Control room") (label "fig:valves-control-room")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/nitrogen_valve_location.jpg"))
+        (caption
+         (subref "fig:nitrogen-bottle-outside")
+          ": Location of the Nitrogen bottle and the main valves outside the building."
+         (subref "fig:valves-control-room")
+          ": Location of the valves next to the control room")
+        (label "fig:nitrogen_bottle_valve"))
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Nitrogen valve") (label "fig:nitrogen-valve-control-room")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/nitrogen_valve.jpg"))
+        (subfigure (linewidth 0.5) (caption "") (label "fig:nitrogen-flow-meter-control-room")
+                   (includegraphics (list (cons 'width (linewidth 0.95)))
+                                    "~/org/Doc/Detector/figs/nitrogen_flow_meter.jpg"))
+        (caption
+         (subref "fig:nitrogen-valve-control-room")
+          ": The actual nitrogen valve on the set of valves near the control room."
+         (subref "fig:nitrogen-flow-meter-control-room")
+          ": Location of the flow meter near the valve next to the control room")
+        (label "fig:cast:nitrogen_flow_meter_valve"))
+#+end_src
+
+#+BEGIN_EXPORT latex
+\newpage
+#+END_EXPORT
+
+**** TODOs for this section                                    :noexport:
+
+For the needle valve on the airport side, I do have a picture, but no
+need I think...
+
 
 ** Interlock systems
 :PROPERTIES:
@@ -39344,340 +39577,6 @@ This is to make sure there can be no rapid toggling between the two
 states during pumping or flushing the system. 
   
 
-** Ramping the HV
-
-The high voltage supply can be controlled in two different
-ways. Besides differing in usability terms (one is manual, the other
-automatic), the main difference between the two is the HV interlock,
-which is only partially usable in case of the manual HV control.
-1. in the manual way using the Linux software supplied by iseg. On the
-   InGrid-DAQ computer it is located in
-   [[file:/home/ingrid/src/isegControl/isegControl][~/src/isegControl/isegControl]]. Depending on the setup of the
-   machine, the software may need superuser rights to access the USB
-   connection. With the software the given channel as shown in
-   tab. [[tab:cast:high_voltage]] can be set up and the HV can be ramped up. Note: one
-   needs to activate SetKillEnable such that the HV is shut down in
-   case of a current trip (exceeding of specified current). One should
-   then set 'groups' of different channels, so that grid, anode and
-   ring 1 are shut down at the same time, in case of a current trip,
-   as well as ring 29 and the cathode! In addition the trip current
-   needs to be manually set about a factor 5 higher during ramping,
-   because of capacitors, which need to be charged first. Otherwise
-   the channels trip immediately. In this case the HV interlock is
-   restricted to basic current restrictions. Anything detector related
-   is not included!
-2. in the automatic way via the TOS. The TOS takes care of everything
-   mentioned above. To use the TOS for the HV control (and thus also
-   use the complete HV interlock, as it exists at the moment), perform
-   the following steps:
-   1. check [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]] and compare
-      with tab. [[tab:cast:high_voltage]] whether settings seem reasonable
-   2. after starting TOS and setting up the chips, call
-      #+BEGIN_SRC sh
-      > ActivateHFM
-      #+END_SRC
-      which will set up TOS to use the combined HV and FADC (due to
-      both inside the same VME crate, they are intertwined). This
-      configures the FADC and reads the desired HV settings, but does
-      not set the HV settings on the module yet.
-   3. to write the HV to the HV module, call
-      #+BEGIN_SRC sh
-      > InitHV
-      #+END_SRC
-      which will write the HV settings from HFM_settings.ini to the HV
-      module. At the end it will ask the user, whether the HV should
-      be ramped up:
-      #+BEGIN_SRC sh
-      Do you wish to ramp up the channels now? (Y / n)
-      #+END_SRC
-      If yes, the ramping progress will be shown via calls to the
-      CheckModuleIsRamping() function (which can also be called
-      manually in TOS). 
-   This should properly ramp up all channels. It is possible that TOS
-   fails to connect to the VME crate and hence is not able to ramp up
-   the channels. The most likely reason for this is that the
-   isegControl software is still open, since only one application can
-   access a single USB interface at the same time.
-
-** Vacuum
-
-The vacuum system as described in sec. [[#sec:cast:vacuum_system]] usually does not
-require manual intervention during normal operation.
-
-For maintenance the following two sections describe how to pump the
-system safely as well as how to flush it with nitrogen. Both processes
-are rather delicate due to the sensitive $\ce{Si_x N_y}$
-window. Pumping needs to be done slowly, $O(\SI{1}{\milli\bar \per
-\second})$. To be able to do this, the needle valve
-$V_{\text{Needle}}$ (cf. fig. [[fig:cast:vacuum-schematic]]) is installed. One
-may separate the vacuum volume into two separate vacua. A bad vacuum
-before the primary pump and after the turbo pumps T1 and T2 and a good
-vacuum before the turbo pump T2. There are three connections from the
-good vacuum to the bad one. 
-1. through T2, closable via $V_{\text{T2}}$, $\SI{40}{\mm}$ tubing
-2. through the needle valve $V_{\text{needle}}$, $\SI{16}{\mm}$ tubing
-3. through T1 via the manipulator interstage, normally closed (see the
-  note below), $\SI{25}{\mm}$ tubing
-3 is mainly irrelevant for pumping purposes, since there is no valve
-to open or close; it is always closed by a 2-O-ring seal to the good
-vacuum. While 1 is the main path for pumping during operation, it is 2
-which is used during a pumping down or flushing of the system, since
-it can be controlled very granularly. 
-
-For both explanations below, it is very important to always think
-about each step (are the correct valves open / closed? etc.). A small
-mistake can lead to severe damage of the hardware (turbo pumps can
-break, the window can rupture).
-
-_Note_: There is a third very small vacuum volume before T1, which is
-the volume up to the manipulator interstage. This volume is separate
-from the main good vacuum chamber, due to a 2-O-ring seal on both ends
-of the manipulator. Compare with fig. [[fig:cast:vacuum-schematic]] at the
-location of the two clamped flanges 'above' the manipulator. One
-2-O-ring seal is at the upper flange and one at the lower. This is
-because the manipulator part furthest from the beampipe is under
-air. In order to seal the air and the vacuum especially during
-movement of the source, these seals are in place. However, while the
-2-O-ring seals provide decent sealing, it is not perfect. This is why
-the small turbo pump T1 is in place at all, to reduce the amount of
-air, which might enter the system during source manipulation. Another
-aspect to keep in mind is potential air, which can get trapped in
-between the two O-rings. This air will be released during movement of
-the seals. Especially after the system was open to air, it is expected
-that a small pressure increase on $P_{\text{MM}}$ can be seen during
-operation, despite T1 being in place. After several movement cycles,
-$O(10)$, these peaks should be negligible.
-
-*** Pumping the vacuum
-
-Before pumping it is a good idea to connect two linear gauges to the
-two $P_{\text{Linear}}$ pressure sensors.
-To pump the system safely, perform the following steps:
-1. Make sure every pump is turned off.
-2. Make sure every valve in the system is closed:
-   1. $V_{\text{Primary}}$
-   2. $V_{\text{Leak}}$
-   3. $V_{\text{T2}}$
-   4. $V_{\text{Needle}}$
-3. Connect a linear gauge to $P_{\text{P, Linear}}$ on the primary pump line.
-4. Start the primary pump. Tubing up to $V_{\text{Primary}}$ will be
-   pumped, visible on linear gauge connected to
-   $P_{\text{P, Linear}}$. Check that the second linear gauge remains
-   unchanged, if not $V_{\text{Primary}}$ and $V_{\text{Needle}}$ is
-   open!
-5. Once $P_{\text{P, Linear}}$ shows $\leq \SI{10}{\milli bar}$,
-   slowly open $V_{\text{Primary}}$, again checking $P_{\text{N,
-   Linear}}$ remains unchanged. This will increase the pressure on
-   $P_{\text{P, Linear}}$ again until the volume is pumped.
-6. This step is the most crucial. With $V_{\text{T2}}$ still closed,
-   very carefully open $V_{\text{Needle}}$, while keeping an eye on
-   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
-   locking mechanisms. The knob at the end with the analog indicator
-   and a general lock in front of that. While the analog indicator
-   shows =000=, open the general lock. Then slowly start turning the
-   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
-   slowly start to decrease. Keep turning the knob until you reach a
-   pump rate of $O(\SI{1}{\milli \bar \per \second})$. You will have
-   to keep opening the needle valve further, the lower the pressure is
-   to keep the pump rate constant.
-7. Once both linear gauges have equalized (up to different offsets),
-   close the needle valve again.
-8. Open $V_{\text{T2}}$.
-9. Start T2 by turning on the power and pressing the right most
-   button. Use the arrow buttons to select the 'actual RPM' setting to
-   see that the turbo is spinning up. Final speed should be set to
-   $\SI{1500}{\Hz}$.
-10. While T2 is spinning up, start T1 by turning on the power at the
-    back. There is no additional button to be pressed.
-
-The system should now be in the following state:
-- $V_{\text{Leak}}$ closed
-- $V_{\text{Needle}}$ closed
-- $V_{\text{T2}}$ open
-- $V_{\text{Primary}}$ open
-- T2 & T1 running
-- Primary pump running
-If so, the system is now pumping. Note that it may take several days
-to reach a vacuum good enough to satisfy the interlock.
-
-*** Flushing the system
-
-Flushing the system is somewhat of a reverse of pumping the
-system. Follow these steps to safely flush the system with
-nitrogen. See section [[Nitrogen supply]] for an explanation of which
-valves need to be operated to open the nitrogen line.
-Before flushing the system connect two linear gauges to both
-$P_{\text{Linear}}$ sensors.
-1. Make sure the turbo pumps are turned off, if not yet turn both off
-   and wait for them to have come to a halt.
-2. Turn off the primary pump.
-3. Close $V_{\text{T2}}$. $V_{\text{Leak}}$ and $V_{\text{Needle}}$
-   should already be closed, while $V_{\text{T2}}$ and
-   $V_{\text{Primary}}$ should still be open.
-4. Connect the nitrogen line to the blind flange before
-   $V_{\text{Leak}}$. 
-5. Slowly open $V_{\text{Leak}}$, while checking both linear
-   gauges. Make sure only the pressure on $P_{\text{P, Linear}}$
-   increases, while $P_{\text{N, Linear}}$ remains under vacuum. If
-   not, another valve is still open. Close $V_{\text{Leak}}$
-   immediately again!
-6. Keep flushing nitrogen, until $P_{\text{P, Linear}}$ gets close to
-   $\SI{1000}{\milli\bar}$ (the sensors will never actually reach
-   that value).
-7. Close $V_{\text{Leak}}$ again to make sure you do not put the
-   system over one atmosphere of pressure.
-8. This step is the most crucial. With $V_{\text{T2}}$ still closed,
-   very carefully open $V_{\text{Needle}}$, while keeping an eye on
-   $P_{\text{N, Linear}}$. Note that $V_{\text{Needle}}$ has two
-   locking mechanisms. The knob at the end with the analog indicator
-   and a general lock in front of that. While the analog indicator
-   shows =000=, open the general lock. Then slowly start turning the
-   knob. At around =300= the pressure on $P_{\text{N, Linear}}$ should
-   slowly start to increase. Keep turning the knob until you reach a
-   pump rate of $O(\SI{1}{\milli \bar \per \second})$.
-9. You will notice that the pressure on $P_{\text{P, Linear}}$ will
-   start to decrease, since the air will distribute in a larger
-   volume. Open $V_{\text{Leak}}$ again slightly to keep $P_{\text{P,
-   Linear}}$ roughly constant.
-10. Keep flushing with $\SI{1}{\milli\bar\per\second}$ until both
-    sensors read $O(\SI{1000}{\milli\bar})$.
-11. Close all valves in the system again.
-
-This way the system is safely flushed with nitrogen. This helps to
-pump faster after a short maintenance, because less humidity can enter
-the system.
-
-** Gas supply
-
-If the requirements of the gas supply interlock are satisfied
-(cf. sec. [[Gas supply interlock]]), it is possible to flush the detector
-with gas. For that, follow these steps:
-1. Make sure the pressure controller is connected and running. Check
-   InGrid-PLC computer in control room and see if pressure control
-   software is running. If gas supply is currently closed, reported
-   pressure inside the detector is usually reported to
-   $\SIrange{960}{980}{\milli\bar}$.
-2. Outside the building, open the main valve of the currently active
-   gas bottle (check the arrow on the bottle selector mechanism). See
-   fig. [[sref:fig:gas-bottle-outside]].
-3. Open the second valve near the bottle.
-4. Pressure values should be:
-   - gas bottle: $\sim\SIrange{30}{100}{\bar}$
-   - pre-line pressure: $\sim\SI{7}{\bar}$
-   - line pressure: $\sim\SI{0.45}{\bar}$
-5. Activate the gas supply at the interlock box by turning the key to
-   =Security on= and pressing the large button. See
-   fig. [[sref:fig:interlock-box]].
-6. Go to the airport side of the magnet. Open the valve on the InGrid
-   gas panel below the telescope platform. See
-   fig. [[fig:ingrid-gas-panel]].
-7. Slowly open the needle valve on the flow meter on the previous
-   panel. Increase gas flow up to $\sim\SI{2}{\liter\per\hour}$.
-8. Open the needle valve on the gas supply line on the side of the
-   platform.
-9. After $\SIrange{5}{10}{\minute}$ the pressure controller on the
-   InGrid-PLC computer should report $\SI{1050}{\milli\bar}$.
-# 7. Make sure the electrovalves on the second gas panel (see
-#    fig. NOT HERE. NO PANEL) are open. THESE VALVES CANNOT BE CHECKED
-#    EXPLICITLY. IF INTERLOCK BOX IS ACTIVE, WILL BE OPEN?! MAYBE CHECK
-#    BOX POWER SUPPLY? NO LED I THINK.
-
-
-Now the detector should be flushed with $\ce{Ar} /
-\ce{iC_4H_{10}}$. Before turning on the HV, make sure to flush for at
-least $\SI{12}{\hour}$ to be on the safe side.
-
-#+begin_src subfigure
-(figure ()
-        (subfigure (linewidth 0.5) (caption "Gas bottle") (label "fig:gas-bottle-outside")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/org/Doc/Detector/figs/gas_bottles_outside.jpg"))
-        (subfigure (linewidth 0.5) (caption "Interlock box") (label "fig:interlock-box")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/org/Doc/Detector/figs/gas_interlock_box.jpg"))
-        (caption
-         (subref "fig:gas-bottle-outside")
-          ": Location of the Argon-Isobutane bottle and the main valves outside the building."
-         (subref "fig:cast:electrovalve-outside")
-          ": Location of the gas interlock box")
-        (label "fig:cast:bottle_valve_outside"))
-#+end_src
-
-#+CAPTION: Location of the InGrid gas panel below the telescope platform on the airport side.
-#+NAME: fig:ingrid-gas-panel
-#+ATTR_LATEX: :width 0.6\textwidth
-[[file:~/org/Doc/Detector/figs/gas_panel.jpg]]
-
-*** TODOs for this section                                       :noexport:
-
-It turns out I never took a good picture of the electrovalve I think :)
-
-#+CAPTION: Location of the needle valve on the gas supply line
-#+NAME: fig:gas-needle-valve
-<file to be inserted>
-
-** Nitrogen supply
-
-Nitrogen is supplied by a nitrogen bottle outside the building. To
-open the nitrogen line, 5 valves need to be opened. The line ends in a
-copper pipe on the airport side, which is usually there rolled up (the
-copper is somewhat flexible).
-1. Open the lever on the nitrogen bottle outside the building (see
-   fig. [[sref:fig:nitrogen-bottle-outside]]).
-2. Open the valve next to the bottle.
-3. Go to the gas lines next to the control room. The right most line
-   (see fig. [[sref:fig:valves-control-room]] and
-   fig. [[sref:fig:nitrogen-valve-control-room]]) is the nitrogen line. Open
-   the valve.
-4. Open the needle valve on the flow meter to the right of the
-   previous valve.
-5. Open the needle valve on the airport side of the magnet.
-This should be all to open the nitrogen line. The flow through the
-pipe is not too large, but it should be large enough to feel it on the
-back of the hand.
-
-#+begin_src subfigure
-(figure ()
-        (subfigure (linewidth 0.5) (caption "Nitrogen bottle") (label "fig:nitrogen-bottle-outside")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/org/Doc/Detector/figs/nitrogen_bottle.jpg"))
-        (subfigure (linewidth 0.5) (caption "Control room") (label "fig:valves-control-room")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/org/Doc/Detector/figs/nitrogen_valve_location.jpg"))
-        (caption
-         (subref "fig:nitrogen-bottle-outside")
-          ": Location of the Nitrogen bottle and the main valves outside the building."
-         (subref "fig:valves-control-room")
-          ": Location of the valves next to the control room")
-        (label "fig:nitrogen_bottle_valve"))
-#+end_src
-
-#+begin_src subfigure
-(figure ()
-        (subfigure (linewidth 0.5) (caption "Nitrogen valve") (label "fig:nitrogen-valve-control-room")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/org/Doc/Detector/figs/nitrogen_valve.jpg"))
-        (subfigure (linewidth 0.5) (caption "") (label "fig:nitrogen-flow-meter-control-room")
-                   (includegraphics (list (cons 'width (linewidth 0.95)))
-                                    "~/org/Doc/Detector/figs/nitrogen_flow_meter.jpg"))
-        (caption
-         (subref "fig:nitrogen-valve-control-room")
-          ": The actual nitrogen valve on the set of valves near the control room."
-         (subref "fig:nitrogen-flow-meter-control-room")
-          ": Location of the flow meter near the valve next to the control room")
-        (label "fig:cast:nitrogen_flow_meter_valve"))
-#+end_src
-
-#+BEGIN_EXPORT latex
-\newpage
-#+END_EXPORT
-
-*** TODOs for this section                                       :noexport:
-
-For the needle valve on the airport side, I do have a picture, but no
-need I think...
-
-
 ** CAST log files [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:cast_log_files
@@ -39748,6 +39647,9 @@ used to only consider background (non tracking) or solar tracking data
 - [ ] *LINK TO CODE!*
 
 *** Add tracking log information to background files             :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:log_files:add_tracking_info
+:END:
 
 The code dealing with the log files is [[file:~/CastData/ExternCode/TimepixAnalysis/LogReader/cast_log_reader.nim]]
 
