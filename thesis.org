@@ -36466,156 +36466,6 @@ bibliography:references.bib
 
 
 
-* Configurations                                                   :Appendix:
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:configuration
-:END:
-
-- [ ] This can be seen from a slightly wider lens. I.e. not only
-  strictly configuration files, but also things like the used TOF
-  versions?
-
-** TOS configuration file [/]
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:configuration:tos_config
-:END:
-
-This is the configuration file as it was used at CAST during the data
-taking periods.
-
-- [ ] *ALSO LINK AN ONLINE VERSION?*
-
-#+begin_src toml
-[General]
-sAddress_fadc = 1
-baseAddress_hv = 0x4000
-
-[HvModule]
-setKillEnable                   = true
-# Voltage and Current RampSped currently set to arbitrary value
-# in percent / second
-moduleVoltageRampSpeed          = 0.1
-moduleCurrentRampSpeed          = 50
-# checkModuleTimeInterval       = 60, checks the status of the
-# module every 60 seconds during a Run, between two events
-checkModuleTimeInterval         = 60
-
-# if this flag is set to true, anode and grid
-# will be coupled to one group
-[HvGroups]
-anodeGridGroupFlag              = true
-# grid is master channel of set on group
-anodeGridGroupMasterChannel     = 5
-anodeGridGroupNumber            = 0
-monitorTripGroupFlag            = true
-monitorTripGroupNumber          = 1
-rampingGroupFlag                = true
-rampingGroupNumber              = 2                          
-gridChannelNumber               = 5
-anodeChannelNumber              = 6
-cathodeChannelNumber            = 9
-
-[HvChannels]
-# grid, anode and cathode settings
-# all currents given in A (vmecontrol shows mA)
-0_Name                          = grid
-0_Number                        = 5
-0_VoltageSet                    = 300
-0_VoltageNominal                = 500
-0_VoltageBound                  = 10
-0_CurrentSet                    = 0.000050
-0_CurrentNominal                = 0.000500 
-0_CurrentBound                  = 0
-                                
-1_Name                          = anode
-1_Number                        = 6
-1_VoltageSet                    = 375
-1_VoltageNominal                = 500
-1_VoltageBound                  = 10
-1_CurrentSet                    = 0.000050
-1_CurrentNominal                = 0.000500
-1_CurrentBound                  = 0
-                                
-2_Name                          = cathode
-2_Number                        = 9
-2_VoltageSet                    = 1875
-2_VoltageNominal                = 2500
-2_VoltageBound                  = 15
-2_CurrentSet                    = 0.000050
-2_CurrentNominal                = 0.000500
-2_CurrentBound                  = 0
-                                
-3_Name                          = Ring1
-3_Number                        = 7
-3_VoltageSet                    = 415
-3_VoltageNominal                = 500
-3_VoltageBound                  = 15
-3_CurrentSet                    = 0.000100
-3_CurrentNominal                = 0.000500
-3_CurrentBound                  = 0
-                                
-4_Name                          = Ring29
-4_Number                        = 8
-4_VoltageSet                    = 1830
-4_VoltageNominal                = 2500
-4_VoltageBound                  = 15
-4_CurrentSet                    = 0.000100
-4_CurrentNominal                = 0.000500
-4_CurrentBound                  = 0
-                                
-6_Name                          = sipm
-6_Number                        = 4
-6_VoltageSet                    = 65.6
-6_VoltageNominal                = 100
-6_VoltageBound                  = 5
-6_CurrentSet                    = 0.0005
-6_CurrentNominal                = 0.0005
-6_CurrentBound                  = 0
-                                
-# The veto paddle scintillator is commented out, as it was supplied
-# with HV by an external CAEN HV power supply.
-# 5_Name                        = szintillator
-# 5_Number                      = 11
-# #5_VoltageSet                 = 1300
-# 5_VoltageSet                  = 0
-# 5_VoltageNominal              = 2500
-# 5_VoltageBound                = 5
-# 5_CurrentSet                  = 0.002
-# 5_CurrentNominal              = 0.002
-# 5_CurrentBound                = 0
-
-[Fadc] # FADC Settings
-fadcTriggerType                 = 3 
-fadcFrequency                   = 2
-fadcPosttrig                    = 80
-fadcPretrig                     = 15000
-# was 2033 before, 1966 corresponds to -40 mV
-fadcTriggerThresholdRegisterAll = 1966 
-# run time of a single pedestal run for the FADC in ms
-fadcPedestalRunTime             = 100
-# number of acquisition runs done for each pedestal calibration
-fadcPedestalNumRuns             = 10
-# using channel 0 on FADC as trigger source, thus bit 0  1!
-fadcChannelSource               = 1
-# set FADC mode register (mainly to enable 14-bit readout)
-fadcModeRegister                = 0b000
-
-[Temperature] # temperature related parameters
-safeUpperTempIMB                = 61
-safeUpperTempSeptem             = 61
-safeLowerTempIMB                = 0
-safeLowerTempSeptem             = 0
-#+end_src
-
-
-** TOF versions used at CAST [/]
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:configuration:tof_versions
-:END:
-
-- [ ] *WHICH VERSIONS WERE USED*
-- [ ] *WHERE ARE THE FILES*. Office computer?
-
 * Data acquisition and detector monitoring                         :Appendix:Detector:
 :PROPERTIES:
 :CUSTOM_ID: sec:daq
@@ -36660,8 +36510,8 @@ software on the DAQ computer is handled via Ethernet.
 For a detailed introduction to TOF, see cite:lupberger2016pixel as
 well as cite:schiffer_phd.
 
-The firmware versions used for each data taking period can be found in
-appendix [[#sec:appendix:configuration:tof_versions]].
+See sec. [[#sec:appendix:configuration:tos_tof_versions]] for a few notes
+on the used firmware versions during data taking.
 
 *** TODOs for this section                                       :noexport:
 
@@ -37111,7 +36961,7 @@ important if the FADC is used at a sampling frequency of $<
   recording data into the registers to record full signal shapes and
   center the signal!
 
-***** Explanation of beginning of data portion                 :noexport:
+***** Explanation of beginning of data portion                 :extended:
 
 Explanation of the data header [[code:daq:fadc_data_header_2]] here:
 - =hvFadcManager.cpp= =writeFadcData=
@@ -37125,7 +36975,7 @@ either. I think it allows to more precisely find the time of trigger
 between two register entries? Ah yes, see page 14 of the manual about
 the Vernier. Allows for 50 ps RMS time information between two bins.
 
-***** Explanation of FADC settings                             :noexport:
+***** Explanation of FADC settings                             :extended:
 
 As mentioned in the footnote in the previous section, I really don't
 understand the choice of FADC settings we used for the actual data
@@ -37650,6 +37500,181 @@ exceeds one frame per second significantly.
 *** TODOs for this section [1/1]                                 :noexport:
 
 - [X] *CITE SOMETHING FOR VIRIDIS COLORSCALE*
+
+
+* Configurations and TOS / TOF versions                            :Appendix:
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:configuration
+:END:
+
+In this appendix we will present the TOS configuration file used for data
+taking at CAST and shortly note on versions of TOS and TOF used. 
+
+** TOS configuration file [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:configuration:tos_config
+:END:
+
+Below is the configuration file as it was used at CAST during the data
+taking periods. Most notably it contains the required address for the
+FADC in the VME crate, the high voltage settings (groups, voltages and
+current bounds) and the FADC settings (channel, trigger threshold etc.).
+
+#+begin_src toml
+[General]
+sAddress_fadc = 1
+baseAddress_hv = 0x4000
+
+[HvModule]
+setKillEnable                   = true
+# Voltage and Current RampSped currently set to arbitrary value
+# in percent / second
+moduleVoltageRampSpeed          = 0.1
+moduleCurrentRampSpeed          = 50
+# checkModuleTimeInterval       = 60, checks the status of the
+# module every 60 seconds during a Run, between two events
+checkModuleTimeInterval         = 60
+
+# if this flag is set to true, anode and grid
+# will be coupled to one group
+[HvGroups]
+anodeGridGroupFlag              = true
+# grid is master channel of set on group
+anodeGridGroupMasterChannel     = 5
+anodeGridGroupNumber            = 0
+monitorTripGroupFlag            = true
+monitorTripGroupNumber          = 1
+rampingGroupFlag                = true
+rampingGroupNumber              = 2                          
+gridChannelNumber               = 5
+anodeChannelNumber              = 6
+cathodeChannelNumber            = 9
+
+[HvChannels]
+# grid, anode and cathode settings
+# all currents given in A (vmecontrol shows mA)
+0_Name                          = grid
+0_Number                        = 5
+0_VoltageSet                    = 300
+0_VoltageNominal                = 500
+0_VoltageBound                  = 10
+0_CurrentSet                    = 0.000050
+0_CurrentNominal                = 0.000500 
+0_CurrentBound                  = 0
+                                
+1_Name                          = anode
+1_Number                        = 6
+1_VoltageSet                    = 375
+1_VoltageNominal                = 500
+1_VoltageBound                  = 10
+1_CurrentSet                    = 0.000050
+1_CurrentNominal                = 0.000500
+1_CurrentBound                  = 0
+                                
+2_Name                          = cathode
+2_Number                        = 9
+2_VoltageSet                    = 1875
+2_VoltageNominal                = 2500
+2_VoltageBound                  = 15
+2_CurrentSet                    = 0.000050
+2_CurrentNominal                = 0.000500
+2_CurrentBound                  = 0
+                                
+3_Name                          = Ring1
+3_Number                        = 7
+3_VoltageSet                    = 415
+3_VoltageNominal                = 500
+3_VoltageBound                  = 15
+3_CurrentSet                    = 0.000100
+3_CurrentNominal                = 0.000500
+3_CurrentBound                  = 0
+                                
+4_Name                          = Ring29
+4_Number                        = 8
+4_VoltageSet                    = 1830
+4_VoltageNominal                = 2500
+4_VoltageBound                  = 15
+4_CurrentSet                    = 0.000100
+4_CurrentNominal                = 0.000500
+4_CurrentBound                  = 0
+                                
+6_Name                          = sipm
+6_Number                        = 4
+6_VoltageSet                    = 65.6
+6_VoltageNominal                = 100
+6_VoltageBound                  = 5
+6_CurrentSet                    = 0.0005
+6_CurrentNominal                = 0.0005
+6_CurrentBound                  = 0
+                                
+# The veto paddle scintillator is commented out, as it was supplied
+# with HV by an external CAEN HV power supply.
+# 5_Name                        = szintillator
+# 5_Number                      = 11
+# #5_VoltageSet                 = 1300
+# 5_VoltageSet                  = 0
+# 5_VoltageNominal              = 2500
+# 5_VoltageBound                = 5
+# 5_CurrentSet                  = 0.002
+# 5_CurrentNominal              = 0.002
+# 5_CurrentBound                = 0
+
+[Fadc] # FADC Settings
+fadcTriggerType                 = 3 
+fadcFrequency                   = 2
+fadcPosttrig                    = 80
+fadcPretrig                     = 15000
+# was 2033 before, 1966 corresponds to -40 mV
+fadcTriggerThresholdRegisterAll = 1966 
+# run time of a single pedestal run for the FADC in ms
+fadcPedestalRunTime             = 100
+# number of acquisition runs done for each pedestal calibration
+fadcPedestalNumRuns             = 10
+# using channel 0 on FADC as trigger source, thus bit 0  1!
+fadcChannelSource               = 1
+# set FADC mode register (mainly to enable 14-bit readout)
+fadcModeRegister                = 0b000
+
+[Temperature] # temperature related parameters
+safeUpperTempIMB                = 61
+safeUpperTempSeptem             = 61
+safeLowerTempIMB                = 0
+safeLowerTempSeptem             = 0
+#+end_src
+
+** TOS and TOF versions used at CAST
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:configuration:tos_tof_versions
+:END:
+
+For the DAQ software TOS unfortunately no discrete git tags exist, due
+to its rocky development. However, based on the git repository [[cite:&TOS_github]]
+and the dates of the start of the data taking campaigns, we can deduce
+the corresponding commits, which were used there.
+
+The detector firmware versions, TOF, have an even less well defined
+history. No development history exists, strictly speaking. The ~.bit~
+files are available, but their names are very 'descriptive' in nature,
+but do not contain any version numbers either. If memory serves
+correctly, the version used in /Run-3/ at CAST contained something
+like ~szint1_fixed~ in its filename, indicating that the scintillator
+trigger logic was fixed.
+
+*** More notes on the TOF versions                               :extended:
+
+Tobi expressed some of his development frustrations by coming up with
+ever more creative ways to name the binary files!
+
+The initial version might have been ~bastis neues lielibings tof~ or
+something like that. Well, it's not like it matters much at this
+point, which is why I did not spend any time really digging into which
+version exactly was used. 
+
+*** TODOs for this section                                       :noexport:
+- [ ] *WHICH VERSIONS WERE USED*
+- [ ] *WHERE ARE THE FILES*. Office computer?
+
+
 
 * Calibrations                                                     :Appendix:
 :PROPERTIES:
