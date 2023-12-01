@@ -42657,8 +42657,14 @@ in fig. [[cdl_logL_no_interp]].
 - [ ] This *might* become an extended appendix, we'll see. 
 
 - [ ] *PUT IN THE RAW OCCUPANCIES OF ALL CHIPS IN BACKGROUND OF EACH
-  RUN PERIOD*  
+  RUN PERIOD*
 
+- [ ] Can we use the approach used for the sparking issue?
+  -> The plot for that is in [[#sec:detector:sparking_behavior]]
+  I think this should not be too difficult.
+  -> Put the septem logic into ~geometry.nim~. Then turn the script
+  into a ~plotSeptemOccupancy~ file with single run / multiple run
+  arguments etc.!
 
 * FADC rise time additions                                         :Appendix:
 :PROPERTIES:
@@ -42695,7 +42701,13 @@ in fig. [[cdl_logL_no_interp]].
 - [ ] Background rates over the entire chip for different veto setups!
   Emphasizes even more effect of vetoes!
 - [ ] Raw data rate without any classifier or vetoes!
-- [ ]     
+- [ ]
+
+** Generate background rates over full chip
+
+** Generate rate without any vetoes over full chip
+
+
 
 * Background interpolation chip cutout correction                  :Appendix:
 :PROPERTIES:
@@ -43240,21 +43252,15 @@ similar fashion to the equivalent for ~raw_data_manipulation~ before.
 
 Apply likelihood method for background suppression.
 
-*** =computeLimit=
+*** =mcmc_limit_calculation=
 
-Computes the limit *NOT THE ONE USED*
+Computes the limit
 
-*** Other
-
-**** =cdl_spectrum_creation=
+*** =cdl_spectrum_creation=
 
 Generates the data from the CDL data that is used as X-ray reference
 data for the likelihood method.
 
-**** ...
-
-Many other tools are present. Mainly different plotting tools and
-tools dealing with other data, e.g. log files of the CAST experiment.
 
 *** =cast_log_reader=
 :PROPERTIES:
@@ -43265,6 +43271,37 @@ tools dealing with other data, e.g. log files of the CAST experiment.
 
 - [ ] Also mention some of the other features, i.e. generating times
   the magnet was on, point of the magnet etc.
+
+**** Adding tracking information to HDF5 files                  :extended:
+
+See sec. [[#sec:cast:log_files:add_tracking_info]] on how to use
+~cast_log_reader~ to add the tracking information to the HDF5 files.
+
+*** ~ingridDatabase~ library / ~databaseTool~
+
+
+
+*** Plotting tools
+
+**** ~plotBackgroundClusters~
+**** ~plotBackgroundRate~
+**** ~plotCalibration~
+**** ~plotData~
+
+**** ...
+
+Many other tools are present. Mainly different plotting tools and
+tools dealing with other data, e.g. log files of the CAST experiment.
+
+*** Other libraries
+
+Relevant for thesis, developed:
+- Datamancer ::
+- ggplotnim ::
+- xrayAttenuation ::
+- nimhdf5 ::
+- TrAXer ::
+- Optimization :: Several optimization related packages
 
 * Full data reconstruction [/]                                     :Appendix:
 :PROPERTIES:
