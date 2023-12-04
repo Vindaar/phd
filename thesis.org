@@ -3172,7 +3172,8 @@ ggplot(df, aes("Energy [keV]","diffFlux", color = "type")) +
   geom_line() +
   xlab(r"Energy [$\si{keV}$]") + ylab(r"Flux [$\si{keV^{-1}.m^{-2}.yr^{-1}}$]") +
   xlim(0, 15) + 
-  ggtitle("Differential axion flux arriving on Earth by type") + 
+  ggtitle("Differential axion flux arriving on Earth by type") +
+  themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) +  # width 360?
   # ggshow(800, 480)
   ggsave("~/phd/Figs/axions/differential_solar_axion_flux_by_type.pdf", useTeX = true, standalone = true, width = 600, height = 360)
 #+end_src
@@ -3291,6 +3292,7 @@ proc main =
     geom_line() +
     xlab("Relative solar radius", margin = 1.25) + ylab("Relative emission", margin = 1.75) +
     ggtitle("Radial emission profile of KSVZ ($g_{aγ}$) and DFSZ ($g_{aγ}, g_{ae}$) axion models", titleFont = font(11.0)) +
+    themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) + # golden ratio or height = 360, ?
     #ggshow() 
     ggsave("/home/basti/phd/Figs/axions/solar_axion_radial_emission.pdf", useTeX = true, standalone = true, width = 800, height = 480)
 
@@ -3303,6 +3305,7 @@ proc main =
     ggtitle("Flux by energy and fraction of solar radius") +
     xlab(r"Energy [$\si{keV}$]", margin = 1.25) +
     ylab(r"Relative solar radius", margin = 1.75) +
+    themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) + # golden ratio or height = 360, ?    
     xlim(0, 10) + ylim(0, 0.5) +
     ggsave("/home/basti/phd/Figs/axions/flux_by_energy_vs_radius_axion_electron.pdf", useTeX = true, standalone = true)
     #ggshow() # 640, 480)
@@ -3367,6 +3370,7 @@ ggplot(df, aes("energies", "radiance")) +
   xlab(r"Energy [$\si{keV}$]") +
   ylab(r"Radiance [$\si{J.m^{-2}.sr^{-1}}$]") +
   xlim(0, 15) +
+  themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) + # golden ratio or height = 360, ?
   #ggshow() 
   ggsave("/home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf", useTeX = true, standalone = true, width = 600, height = 360)
 #+end_src
@@ -3377,6 +3381,11 @@ ggplot(df, aes("energies", "radiance")) +
 Solar core temperature 1.5e+07 K in keV : 1.2926 keV
 inf J•sr⁻¹•m⁻²
 178.526 J•sr⁻¹•m⁻²
+[INFO]: No plot ratio given, using golden ratio.
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /home/basti/phd/Figs /home/basti/phd/Figs/blackbody_spectrum_solar_core.tex
+Generated: /home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf
 :end:
 
 
@@ -4111,7 +4120,7 @@ which
 - [ ] Ask Jaime if this really looks sensible, because to me it does
   not! That's barely better than the MPE telescope...  
 
-#+begin_src nim :flags -d:QuietTikZ=true :tange code/plot_mpe_llnl_effective_areas.nim
+#+begin_src nim :flags -d:QuietTikZ=true :tangle code/plot_mpe_llnl_effective_areas.nim
 import ggplotnim, ggplotnim/ggplot_sdl2
 import unchained
 const mpe = "~/phd/resources/MPE/mpe_xray_telescope_cast_effective_area.csv"
@@ -4126,23 +4135,21 @@ ggplot(df, aes("Energy[keV]", "EffectiveArea[cm²]", color = "Telescope")) +
   geom_line() +
   xlab(r"Energy [\si{keV}]") + ylab(r"EffectiveArea [\si{cm^2}]") +
   scale_y_continuous(secAxis = secAxis(f{1.0 / areaBore.float}, name = r"Transmission [\si{\%}]")) +
-  legendPosition(0.83, -0.2) + 
-  ggshow("~/phd/Figs/telescopes/effective_area_mpe_llnl.pdf", width = 600, height = 360, useTeX = true, standalone = true)
+  legendPosition(0.83, -0.2) +
+  themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) + 
+  ggshow("~/phd/Figs/telescopes/effective_area_mpe_llnl.pdf", useTeX = true, standalone = true)
 #+end_src
 
 #+RESULTS:
-| 14.522 cm²        |                                                             |                   |                                 |                                                             |
-| Producing        | ~/phd/Figs/telescopes/effective_area_mpe_llnl.pdf           |                   |                                 |                                                             |
-| [INFO]           | TeXDaemon                                                   | ready             | for                             | input.                                                      |
-| shellCmd:        | command                                                     | -v                | xelatex                         |                                                             |
-| shellCmd:        | xelatex                                                     | -output-directory | /home/basti/phd/Figs/telescopes | /home/basti/phd/Figs/telescopes/effective_area_mpe_llnl.tex |
-| Generated:       | /home/basti/phd/Figs/telescopes/effective_area_mpe_llnl.pdf |                   |                                 |                                                             |
-| AudioDeviceAdded |                                                             |                   |                                 |                                                             |
-| AudioDeviceAdded |                                                             |                   |                                 |                                                             |
-| AudioDeviceAdded |                                                             |                   |                                 |                                                             |
-| AudioDeviceAdded |                                                             |                   |                                 |                                                             |
-| AudioDeviceAdded |                                                             |                   |                                 |                                                             |
-| AudioDeviceAdded |                                                             |                   |                                 |                                                             |
+| [INFO]:          | No                                                          | plot              | ratio                           | given,                                                      | using | golden | ratio. |
+| [INFO]           | TeXDaemon                                                   | ready             | for                             | input.                                                      |       |        |        |
+| shellCmd:        | command                                                     | -v                | lualatex                        |                                                             |       |        |        |
+| shellCmd:        | lualatex                                                    | -output-directory | /home/basti/phd/Figs/telescopes | /home/basti/phd/Figs/telescopes/effective_area_mpe_llnl.tex |       |        |        |
+| Generated:       | /home/basti/phd/Figs/telescopes/effective_area_mpe_llnl.pdf |                   |                                 |                                                             |       |        |        |
+| AudioDeviceAdded |                                                             |                   |                                 |                                                             |       |        |        |
+| AudioDeviceAdded |                                                             |                   |                                 |                                                             |       |        |        |
+| Clicked          | at:                                                         | (468,             | 519)                            | button:                                                     |     1 |        |        |
+| Lifted           | at:                                                         | (468,             | 519)                            | button:                                                     |     1 |        |        |
 
 *** Best limits set by CAST
 
@@ -17282,7 +17289,8 @@ proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hide
   var plt = ggplot(dfG, aes(runNumber, riseTimeS)) + 
     ggtitle("FADC signal rise times in ⁵⁵Fe data for all runs in $#" % suffix) +
     margin(right = mRight) +
-    theme_font_scale(fontScale) +
+    #theme_font_scale(fontScale) +
+    themeLatex(fWidth = 0.9, width = width, height = height, baseTheme = singlePlot) +     
     ylim(rMin - Δr, rMax + Δr)
   plt = plt.fadcSettings(allRuns, hideText, rMin, rMax, perc)
   plt + geom_point(aes = aes(color = fallTimeS)) +
@@ -17294,7 +17302,7 @@ proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hide
   var plt2 = ggplot(dfG, aes(runNumber, fallTimeS)) + 
     margin(right = mRight) +
     ylim(fMin - Δf, fMax + Δf) + 
-    theme_font_scale(fontScale) +
+    #theme_font_scale(fontScale) +
     ggtitle("FADC signal fall times in ⁵⁵Fe data for all runsin $#" % suffix)
   plt2 = plt2.fadcSettings(allRuns, hideText, fMin, fMax, perc)
   plt2 + geom_point(aes = aes(color = riseTimeS)) +
@@ -17305,7 +17313,8 @@ proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hide
     geom_point() +
     ggtitle("FADC signal rise vs fall times for ⁵⁵Fe data in $#" % suffix) +
     margin(right = mRight) +
-    theme_font_scale(fontScale) + 
+    #theme_font_scale(fontScale) +
+    themeLatex(fWidth = 0.9, width = width, height = height, baseTheme = singlePlot) + 
     ggsave("Figs/FADC/fadc_mean_riseTime_vs_fallTime_$#.pdf" % suffix,
            width = width, height = height, useTeX = useTeX, standalone = useTeX)    
 
