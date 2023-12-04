@@ -43158,6 +43158,97 @@ in fig. [[cdl_logL_no_interp]].
 
 ** Generate background rates over full chip
 
+- [ ] Adjust the below to use the interesting input files. The region
+  is already ~crAll~. Just need to 
+
+#+begin_src sh :results drawer
+plotBackgroundRate \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_line_vQ_0.99.h5 \
+    --names "LnL80" --names "LnL80" \
+    --names "LnL80+Sc" --names "LnL80+Sc" \
+    --names "LnL80+F" --names "LnL80+F" \
+    --names "LnL80+S" --names "LnL80+S" \
+    --names "LnL80+SL" --names "LnL80+SL" \
+    --names "LnL80+L" --names "LnL80+L" \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.7_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.7_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.7_lnL_scinti_fadc_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.7_lnL_scinti_fadc_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.7_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.7_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    --names "LnL70" --names "LnL70" \
+    --names "LnL70+L" --names "LnL70+L" \
+    --names "LnL70+S" --names "LnL70+S" \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.9_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.9_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.9_lnL_scinti_fadc_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.9_lnL_scinti_fadc_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.9_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.9_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    --names "LnL90" --names "LnL90" \
+    --names "LnL90+L" --names "LnL90+L" \
+    --names "LnL90+S" --names "LnL90+S" \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "MLP@85" --names "MLP@85" \
+    --names "MLP@85+L" --names "MLP@85+L" \
+    --names "MLP@85+S" --names "MLP@85+S" \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.9_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.9_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "MLP@9" --names "MLP@9" \
+    --names "MLP@9+L" --names "MLP@9+L" \
+    --names "MLP@9+S" --names "MLP@9+S" \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "MLP@95" --names "MLP@95" \
+    --names "MLP@95+L" --names "MLP@95+L" \
+    --names "MLP@95+S" --names "MLP@95+S" \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.98_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.98_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.98_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.98_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.98_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.98_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "MLP@98" --names "MLP@98" \
+    --names "MLP@98+L" --names "MLP@98+L" \
+    --names "MLP@98+S" --names "MLP@98+S" \
+    --centerChip 3 \
+    --title "Background rate from CAST data, incl. scinti, FADC, septem, line veto" \
+    --showNumClusters \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --outfile background_rate_crAll_different_veto_cases.pdf \
+    --outpath ~/phd/Figs/background/ \
+    --region crAll \
+    --energyMin 0.2 \
+#    --rateTable ~/phd/resources/background_rate_comparisons_crAll.org \
+    --quiet
+#+end_src
+
 ** Generate rate without any vetoes over full chip
 
 We will use the same units as for the background rate for easier
