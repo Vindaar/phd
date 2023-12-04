@@ -47,6 +47,20 @@ proc fadcSettings(plt: GgPlot, allRuns: seq[int], hideText: bool, minVal, maxVal
 proc getSetting(run: int): string =
   result = settings[lowerBound(runs, run) - 1]
 
+func singlePlot*(): Theme =
+  result = Theme(titleFont: some(font(11.0)),
+                 labelFont: some(font(11.0)),
+                 tickLabelFont: some(font(9.0)),
+                 tickLength: some(5.0),
+                 tickWidth: some(1.0),
+                 gridLineWidth: some(1.0),                 
+                 legendFont: some(font(9.0)),
+                 legendTitleFont: some(font(9.0, bold = true)),
+                 facetHeaderFont: some(font(9.0, alignKind = taCenter)),
+                 baseLabelMargin: some(0.35),
+                 annotationFont: some(font(9.0, family = "monospace")),
+                 baseScale: some(1.0))
+
 proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hideText: bool) =
   ## Given a full run of FADC data, create the
   ## Note: it may be sensible to compute a truncated mean instead
@@ -65,7 +79,8 @@ proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hide
   var plt = ggplot(dfG, aes(runNumber, riseTimeS)) + 
     ggtitle("FADC signal rise times in ⁵⁵Fe data for all runs in $#" % suffix) +
     margin(right = mRight) +
-    theme_font_scale(fontScale) +
+    #theme_font_scale(fontScale) +
+    themeLatex(fWidth = 0.9, width = width, height = height, baseTheme = singlePlot) +     
     ylim(rMin - Δr, rMax + Δr)
   plt = plt.fadcSettings(allRuns, hideText, rMin, rMax, perc)
   plt + geom_point(aes = aes(color = fallTimeS)) +
@@ -77,7 +92,7 @@ proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hide
   var plt2 = ggplot(dfG, aes(runNumber, fallTimeS)) + 
     margin(right = mRight) +
     ylim(fMin - Δf, fMax + Δf) + 
-    theme_font_scale(fontScale) +
+    #theme_font_scale(fontScale) +
     ggtitle("FADC signal fall times in ⁵⁵Fe data for all runsin $#" % suffix)
   plt2 = plt2.fadcSettings(allRuns, hideText, fMin, fMax, perc)
   plt2 + geom_point(aes = aes(color = riseTimeS)) +
@@ -88,7 +103,8 @@ proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hide
     geom_point() +
     ggtitle("FADC signal rise vs fall times for ⁵⁵Fe data in $#" % suffix) +
     margin(right = mRight) +
-    theme_font_scale(fontScale) + 
+    #theme_font_scale(fontScale) +
+    themeLatex(fWidth = 0.9, width = width, height = height, baseTheme = singlePlot) + 
     ggsave("Figs/FADC/fadc_mean_riseTime_vs_fallTime_$#.pdf" % suffix,
            width = width, height = height, useTeX = useTeX, standalone = useTeX)    
 
