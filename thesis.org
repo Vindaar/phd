@@ -16530,7 +16530,8 @@ shift forms of the septemboard.
 
 #+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools :results drawer
 WRITE_PLOT_CSV=true USE_TEX=true ./mapSeptemTempToFePeak \
-             ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+#             ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+                    /mnt/1TB/CAST/2017/CalibrationRuns2017_Reco.h5 \
              --inputs fePixel --inputs feCharge --inputs feFadc \
              --outpath ~/phd/Figs/behavior_over_time/mapSeptemTempToFePeak/
 #+end_src
@@ -16951,7 +16952,8 @@ proc plotCorrelationPerPeriod(df: DataFrame, kind: FeFileKind, gainDf, dfCastTem
   var plt = ggplot(df, aes("Timestamp", PeakNorm)) +
     geom_line(data = dfCastTemp, aes = aes("Time", "TempNorm", color = "Temperature")) +
     geom_point() +
-    scale_x_continuous(labels = toPeriod)
+    scale_x_continuous(labels = toPeriod) 
+    #themeLatex(fWidth = 
 
   if dfTemp.len > 0: # only if septemboard data available in this period
     plt = plt + geom_point(data = dfTemp, aes = aes("Timestamp", f{idx("Temp / °") / max(col("Temp / °"))}), color = "blue")
@@ -16959,7 +16961,8 @@ proc plotCorrelationPerPeriod(df: DataFrame, kind: FeFileKind, gainDf, dfCastTem
   block AllChips:
     plt + geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}, color = "Chip"), alpha = 0.7, size = 1.5) +
       ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind &
-        " (black) and gas gains by chip", titleFont = font(11.0)) + 
+        " (black) and gas gains by chip", titleFont = font(11.0)) +
+      themeLatex(fWidth = 0.9, width = Width, height = Height, baseTheme = singlePlot) + 
       ggsave(&"{outpath}/correlation_{kind}_all_chips_gasgain_period_{period}.pdf",
               width = 1000, height = 600,
               useTeX = UseTeX, standalone = UseTeX)                                                                              
