@@ -30,6 +30,7 @@ ggplot(df, aes("Energy [keV]", "Trans", color = "Compound")) +
   geom_line() +
   xlab(r"Energy [$\si{keV}$]") + ylab("Transmission") +
   ggtitle("Transmission examples of $# $# and $# Argon at NTP" % [dS, si, dA]) +
+  themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +
   ggsave("/home/basti/phd/Figs/theory/transmission_example.pdf",
          useTex = true, standalone = true, width = 600, height = 360)
 
@@ -40,6 +41,7 @@ ggplot(dff, aes("Energy [keV]", "l_abs")) +
   geom_line() +
   xlab(r"Energy [$\si{keV}$]") + ylab(r"Absorption length [$\si{cm}$]") +
   ggtitle("Absorption length of $# Argon at NTP" % [dA]) +
+  themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +  
   ggsave("/home/basti/phd/Figs/theory/absorption_length_example.pdf",
          useTex = true, standalone = true, width = 600, height = 360)
   

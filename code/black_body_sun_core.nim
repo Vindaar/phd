@@ -28,5 +28,6 @@ ggplot(df, aes("energies", "radiance")) +
   xlab(r"Energy [$\si{keV}$]") +
   ylab(r"Radiance [$\si{J.m^{-2}.sr^{-1}}$]") +
   xlim(0, 15) +
+  themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) + # golden ratio or height = 360, ?
   #ggshow() 
   ggsave("/home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf", useTeX = true, standalone = true, width = 600, height = 360)

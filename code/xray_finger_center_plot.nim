@@ -2,7 +2,7 @@ import nimhdf5, ggplotnim, options
 import ingrid / tos_helpers
 import std / [strutils, tables]
 
-proc main(run: int, switchAxes: bool = false) =
+proc main(run: int, switchAxes: bool = false, useTeX = false) =
   let file = "/t/reco_xray_finger_$#.h5" % $run
   
   #proc readClusters(h5f: H5File): (seq[float], seq[float]) =
@@ -43,8 +43,13 @@ proc main(run: int, switchAxes: bool = false) =
     ggtitle("X-ray finger clusters of run $#" % $run) +
     xlab(r"x [mm]") + ylab(r"y [mm]") + 
     xlim(0.0, 14.0) + ylim(0.0, 14.0) +
-    theme_scale(1.0, family = "serif") + 
-    ggsave("/home/basti/phd/Figs/CAST_Alignment/xray_finger_centers_run_$#.pdf" % $run) 
+    margin(right = 3.5) + 
+    #theme_scale(1.0, family = "serif") +
+    coord_fixed(1.0) + 
+    themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) +
+    legendPosition(0.83, 0.0) + 
+    ggsave("/home/basti/phd/Figs/CAST_Alignment/xray_finger_centers_run_$#.pdf" % $run,
+           useTeX = useTeX, standalone = useTeX, dataAsBitmap = true)
            #useTeX = true, standalone = true)
 
 when isMainModule:

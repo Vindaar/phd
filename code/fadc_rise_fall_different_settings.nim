@@ -47,20 +47,6 @@ proc fadcSettings(plt: GgPlot, allRuns: seq[int], hideText: bool, minVal, maxVal
 proc getSetting(run: int): string =
   result = settings[lowerBound(runs, run) - 1]
 
-func singlePlot*(): Theme =
-  result = Theme(titleFont: some(font(11.0)),
-                 labelFont: some(font(11.0)),
-                 tickLabelFont: some(font(9.0)),
-                 tickLength: some(5.0),
-                 tickWidth: some(1.0),
-                 gridLineWidth: some(1.0),                 
-                 legendFont: some(font(9.0)),
-                 legendTitleFont: some(font(9.0, bold = true)),
-                 facetHeaderFont: some(font(9.0, alignKind = taCenter)),
-                 baseLabelMargin: some(0.35),
-                 annotationFont: some(font(9.0, family = "monospace")),
-                 baseScale: some(1.0))
-
 proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hideText: bool) =
   ## Given a full run of FADC data, create the
   ## Note: it may be sensible to compute a truncated mean instead

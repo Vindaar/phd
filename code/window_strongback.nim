@@ -44,6 +44,7 @@ proc sample() =
     geom_linerange(aes = aes(x = 0, y = 2.25, xMin = -2.25, xMax = 2.25), color = "black") +
     geom_linerange(aes = aes(x = 0, y = -2.25, xMin = -2.25, xMax = 2.25), color = "black") +
     xlab("x [mm]") + ylab("y [mm]") +
-    ggtitle("Idealized schematic of the window layout. Strongback in purple.") +
-    ggsave("/home/basti/phd/Figs/SiN_window_occlusion.png", 640, 500)#width = 1150, height = 1000)
+    ggtitle("Idealized layout, strongback in purple") +
+    themeLatex(fWidth = 0.5, width = 640, height = 480, baseTheme = sideBySide) +           
+    ggsave("/home/basti/phd/Figs/SiN_window_occlusion.pdf", useTeX = true, standalone = true, dataAsBitmap = true)#width = 1150, height = 1000)
 sample()

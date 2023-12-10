@@ -34,12 +34,14 @@ else:
   ggplot(df.group_by("Channel").filter(f{float -> bool: `val` < percentile(col("val"), 99)}),
          aes("Register", "val", color = "Channel")) +
     facet_wrap("Channel", scales = "free") +
-    geom_point(size = 2.0) +
-    facetMargin(0.5) +
+    geom_point(size = 1.0) +
+    facetMargin(0.7) +
     margin(bottom = 1.0, right = 2.0) +
+    scale_y_continuous(breaks = 5) + 
     legendPosition(0.87, 0.0) + 
     ylab("Register") + 
     ggtitle("FADC register pedestal values, split by channels") +    
-    xlab("Channel", margin = 0.0) + 
+    xlab("Channel", margin = 0.0) +
+    themeLatex(fWidth = 1.0, width = 600, baseTheme = singlePlot) + 
     ggsave("/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.pdf",
           useTeX = true, standalone = true)

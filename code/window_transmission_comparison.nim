@@ -32,7 +32,8 @@ ggplot(df, aes("Energy [keV]", "Trans", color = "Compound")) +
   geom_line() +
   xlab(r"Energy [$\si{keV}$]") + ylab("Transmission") +
   xlim(0.0, 3.0) + 
-  ggtitle(r"Transmission examples of $# $# and $# Mylar" % [dS, si, dM]) +
+  ggtitle(r"Transmission of $# $# and $# Mylar ($#)" % [dS, si, dM, mylar.name()]) +
+  themeLatex(fWidth = 0.9, width = 600, height = 360,  baseTheme = singlePlot) + 
   ggsave("/home/basti/phd/Figs/detector/window_transmisson_comparison.pdf",
          width = 600, height = 360,
          useTex = true, standalone = true) 

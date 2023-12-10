@@ -382,19 +382,28 @@ proc plotE_vs_flux_and_angles(E_c: GeV, I₀: m⁻²•s⁻¹•sr⁻¹, ε: GeV
       let dfLoc = toDf({E_initials, E_lefts, flux, "angle [°]" : angle})
       #  .filter(f{`E_initials` >= lastDropped.float})
       df.add dfLoc
+
+    var theme = themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide)
+    theme.tickWidth = some(theme.tickWidth.get / 2.0)
+    theme.tickLength = some(theme.tickLength.get / 2.0)    
+    theme.gridLineWidth = some(theme.gridLineWidth.get / 2.0)    
     ggplot(df, aes("E_initials", "flux", color = factor("angle [°]"))) +
       geom_line() +
-      xlab(r"Initial energy [\si{GeV}]") + ylab(r"Flux [\si{m^{-2}.s^{-1}.sr^{-1}}]") +
+      xlab(r"Initial energy [\si{GeV}]") + ylab(r"Flux [\si{m^{-2}.s^{-1}.sr^{-1}}]", margin = 2.5) +
       scale_x_log10() + scale_y_log10() +
-      ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
+      margin(right = 3.0) + 
+      ggtitle(&"Muon flux at different angles{suffix}") +
+      theme + 
       ggsave(&"/home/basti/phd/Figs/muons/initial_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf",
              useTeX = true, standalone = true, width = 600, height = 450)
   
     ggplot(df, aes("E_lefts", "flux", color = factor("angle [°]"))) +
       geom_line() +
-      xlab(r"Energy at surface [\si{GeV}]") + ylab(r"Flux [\si{m^{-2}.s^{-1}.sr^{-1}}]") +
+      xlab(r"Energy at surface [\si{GeV}]") + ylab(r"Flux [\si{m^{-2}.s^{-1}.sr^{-1}}]", margin = 2.5) +
       scale_x_log10() + scale_y_log10() +
-      ggtitle(&"Differential muon flux dependency at different angles{suffix}") +
+      margin(right = 3.0) +       
+      theme + 
+      ggtitle(&"Muon flux at different angles{suffix}") +
       ggsave(&"/home/basti/phd/Figs/muons/final_energy_vs_flux_and_angle_cosmic_muons{suffix}.pdf",
              useTeX = true, standalone = true, width = 600, height = 450)              
   block StaticLoss:

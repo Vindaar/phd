@@ -17,14 +17,15 @@ let df = readCsv(path, sep = '\t', skipLines = 2, colNames = @["IMB", "Septem", 
 ggplot(df, aes("Timestamp", "Temperature", color = "Type")) +
   geom_line() +
   # scale_x_continuous() +
-  ggtitle("Temperature during run on 2017/04/18 with fan next to detector") + 
-  xlab("Time of day") + ylab("Temperature [°C]") +
-  #margin(top = 2.0) + 
+  ggtitle("Temperature on 2017/04/18 with fan") + 
+  xlab("Time of day", margin = 3.25, rotate = -45.0, alignTo = "right") + ylab("Temperature [°C]") +
+  margin(bottom = 4.0, right = 4.0) + 
   scale_x_date(isTimestamp = true,
                formatString = "HH:mm:ss",
                dateSpacing = initDuration(hours = 2),
                dateAlgo = dtaAddDuration,
                timeZone = local()) +
+  themeLatex(fWidth = 0.5, width = 600, height = 420, baseTheme = sideBySide) + 
   ggsave("/home/basti/phd/Figs/detector/sparking/temperature_sparking_run_268.pdf",
         width = 600, height = 360, useTeX = true, standalone = true)
 df.writeCsv("/home/basti/phd/resources/temperature_sparking_run_268.csv")  

@@ -56,7 +56,10 @@ ggplot(dfR, aes("rateTime", "rate", color = factor("chip"))) +
                dateSpacing = initDuration(hours = 2),
                dateAlgo = dtaAddDuration,
                timeZone = local()) +
-  xlab("Time of day") + ylab(r"Rate [$\si{pixel.s^{-1}}$]") + 
+  themeLatex(fWidth = 0.5, width = 600, height = 420, baseTheme = sideBySide) +
+  margin(bottom = 4.0, right = 4.0) +   
+  xlab("Time of day", margin = 3.25, rotate = -45.0, alignTo = "right") + 
+  ylab(r"Rate [$\si{pixel.s^{-1}}$]") + 
   ggsave("/home/basti/phd/Figs/detector/sparking/mean_hit_rate_sparking_run_268.pdf",
         width = 600, height = 360, useTex = true, standalone = true)
 

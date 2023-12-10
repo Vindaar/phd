@@ -35,8 +35,11 @@ proc drawPlot() =
     xlim(0, 256) + ylim(0, 256) +
     #theme_font_scale(2.0) +
     #margin(left = 3, bottom = 3, right = 5) +
-    margin(right = 3) + 
-    facetHeaderText(font = font(12.0, alignKind = taCenter)) + 
+    margin(right = 3.5) + 
+    #facetHeaderText(font = font(12.0, alignKind = taCenter)) +
+    xlab("x [Pixel]", margin = 1.5) + ylab("y [Pixel]", margin = 2) + 
+    legendPosition(0.88, 0.0) +
+    themeLatex(fWidth = 0.9, width = 800, height = 400, baseTheme = singlePlot) + 
     ggsave("/home/basti/phd/Figs/reco/gridpix_example_events.pdf", width = 800, height = 400, useTeX = true, standalone = true)
 
 drawPlot()

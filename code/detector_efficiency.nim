@@ -67,11 +67,11 @@ ggplot(df, aes("Energy [keV]", "Efficiency", color = "Material")) +
   xlab("Energy [keV]") + ylab("Efficiency") +
   xlim(0.0, 10.0) + 
   ggtitle(r"Transmission (absorption for gases) of relevant detector materials and combined \\" &
-    "detection efficiency of the Septemboard detector",
-    titleFont = font(12.0)) +
+    "detection efficiency of the Septemboard detector") +
   margin(top = 1.5, right = 2.0) +
   titlePosition(0.0, 0.8) + 
-  legendPosition(0.42, 0.15) + 
+  legendPosition(0.42, 0.15) +
+  themeLatex(fWidth = 0.9, width = 600, height = 400, baseTheme = singlePlot) + 
   ggsave("/home/basti/phd/Figs/detector/detector_efficiency.pdf",
          width = 600, height = 400,
          #width = 800, height = 600,
