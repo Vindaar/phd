@@ -138,7 +138,7 @@ proc plotCorrelationPerPeriod(df: DataFrame, kind: FeFileKind, gainDf, dfCastTem
   var plt = ggplot(df, aes("Timestamp", PeakNorm)) +
     geom_line(data = dfCastTemp, aes = aes("Time", "TempNorm", color = "Temperature")) +
     geom_point() +
-    scale_x_continuous(labels = toPeriod)
+    scale_x_continuous(labels = toPeriod) 
 
   if dfTemp.len > 0: # only if septemboard data available in this period
     plt = plt + geom_point(data = dfTemp, aes = aes("Timestamp", f{idx("Temp / °") / max(col("Temp / °"))}), color = "blue")
@@ -146,7 +146,9 @@ proc plotCorrelationPerPeriod(df: DataFrame, kind: FeFileKind, gainDf, dfCastTem
   block AllChips:
     plt + geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}, color = "Chip"), alpha = 0.7, size = 1.5) +
       ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind &
-        " (black) and gas gains by chip", titleFont = font(11.0)) + 
+        " (black) and gas gains by chip", titleFont = font(11.0)) +
+      themeLatex(fWidth = 0.9, textWidth = 677.3971, # the `\textheight`, want to insert in landscape
+                  width = Width, height = Height, baseTheme = singlePlot) + 
       ggsave(&"{outpath}/correlation_{kind}_all_chips_gasgain_period_{period}.pdf",
               width = 1000, height = 600,
               useTeX = UseTeX, standalone = UseTeX)                                                                              
@@ -155,7 +157,9 @@ proc plotCorrelationPerPeriod(df: DataFrame, kind: FeFileKind, gainDf, dfCastTem
     gainDf = gainDf.filter(f{`Chip` == 3})
     plt + geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}), color = "purple", alpha = 0.7, size = 1.5) + 
       ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind &
-        " (black) and gas gains (chip3) in purple", titleFont = font(11.0)) +     
+        " (black) and gas gains (chip3) in purple", titleFont = font(11.0)) +
+      themeLatex(fWidth = 0.9, textWidth = 677.3971, # the `\textheight`, want to insert in landscape
+                  width = Width, height = Height, baseTheme = singlePlot) + 
       ggsave(&"{outpath}/correlation_{kind}_period_{period}.pdf", width = 1000, height = 600,
              useTeX = UseTeX, standalone = UseTeX)                                   
 
@@ -213,7 +217,8 @@ proc plotTempVsGain(dfCastTemp, gainDf: DataFrame, outpath: string) =
   ggplot(dfGT.filter(f{`temps` > 0.0}), aes("temps", "gains", color = "period")) +
     geom_point() +
     ggtitle("Gas gain (90 min slices) vs ambient T at CAST (center chip)") +
-    xlab("Temperature [°C]") + ylab("Gas gain") + 
+    xlab("Temperature [°C]") + ylab("Gas gain") +
+    themeLatex(fWidth = 0.9, width = Width, height = Height, baseTheme = singlePlot) + 
     ggsave(&"{outpath}/gain_vs_temp_center_chip.pdf",
            width = 600, height = 360,
            useTeX = UseTeX, standalone = UseTeX)            
@@ -231,6 +236,7 @@ proc main(calibFiles: seq[string], dataFiles: seq[string] = @[],
     ggplot(gainDf, aes("tStart", "G", color = "Chip")) +
       geom_point(size = 2.0) +
       ggtitle("Raw gas gain values in 90 min bins for all chips") +
+      themeLatex(fWidth = 0.9, width = Width, height = Height, baseTheme = singlePlot) +       
       ggsave(&"{outpath}/raw_gas_gain.pdf",
              width = 600, height = 360, 
              useTeX = UseTeX, standalone = UseTeX)              
