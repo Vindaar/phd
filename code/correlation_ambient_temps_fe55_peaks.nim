@@ -9,10 +9,13 @@ type
     fePixel, feCharge, feFadc
 
 let UseTex = getEnv("USE_TEX", "false").parseBool
+let Width = getEnv("WIDTH", "1000").parseFloat
+let Height = getEnv("HEIGHT", "600").parseFloat
 
 const Peak = "μ"
 let PeakNorm = if UseTex: r"$μ/μ_{\text{max}}$" else: "μ/μ_max"
 const TempPeak = "(μ/T) / max"
+let T_amb = if UseTex: r"$T_{\text{amb}}$" else: "T_amb"
 
 proc readFePeaks(files: seq[string], feKind: FeFileKind = fePixel): DataFrame =
   const kalphaPix = 10
@@ -109,6 +112,13 @@ proc readCastTemps(): DataFrame =
     .group_by("Temperature")
     .mutate(f{"TempNorm" ~ `TempVal` / max(col("TempVal"))})
     .filter(f{`Temperature` != "T_ext"})
+  var newKeys = newSeq[(string, string)]()
+  if UseTex:
+    result = result.mutate(f{string -> string: "Temperature" ~ (
+      let suff = `Temperature`.split("_")[1] 
+      r"$T_{\text{" & suff & "}}$")
+    })
+    echo "Resulting DF: ", result
 
 proc toPeriod(v: float): string =
   result = v.int.fromUnix.format("dd/MM/YYYY")
@@ -131,6 +141,7 @@ proc plotCorrelationPerPeriod(df: DataFrame, kind: FeFileKind, gainDf, dfCastTem
     .filter(f{float: `Timestamp` >= t0 and `Timestamp` <= t1})
   var gainDf = gainDf
     .filter(f{float: `tStart` >= t0 and `tStart` <= t1})
+    .mutate(f{float: "gainNorm" ~ `G` / max(col("G"))})
   echo gainDf
 
   ## XXX: combine point like data for legend?
@@ -143,23 +154,26 @@ proc plotCorrelationPerPeriod(df: DataFrame, kind: FeFileKind, gainDf, dfCastTem
   if dfTemp.len > 0: # only if septemboard data available in this period
     plt = plt + geom_point(data = dfTemp, aes = aes("Timestamp", f{idx("Temp / °") / max(col("Temp / °"))}), color = "blue")
 
+  
+
   block AllChips:
-    plt + geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}, color = "Chip"), alpha = 0.7, size = 1.5) +
-      ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind &
+    plt + geom_point(data = gainDf, aes = aes("tStart", "gainNorm", color = gradient("Chip")), alpha = 0.7, size = 1.5) +
+      ggtitle("Correlation between temperatures (Septem = blue points) \\& 55Fe position " & $kind &
         " (black) and gas gains by chip", titleFont = font(11.0)) +
       themeLatex(fWidth = 0.9, textWidth = 677.3971, # the `\textheight`, want to insert in landscape
-                  width = Width, height = Height, baseTheme = singlePlot) + 
+                  width = Width, height = Height, baseTheme = singlePlot) +
+      margin(bottom = 2.5) + 
       ggsave(&"{outpath}/correlation_{kind}_all_chips_gasgain_period_{period}.pdf",
               width = 1000, height = 600,
               useTeX = UseTeX, standalone = UseTeX)                                                                              
 
   block CenterChip:
     gainDf = gainDf.filter(f{`Chip` == 3})
-    plt + geom_point(data = gainDf, aes = aes("tStart", f{float: `G` / max(col("G"))}), color = "purple", alpha = 0.7, size = 1.5) + 
-      ggtitle("Correlation between temperatures (Septem = blue points) & 55Fe position " & $kind &
+    plt + geom_point(data = gainDf, aes = aes("tStart", "gainNorm"), color = "purple", alpha = 0.7, size = 1.5) + 
+      ggtitle("Correlation between temperatures (Septem = blue points) \\& 55Fe position " & $kind &
         " (black) and gas gains (chip3) in purple", titleFont = font(11.0)) +
       themeLatex(fWidth = 0.9, textWidth = 677.3971, # the `\textheight`, want to insert in landscape
-                  width = Width, height = Height, baseTheme = singlePlot) + 
+                 width = Width, height = Height, baseTheme = singlePlot) + 
       ggsave(&"{outpath}/correlation_{kind}_period_{period}.pdf", width = 1000, height = 600,
              useTeX = UseTeX, standalone = UseTeX)                                   
 
@@ -186,7 +200,7 @@ proc plotTempVsGain(dfCastTemp, gainDf: DataFrame, outpath: string) =
     echo dfCastTemp
     let dfF = dfCastTemp
        .filter(f{int: `Time` >= t0G and `Time` <= t1G},
-               f{string -> bool: `Temperature` == "T_amb"})
+               f{string -> bool: `Temperature` == T_amb})
       
     var cT: RunningStat    
     let ambT = dfF["TempVal", float]
@@ -218,7 +232,7 @@ proc plotTempVsGain(dfCastTemp, gainDf: DataFrame, outpath: string) =
     geom_point() +
     ggtitle("Gas gain (90 min slices) vs ambient T at CAST (center chip)") +
     xlab("Temperature [°C]") + ylab("Gas gain") +
-    themeLatex(fWidth = 0.9, width = Width, height = Height, baseTheme = singlePlot) + 
+    themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +
     ggsave(&"{outpath}/gain_vs_temp_center_chip.pdf",
            width = 600, height = 360,
            useTeX = UseTeX, standalone = UseTeX)            
