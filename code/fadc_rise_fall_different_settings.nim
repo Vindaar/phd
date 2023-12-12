@@ -9,6 +9,8 @@ proc stripPrefix(s, p: string): string =
   result.removePrefix(p)
 
 let useTeX = getEnv("USE_TEX", "false").parseBool
+let Width = getEnv("WIDTH", "600").parseFloat
+let Height = getEnv("HEIGHT", "450").parseFloat
 
 from ginger import transparent
 
@@ -40,7 +42,8 @@ proc fadcSettings(plt: GgPlot, allRuns: seq[int], hideText: bool, minVal, maxVal
     geom_tile(data = dfRects, aes = aes(x = "runs", y = "ys", height = "heights", width = "widths", fill = "settings"),
               alpha = 0.3) +
     xlim(80, 200) +
-    margin(right = mRight) 
+    margin(right = mRight) +
+    themeLatex(fWidth = 0.9, width = Width, height = Height, baseTheme = singlePlot) 
   if not hideText:
     result = result + geom_text(data = dfRects, aes = aes(x = f{`runs` + 2}, y = "textYs", text = "settings"), alignKind = taLeft)
 
@@ -90,7 +93,7 @@ proc plotFallTimeRiseTime(df: DataFrame, suffix: string, allRuns: seq[int], hide
     ggtitle("FADC signal rise vs fall times for ⁵⁵Fe data in $#" % suffix) +
     margin(right = mRight) +
     #theme_font_scale(fontScale) +
-    themeLatex(fWidth = 0.9, width = width, height = height, baseTheme = singlePlot) + 
+    themeLatex(fWidth = 0.9, width = width, height = Height, baseTheme = singlePlot) + 
     ggsave("Figs/FADC/fadc_mean_riseTime_vs_fallTime_$#.pdf" % suffix,
            width = width, height = height, useTeX = useTeX, standalone = useTeX)    
 
@@ -186,9 +189,6 @@ proc main(path: string, year: int, fit = false, hideText = false) =
 
   let allRuns = df["runs", int].toSeq1D
 
-  let width = getEnv("WIDTH", "600").parseFloat
-  let height = getEnv("HEIGHT", "450").parseFloat
-
   plotFallTimeRiseTime(dfProp, suffix, allRuns, hideText)
 
   block Fe55PeakPos:
@@ -200,7 +200,7 @@ proc main(path: string, year: int, fit = false, hideText = false) =
       ylim(0.1, 0.35) +
       ylab("⁵⁵Fe peak position [V]") + xlab("Run number") +
       ggtitle("Peak position of the ⁵⁵Fe runs in the FADC data") + 
-      ggsave(outname, width = width, height = height, useTeX = useTeX, standalone = useTeX)
+      ggsave(outname, width = Width, height = Height, useTeX = useTeX, standalone = useTeX)
   block ActivationThreshold:
     let outname = "Figs/FADC/activation_threshold_gridpix_energy_fadc_$#.pdf" % $suffix
     var plt = ggplot(df, aes("runs", "actThr"))
@@ -210,7 +210,7 @@ proc main(path: string, year: int, fit = false, hideText = false) =
       ylim(0.9, 2.4) + 
       ylab("Activation threshold [keV]") + xlab("Run number") +
       ggtitle("Activation threshold based on center GridPix energy") + 
-      ggsave(outname, width = width, height = height, useTeX = useTeX, standalone = useTeX)
+      ggsave(outname, width = Width, height = Height, useTeX = useTeX, standalone = useTeX)
     
 
 when isMainModule:

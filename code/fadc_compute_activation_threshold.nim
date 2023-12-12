@@ -47,15 +47,19 @@ proc main(fname: string, percentile: int) =
     geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
     xlab("Pulse amplitude [V]") + ylab("Counts") +
     ggtitle("Activation threshold by smallest pulses triggering FADC") +
-    theme_font_scale(1.0, family = "serif") +
-    ggsave("~/phd/Figs/FADC/fadc_minima_histo_activation_threshold_mV.pdf")
+    themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +
+    margin(right = 2.5) +    
+    ggsave("~/phd/Figs/FADC/fadc_minima_histo_activation_threshold_mV.pdf",
+           useTeX = true, standalone = true)
 
   ggplot(df, aes("minimaGP", fill = "idxs")) +
     geom_histogram(position = "identity", alpha = 0.5, hdKind = hdOutline) +
     xlab("Energy on GridPix [keV]") + ylab("Counts") +
     ggtitle("Activation threshold by energy recorded on center GridPix") +
-    theme_font_scale(1.0, family = "serif") +
-    ggsave("~/phd/Figs/FADC/fadc_minima_histo_gridpix_energy.pdf")    
+    themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +
+    margin(right = 2.5) +
+    ggsave("~/phd/Figs/FADC/fadc_minima_histo_gridpix_energy.pdf",
+           useTeX = true, standalone = true)
 
 when isMainModule:
   import cligen
