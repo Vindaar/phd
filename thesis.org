@@ -17679,22 +17679,24 @@ let df1 = readCsv("/home/basti/phd/resources/behavior_over_time/data_full_run_ga
 let df2 = readCsv("/home/basti/phd/resources/behavior_over_time/data_gas_gains_binned_90.0_min_filtered_crSilver.csv")
 let df = bind_rows([("Unbinned", df1), ("Binned", df2)], "Data")
 
-proc toPeriod(v: float): string =
-  result = v.int.fromUnix.format("dd/MM/YYYY")
+proc th(): Theme =
+  result = singlePlot()
+  result.tickLabelFont = some(font(7.0))
 
 let name = "energyFromChargeMedian"
 ggplot(df, aes("timestamp", name, shape = "runType", color = "Data")) +
   facet_wrap("runPeriods", scales = "free") +
-  facetMargin(0.5, ukCentimeter) +
-  theme_scale(1.2) +
-  facetHeaderText(font = font(14.0)) + 
-  scale_x_continuous(labels = toPeriod) +
+  facetMargin(0.75, ukCentimeter) +
+  scale_x_date(name = "Date", isTimestamp = true,
+               dateSpacing = initDuration(weeks = 2),
+               formatString = "dd/MM/YYYY", dateAlgo = dtaAddDuration) +
   geom_point(alpha = some(0.8), size = 2.0) +
   ylim(2.0, 6.5) +
-  margin(top = 1.5, left = 2.0, bottom = 1.0, right = 2.0) +
+  margin(top = 1.5, left = 4.0, bottom = 1.0, right = 2.0) +
   legendPosition(0.5, 0.175) +
-  xlab("Date", rotate = -20, alignTo = "right", margin = 0.0) +
-  ylab("Energy [keV]") + 
+  xlab("Date", margin = 0.0) +
+  ylab("Energy [keV]", margin = 3.0) +
+  themeLatex(fWidth = 1.0, width = 1200, height = 800, baseTheme = th) + 
   ggtitle(&"Median of cluster energy, binned vs. unbinned. 90 min intervals.") +
   ggsave(&"Figs/behavior_over_time/median_energy_binned_vs_unbinned.pdf",
          width = 1200, height = 800,
@@ -17702,6 +17704,11 @@ ggplot(df, aes("timestamp", name, shape = "runType", color = "Data")) +
 #+end_src
 
 #+RESULTS:
+| INFO:      | The                                                          | integer           | column                  | `timestamp`                                                  | has | been | automatically | determined | to | be | continuous. | To | overwrite | this | behavior | add | a | `+ | scale_x/y_discrete()` | call | to | the | plotting | chain. | Choose | `x` | or | `y` | depending | on | which | axis | this | column | refers | to. | Or | apply | a | `factor` | to | the | column | name | in | the | `aes` | call, | i.e. | `aes(..., | factor("timestamp"), | ...)`. |
+| [INFO]     | TeXDaemon                                                    | ready             | for                     | input.                                                       |     |      |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
+| shellCmd:  | command                                                      | -v                | lualatex                |                                                              |     |      |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
+| shellCmd:  | lualatex                                                     | -output-directory | Figs/behavior_over_time | Figs/behavior_over_time/median_energy_binned_vs_unbinned.tex |     |      |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
+| Generated: | Figs/behavior_over_time/median_energy_binned_vs_unbinned.pdf |                   |                         |                                                              |     |      |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
 
 which results in
 
@@ -17792,7 +17799,7 @@ FADC.
 #+CAPTION: Example of the most common type of noise example. Noise has a
 #+CAPTION: periodicity of about $\sim\SI{150}{ns}$, or about $\SI{6.6}{MHz}$. 
 #+NAME: fig:calib:fadc_noise_example
-[[~/phd/Figs/FADC/fadcNoise/figs/DataRuns2017_Reco_2023-10-25_15-12-30/fadc_event_run109_event19157_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
+[[~/phd/Figs/FADC/fadcNoise/fadc_event_run109_event19157_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
 
 For data analysis purposes, in particular when the FADC data is used
 in conjunction with the GridPix data it is important to not
@@ -17889,7 +17896,7 @@ event #: 9497
 
 For each of these let's generate a prettier version:
 #+begin_src sh :dir ~/phd/Figs/FADC/fadcNoise
-F_LEFT=-0.8 L_MARGIN=2.5 B_MARGIN=1.5 T_MARGIN=1.0 USE_TEX=true WIDTH=600 HEIGHT=420 FONT_SCALE=1.2 \
+F_LEFT=-0.8 L_MARGIN=2.5 B_MARGIN=2.0 T_MARGIN=1.0 USE_TEX=true WIDTH=600 HEIGHT=420 \
     plotData \
     --h5file ~/CastData/data/DataRuns2017_Reco.h5 \
     --runType=rtBackground \
@@ -17898,12 +17905,13 @@ F_LEFT=-0.8 L_MARGIN=2.5 B_MARGIN=1.5 T_MARGIN=1.0 USE_TEX=true WIDTH=600 HEIGHT
     --fadc \
     --eventDisplay \
     --runs 109 \
-    --events 19157 --events 4147 --events 9497
+    --events 19157 --events 4147 --events 9497 \
+    --plotPath ~/phd/Figs/FADC/fadcNoise/
 #+end_src
 
-- [[~/phd/Figs/FADC/fadcNoise/figs/DataRuns2017_Reco_2023-10-25_15-12-30/fadc_event_run109_event19157_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
-- [[~/phd/Figs/FADC/fadcNoise/figs/DataRuns2017_Reco_2023-10-25_15-12-30/fadc_event_run109_event4147_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
-- [[~/phd/Figs/FADC/fadcNoise/figs/DataRuns2017_Reco_2023-10-25_15-12-30/fadc_event_run109_event9497_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
+- [[~/phd/Figs/FADC/fadcNoise/fadc_event_run109_event19157_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
+- [[~/phd/Figs/FADC/fadcNoise/fadc_event_run109_event4147_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
+- [[~/phd/Figs/FADC/fadcNoise/fadc_event_run109_event9497_region_crAll_fadc_noisy_0.5_1.5_applyAll_true.pdf]]
 
 *** Amplifier settings impact and activation threshold [0/4]
 :PROPERTIES:
