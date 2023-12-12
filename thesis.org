@@ -8609,7 +8609,7 @@ regions with the most amount of background.
 #+CAPTION: for a track containing the center cluster can overrule the X-ray like definition of
 #+CAPTION: the center chip only.
 #+NAME: fig:detector:gridpix_ring_veto_idea
-[[~/org/Figs/InGridSeptemExplanation/septem_explanation_lnL_monokai_StixTwo.pdf]] 
+[[~/org/Figs/InGridSeptemExplanation/septem_explanation_lnL_monokai_StixTwo.pdf]]
 
 [fn:detector_readout_time] The ideal readout time for one chip is $t =
 \SI{917504}{bits} · \SI{25}{ns} = \SI{22.9942}{ms}$
@@ -15899,36 +15899,21 @@ on "Detector behavior over time" in the ~statusAndProgress~ and in
 particular the 'Addendum' there (extreme outliers in some cases is the tl/dr).
 #+begin_src sh
 nim c -d:danger -d:StartHue=285 plotTotalChargeOverTime && \
-    USE_TEX=true plotTotalChargeOverTime \
-                 ~/CastData/data/DataRuns2017_Reco.h5 \
-                 ~/CastData/data/DataRuns2018_Reco.h5 \
-                 --interval 90 \
-                 --cutoffCharge 0 \
-                 --cutoffHits 500 \
-                 --calibFiles ~/CastData/data/CalibrationRuns2017_Reco.h5 \
-                 --calibFiles ~/CastData/data/CalibrationRuns2018_Reco.h5 \
-                 --applyRegionCut \
-                 --timeSeries \
-                 --useMedian \
-                 --normalizeMedian \
-                 --outpath ~/phd/Figs/behavior_over_time/plotTotalChargeOverTime/
-#+end_src
-#+begin_src sh
-LEFT=4.0 FACET_MARGIN=1.5 USE_TEX=true \
-plotTotalChargeOverTime \
-             /mnt/1TB/CAST/2017/DataRuns2017_Reco.h5 \
-             /mnt/1TB/CAST/2018_2/DataRuns2018_Reco.h5 \
-             --interval 90 \
-             --cutoffCharge 0 \
-             --cutoffHits 500 \
-             --calibFiles /mnt/1TB/CAST/2017/CalibrationRuns2017_Reco.h5 \
-             --calibFiles /mnt/1TB/CAST/2018_2/CalibrationRuns2018_Reco.h5 \
-             --applyRegionCut \
-             --timeSeries \
-             --useMedian \
-             --normalizeMedian \
-             --outpath ~/phd/Figs/behavior_over_time/plotTotalChargeOverTime/ \
-             --titleSuff " " 
+LEFT=4.0 FACET_MARGIN=0.75 ROT_ANGLE=0.0 USE_TEX=true \
+         plotTotalChargeOverTime \
+         ~/CastData/data/DataRuns2017_Reco.h5 \
+         ~/CastData/data/DataRuns2018_Reco.h5 \
+         --interval 90 \
+         --cutoffCharge 0 \
+         --cutoffHits 500 \
+         --calibFiles ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+         --calibFiles ~/CastData/data/CalibrationRuns2018_Reco.h5 \
+         --applyRegionCut \
+         --timeSeries \
+         --useMedian \
+         --normalizeMedian \
+         --outpath ~/phd/Figs/behavior_over_time/plotTotalChargeOverTime/ \
+         --titleSuff " " 
 #+end_src
 We use a ~titleSuff~ suffix of a single space, because a) it's not
 empty but b) we don't want an actual suffix (about the cut region etc.).
@@ -17489,15 +17474,19 @@ the regular data reconstruction and calibration, in particular by the
 
 Let's recreate them in the style we want for the thesis.
 
+We use a slightly taller height to have a bit more space (for y label
+and annotation).
 #+begin_src sh
-USE_TEX=true WIDTH=600 HEIGHT=360 reconstruction \
+USE_TEX=true WIDTH=600 HEIGHT=420 reconstruction \
    -i ~/CastData/data/CalibrationRuns2017_Reco.h5 \
    --only_gain_fit \
-   --plotOutPath ~/phd/Figs/energyCalibration/Run_2/
-USE_TEX=true WIDTH=600 HEIGHT=360 reconstruction \
+   --plotOutPath ~/phd/Figs/energyCalibration/Run_2/ \
+   --overwrite
+USE_TEX=true WIDTH=600 HEIGHT=420 reconstruction \
    -i ~/CastData/data/CalibrationRuns2018_Reco.h5 \
    --only_gain_fit \
-   --plotOutPath ~/phd/Figs/energyCalibration/Run_3/
+   --plotOutPath ~/phd/Figs/energyCalibration/Run_3/ \
+   --overwrite
 #+end_src
 
 which produces the plots in:
