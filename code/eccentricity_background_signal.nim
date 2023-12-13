@@ -23,8 +23,11 @@ proc main(calib, back: string) =
     #               position = "identity",
     #               alpha = 0.5,
     #               density = true) +
+    xlab("Eccentricity") + ylab("Density") +   
     geom_density(color = "black", size = 1.0, alpha = 0.7, normalize = true) + 
-    ggtitle("Comparison of the eccentricity of calibration and background data") + 
+    ggtitle("Eccentricity of calibration and background data") +
+    themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) +
+    margin(left = 2.2, right = 5.2) +         
     ggsave("Figs/background/eccentricity_calibration_background.pdf", useTeX = true, standalone = true)
 
   proc splitPeaks(x: float): string =
@@ -45,9 +48,11 @@ proc main(calib, back: string) =
     #               position = "identity",
     #               alpha = 0.5,
     #               density = true) +
+    xlab("Eccentricity") + ylab("Density") + 
     geom_density(color = "black", size = 1.0, alpha = 0.7, normalize = true) +
-    ggtitle(r"Comparison of the X-rays from the $^{55}\text{Fe}$ photopeak (5.9 keV) and escapepeak (3 keV)",
-      titleFont = font(10.0)) + 
+    ggtitle(r"$^{55}\text{Fe}$ photopeak (5.9 keV) and escapepeak (3 keV)") +
+    themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) +
+    margin(left = 2.2, right = 5.2) +     
     ggsave("Figs/background/eccentricity_photo_escape_peak.pdf", useTeX = true, standalone = true)
     
 when isMainModule:
