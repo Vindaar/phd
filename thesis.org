@@ -19903,9 +19903,11 @@ with the ~cdl_spectrum_creation~ tool as follows:
 
 Make sure the config file uses ~fitByRun~ to reproduce the same plots!
 
+~ESCAPE_LATEX~ performs replacement of characters like ~&~ used in
+titles. 
 #+begin_src sh
 cd /tmp
-cdl_spectrum_creation -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 --cutcdl --dumpAccurate --hideNloptFit
+ESCAPE_LATEX=true USE_TEX=true cdl_spectrum_creation -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 --cutcdl --dumpAccurate --hideNloptFit
 #+end_src
 
 This generates lots of plots, they should all land in something like:
@@ -20899,6 +20901,7 @@ In order to generate plots of the reference distributions as well as
 the likelihood distributions, we use the ~TimepixAnalysis/Plotting/plotCdl~ tool (adjust the
 path to the ~calibration-cdl-2018.h5~ according to your system):
 #+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Plotting/plotCdl
+ESCAPE_LATEX=true USE_TEX=true \
 ./plotCdl \
     -c ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
     --outpath ~/phd/Figs/CDL
