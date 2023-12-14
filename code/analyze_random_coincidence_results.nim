@@ -28,7 +28,7 @@ proc parseFile(fname: string): float =
 
 # now all files in our eccentricity cut run directory
 const path = "/home/basti/phd/resources/estimateRandomCoinc/"
-import std / [os, parseutils, strutils]
+import std / [os, parseutils]
 import ggplotnim
 import strscans
 proc parseEccentricityCutoff(f: string): float =
@@ -77,28 +77,33 @@ echo df.filter(f{`ε_cut` == 1.0})
   .drop("Type", "ε_cut")
   .spread("Fake", "FractionPass").toOrgTable()
 # And finally create the plots and output CSV file
-if false:
+if true:
   df.writeCsv("/home/basti/phd/resources/septem_line_random_coincidences_ecc_cut.csv", precision = 8)  
 
 block PlotFromCsv:
-  block OldPlot:  
-    let df = readCsv("/home/basti/org/resources/septem_line_random_coincidences_ecc_cut.csv")
-      .filter(f{`Type` notin ["LinelvRegularNoHLCReal", "LinelvRegularNoHLCFake"]})
-      .mutate(f{string: "Type" ~ `Type`.replace("lvRegular", "").replace("NoHLC", "")})
-    ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
-      geom_point() +
-      ggtitle("Fraction of events passing line veto based on ε cutoff") +
-      #margin(right = 9) + 
-      ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
-             width = 600, height = 420, useTeX = true, standalone = true)
-      #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf", width = 800, height = 480)
+  block OldPlot:
+    let oldFile = "/home/basti/org/resources/septem_line_random_coincidences_ecc_cut.csv"
+    if fileExists(oldFile):
+      let df = readCsv(oldFile)
+        .filter(f{`Type` notin ["LinelvRegularNoHLCReal", "LinelvRegularNoHLCFake"]})
+        .mutate(f{string: "Type" ~ `Type`.replace("lvRegular", "").replace("NoHLC", "")})
+      ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
+        geom_point() +
+        ggtitle("Fraction of events passing line veto based on ε cutoff") +
+        #margin(right = 9) +
+        themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) + 
+        ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
+               width = 600, height = 420, useTeX = true, standalone = true)
+        #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf", width = 800, height = 480)
   block NewPlot:
     ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
       geom_point() +
       ggtitle("Fraction of events passing line veto based on ε cutoff") +
       #margin(right = 9) +
-      ggsave("/tmp/test.pdf", 
-      #ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
+      margin(right = 5.5) + 
+      xlab("Eccentricity cut 'ε_cut'") + ylab("Fraction passing [%]") + 
+      themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +       
+      ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
              width = 600, height = 420, useTeX = true, standalone = true)
     
   

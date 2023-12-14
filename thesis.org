@@ -23724,10 +23724,10 @@ compare both to the 80% LnL.
 
 #+begin_src sh :results drawer
 plotBackgroundRate \
-    /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
-    /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
-    /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
-    /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5 \
     ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL.h5 \
     ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL.h5 \
     --centerChip 3 \
@@ -23743,6 +23743,7 @@ plotBackgroundRate \
     --energyMin 0.2 \
     --outfile background_rate_gold_mlp_0.95_0.8_lnL.pdf \
     --outpath ~/phd/Figs/background/ \
+    --useTeX \
     --quiet
 #+end_src
 
@@ -24133,7 +24134,7 @@ calibrated and tested scintillators are an extremely valuable upgrade.
 #+CAPTION: The origin of the peak at \SI{255}{clocks} in the data of the paddle is
 #+CAPTION: unclear.
 #+NAME: fig:background:scintillator_clock_cycles
-[[~/phd/Figs/scintillators/scintillators_facet_main_2018.pdf]]
+[[~/phd/Figs/scintillators/scintillators_facet_main_run-1.pdf]]
 
 #+CAPTION: Background rate based on the Run-3 CAST data achieved by the addition of a scintillator cut veto
 #+CAPTION: of $\SI{7.5}{μs}$ for any cluster that initially passes the log likelihood
@@ -24513,8 +24514,9 @@ ball park estimate.
 The tool we use to plot the scintillator data is ~Tools/scintiInfo~.
 
 It generates output into the ~out/<plot path>/~ directory:
-#+begin_src sh
-./scintiInfo -f ~/CastData/data/DataRuns2018_Reco.h5
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/scintiInfo/
+WRITE_PLOT_CSV=true USE_TEX=true ./scintiInfo -f ~/CastData/data/DataRuns2018_Reco.h5 \
+             --plotPath ~/phd/Figs/scintillators/
 #+end_src
 which generates 3 plots for each scintillator containing all data,
 all non trivial data and all hits > 0 and < 300.
@@ -25407,6 +25409,10 @@ Generated: /home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc.pd
 
 **** Generate plots of rise/fall time for CDL data :extended:
 
+This code snippet is the original code that we used for the first
+plots, when it was still part of
+[[file:~/org/Doc/StatusAndProgress.org]]. It has since been moved to [[file:~/CastData/ExternCode/TimepixAnalysis/Plotting/plotFadc/plotFadc.nim]].
+
 #+begin_src nim :results drawer :tangle /tmp/fadc_rise_fall_signal_vs_background.nim
 import nimhdf5, ggplotnim
 import std / [strutils, os, sequtils, sets, strformat]
@@ -25513,7 +25519,7 @@ when isMainModule:
 #+end_src
 
 #+begin_src sh
-plotFadc \
+USE_TEX=true plotFadc \
     -c ~/CastData/data/CalibrationRuns2018_Reco.h5 \
     -b ~/CastData/data/DataRuns2018_Reco.h5 \
     --year 2018 \
@@ -25689,6 +25695,9 @@ plotFadc \
 
 
 **** Generate plots comparing rise/fall time of X-rays and background :noexport:
+
+*UPDATE*: <2023-12-14 Thu 18:50>: The below is also outdated! See
+~plotFadc~ above.
 
 - [ ] *MOVE THE CODE CURRENTLY IN STATUS TO TPA!*
 
@@ -25928,9 +25937,8 @@ close to the center, and yet still 'connects' to another chip.
 #+CAPTION: The cyan cluster in the bottom left of the center chip is in addition a good example of
 #+CAPTION: how in particular cutting a track in the corners leads to a much more spherical
 #+CAPTION: cluster.
-#+CAPTION: *UPDATE ME*
 #+NAME: fig:example_clusters_septem_veto
-[[~/org/Figs/statusAndProgress/exampleEvents/background_septem_vetoed.pdf]]
+[[~/phd/Figs/background/exampleEvents/septemEvent_run_162_event_80301.pdf]]
 
 The background rate with the septem veto is shown in
 fig. [[fig:background:background_rate_septem_veto]], where we see that most of the
@@ -26404,7 +26412,9 @@ PLOT_SEPTEM_E_CUTOFF=1.0 PLOT_SEPTEM_EVENT_NUMBER=80301 \
     --lnL \
     --signalEfficiency 0.8 \
     --septemveto \
-    --plotSeptem 
+    --plotSeptem \
+    --plotPath ~/phd/Figs/background/exampleEvents/ \
+    --useTeX
 #+end_src
 -> Works (just produces too many plots!)
 -> Add an "event index" filter for the plotSeptem. Done.
@@ -26450,7 +26460,7 @@ center cluster.
 #+CAPTION: The black circle is a measure for the radius of the center cluster. If the
 #+CAPTION: line of the eccentric cluster cuts the circle, the cluster is vetoed.
 #+NAME: fig:background:example_clusters_line_veto
-[[~/org/Figs/statusAndProgress/exampleEvents/background_event_vetoed_by_lineveto.pdf]]
+[[~/phd/Figs/background/exampleEvents/septemEvent_run_261_event_44109.pdf]]
 
 The achieved background rate, see
 fig. [[fig:background:background_rate_line_veto]], goes well into the
@@ -26549,12 +26559,14 @@ PLOT_SEPTEM_E_CUTOFF=1.0 PLOT_SEPTEM_EVENT_NUMBER=44109 \
     --lnL \
     --signalEfficiency 0.8 \
     --lineveto \
-    --plotSeptem 
+    --plotSeptem \
+    --plotPath ~/phd/Figs/background/exampleEvents/ \
+    --useTeX
 #+end_src
 -> Works.
 -> To produce thesis plot, run command in ~/phd/Figs/<subdirectory>~
 
-**** Generate plot for background rate with all vetoes          :noexport:
+**** Generate plot for background rate with all vetoes          :extended:
 
 Let's generate the plot:
 
@@ -27341,7 +27353,7 @@ proc parseFile(fname: string): float =
 
 # now all files in our eccentricity cut run directory
 const path = "/home/basti/phd/resources/estimateRandomCoinc/"
-import std / [os, parseutils, strutils]
+import std / [os, parseutils]
 import ggplotnim
 import strscans
 proc parseEccentricityCutoff(f: string): float =
@@ -27390,28 +27402,33 @@ echo df.filter(f{`ε_cut` == 1.0})
   .drop("Type", "ε_cut")
   .spread("Fake", "FractionPass").toOrgTable()
 # And finally create the plots and output CSV file
-if false:
+if true:
   df.writeCsv("/home/basti/phd/resources/septem_line_random_coincidences_ecc_cut.csv", precision = 8)  
 
 block PlotFromCsv:
-  block OldPlot:  
-    let df = readCsv("/home/basti/org/resources/septem_line_random_coincidences_ecc_cut.csv")
-      .filter(f{`Type` notin ["LinelvRegularNoHLCReal", "LinelvRegularNoHLCFake"]})
-      .mutate(f{string: "Type" ~ `Type`.replace("lvRegular", "").replace("NoHLC", "")})
-    ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
-      geom_point() +
-      ggtitle("Fraction of events passing line veto based on ε cutoff") +
-      #margin(right = 9) + 
-      ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
-             width = 600, height = 420, useTeX = true, standalone = true)
-      #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf", width = 800, height = 480)
+  block OldPlot:
+    let oldFile = "/home/basti/org/resources/septem_line_random_coincidences_ecc_cut.csv"
+    if fileExists(oldFile):
+      let df = readCsv(oldFile)
+        .filter(f{`Type` notin ["LinelvRegularNoHLCReal", "LinelvRegularNoHLCFake"]})
+        .mutate(f{string: "Type" ~ `Type`.replace("lvRegular", "").replace("NoHLC", "")})
+      ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
+        geom_point() +
+        ggtitle("Fraction of events passing line veto based on ε cutoff") +
+        #margin(right = 9) +
+        themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) + 
+        ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
+               width = 600, height = 420, useTeX = true, standalone = true)
+        #ggsave("/tmp/fraction_passing_line_veto_ecc_cut.pdf", width = 800, height = 480)
   block NewPlot:
     ggplot(df, aes("ε_cut", "FractionPass", color = "Type")) +
       geom_point() +
       ggtitle("Fraction of events passing line veto based on ε cutoff") +
       #margin(right = 9) +
-      ggsave("/tmp/test.pdf", 
-      #ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
+      margin(right = 5.5) + 
+      xlab("Eccentricity cut 'ε_cut'") + ylab("Fraction passing [%]") + 
+      themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +       
+      ggsave("Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf",
              width = 600, height = 420, useTeX = true, standalone = true)
     
   
@@ -27612,28 +27629,17 @@ File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_sep
 	Mean output = 1590.0
 	Fraction of events left = 0.7949999999999999
 	Fraction of events left = 0.7949999999999999
-DataFrame with 4 columns and 3 rows:
-     Idx           Septem             Line             Real             Fake
-  dtype:             bool             bool           string           string
-       0            false             true     $\num{25.32}     $\num{85.39}
-       1             true            false     $\num{14.12}     $\num{83.11}
-       2             true             true      $\num{9.17}     $\num{78.63}
+| Septem | Line | Real | Fake |
+|----|----|----|----|
+|false|true|$\num{25.32}$|$\num{85.39}$|
+|true|false|$\num{14.12}$|$\num{83.11}$|
+|true|true|$\num{9.17}$|$\num{78.63}$|
 
-| Septem | Line  | Real         | Fake         |
-|--------+-------+--------------+--------------|
-| false  | true  | $\num{25.32} | $\num{85.39} |
-| true   | false | $\num{14.12} | $\num{83.11} |
-| true   | true  | $\num{9.17}  | $\num{78.63} |
-
-[INFO] TeXDaemon ready for input.
-shellCmd: command -v lualatex
-shellCmd: lualatex -output-directory Figs/background/estimateSeptemVetoRandomCoinc Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.tex
-Generated: Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf
-[INFO] TeXDaemon ready for input.
-shellCmd: command -v lualatex
-shellCmd: lualatex -output-directory /tmp /tmp/test.tex
-Generated: /tmp/test.pdf
 :end:
+
+#+begin_src sh :dir ~/phd
+ESCAPE_LATEX=true code/analyze_random_coincidence_results
+#+end_src
 
 Old values used in ~mcmc_limit_calculation~:
 #+begin_src nim
@@ -28696,10 +28702,10 @@ larger cluster.
 (figure ()
         (subfigure (linewidth 0.5) (caption "No vetoes") (label "fig:background:suppression_lnL80_without")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/phd/Figs/backgroundClusters/background_suppression_tile_map_lnL80_no_vetoes.pdf"))
+                                    "~/phd/Figs/backgroundClusters/background_suppression_tile_map_lnL80_no_vetoes_zMaxS_1000.pdf"))
         (subfigure (linewidth 0.5) (caption "All vetoes") (label "fig:background:suppression_lnL80_all")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/phd/Figs/backgroundClusters/background_suppression_tile_map_lnL80_all_vetoes.pdf"))
+                                    "~/phd/Figs/backgroundClusters/background_suppression_tile_map_lnL80_all_vetoes_zMaxS_1000.pdf"))
         (caption
          "Local background suppression of the \\lnL method compared to the raw 2017/18 CAST data. "
          (subref "fig:background:suppression_lnL80_without")
@@ -28879,7 +28885,7 @@ Old plot:
 What plots do we want exactly?
 
 #+begin_src sh :results drawer
-plotBackgroundRate \
+ESCAPE_LATEX=true plotBackgroundRate \
     ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
     ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
     ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
@@ -29291,19 +29297,37 @@ plotBackgroundRate \
 
 - [ ] *MAYBE MAKE TEXT FONT WHITE AGAIN?*
 
-LnL @ 80% and all vetoes:
+LnL @ 80% and no vetoes, but using the same zMax as for the all veto case below.
 #+begin_src sh :results drawer
-plotBackgroundClusters \
-    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
-    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+ESCAPE_LATEX=true plotBackgroundClusters \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL.h5 \
     --zMax 5 \
-    --title "Cluster centers CAST data, LnL@80%, all vetoes" \
+    --zMaxSuppression 1000 \
+    --title "CAST data, LnL@80%, no vetoes" \
     --outpath ~/phd/Figs/backgroundClusters/ \
     --filterNoisyPixels \
     --energyMin 0.2 --energyMax 12.0 \
     --showGoldRegion \
     --backgroundSuppression \
-    --suffix "_lnL80_all_vetoes"
+    --suffix "_lnL80_no_vetoes_zMaxS_1000" \
+    --useTikZ
+#+end_src
+LnL @ 80% and all vetoes:
+#+begin_src sh :results drawer
+ESCAPE_LATEX=true plotBackgroundClusters \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    --zMax 5 \
+    --zMaxSuppression 1000 \
+    --title "CAST data, LnL@80%, all vetoes" \
+    --outpath ~/phd/Figs/backgroundClusters/ \
+    --filterNoisyPixels \
+    --energyMin 0.2 --energyMax 12.0 \
+    --showGoldRegion \
+    --backgroundSuppression \
+    --suffix "_lnL80_all_vetoes_zMaxS_1000" \
+    --useTikZ
 #+end_src
 
 #+RESULTS:
@@ -29372,7 +29396,7 @@ Generated: /home/basti/phd/Figs/backgroundClusters/background_suppression_tile_m
 
 Background clusters, 95%:
 #+begin_src sh :results drawer 
-plotBackgroundClusters \
+ESCAPE_LATEX=true plotBackgroundClusters \
     ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
     ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
     --zMax 5 \
@@ -29382,7 +29406,8 @@ plotBackgroundClusters \
     --showGoldRegion \
     --energyMin 0.2 --energyMax 12.0 \
     --suffix "_mlp_95_all_vetoes_adam_tanh30_sigmoid_mse_82k" \
-    --backgroundSuppression
+    --backgroundSuppression \
+    --useTikZ
 #+end_src
 
 #+RESULTS:
