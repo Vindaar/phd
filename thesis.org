@@ -14444,10 +14444,10 @@ become loose from the connector.
                                     "~/phd/Figs/CAST_detector_exploded/detector_broken_window_open_top_IMG_20170919_152130.jpg"))
         (caption
          (subref "fig:cast:window_accident:broken_window")
-          "shows the cathode of the detector from the inside
-           with the broken window. Essentially the full window directly exposed to vacuum is gone."
+          " shows the cathode of the detector from the inside
+           with the broken window. Essentially the full window directly exposed to vacuum is gone. "
          (subref "fig:cast:window_accident:broken_window_inside")
-          "is the view into the detector without the cathode.
+          " is the view into the detector without the cathode.
            A bulge of the field cage is visible where the compressed air entered.")
         (label "fig:cast:window_accident:broken_window_subfig"))
 #+end_src
@@ -14999,6 +14999,9 @@ This, tab. [[tab:cast:total_data_time_extended]], is an extended version
 
 
 *** Code to compute statistics [10/17]                           :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:cast:compute_statistics
+:END:
 
 - [ ] code to compute the total run duration of the different parts
 - [ ] code to produce the outer chip & central chip activity
@@ -19270,6 +19273,10 @@ yielding
 and
 [[~/phd/Figs/background/eccentricity_photo_escape_peak.pdf]]
 
+#+begin_src sh
+
+#+end_src
+
 ** CAST Detector Lab [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:cdl
@@ -20996,8 +21003,7 @@ and fraction in transverse RMS space continuously.
          (subref "fig:cdl:cdl_morphing_frac_all_energies")
          " is a heatmap of the full energy vs. fraction in transverse RMS
            space interpolated using this binwise linear interpolation. The energy of the fluorescence
-           lines is indicated on which the interpolation is based.
-           *ADJUST SIZE OF PLOTS!!!*")
+           lines is indicated on which the interpolation is based.")
         (label "fig:cdl:cdl_morphing_examples"))
 #+end_src
 
@@ -21624,7 +21630,8 @@ plotBackgroundClusters \
     --backgroundSuppression \
     --energyMin 0.2 --energyMax 12.0 \
     --suffix "_lnL80_no_vetoes" \
-    --filterNoisyPixels
+    --filterNoisyPixels \
+    --useTikZ
 #+end_src
 
 #+RESULTS:
@@ -22123,7 +22130,10 @@ gaseous detector theory fundamentals:
 - gas gain understanding is (here also) needed to sample the gain for
   each electron
 
-**** Generate some example and comparison plots [/]             :noexport:
+**** Generate some example and comparison plots [/]             :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:background:gen_plots_fake_event_comparisons
+:END:
 
 - [X] Comparison of the different properties as a ridgeline plot?
   -> similar to plots in appendix
@@ -22173,18 +22183,18 @@ plotDatasetGgplot \
 
 Let's automate this quickly for all \cefe calibration runs.
 
-#+begin_src nim :tangle /tmp/generate_all_fake_data_plots.nim
+#+begin_src nim :tangle code/generate_all_run_fake_data_plots.nim
 import shell, strutils, sequtils
 import nimhdf5
 import ingrid / [ingrid_types, tos_helpers]
 
-const filePath = "/mnt/1TB/CAST/$#/CalibrationRuns$#_Reco.h5"
+const filePath = "~/CastData/data/CalibrationRuns$#_Reco.h5"
 const genData = """
 fake_event_generator \
     like \
     -p $file \
     --run $run \
-    --outpath /home/basti/org/resources/fake_events_for_runs.h5 \
+    --outpath $fakeFile \
     --outRun $run \
     --tfKind Mn-Cr-12kV \
     --nmc 50000
@@ -22192,37 +22202,56 @@ fake_event_generator \
 const plotData = """
 plotDatasetGgplot \
     -f $file \
-    -f /home/basti/org/resources/fake_events_for_runs.h5 \
+    -f $fakeFile \
     --names 55Fe --names Simulation \
     --run $run \
     --plotPath /home/basti/phd/Figs/fakeEventSimulation/runComparisons/ \
     --prefix ingrid_properties_run_$run \
-    --suffix "Run $run"
+    --suffix ", run $run"
 """
 
-const years = ["2017", "2018_2"]
-const yearFile = ["2017", "2018"]
-for (year, fYear) in zip(years, yearFile):
-  #if year == "2017": continue ## skip for now, already done
-  let file = filePath % [year, fYear]
-  var runs = newSeq[int]()
-  withH5(file, "r"):
-    let fileInfo = getFileInfo(h5f)
-    runs = fileInfo.runs
-  for run in runs:
-    echo "Working on run: ", run
-    let genCmd = genData % ["file", file, "run", $run]
-    shell:
-      ($genCmd)
-    let plotCmd = plotData % ["file", file, "run", $run, "run", $run, "run", $run]
-    shell:
-      ($plotCmd)
+proc main(generate = false,
+          plot = false,
+          fakeFile = "~/org/resources/fake_events_for_runs.h5") =
+  const years = [2017, 2018]
+  for year in years:
+    #if year == "2017": continue ## skip for now, already done
+    let file = filePath % [$year]
+    var runs = newSeq[int]()
+    withH5(file, "r"):
+      let fileInfo = getFileInfo(h5f)
+      runs = fileInfo.runs
+    for run in runs:
+      echo "Working on run: ", run
+      if generate:
+        let genCmd = genData % ["file", file, "run", $run, "fakeFile", fakeFile]
+        shell:
+          ($genCmd)
+      if plot:
+        let plotCmd = plotData % ["file", file, "fakeFile", fakeFile, "run", $run, "run", $run, "run", $run]
+        shell:
+          ($plotCmd)
+when isMainModule:
+  import cligen
+  dispatch main
 #+end_src
 
 which yields all the plots in:
 [[file:Figs/fakeEventSimulation/runComparisons/]]
 
 - [ ] *RERUN WITH CSV OUTPUT!*
+
+First we generate the HDF5 file containing all the fake data:
+#+begin_src sh :dir ~/phd/
+ntangle thesis.org && nim c code/generate_all_run_fake_data_plots
+code/generate_all_run_fake_data_plots --generate
+#+end_src
+and then we can create all the plots. In the section below we will
+include the plot for run 241.
+
+#+begin_src sh :dir ~/phd/
+code/generate_all_run_fake_data_plots --plot
+#+end_src
 
 *** Determination of gas diffusion
 :PROPERTIES:
@@ -22542,10 +22571,13 @@ extended version of the thesis.
 
 - [X] *DECIDE WHERE TO SHOW ALL PLOTS. APPENDIX IS TOO LONG!*
 
-**** All plots of the simulated and real data comparisons       :extended:
+**** Plots comparing simulated and real data        :extended:
+
+The figure shown in the main body and all other plots for all runs are
+produced in sec. [[#sec:background:gen_plots_fake_event_comparisons]].
 
 As it would also blow up the length of the extended thesis
-unnecessarily, all the figures are simply found in
+unnecessarily, all the figures are simply found in:
 
 [[file:Figs/fakeEventSimulation/runComparisons/]]
 
