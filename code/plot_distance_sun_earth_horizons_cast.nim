@@ -31,19 +31,28 @@ echo "Mean distance during trackings = ", meanD
 echo "Variance of distance during trackings = ", varD
 echo "Std of distance during trackings = ", stdD
 # and write back the DF of the tracking positions
-dfHT.writeCsv("~/phd/resources/sun_earth_distance_cast_solar_trackings.csv")
+#dfHT.writeCsv("~/phd/resources/sun_earth_distance_cast_solar_trackings.csv")
+
+let texts = @[r"$μ_{\text{distance}} = " & &"{meanD:.4f}$",
+              #r"$\text{Variance} = " & &"{varD:.4g}$",
+              r"$σ_{\text{distance}} = " & &"{stdD:.4f}$"]
+let annot = texts.join(r"\\")
+echo "Annot: ", annot
+
+proc thm(): Theme =
+  result = sideBySide()
+  result.annotationFont = some(font(7.0)) # we don't want monospace font!
 
 ggplot(df, aes("Timestamp", "delta", color = "Type")) +
   geom_line(data = df.filter(f{`Type` == "HorizonsAPI"})) +
   geom_point(data = df.filter(f{`Type` == "Trackings"}), size = 1.0) +
   scale_x_date(isTimestamp = true,
                formatString = "yyyy-MM",
-               dateSpacing = initDuration(days = 60)) +
-  xlab("Date", rotate = -45.0, alignTo = "right", margin = 1.5) +
-  annotate(text = &"Mean distance during trackings = {meanD:.4f}", x = 1.52e9, y = 1.0175) + 
-  annotate(text = &"Variance distance during trackings = {varD:.4g}", x = 1.52e9, y = 1.015) +   
-  annotate(text = &"Std distance during trackings = {stdD:.4f}", x = 1.52e9, y = 1.0125) + 
-  margin(bottom = 2.0) + 
+               dateSpacing = initDuration(days = 90)) +
+  xlab("Date", rotate = -45.0, alignTo = "right", margin = 3.0) +
+  annotate(text = annot, x = 1.5975e9, y = 1.0075) + 
   ggtitle("Distance in AU Sun ⇔ Earth") +
-  theme_font_scale(1.0, family = "serif") + 
-  ggsave("~/phd/Figs/systematics/sun_earth_distance_cast_solar_tracking.pdf", width = 600, height = 360)
+  legendPosition(0.7, 0.2) + 
+  themeLatex(fWidth = 0.5, width = 600, baseTheme = thm, useTeX = true) +
+  margin(left = 3.5, bottom = 3.75) + 
+  ggsave("~/phd/Figs/systematics/sun_earth_distance_cast_solar_tracking.pdf", width = 600, height = 360, dataAsBitmap = true)

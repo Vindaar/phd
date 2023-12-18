@@ -30510,7 +30510,7 @@ Simplest implementation:
 - constant background (due to single channel)
 - no telescope, i.e. area for signal flux is the same as for
   background (due to no focusing)  
-#+begin_src nim :results drawer :exports both :tangle /tmp/simple_limit_example.nim
+#+begin_src nim :results drawer :exports both :tangle /tmp/simple_limit_example.nim :flags -d:EscapeLatex=true
 import unchained, math
 ## Assumptions:
 const totalTime = 100.0.h # 100 of "tracking time"
@@ -30563,7 +30563,7 @@ ggplot(df, aes("xs", "ys")) +
   #geom_linerange(aes = aes(x = xs[limitIdx], yMin = 0.0, yMax = L_atLimit), ) + 
   annotate(x = xs[limitIdx], y = L_atLimit + 0.1, text = "Limit at 95% area") +
   ggtitle("Example likelihood and limit") +
-  theme_font_scale(scale = 1.0, family = "serif") +
+  themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot, useTeX = true) + 
   ggsave("/home/basti/phd/Figs/limit/simple_likelihood_limit_example.pdf", width = 600, height = 380)
 #+end_src
 
@@ -30910,17 +30910,18 @@ realistic uncertainty, $σ = 0.05$, roughly the inner $-0.1 < ϑ < 0.1$
 space contributes. This corresponds to a range of $\SI{-0.7}{mm} < x <
 \SI{0.7}{mm}$ around the center in fig. sref:fig:limit:method_systematics:example_theta_0.6.
 
+#                                    "~/org/Figs/statusAndProgress/limitSanityChecks/axion_image_limit_calc_theta_0_6.pdf"))
 #+begin_src subfigure
 (figure ()
         (subfigure (linewidth 0.33) (caption "Axion image at $ϑ_{x,y} = 0.6$") (label "fig:limit:method_systematics:example_theta_0.6")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/org/Figs/statusAndProgress/limitSanityChecks/axion_image_limit_calc_theta_0_6.pdf"))
+                                    "~/phd/Figs/limit/sanity/fWidth0.3/axion_image_limit_calc_theta_0_6.pdf"))
         (subfigure (linewidth 0.33) (caption "$σ_{x,y} = 0.05$") (label "fig:limit:method_systematics:example_sigma_0.05")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/org/Figs/statusAndProgress/limitSanityChecks/likelihood_sigma_0.05_manyθx_θy.pdf"))
+                                    "~/phd/Figs/limit/sanity/fWidth0.3/likelihood_sigma_0.05_manyϑx_ϑy.pdf"))
         (subfigure (linewidth 0.33) (caption "$σ_{x,y} = 0.25$") (label "fig:limit:method_systematics:example_sigma_0.25")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/org/Figs/statusAndProgress/limitSanityChecks/likelihood_sigma_0.25_manyθx_θy.pdf"))
+                                    "~/phd/Figs/limit/sanity/fWidth0.3/likelihood_sigma_0.25_manyϑx_ϑy.pdf"))
         (caption
          (subref "fig:limit:method_systematics:example_theta_0.6")
          ": Impact of the position nuisance parameter on the axion image.
@@ -30971,6 +30972,32 @@ From here we compute 3 combined systematics:
 - $σ_s = \sqrt{ 0.2² + 2.3² + 0.6²} = \SI{2.38}{\%}$
 - $σ_p = \SI{5}{\%}$
 - $σ_b = \SI{0.5}{\%}$
+
+*** Generate plots of systematic                                 :extended:
+
+The left most image in fig. sref:fig:limit:method_systematics:example
+is created as part of the ~--raytracing~ sanity check. The other two
+are part of the ~likelihoodSystematics~ sanity check (from the
+~plotLikelihoodCurves~ proc via ~calcPosition~ for either the "few" or
+"many" candidates case.
+
+We place these into a separate directory, because for this particular
+set of plots we wish to produce them with a target width of
+~0.3333\textwidth~.
+
+#+begin_src sh
+F_WIDTH=0.33333333333 DEBUG_TEX=true ESCAPE_LATEX=true USE_TEX=true \
+                      mcmc_limit_calculation sanity \
+                       --limitKind lkMCMC \
+                       --axionModel ~/org/resources/axionProduction/axionElectronRealDistance/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv \
+                       --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+                       --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+                       --switchAxes \
+                       --sanityPath ~/phd/Figs/limit/sanity/fWidth0.3/ \
+                       --likelihoodSystematics \
+                       --raytracing \
+                       --rombergIntegrationDepth 3
+#+end_src
 
 *** $s'$ is equivalent to $s_i'$ ?                               :extended:
 
@@ -31760,6 +31787,11 @@ With the CSV file produced in the previous section we can now plot the
 CAST trackings (from the TimepixAnalysis ~resources~ directory)
 against it.
 
+Note: We need to use the same plot height as for the differential
+axion flux produced in
+sec. [[#sec:theory:gen_solar_axion_flux_plots]]. Height not defined, width
+600 (golden ratio).
+
 #+begin_src nim :tangle code/plot_distance_sun_earth_horizons_cast.nim
 import ggplotnim, sequtils, times, strutils, strformat
 # 2017-Jan-01 00:00
@@ -31794,23 +31826,38 @@ echo "Mean distance during trackings = ", meanD
 echo "Variance of distance during trackings = ", varD
 echo "Std of distance during trackings = ", stdD
 # and write back the DF of the tracking positions
-dfHT.writeCsv("~/phd/resources/sun_earth_distance_cast_solar_trackings.csv")
+#dfHT.writeCsv("~/phd/resources/sun_earth_distance_cast_solar_trackings.csv")
+
+let texts = @[r"$μ_{\text{distance}} = " & &"{meanD:.4f}$",
+              #r"$\text{Variance} = " & &"{varD:.4g}$",
+              r"$σ_{\text{distance}} = " & &"{stdD:.4f}$"]
+let annot = texts.join(r"\\")
+echo "Annot: ", annot
+
+proc thm(): Theme =
+  result = sideBySide()
+  result.annotationFont = some(font(7.0)) # we don't want monospace font!
 
 ggplot(df, aes("Timestamp", "delta", color = "Type")) +
   geom_line(data = df.filter(f{`Type` == "HorizonsAPI"})) +
   geom_point(data = df.filter(f{`Type` == "Trackings"}), size = 1.0) +
   scale_x_date(isTimestamp = true,
                formatString = "yyyy-MM",
-               dateSpacing = initDuration(days = 60)) +
-  xlab("Date", rotate = -45.0, alignTo = "right", margin = 1.5) +
-  annotate(text = &"Mean distance during trackings = {meanD:.4f}", x = 1.52e9, y = 1.0175) + 
-  annotate(text = &"Variance distance during trackings = {varD:.4g}", x = 1.52e9, y = 1.015) +   
-  annotate(text = &"Std distance during trackings = {stdD:.4f}", x = 1.52e9, y = 1.0125) + 
-  margin(bottom = 2.0) + 
+               dateSpacing = initDuration(days = 90)) +
+  xlab("Date", rotate = -45.0, alignTo = "right", margin = 3.0) +
+  annotate(text = annot, x = 1.5975e9, y = 1.0075) + 
   ggtitle("Distance in AU Sun ⇔ Earth") +
-  theme_font_scale(1.0, family = "serif") + 
-  ggsave("~/phd/Figs/systematics/sun_earth_distance_cast_solar_tracking.pdf", width = 600, height = 360)
+  legendPosition(0.7, 0.2) + 
+  themeLatex(fWidth = 0.5, width = 600, baseTheme = thm, useTeX = true) +
+  margin(left = 3.5, bottom = 3.75) + 
+  ggsave("~/phd/Figs/systematics/sun_earth_distance_cast_solar_tracking.pdf", width = 600, height = 360, dataAsBitmap = true)
 #+end_src
+
+#+RESULTS:
+| Mean     | distance | during   | trackings | =           | 0.9891142629616164 |                       |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
+| Variance | of       | distance | during    | trackings   | =                  | 1.399200318749014e-05 |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
+| Std      | of       | distance | during    | trackings   | =                  |  0.003740588615109946 |               |            |    |    |             |    |           |      |          |     |   |    |                       |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |    |       |   |          |    |     |        |      |    |     |       |       |      |           |                      |        |
+| INFO:    | The      | integer  | column    | `Timestamp` | has                |                  been | automatically | determined | to | be | continuous. | To | overwrite | this | behavior | add | a | `+ | scale_x/y_discrete()` | call | to | the | plotting | chain. | Choose | `x` | or | `y` | depending | on | which | axis | this | column | refers | to. | Or | apply | a | `factor` | to | the | column | name | in | the | `aes` | call, | i.e. | `aes(..., | factor("Timestamp"), | ...)`. |
 
 
 *** Conversion probability - $P_{aγ}(g_{aγ})$
@@ -32163,7 +32210,6 @@ veto efficiencies. If one combines this with using all vetoes at a
 software efficiency of $\SI{80}{\%}$, the total detection efficiency
 of the detector would peak at only $\SI{28.4}{\%}$ at that energy.
 
-#+ATTR_LATEX: :width 0.8\textwidth
 #+CAPTION: The combined detection efficiency of the detector, taking into account the
 #+CAPTION: telescope efficiency via the effective area, the window absorption probability
 #+CAPTION: and the absorption probability in the detector gas.
@@ -32192,7 +32238,7 @@ LLNL effective area).
 
 To produce the CSV file
 #+begin_src sh
-./septemboardDetectionEff \
+USE_TEX=true ./septemboardDetectionEff \
     --outpath ~/phd/resources/ \
     --plotPath ~/phd/Figs/limit/ \
     --llnlEff ~/org/resources/llnl_cast_nature_jaime_data/2016_DEC_Final_CAST_XRT/EffectiveArea.txt \
@@ -32319,7 +32365,6 @@ calculation based on the physical position on the chip of a given candidate.
 #+CAPTION: It is very slightly asymmetric, because of being $\SI{0.7}{cm}$ in front
 #+CAPTION: of the focal point.
 #+NAME: fig:limit:ingredients:axion_image
-#+ATTR_LATEX: :width 0.8\textwidth
 [[~/phd/Figs/limit/sanity/axion_image_limit_calc_no_theta.pdf]]
 
 [fn:why_not] A big reason for this approach is that so far I have not
@@ -32351,8 +32396,10 @@ We produce it by running the ~sanity~ subcommand of
 ~mcmc_limit_calculation~, in particular the ~raytracing~ argument.
 Note that we don't need any input files, the default ones are fine,
 because we don't run any input related sanity checks.
+
 #+begin_src sh
-mcmc_limit_calculation sanity \
+F_WIDTH=0.9 DEBUG_TEX=true ESCAPE_LATEX=true USE_TEX=true \
+                      mcmc_limit_calculation sanity \
                        --limitKind lkMCMC \
                        --axionModel ~/org/resources/axionProduction/axionElectronRealDistance/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv \
                        --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
@@ -32541,10 +32588,10 @@ candidate.
 (figure ()
         (subfigure (linewidth 0.5) (caption "Intensity at a point") (label "fig:limit:interpolation_clusters")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/org/Figs/statusAndProgress/limitSanityChecks/interpolation_clusters_E_3.0_keV_x_110_y_80.pdf"))
+                                    "~/phd/Figs/limit/sanity/interpolation_clusters_E_3.0_keV_x_110_y_80.pdf"))
         (subfigure (linewidth 0.5) (caption "Interpolation") (label "fig:limit:background_interpolation_example")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/org/Figs/statusAndProgress/limitSanityChecks/normalized_interpolation_at_3.0keV_ymax_5e-05.pdf"))
+                                    "~/phd/Figs/limit/sanity/normalized_interpolation_at_3.0keV_ymax_5e-05.pdf"))
         (caption
          (subref "fig:limit:interpolation_clusters")
          ": Calculation of intensity " ($ "I") " at the center of the red circle. Black crosses indicate all
@@ -32651,10 +32698,19 @@ One of the fundamental points about making this whole procedure generic.
 
 **** Generate the interpolation figure                          :extended:
 
-Sanity check!
+Sanity check for background interpolation:
 #+begin_src sh
+F_WIDTH=0.5 DEBUG_TEX=true ESCAPE_LATEX=true USE_TEX=true \
+                      mcmc_limit_calculation sanity \
+                       --limitKind lkMCMC \
+                       --axionModel ~/org/resources/axionProduction/axionElectronRealDistance/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv \
+                       --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+                       --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+                       --switchAxes \
+                       --sanityPath ~/phd/Figs/limit/sanity/ \
+                       --backgroundInterp
 #+end_src
-  
+
 
 **** Sampling of background interpolation                       :noexport:
 
@@ -33674,10 +33730,10 @@ the energy of each cluster in $\si{keV}$.
 (figure ()
         (subfigure (linewidth 0.5) (caption "Grid of expected counts") (label "fig:limit:expected_counts")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/org/Figs/statusAndProgress/limitSanityChecks/candidate_sampling_grid_index_5.pdf"))
+                                    "~/phd/Figs/limit/sanity/candidate_sampling_grid_index_5.pdf"))
         (subfigure (linewidth 0.5) (caption "Toy candidate set") (label "fig:limit:toy_candidate_set")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/org/Figs/statusAndProgress/limitSanityChecks/example_candidates_1.pdf"))
+                                    "~/phd/Figs/limit/sanity/example_candidates_1.pdf"))
         (caption
          (subref "fig:limit:expected_counts")
          ": Expected counts in " ($ "(10, 10, 20)")
@@ -33698,9 +33754,19 @@ the energy of each cluster in $\si{keV}$.
 
 **** Generate the candidate sampling figure                     :extended:
 
-Sanity check!
+Sanity check for candidate sampling:
 #+begin_src sh
+F_WIDTH=0.5 DEBUG_TEX=true ESCAPE_LATEX=true USE_TEX=true \
+                      mcmc_limit_calculation sanity \
+                       --limitKind lkMCMC \
+                       --axionModel ~/org/resources/axionProduction/axionElectronRealDistance/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv \
+                       --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+                       --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+                       --switchAxes \
+                       --sanityPath ~/phd/Figs/limit/sanity/ \
+                       --backgroundSampling
 #+end_src
+
   
 ** Systematics
 :PROPERTIES:
@@ -35868,10 +35934,10 @@ towards low values.
 (figure ()
         (subfigure (linewidth 0.5) (caption "\\includegraphics[width=0.03\\textwidth]{/home/basti/org/Figs/panda-face_emoji_bubu.png} $ϑ_s$ vs. $ϑ_b$") (label "fig:limit:mcmc_theta_s_b")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/phd/Figs/limit/sanity/mcmc_lines_thetas_sb_real_syst_real_random_cands_0.png"))
+                                    "~/phd/Figs/limit/sanity/mcmc_lines_thetas_sb_real_syst_real_random_cands_0.pdf"))
         (subfigure (linewidth 0.5) (caption "$g²$ vs. $ϑ_y$") (label "fig:limit:mcmc_theta_x_y")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/phd/Figs/limit/sanity/mcmc_lines_thetas_gy_real_syst_real_random_cands_0.png"))
+                                    "~/phd/Figs/limit/sanity/mcmc_lines_thetas_gy_real_syst_real_random_cands_0.pdf"))
         (caption
          (subref "fig:limit:mcmc_theta_s_b")
          ": MCMC of the $ϑ_s$ nuisance parameter against $ϑ_b$ with the
@@ -35897,7 +35963,7 @@ fig. [[fig:limit:mcmc_calc_limit:limit]].
 #+CAPTION: Blue is the lower 95-th percentile of the integral over the likelihood
 #+CAPTION: function and red the upper 5-th.
 #+NAME: fig:limit:mcmc_calc_limit:limit
-[[~/org/Figs/statusAndProgress/limitCalculation/mcmc_histo_example_limit_determination.pdf]]
+[[~/phd/Figs/limit/sanity/mcmc_histo_real_syst_real_random_cands_0.pdf]]
 
 [fn:not_ref] Do not confuse $g_{\text{base}}$ with the reference
 coupling constant for which the axion flux is computed
@@ -35958,7 +36024,7 @@ $g_{\text{ref}}$ mentioned earlier.
 
 #+end_src
 
-*** Generate example MCMC plots                                  :extended:
+*** Generate example MCMC plots (incl. histogram)                :extended:
 
 These plots are produced from the sanity checks in
 ~mcmc_limit_calculation~.
@@ -35968,7 +36034,9 @@ it will compute several points using regular numerical integration
 (Romberg). Pass ~--rombergIntegrationDepth 2~ to speed it up, but the
 last plot may not be produced successfully (but we don't care about
 that plot here):
+
 #+begin_src sh
+F_WIDTH=0.5 DEBUG_TEX=true ESCAPE_LATEX=true USE_TEX=true \
 mcmc_limit_calculation sanity \
                        --limitKind lkMCMC \
                        --axionModel ~/org/resources/axionProduction/axionElectronRealDistance/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv \
@@ -35976,9 +36044,9 @@ mcmc_limit_calculation sanity \
                        --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
                        --switchAxes \
                        --sanityPath ~/phd/Figs/limit/sanity/ \
-                       --realSystematics
+                       --realSystematics \
+                       --rombergIntegrationDepth 3
 #+end_src
-
 
 
 ** Expected limits of different setups
@@ -36326,7 +36394,7 @@ File: mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty_ukUncertain_σs_0.
 *** Generate plot of expected limit histogram                    :extended:
 
 #+begin_src sh
-mcmc_limit_calculation \
+ESCAPE_LATEX=true USE_TEX=true mcmc_limit_calculation \
     limit \
     -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
     -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
@@ -36338,7 +36406,7 @@ mcmc_limit_calculation \
     --xLow 2.5e-21 \
     --xHigh 1.5e-20 \
     --limitKind lkMCMC \
-    --yHigh 1200 \
+    --yHigh 1300 \
     --bins 100 \
     --linesTo 800 \
     --as_gae_gaγ \
@@ -36596,14 +36664,14 @@ activity). Restricting the clusters to $\SIrange{1}{12}{keV}$ yields
 
 Combined:
 #+begin_src sh
-plotBackgroundRate \
+ESCAPE_LATEX=true plotBackgroundRate \
     ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
     ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
     ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
     ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
     --centerChip 3 \
     --names "Background" --names "Background" --names "Candidates" --names "Candidates" \
-    --title "Rate over whole chip, MLP@95 % + line veto," \
+    --title "Rate over whole chip, MLP@95 % + line veto" \
     --showNumClusters \
     --region crAll \
     --showTotalTime \
@@ -36614,6 +36682,7 @@ plotBackgroundRate \
     --outpath ~/phd/Figs/trackingCandidates/ \
     --logPlot \
     --hideErrors \
+    --useTeX \
     --quiet
 #+end_src
 
@@ -36872,7 +36941,9 @@ plotBackgroundClusters \
     --energyText \
     --colorBy energy \
     --energyTextRadius 85.0 \
-    --switchAxes
+    --switchAxes \
+    --useTikZ \
+    --singlePlot
 #+end_src
 
 [[~/phd/Figs/trackingCandidates/background_cluster_centersmlp_0.95_scinti_fadc_line_tracking_candidates_axion_image_with_energy_radius_85.pdf]]
@@ -37316,7 +37387,7 @@ validation of the MCMC result. [fn:romberg_integration_performance]
 [[~/phd/Figs/trackingCandidates/mcmc_real_limit_likelihood_g_ae2.pdf]]
 
 [fn:likely_expected] Judging by the $χ²$ distribution in
-[[cite:&Barth_2013]] fig. 6 having a minimum for negative $g²_{ae}g²{gγ}$
+[[cite:&Barth_2013]] fig. 6 having a minimum for negative $g²_{ae}g²_{gγ}$
 values potentially implies a better observed limit than expected. 
 
 [fn:romberg_integration_performance] Note though, while the
@@ -37354,8 +37425,10 @@ g_{ae} · g_{aγ} = \SI{6.56e-23}{GeV⁻¹},
 
 **** Calculate the observed limit                               :extended:
 
-#+begin_src sh
-mcmc_limit_calculation \
+We use ~F_WIDTH=0.5~ for the ~ln(1 + s/b)~ plot. The MCMC g_ae²
+histogram is forced to be 0.9 in width anyway.
+#+begin_src sh 
+F_WIDTH=0.5 ESCAPE_LATEX=true USE_TEX=true mcmc_limit_calculation \
     limit \
     -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
     -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
