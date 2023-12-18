@@ -790,7 +790,7 @@ Using STIX Two we don't have all unicode in text!!
   else. Maybe introduce a "future thoughts about vetoes etc." section
   - [ ] Fix calculation of gas parameters used in FADC veto section
     based on
-    [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/septemboardCastGasPyboltz/septemboardGasCastPyboltz.nim]]
+    [[~/CastData/ExternCode/TimepixAnalysis/Tools/septemboardCastGasNimboltz/septemboardGasCastNimBoltz.nim]]
     to use NimBoltz instead.
   - [X] Added a version of the code using NimBoltz
   - [ ] Rerun using NimBoltz version with 2e9 interactions! We use 1e7
@@ -13749,7 +13749,7 @@ usage and importance for data analysis will be given in chapter
 manipulator. Using a compressed air line with about $\SI{6}{bar}$
 pressure the manipulator can be moved up and down. Under vacuum
 conditions of the setup the manipulator is inserted unless the
-compressed air is used to keep it out.
+compressed air is used to push it out.
 
 A Raspberry Pi [fn:raspi] is installed close to the manipulator and
 connects to the two Festo [fn:festo] control sensors at the top and
@@ -19637,6 +19637,11 @@ based on the references should be the 'medium filter'. Hence the used numbers.
 
 **** TODOs from the section above [9/15]                        :noexport:
 
+- [ ] *REWRITE SENTENCE IN MAIN TEXT ABOUT TEMPERATURE?*
+  -> ROBERTO COMMENT
+
+
+
 This section contains the more generic TODOs that are longer / done
 and have no specific relevance to an existing paragraph / fig / tab
 
@@ -20162,7 +20167,7 @@ fitted if it can be visually identified in the
 data. [fn:choice_of_params] If no 'argument' is shown in the table to
 $G$ it means each parameter ($N, μ, σ$) is fitted. Any specific
 argument given implies that parameter is _fixed_ relative to another
-parameter. For example $μ^{\ce{Ag}}_{Lα}·(\frac{3.151}{2.984})$ fixes
+parameter. For example $μ^{\ce{Ag}}_{Lα}·\left(\frac{3.151}{2.984}\right)$ fixes
 the $Lβ$ line of silver to the fit parameter $μ^{\ce{Ag}}_{Lα}$ of the
 $Lα$ line with a multiplicative shift based on the relative eneries of
 $Lα$ to $Lβ$.  In some cases the amplitude is fixed between different
@@ -20216,7 +20221,7 @@ the fluorescence line and therefore known energy.
 #+CAPTION: All fit functions for the charge spectra used for each target / filter combination. Typically each
 #+CAPTION: line that is expected and visible in the data is fit. $G$ is a normal Gaussian. No 'argument'
 #+CAPTION: to $G$ means each parameter ($N, μ, σ$) is fit. Specific arguments imply this
-#+CAPTION: parameter is _fixed_ relative to another parameter, e.g. $μ^{\ce{Ag}}_{Lα}·(\frac{3.151}{2.984}$ fixes
+#+CAPTION: parameter is _fixed_ relative to another parameter, e.g. $μ^{\ce{Ag}}_{Lα}·\left(\frac{3.151}{2.984}\right)$ fixes
 #+CAPTION: $Lβ$ line of silver to the fit parameter $μ^{\ce{Ag}}_{Lα}$ of $Lα$ with a multiplicative
 #+CAPTION: shift based on the relative eneries of $Lα$ to $Lβ$.
 #+CAPTION: In some cases the amplitude is fixed between different lines, e.g. in one of the $\ce{Cu}-\text{EPIC}$
@@ -20226,18 +20231,18 @@ the fluorescence line and therefore known energy.
 #+CAPTION: what the real cause is, in particular in the lower energy case.
 #+NAME: tab:cdl:fit_func_charge
 #+ATTR_LATEX: :environment longtable :width \textwidth :spread 
-|--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Target | Filter | HV [kV] | Fit functions                                                                                                                                                                                                                                                                                                  |
-|--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Cu     | Ni     |      15 | $G^{\ce{Cu}}_{Kα} + G^{\ce{Cu}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                              |
-| Mn     | Cr     |      12 | $G^{\ce{Mn}}_{Kα} + G^{\ce{Mn}, \text{esc}}_{Kα}$                                                                                                                                                                                                                                                              |
-| Ti     | Ti     |       9 | $G^{\ce{Ti}}_{Kα} + G^{\ce{Ti}, \text{esc}}_{Kα} + G^{\ce{Ti}}_{Kβ}\left( μ^{\ce{Ti}}_{Kα}·(\frac{4.932}{4.511}), σ^{\ce{Ti}}_{Kα} \right) + G^{\ce{Ti}, \text{esc}}_{Kβ}\left( μ^{\ce{Ti}}_{Kα}·(\frac{1.959}{4.511}), σ^{\ce{Ti}, \text{esc}}_{Kα} \right)$                                                  |
-| Ag     | Ag     |       6 | $G^{\ce{Ag}}_{Lα} + G^{\ce{Ag}}_{Lβ}\left( N^{\ce{Ag}}_{Lα}·0.56, μ^{\ce{Ag}}_{Lα}·(\frac{3.151}{2.984}), σ^{\ce{Ag}}_{Lα} \right)$                                                                                                                                                                            |
-| Al     | Al     |       4 | $G^{\ce{Al}}_{Kα}$                                                                                                                                                                                                                                                                                             |
-| Cu     | EPIC   |       2 | $G^{\ce{Cu}}_{Lα} + G^{\ce{Cu}}_{Lβ}\left( N^{\ce{Cu}}_{Lα}·(\frac{0.65}{1.11}), μ^{\ce{Cu}}_{Lα}·(\frac{0.9498}{0.9297}), σ^{\ce{Cu}}_{Lα} \right) + G^{\ce{O}}_{Kα}\left( \frac{N^{\ce{Cu}}_{Lα}}{3.5}, μ^{\ce{Cu}}_{Lα}·(\frac{0.5249}{0.9297}), \frac{σ^{\ce{Cu}}_{Lα}}{2.0} \right) + G_{\text{unknown}}$ |
-| Cu     | EPIC   |     0.9 | $G^{\ce{O}}_{Kα} + G^{\ce{C}}_{Kα}\left( \frac{N^{\ce{O}}_{Kα}}{10.0}, μ^{\ce{O}}_{Kα}·(\frac{277.0}{524.9}), σ^{\ce{O}}_{Kα} \right) + G_{\text{unknown}}$                                                                                                                                                    |
-| C      | EPIC   |     0.6 | $G^{\ce{C}}_{Kα} + G^{\ce{O}}_{Kα}\left( μ^{\ce{C}}_{Kα}·(\frac{0.525}{0.277}), σ^{\ce{C}}_{Kα} \right)$                                                                                                                                                                                                       |
-|--------+--------+---------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|--------+--------+---------+-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Target | Filter | HV [kV] | Fit functions                                                                                                                                               |
+|--------+--------+---------+-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Cu     | Ni     |      15 | $G^{\ce{Cu}}_{Kα} + G^{\ce{Cu}, \text{esc}}_{Kα}$                                                                                                           |
+| Mn     | Cr     |      12 | $G^{\ce{Mn}}_{Kα} + G^{\ce{Mn}, \text{esc}}_{Kα}$                                                                                                           |
+| Ti     | Ti     |       9 | $G^{\ce{Ti}}_{Kα} + G^{\ce{Ti}, \text{esc}}_{Kα} + G^{\ce{Ti}}_{Kβ}\left( μ^{\ce{Ti}}_{Kα}·\left(\frac{4.932}{4.511}\right), σ^{\ce{Ti}}_{Kα} \right) + G^{\ce{Ti}, \text{esc}}_{Kβ}\left( μ^{\ce{Ti}}_{Kα}·\left(\frac{1.959}{4.511}\right), σ^{\ce{Ti}, \text{esc}}_{Kα} \right)$ |
+| Ag     | Ag     |       6 | $G^{\ce{Ag}}_{Lα} + G^{\ce{Ag}}_{Lβ}\left( N^{\ce{Ag}}_{Lα}·0.56, μ^{\ce{Ag}}_{Lα}·\left(\frac{3.151}{2.984}\right), σ^{\ce{Ag}}_{Lα} \right)$              |
+| Al     | Al     |       4 | $G^{\ce{Al}}_{Kα}$                                                                                                                                          |
+| Cu     | EPIC   |       2 | $G^{\ce{Cu}}_{Lα} + G^{\ce{Cu}}_{Lβ}\left( N^{\ce{Cu}}_{Lα}·\left(\frac{0.65}{1.11}\right), μ^{\ce{Cu}}_{Lα}·\left(\frac{0.9498}{0.9297}\right), σ^{\ce{Cu}}_{Lα} \right) + G^{\ce{O}}_{Kα}\left( \frac{N^{\ce{Cu}}_{Lα}}{3.5}, μ^{\ce{Cu}}_{Lα}·\left(\frac{0.5249}{0.9297}\right), \frac{σ^{\ce{Cu}}_{Lα}}{2.0} \right) + G_{\text{unknown}}$ |
+| Cu     | EPIC   |     0.9 | $G^{\ce{O}}_{Kα} + G^{\ce{C}}_{Kα}\left( \frac{N^{\ce{O}}_{Kα}}{10.0}, μ^{\ce{O}}_{Kα}·\left(\frac{277.0}{524.9}\right), σ^{\ce{O}}_{Kα} \right) + G_{\text{unknown}}$ |
+| C      | EPIC   |     0.6 | $G^{\ce{C}}_{Kα} + G^{\ce{O}}_{Kα}\left( μ^{\ce{C}}_{Kα}·\left(\frac{0.525}{0.277}\right), σ^{\ce{C}}_{Kα} \right)$                                         |
+|--------+--------+---------+-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 \normalsize
 
 [fn:pixel_spectra_fitting] Note that similar fits can be performed for
@@ -20859,6 +20864,9 @@ as well!
 
 **** TODOs for this section [/]                                 :noexport:
 
+- [ ] *PUT NOTE INTO FOOTNOTE?*
+
+
 - [ ] *TAKE OUT 'NOTE ABOUT INIFNITIES' IN DATA*
   -> I don't think it is particular enlightening in the context of the
   section. Probably it will just become an extended note about the raw
@@ -21201,6 +21209,8 @@ this chapter to the background data of CAST we can extract all
 clusters that are X-ray like and therefore describe the irreducible
 background rate. Unless otherwise stated the following plots use a
 software efficiency of $\SI{80}{\%}$.
+
+- [ ] *UPDATE TEXT ABOUT NUMBER OF CLUSTERS, NO SPARKY*
 
 Fig. [[sref:fig:background:cluster_centers_no_vetoes_2017_18]] shows the
 cluster centers and their distribution over the whole center GridPix,
@@ -21975,7 +21985,7 @@ and background events are
 \mathbf{\hat{y}}_{\text{background}} &= \vektor{ 0 \\ 1 }
 \end{align*}
 
-where the first entry of $\mathbf{\hat{y}}$ corresponds to output
+where the first entry of each $\mathbf{\hat{y}}$ corresponds to output
 neuron 1 and the second to output neuron 2.
 
 For the network to generalize to all real CAST data, the training
@@ -22070,7 +22080,7 @@ steps.
     cluster, using the same calibration functions as the real chip
     (depending on which dataset it should correspond to).
 
-Note: neighboring pixels are added to achieve matching eccentricity
+Note: Neighboring pixels are added to achieve matching eccentricity
 distributions between real data and simulated. Activating neighboring
 pixels increases the local pixel density randomly, which effectively
 increases the weight of some pixels, leading to a slight increase of
@@ -22548,7 +22558,7 @@ Fig. [[fig:background:mlp:ridgeline_simulated_vs_real_run241]] shows the
 comparison of all cluster properties of simulated and real data for
 one \cefe calibration run, number 241. The data is cut to the
 photopeak and normalized to fit into a single plot, each ridge shows a
-kernel density estimation of the data. Gas gain and gas diffusion are
+kernel density estimation (KDE) of the data. Gas gain and gas diffusion are
 extracted from the data as explained in previous sections.
 
 All distributions outside the number of hits, energy and total charge
@@ -25005,12 +25015,12 @@ that tracks the Sun to much higher altitudes will see such muon
 background significantly more ($\cos²(θ)$!).
 
 [fn:gas_properties_pyboltz] The properties were calculated with
-~PyBoltz~, a Cython conversion of Magboltz. The code can be found
+~Magboltz~ using ~Nimboltz~, a Nim interfacer for ~Magboltz~. The code can be found
 here:
-https://github.com/Vindaar/TimepixAnalysis/Tools/septemboardCastGasPyboltz
+https://github.com/Vindaar/TimepixAnalysis/Tools/septemboardCastGasNimboltz
 Further the numbers used here are for a temperature of $\SI{26}{°C}$,
 slightly above room temperature due to the heating of the Septemboard
-itself into the gas. *UPDATE CODE TO USE NIMBOLTZ*
+itself into the gas.
 
 **** TODOs for above section [/] :noexport:
 
@@ -30036,7 +30046,7 @@ what the individual pieces are and how likelihood values are computed
 (sec. [[#sec:limit:method_computing_L]]) and how a limit is computed from
 such a likelihood function,
 sec. [[#sec:limit:method_computing_a_limit]]. Then we introduce our
-approach to compute an expected limit by sampling toy candidates,
+approach to compute an expected limit by sampling toy candidates [fn:toys],
 sec. [[#sec:limit:method_expected_limit]]. 
 
 After this we will extend our approach in sec. [[#sec:limit:systematics]]
@@ -30058,6 +30068,10 @@ veto choices, sec. [[#sec:limit:expected_limits]]. For the best performing
 setup -- the one yielding the best expected limit -- we present our
 axion candidates, [[#sec:limit:candidates]]. Based on these we finally
 present our observed limits in sec. [[#sec:limit:observed_limits]].
+
+[fn:toys] 'Toy' is a common terminology for randomly sampled cases in
+Monte Carlo calculations. In our case, sampling representative
+candidates from the background distribution yields a set of 'toy candidates'.
 
 ** TODOs for this section [/]                                     :noexport:
 
@@ -30253,7 +30267,7 @@ to measure $c_i$ counts in each channel $i$ assuming only the
 background hypothesis.
   
 #+begin_quote
-For each channel $i$ the ratio of probabilities itself is not strictly
+Note: For each channel $i$ the ratio of probabilities itself is not strictly
 speaking a probability density function, because the integral
 
 \[
@@ -30318,6 +30332,11 @@ to get a combined likelihood to compute a limit for.
 
 [fn:we_could] We could use $P_i(k_i; λ_i = s_i + b_i)$, but among
 other things a ratio is numerically more stable.
+
+*** TODOs for this section                                       :noexport:
+
+- [ ] *PUT NOTE ON EXTENDED* below the 'Note the important fact' part?
+  I. directly above 'Deriving a practical version of L'?
 
 *** Notes on more explanations                                   :extended:
 
@@ -32369,7 +32388,7 @@ position uncertainty, we need to move the axion image without moving
 the strongback. As such the strongback is added as part of the limit
 calculation based on the physical position on the chip of a given candidate.
 
-#+CAPTION: Axion image as computed using raytracing for the AGSS09 solar model
+#+CAPTION: Axion image as computed using raytracing for the AGSS09 cite:agss09_chemical,agss09_new_solar solar model
 #+CAPTION: and under the assumption that the axion-electron coupling constant
 #+CAPTION: $g_{ae} = \num{1e-13}$ dominates over the axion-photon coupling $g_{aγ} = \SI{1e-12}{GeV^{-1}}$.
 #+CAPTION: The diagonal lines with missing flux are the detector window strongbacks.
@@ -32564,8 +32583,8 @@ W(x', y', E') &= t_B ∫_{E' - E_c}^{E' + E_c} ∫_{\mathcal{D}(\vec{x'}, \vec{x
 where we made use of the fact that within the region of interest
 $\mathcal{D}'$ is effectively just a radius $r$ around the point we
 evaluate. $t_B$ is the total active background data taking time. If
-our measure was $\mathcal{M} = 1$ -- meaning we would count the
-clusters in $\mathcal{D}(\vec{x}, \vec{x}') \leq R$ -- the
+our measure was $\mathcal{M} = 1$, meaning we would count the
+clusters in $\mathcal{D}(\vec{x}, \vec{x}') \leq R$, the
 normalization $W$ would simply be the volume of the cylinder.
 
 This yields a smooth and continuous interpolation of the background
@@ -37546,20 +37565,20 @@ uncertainties and detection efficiencies.
 
 Focusing on a new detector, there are two major improvements on the
 horizon. First of all a future detector is likely going to be built
-from for radiopure materials. This should reduce the inherent
-background seen in the detector significantly. In addition such a
-detector will be built on top of the Timepix3 instead of the
-Timepix. This comes with massive improvements in terms of achievable
-background rates at higher signal efficiencies. The Timepix3 can be
-read out in a stream-based fashion. Therefore, there is no more dead
-time associated with a readout and long shutter times are a thing of
-the past. More importantly, this means for a 7-GridPix detector
-layout, the very high random coincidence rates seen for the current
-detector (see sec. [[#sec:background:estimate_veto_efficiency]]) are
-completely removed. For a Timepix3 based detector the septem veto and
-line veto can be used /without any efficiency penalty/. Combined with
-an MLP classifier as used in this thesis and without considering
-radiopure materials, background rates in the
+from radiopure materials. This should reduce the inherent background
+seen in the detector significantly. In addition such a detector will
+be built on top of the Timepix3 instead of the Timepix. This comes
+with massive improvements in terms of achievable background rates at
+higher signal efficiencies. The Timepix3 can be read out in a
+stream-based fashion. Therefore, there is no more dead time associated
+with a readout and long shutter times are a thing of the past. More
+importantly, this means for a 7-GridPix detector layout, the very high
+random coincidence rates seen for the current detector (see
+sec. [[#sec:background:estimate_veto_efficiency]]) are completely
+removed. For a Timepix3 based detector the septem veto and line veto
+can be used /without any efficiency penalty/. Combined with an MLP
+classifier as used in this thesis and without considering radiopure
+materials, background rates in the
 $\SIrange{5e-6}{7e-6}{keV^{-1}.cm^{-2}.s^{-1}}$ range are achievable
 at software efficiencies around the $\SI{95}{\%}$ mark (see
 tab. [[tab:background:background_rate_eff_comparisons]] and
@@ -37635,8 +37654,9 @@ And hey, maybe soon we can also compute a limit on the Axio-Chameleon
 cite:brax2023axiochameleons?
 
 [fn:reproducible] This is also one additional reason why I felt it
-important to provide a thesis that is fully reproducible in order to
-make it easier for other people to actually the developed methods.
+important to provide a thesis that is fully reproducible. This makes
+it easier for other people to actually use the developed software and
+understand the methods.
 
 ** TODOs for this section [/]                                     :noexport:
 
@@ -37829,6 +37849,8 @@ For the other coupling constants we obtained
 # TODO: need backend specific sections here I think
 
 ** TODOs for this section [/]                                     :noexport:
+
+- [ ] *WRITE SUMMARY IN FIRST OR THIRD PERSON?*
 
 - [ ] *EXTEND FOR OTHER COUPLING CONSTANT LIMITS!*
 
