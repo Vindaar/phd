@@ -20007,13 +20007,19 @@ Make sure the config file uses ~fitByRun~ to reproduce the same plots!
 ~ESCAPE_LATEX~ performs replacement of characters like ~&~ used in
 titles. 
 #+begin_src sh
-cd /tmp
-ESCAPE_LATEX=true USE_TEX=true cdl_spectrum_creation -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 --cutcdl --dumpAccurate --hideNloptFit
+F_WIDTH=0.9 ESCAPE_LATEX=true USE_TEX=true \
+            cdl_spectrum_creation \
+            -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
+            --cutcdl --dumpAccurate --hideNloptFit \
+            --plotPath ~/phd/Figs/CDL/fWidth0.9/
 #+end_src
 
-This generates lots of plots, they should all land in something like:
-~out/CDL_2019_raw_2020-09-18_17-28-35/~
-relative to where the command was run.
+Note: 
+
+This generates lots of plots, all placed in the output directory. The
+~fWidth0.9~ subdirectory is because here we wish to produce them with
+slightly smaller fonts as the single charge spectrum we use in the
+next section is inserted standalone.
 
 Among them are:
 - plots of the target / filter kinds with all fits and the raw / cut
@@ -20293,7 +20299,7 @@ the fluorescence line and therefore known energy.
 #+CAPTION: which is later used to extract those clusters likely from the
 #+CAPTION: fluorescence line and therefore known energy.
 #+NAME: fig:cdl:ti_ti_charge_spectrum_run_326
-[[~/phd/Figs/CDL/Ti-Ti-9kVCharge-2019_run_326.pdf]]
+[[~/phd/Figs/CDL/fWidth0.9/Ti-Ti-9kVCharge-2019_run_326.pdf]]
 
 \footnotesize
 #+CAPTION: All fit functions for the charge spectra used for each target / filter combination. Typically each
@@ -22978,7 +22984,7 @@ using the ~--skipTraining~ argument without ~--predict~ (due to
 different data requirements).
 
 #+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/NN_playground/
-./train_ingrid \
+WRITE_PLOT_CSV=true USE_TEX=true ./train_ingrid \
     ~/CastData/data/CalibrationRuns2017_Reco.h5 \
     ~/CastData/data/CalibrationRuns2018_Reco.h5 \
     --back ~/CastData/data/DataRuns2017_Reco.h5 \
@@ -23021,7 +23027,7 @@ different data requirements).
 #+end_src
 
 #+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/NN_playground/
-./train_ingrid \
+WRITE_PLOT_CSV=true USE_TEX=true ./train_ingrid \
     ~/CastData/data/CalibrationRuns2017_Reco.h5 \
     ~/CastData/data/CalibrationRuns2018_Reco.h5 \
     --back ~/CastData/data/DataRuns2017_Reco.h5 \
@@ -23287,12 +23293,13 @@ This might our winner.
 
 90% <2023-11-18 Sat 08:59>
 #+begin_src sh
-./effective_eff_55fe \
+WRITE_PLOT_CSV=true USE_TEX=true ./effective_eff_55fe \
     ~/CastData/data/CalibrationRuns2017_Reco.h5 ~/CastData/data/CalibrationRuns2018_Reco.h5 \
     --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
     --ε 0.90 \
     --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
     --evaluateFit --plotDatasets \
+    --generatePlots --generateRunPlots \
     --plotPath ~/Sync/run2_run3_17_11_23_adam_tanh30_sigmoid_mse_mlp90_82k/ 
 #+end_src
 
@@ -23658,7 +23665,6 @@ gain, diffusion) as compared to the CAST dataset.
 #+CAPTION: line, due to different physical properties. The photopeak corresponds to ~5.9~ and
 #+CAPTION: the equivalent CDL Mn target to ~5.89~. 
 #+NAME: fig:background:mlp:effective_efficiencies
-#+ATTR_LATEX: :width 0.7\textwidth
 [[~/phd/Figs/neuralNetworks/17_11_23_adam_tanh30_sigmoid_mse_3keV/effectiveEff0.95/efficiency_based_on_fake_data_per_run_cut_val.pdf]]
 
 **** TODOs for this section                                     :noexport:
@@ -23688,12 +23694,13 @@ copied here:
 
 Now we compute the effective efficiencies:
 #+begin_src sh
-./effective_eff_55fe \
+WRITE_PLOT_CSV=true USE_TEX=true ./effective_eff_55fe \
     ~/CastData/data/CalibrationRuns2017_Reco.h5 ~/CastData/data/CalibrationRuns2018_Reco.h5 \
     --model ~/org/resources/nn_devel_mixing/17_11_23_adam_tanh30_sigmoid_mse_3keV/mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.pt \
     --ε 0.95 \
     --cdlFile ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
     --evaluateFit --plotDatasets \
+    --generatePlots --generateRunPlots \
     --plotPath ~/phd/Figs/neuralNetworks/17_11_23_adam_tanh30_sigmoid_mse_3keV/effectiveEff0.95/
   #+end_src
 
@@ -39650,7 +39657,7 @@ recorded, we can compute the number of electrons corresponding to that
 =THL= DAC value, as we know the amplitude of the test pulse and thus
 number of injected electrons.
 
-Fig. [[fig:daq:s_curve_example]] shows an S-Curve scan of chip 0 of the
+Fig. [[fig:daq:s_curves_example]] shows an S-Curve scan of chip 0 of the
 Septemboard using the calibration from July 2018. The center peak in
 the middle is the noise peak of the detector at the shutter length
 used for the S-Curve scan. The symmetrical shape is due to specific
@@ -42731,36 +42738,40 @@ There are also pictures of every shift form in my googlo photos.
 |        303 | <2018-12-18 Tue 06:52> |    44.69 |                                                |
 |        306 | <2018-12-20 Thu 06:30> |    40.04 |                                                |
 
-* Cabling & software setup [/]                                     :Appendix:
+* Cabling & software setup [/]                                     :Appendix:extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:cabling_and_softwar_setup
 :END:
 
+This appendix gives a short overview on how the cabling of the
+detector needs to be set up and how to set up a computer to flash the
+firmware TOF. Finally, an example is given on how to start up TOS and
+start a background run. These are mainly notes taken for myself, but I
+think they should be useful for anyone attempting to run this detector.
+
+** TODOs for this section                                         :noexport:
+
 - [ ] *CLEAN THIS UP TO MAKE IT STAND ON ITS OWN OR MERGE INTO ABOVE
   CAST OPERATION?*
 
-The requires:
-- Virtex:
-  - power
-  - 2 HDMI to intermediate board
-  - mini USB into JTAG port on backside
-  - RJ45 from ethernet port into 2nd ethernet card on DAQ PC
+** Virtex V6 cabling
+
+The following pieces are required:
+- power supply
+- 2 HDMI to intermediate board
+- mini USB into JTAG port on backside (to computer)
+- RJ45 from ethernet port into 2nd ethernet card on DAQ PC
 
 The RJ45 connection is only required to flash the firmware onto the
 Virtex.
 
-For the flashing of the firmware, take into account the USB driver
-setup described in =void_settings.org=.
-
-** Detector cabling [/]
-
-- [ ] *CLEAN THIS UP*
+** Detector cabling
 
 The following is the cabling for the FADC and the scintillators to the
 intermediate board. It's a useful reference when connecting the
 cabling!
 
-FADC Trig out:
+FADC Trig out (on the FADC):
 - trig out -> level adapter (NIM module) into NIM IN, set to +NORM+ /
   *COMPL* (*this is active*)
   TTL out -> TTL signal clipper (TTL 5V -> 2.4V) into port marked =I=
@@ -42855,8 +42866,6 @@ Run
 #+end_src
 
 The above would launch a full background run.
-
-
 
 * Window rupture and vacuum contamination                 :Appendix:extended:
 :PROPERTIES:
@@ -43306,9 +43315,21 @@ reached if the telescope sits open during installation etc.
 
 In section [[#sec:calib:detector_behavior_over_time]] we covered the
 median charge and energies of clusters in the background and
-calibration data. Here in the appendix
+calibration data. Here in the appendix we present a few additional
+plots. First in sec. [[#sec:appendix:choice_gas_gain_binning]] are the
+equivalent figures to
+fig. [[fig:calib:median_energy_ridgeline_30_10_2017]] as well as the
+goodness-of-fit tests in a figure for the data shown in
+sec. [[#sec:calib:detector_behavior_over_time]]. In
+sec. [[#sec:appendix:correlation_gas_gain_ambient_temp]] we have the
+equivalent figures to
+fig. [[fig:calib:correlation_ambient_temperature_gasgain_and_spectra]] for
+the other run periods.
+
+** TODOs for this section [/]                                     :noexport:
 
 - [ ] *PROBABLY SCRAP THIS IF WE PUT BOTH DATA INTO ONE PLOT*
+  -> Not sure which plot this referenced anymore even.
 
 ** Choice of gas gain binning time interval
 :PROPERTIES:
@@ -43320,7 +43341,8 @@ intervals for the choice of 'ideal' gas gain time binning for all run
 periods (not in the sense of Run-2 and Run-3, but those split by
 significant off time). In addition
 fig. [[fig:appendix:calib:gof_tests_different_binnings]] shows the results
-of applying a range of goodness of fit tests to the cluster data.
+of applying a range of goodness of fit tests to the cluster data (we
+use a plot and not a table for easier visual parsing).
 
 Note that the repository of this thesis contains even more figures
 related to this in the ~Figs/behavior_over_time~ directory.
@@ -43356,8 +43378,11 @@ related to this in the ~Figs/behavior_over_time~ directory.
 #+NAME: fig:calib:median_energy_ridgeline_Oct2018
 [[~/phd/Figs/behavior_over_time/medianEnergy_kde_ridges_21_10_2018.pdf]]
 
-
+\clearpage 
 ** Correlation of gas gain and ambient CAST temperature
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:correlation_gas_gain_ambient_temp
+:END:
 
 Let's look at the rest of the data not shown in
 sec. [[#sec:calib:causes_variability]]. First in
@@ -43375,7 +43400,6 @@ fig. [[fig:appendix:gas_gain_vs_ambient_temp_center]] shows the gas gain
 of the center chip plotted directly against the ambient temperature at
 CAST as a scatter plot. Here the anti correlation becomes very visible
 as a global trend.
-
 
 #+CAPTION: Normalized data for Run-2 (only 2017) of the temperature sensors from the CAST slow control log
 #+CAPTION: files compared to the behavior of the mean peak position in the \cefe pixel spectra
@@ -43414,343 +43438,951 @@ as a global trend.
 :CUSTOM_ID: sec:appendix:cast_detector_lab
 :END:
 
+In this appendix we present additional plots of the CAST Detector Lab
+(CDL) data taking campaign, as introduced in sec. [[#sec:cdl]]. First in
+sec. [[#sec:appendix:cdl_spectra_by_run]] plots of all CDL runs by their
+target and filter combination, both for the pixel and charge spectrum,
+can be found, split by each
+run. Sec. [[#sec:appendix:cdl:all_spectra_fits_by_run]] then contains all figures
+equivalent to fig. [[fig:cdl:ti_ti_charge_spectrum_run_326]] for all the
+different runs (both as pixel and charge spectrum).
+
+** Generate all spectrum plots split by run :extended:
+
+All the plots of the spectra split by run are produced by
+~cdl_spectrum_creation~ as mentioned in
+sec. [[#sec:background:gen_plots_cdl_data]].
+
+However, for this appendix we wish to have slightly larger fonts,
+because the only plot used in the main thesis body is a single plot,
+not side by side.
+
+So the command for this appendix:
+#+begin_src sh
+F_WIDTH=0.5 WRITE_PLOT_CSV=true ESCAPE_LATEX=true USE_TEX=true \
+            cdl_spectrum_creation \
+            -i ~/CastData/data/CDL_2019/CDL_2019_Reco.h5 \
+            --cutcdl --dumpAccurate --hideNloptFit \
+            --plotPath ~/phd/Figs/CDL/
+#+end_src
+
 ** All spectra split by run
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:cdl_spectra_by_run
 :END:
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/C-EPIC-0.6kV-2019_by_run.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_cEpic0_6_by_run}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/C-EPIC-0.6kVCharge-2019_by_run.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_cEpic0_6_by_run}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_cEpic0_6_by_run}
-  \caption{\subref{fig:appendix:cdl_pixel_cEpic0_6_by_run} Pixel spectrum and \subref{fig:appendix:cdl_charge_cEpic0_6_by_run}
-  charge spectrums of the raw data split by the data taking run.}
-\end{figure}
+The plots in this section are useful to see the variation visible for
+one target/filter combination between different runs. In theory the
+peaks should always be at the same pixel / charge value, but in
+reality for some targets they vary significantly between runs. This is
+the main motivator to treat the data on a 'run-by-run' basis.
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kV-2019_by_run.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_cuEpic0_9_by_run}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kVCharge-2019_by_run.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_cuEpic0_9_by_run}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_cuEpic0_9_by_run}
-  \caption{\subref{fig:appendix:cdl_pixel_cuEpic0_9_by_run} Pixel spectrum and \subref{fig:appendix:cdl_charge_cuEpic0_9_by_run}
-  charge spectrums of the raw data split by the data taking run.}
-\end{figure}
+#+begin_comment
+Below is the code we use to produce all the ~subsection~ DSL side by
+side figures, their labels and captions. Too much work to do by hand,
+if it's all the same anyway. :)
+#+end_comment
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-EPIC-2kV-2019_by_run.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_cuEpic2_by_run}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-EPIC-2kVCharge-2019_by_run.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_cuEpic2_by_run}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_cuEpic2_by_run}
-  \caption{\subref{fig:appendix:cdl_pixel_cuEpic2_by_run} Pixel spectrum and \subref{fig:appendix:cdl_charge_cuEpic2_by_run}
-  charge spectrums of the raw data split by the data taking run.}
-\end{figure}
+#+begin_src nim :exports results :results drawer
+import std / [os, algorithm, strformat, strutils]
+import ingrid / ingrid_types
+const path = "~/phd/Figs/CDL/"
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Al-Al-4kV-2019_by_run.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_alAl4kV_by_run}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Al-Al-4kVCharge-2019_by_run.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_alAl4kV_by_run}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_alAl4kV_by_run}
-  \caption{\subref{fig:appendix:cdl_pixel_alAl4kV_by_run} Pixel spectrum and \subref{fig:appendix:cdl_charge_alAl4kV_by_run}
-  charge spectrums of the raw data split by the data taking run.}
-\end{figure}
+proc subfigureSec(body: string): string =
+  result = """
+$#begin_src subfigure
+(figure ()
+$#
+)
+$#end_src
+""" % ["#+", body, "#+"]
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Ag-Ag-6kV-2019_by_run.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_agAg6kV_by_run}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Ag-Ag-6kVCharge-2019_by_run.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_agAg6kV_by_run}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_agAg6kV_by_run}
-  \caption{\subref{fig:appendix:cdl_pixel_agAg6kV_by_run} Pixel spectrum and \subref{fig:appendix:cdl_charge_agAg6kV_by_run}
-  charge spectrums of the raw data split by the data taking run.}
-\end{figure}
+proc subfigure(caption, label, path: string): string =
+  result = """
+        (subfigure (linewidth 0.5) (caption "$#") (label "$#")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "$#"))
+""" % [caption, label, path]
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Ti-Ti-9kV-2019_by_run.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_tiTi9kV_by_run}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Ti-Ti-9kVCharge-2019_by_run.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_tiTi9kV_by_run}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_tiTi9kV_by_run}
-  \caption{\subref{fig:appendix:cdl_pixel_tiTi9kV_by_run} Pixel spectrum and \subref{fig:appendix:cdl_charge_tiTi9kV_by_run}
-  charge spectrums of the raw data split by the data taking run.}
-\end{figure}
+proc caption(isPixel: bool): string =
+  result = if isPixel: "Pixel spectrum" else: "Charge spectrum"
+proc label(tfKind: TargetFilterKind, isPixel: bool): string =
+  let typ = if isPixel: "pixel" else: "charge"
+  result = &"fig:appendix:cdl_{typ}_{$tfKind}_by_run"
+  
+proc fullLabel(tfKind: TargetFilterKind): string = &"        (label \"fig:appendix:cdl_{$tfKind}_by_run\")"
+proc subref(tfKind: TargetFilterKind, isPixel: bool): string =
+  result = "(subref \"$#\")" % [label(tfKind, isPixel)]
+proc fullCaption(tfKind: TargetFilterKind): string =
+  result = """
+        (caption
+         "Pixel spectra, "
+         $#
+         ", and charge spectra, "
+         $#
+         ", of the raw data for $# split by the data taking run.")
+""" % [subref(tfKind, true), subref(tfKind, false), $tfKind]
 
+var plots = newSeq[string]()
+for tfKind in TargetFilterKind:
+  let pFile = (path / $tfKind & "-2019_by_run.pdf").expandTilde
+  let cFile = (path / $tfKind & "Charge-2019_by_run.pdf").expandTilde
+  doAssert fileExists(pFile)
+  doAssert fileExists(cFile)
+  let plot = subfigureSec(
+    subfigure(caption(isPixel = true), label(tfKind, isPixel = true), pFile) &
+    subfigure(caption(isPixel = false), label(tfKind, isPixel = false), cFile) &
+    fullCaption(tfKind) &
+    fullLabel(tfKind)   
+  )
+  plots.add plot
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Mn-Cr-12kV-2019_by_run.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_mnCr12kV_by_run}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Mn-Cr-12kVCharge-2019_by_run.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_mnCr12kV_by_run}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_mnCr12kV_by_run}
-  \caption{\subref{fig:appendix:cdl_pixel_mnCr12kV_by_run} Pixel spectrum and \subref{fig:appendix:cdl_charge_mnCr12kV_by_run}
-  charge spectrums of the raw data split by the data taking run.}
-\end{figure}
+for plt in plots.reversed:
+  echo plt
+#+end_src
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-Ni-15kV-2019_by_run.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_cuNi15kV_by_run}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-Ni-15kVCharge-2019_by_run.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_cuNi15kV_by_run}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_cuNi15kV_by_run}
-  \caption{\subref{fig:appendix:cdl_pixel_cuNi15kV_by_run} Pixel spectrum and \subref{fig:appendix:cdl_charge_cuNi15kV_by_run}
-  charge spectrums of the raw data split by the data taking run.}
-\end{figure}
+#+RESULTS:
+:results:
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_C-EPIC-0.6kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/C-EPIC-0.6kV-2019_by_run.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_C-EPIC-0.6kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/C-EPIC-0.6kVCharge-2019_by_run.pdf"))
+        (caption
+         "Pixel spectra, "
+         (subref "fig:appendix:cdl_pixel_C-EPIC-0.6kV_by_run")
+         ", and charge spectra, "
+         (subref "fig:appendix:cdl_charge_C-EPIC-0.6kV_by_run")
+         ", of the raw data split by the data taking run.")
+        (label "fig:appendix:cdl_C-EPIC-0.6kV_by_run")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-EPIC-0.9kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kV-2019_by_run.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-EPIC-0.9kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kVCharge-2019_by_run.pdf"))
+        (caption
+         "Pixel spectra, "
+         (subref "fig:appendix:cdl_pixel_Cu-EPIC-0.9kV_by_run")
+         ", and charge spectra, "
+         (subref "fig:appendix:cdl_charge_Cu-EPIC-0.9kV_by_run")
+         ", of the raw data split by the data taking run.")
+        (label "fig:appendix:cdl_Cu-EPIC-0.9kV_by_run")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-EPIC-2kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kV-2019_by_run.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-EPIC-2kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kVCharge-2019_by_run.pdf"))
+        (caption
+         "Pixel spectra, "
+         (subref "fig:appendix:cdl_pixel_Cu-EPIC-2kV_by_run")
+         ", and charge spectra, "
+         (subref "fig:appendix:cdl_charge_Cu-EPIC-2kV_by_run")
+         ", of the raw data split by the data taking run.")
+        (label "fig:appendix:cdl_Cu-EPIC-2kV_by_run")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Al-Al-4kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Al-Al-4kV-2019_by_run.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Al-Al-4kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Al-Al-4kVCharge-2019_by_run.pdf"))
+        (caption
+         "Pixel spectra, "
+         (subref "fig:appendix:cdl_pixel_Al-Al-4kV_by_run")
+         ", and charge spectra, "
+         (subref "fig:appendix:cdl_charge_Al-Al-4kV_by_run")
+         ", of the raw data split by the data taking run.")
+        (label "fig:appendix:cdl_Al-Al-4kV_by_run")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ag-Ag-6kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kV-2019_by_run.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ag-Ag-6kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kVCharge-2019_by_run.pdf"))
+        (caption
+         "Pixel spectra, "
+         (subref "fig:appendix:cdl_pixel_Ag-Ag-6kV_by_run")
+         ", and charge spectra, "
+         (subref "fig:appendix:cdl_charge_Ag-Ag-6kV_by_run")
+         ", of the raw data split by the data taking run.")
+        (label "fig:appendix:cdl_Ag-Ag-6kV_by_run")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ti-Ti-9kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kV-2019_by_run.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ti-Ti-9kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kVCharge-2019_by_run.pdf"))
+        (caption
+         "Pixel spectra, "
+         (subref "fig:appendix:cdl_pixel_Ti-Ti-9kV_by_run")
+         ", and charge spectra, "
+         (subref "fig:appendix:cdl_charge_Ti-Ti-9kV_by_run")
+         ", of the raw data split by the data taking run.")
+        (label "fig:appendix:cdl_Ti-Ti-9kV_by_run")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Mn-Cr-12kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kV-2019_by_run.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Mn-Cr-12kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kVCharge-2019_by_run.pdf"))
+        (caption
+         "Pixel spectra, "
+         (subref "fig:appendix:cdl_pixel_Mn-Cr-12kV_by_run")
+         ", and charge spectra, "
+         (subref "fig:appendix:cdl_charge_Mn-Cr-12kV_by_run")
+         ", of the raw data split by the data taking run.")
+        (label "fig:appendix:cdl_Mn-Cr-12kV_by_run")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-Ni-15kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kV-2019_by_run.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-Ni-15kV_by_run")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kVCharge-2019_by_run.pdf"))
+        (caption
+         "Pixel spectra, "
+         (subref "fig:appendix:cdl_pixel_Cu-Ni-15kV_by_run")
+         ", and charge spectra, "
+         (subref "fig:appendix:cdl_charge_Cu-Ni-15kV_by_run")
+         ", of the raw data split by the data taking run.")
+        (label "fig:appendix:cdl_Cu-Ni-15kV_by_run")
+)
+#+end_src
+
+:end:
 
 \clearpage
 
-** All CDL spectra with line fits
+** All CDL spectra with line fits                                 :extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:cdl:all_spectra_fits
 :END:
 
-- [ ] *ADD TABLE OF THE FITS PERFORMED HERE?*
-- [ ] *NEED TO REPLACE BELOW BY THE PLOTS FOR THE INDIVIDUAL RUNS*
+The plots in this section are the raw and cleaned pixel and charge
+spectra for each target/filter combination, but not split by run. 
+Any missing parameter indicates it was fixed. For lines with an explicit 'fixed', all
+parameters were fixed.
+
+#+begin_comment
+Below is the code we use to produce all the ~subsection~ DSL side by
+side figures, their labels and captions. Too much work to do by hand,
+if it's all the same anyway. :)
+#+end_comment
+
+#+begin_src nim :exports results :results drawer
+import std / [os, algorithm, strformat, strutils]
+import ingrid / ingrid_types
+const path = "~/phd/Figs/CDL/"
+
+proc subfigureSec(body: string): string =
+  result = """
+$#begin_src subfigure
+(figure ()
+$#
+)
+$#end_src
+""" % ["#+", body, "#+"]
+
+proc subfigure(caption, label, path: string): string =
+  result = """
+        (subfigure (linewidth 0.5) (caption "$#") (label "$#")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "$#"))
+""" % [caption, label, path]
+
+proc caption(isPixel: bool): string =
+  result = if isPixel: "Pixel spectrum" else: "Charge spectrum"
+proc label(tfKind: TargetFilterKind, isPixel: bool): string =
+  let typ = if isPixel: "pixel" else: "charge"
+  result = &"fig:appendix:cdl_{typ}_{$tfKind}"
+  
+proc fullLabel(tfKind: TargetFilterKind): string = &"        (label \"fig:appendix:cdl_{$tfKind}\")"
+proc subref(tfKind: TargetFilterKind, isPixel: bool): string =
+  result = "(subref \"$#\")" % [label(tfKind, isPixel)]
+proc fullCaption(tfKind: TargetFilterKind): string =
+  result = """
+        (caption
+         "Pixel spectrum, "
+         $#
+         ", and charge spectrum, "
+         $#
+         ", including fit parameters, raw and cut data of the $# dataset.")
+""" % [subref(tfKind, true), subref(tfKind, false), $tfKind]
+
+var plots = newSeq[string]()
+for tfKind in TargetFilterKind:
+  let pFile = (path / $tfKind & "-2019.pdf").expandTilde
+  let cFile = (path / $tfKind & "Charge-2019.pdf").expandTilde
+  doAssert fileExists(pFile)
+  doAssert fileExists(cFile)
+  let plot = subfigureSec(
+    subfigure(caption(isPixel = true), label(tfKind, isPixel = true), pFile) &
+    subfigure(caption(isPixel = false), label(tfKind, isPixel = false), cFile) &
+    fullCaption(tfKind) &
+    fullLabel(tfKind)   
+  )
+  plots.add plot
+
+for plt in plots.reversed:
+  echo plt
+#+end_src
+
+#+RESULTS:
+:results:
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_C-EPIC-0.6kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/C-EPIC-0.6kV-2019.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_C-EPIC-0.6kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/C-EPIC-0.6kVCharge-2019.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_C-EPIC-0.6kV")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_C-EPIC-0.6kV")
+         ", including fit parameters, raw and cut data of the C-EPIC-0.6kV dataset.")
+        (label "fig:appendix:cdl_C-EPIC-0.6kV")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-EPIC-0.9kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kV-2019.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-EPIC-0.9kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kVCharge-2019.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-EPIC-0.9kV")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-EPIC-0.9kV")
+         ", including fit parameters, raw and cut data of the Cu-EPIC-0.9kV dataset.")
+        (label "fig:appendix:cdl_Cu-EPIC-0.9kV")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-EPIC-2kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kV-2019.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-EPIC-2kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kVCharge-2019.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-EPIC-2kV")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-EPIC-2kV")
+         ", including fit parameters, raw and cut data of the Cu-EPIC-2kV dataset.")
+        (label "fig:appendix:cdl_Cu-EPIC-2kV")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Al-Al-4kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Al-Al-4kV-2019.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Al-Al-4kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Al-Al-4kVCharge-2019.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Al-Al-4kV")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Al-Al-4kV")
+         ", including fit parameters, raw and cut data of the Al-Al-4kV dataset.")
+        (label "fig:appendix:cdl_Al-Al-4kV")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ag-Ag-6kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kV-2019.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ag-Ag-6kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kVCharge-2019.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Ag-Ag-6kV")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Ag-Ag-6kV")
+         ", including fit parameters, raw and cut data of the Ag-Ag-6kV dataset.")
+        (label "fig:appendix:cdl_Ag-Ag-6kV")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ti-Ti-9kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kV-2019.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ti-Ti-9kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kVCharge-2019.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Ti-Ti-9kV")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Ti-Ti-9kV")
+         ", including fit parameters, raw and cut data of the Ti-Ti-9kV dataset.")
+        (label "fig:appendix:cdl_Ti-Ti-9kV")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Mn-Cr-12kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kV-2019.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Mn-Cr-12kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kVCharge-2019.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Mn-Cr-12kV")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Mn-Cr-12kV")
+         ", including fit parameters, raw and cut data of the Mn-Cr-12kV dataset.")
+        (label "fig:appendix:cdl_Mn-Cr-12kV")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-Ni-15kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kV-2019.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-Ni-15kV")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kVCharge-2019.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-Ni-15kV")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-Ni-15kV")
+         ", including fit parameters, raw and cut data of the Cu-Ni-15kV dataset.")
+        (label "fig:appendix:cdl_Cu-Ni-15kV")
+)
+#+end_src
+
+:end:
+
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [X] *ADD TABLE OF THE FITS PERFORMED HERE?*
+  -> What use would such a table be? All the fits are 'transient'
+  numbers. They don't really matter, the approach matters.
+- [X] *NEED TO REPLACE BELOW BY THE PLOTS FOR THE INDIVIDUAL RUNS*
   -> This is a good idea then to remove the pixel spectra that are
   still present here and replace them by side-by-side versions of the
   different runs.
 
+** All CDL spectra with line fits by run
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:cdl:all_spectra_fits_by_run
+:END:
 
-  
-
+The plots in this section are the raw and cleaned pixel and charge
+spectra for each target/filter combination, split by run. 
 Any missing parameter indicates it was fixed. For lines with an explicit 'fixed', all
 parameters were fixed.
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/C-EPIC-0.6kV-2019.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_cEpic0_6}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/C-EPIC-0.6kVCharge-2019.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_cEpic0_6}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_cEpic0_6}
-  \caption{\subref{fig:appendix:cdl_pixel_cEpic0_6} Pixel spectrum including fit parameters and raw and cut data
-  of the C-EPIC (target-filter) dataset at $\SI{0.6}{kV}$ voltage. \subref{fig:appendix:cdl_charge_cEpic0_6} equivalent
-  for the charge spectrum.}
-\end{figure}
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kV-2019.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_cuEpic0_9}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kVCharge-2019.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_cuEpic0_9}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_cuEpic0_9}
-  \caption{\subref{fig:appendix:cdl_pixel_cuEpic0_9} Pixel spectrum including fit parameters and raw and cut data
-  of the Cu-EPIC (target-filter) dataset at $\SI{0.9}{kV}$ voltage. \subref{fig:appendix:cdl_charge_cuEpic0_9} equivalent
-  for the charge spectrum.}
-\end{figure}
+#+begin_comment
+Below is the code we use to produce all the ~subsection~ DSL side by
+side figures, their labels and captions. Too much work to do by hand,
+if it's all the same anyway. :)
+#+end_comment
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-EPIC-2kV-2019.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_cuEpic2}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-EPIC-2kVCharge-2019.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_cuEpic2}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_cuEpic2}
-  \caption{\subref{fig:appendix:cdl_pixel_cuEpic2} Pixel spectrum including fit parameters and raw and cut data
-  of the Cu-EPIC (target-filter) dataset at $\SI{2.0}{kV}$ voltage. \subref{fig:appendix:cdl_charge_cuEpic2} equivalent
-  for the charge spectrum.}
-\end{figure}
+#+begin_src nim :exports results :results drawer
+import std / [os, algorithm, strformat, strutils, sugar]
+import ingrid / ingrid_types
+const path = "~/phd/Figs/CDL/"
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Al-Al-4kV-2019.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_alAl4kV}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Al-Al-4kVCharge-2019.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_alAl4kV}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_alAl4kV}
-  \caption{\subref{fig:appendix:cdl_pixel_alAl4kV} Pixel spectrum including fit parameters and raw and cut data
-  of the Al-Al (target-filter) dataset at $\SI{4}{kV}$ voltage. \subref{fig:appendix:cdl_charge_alAl4kV} equivalent
-  for the charge spectrum.}
-\end{figure}
+proc subfigureSec(body: string): string =
+  result = """
+$#begin_src subfigure
+(figure ()
+$#
+)
+$#end_src
+""" % ["#+", body, "#+"]
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Ag-Ag-6kV-2019.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_agAg6kV}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Ag-Ag-6kVCharge-2019.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_agAg6kV}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_agAg6kV}
-  \caption{\subref{fig:appendix:cdl_pixel_agAg6kV} Pixel spectrum including fit parameters and raw and cut data
-  of the Ag-Ag (target-filter) dataset at $\SI{6}{kV}$ voltage. \subref{fig:appendix:cdl_charge_agAg6kV} equivalent
-  for the charge spectrum.}
-\end{figure}
+proc subfigure(caption, label, path: string): string =
+  result = """
+        (subfigure (linewidth 0.5) (caption "$#") (label "$#")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "$#"))
+""" % [caption, label, path]
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Ti-Ti-9kV-2019.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_tiTi9kV}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Ti-Ti-9kVCharge-2019.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_tiTi9kV}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_tiTi9kV}
-  \caption{\subref{fig:appendix:cdl_pixel_tiTi9kV} Pixel spectrum including fit parameters and raw and cut data
-  of the Ti-Ti (target-filter) dataset at $\SI{9}{kV}$ voltage. \subref{fig:appendix:cdl_charge_tiTi9kV} equivalent
-  for the charge spectrum.}
-\end{figure}
+proc caption(isPixel: bool): string =
+  result = if isPixel: "Pixel spectrum" else: "Charge spectrum"
+proc label(tfKind: TargetFilterKind, isPixel: bool, run: int): string =
+  let typ = if isPixel: "pixel" else: "charge"
+  result = &"fig:appendix:cdl_{typ}_{$tfKind}_run_{run}"
+  
+proc fullLabel(tfKind: TargetFilterKind, run: int): string = &"        (label \"fig:appendix:cdl_{$tfKind}_run_{run}\")"
+proc subref(tfKind: TargetFilterKind, isPixel: bool, run: int): string =
+  result = "(subref \"$#\")" % [label(tfKind, isPixel, run)]
+proc fullCaption(tfKind: TargetFilterKind, run: int): string =
+  result = """
+        (caption
+         "Pixel spectrum, "
+         $#
+         ", and charge spectrum, "
+         $#
+         ", including fit parameters, raw and cut data of the $# dataset for run $#.")
+""" % [subref(tfKind, true, run), subref(tfKind, false, run), $tfKind, $run]
 
+var plots = newSeq[string]()
+  
+for cFile in walkFiles(path.expandTilde & "*Charge-2019_run_*.pdf"):
+  let fname = cFile.extractFilename()
+  let tfKind = parseEnum[TargetFilterKind](fname.split("Charge")[0])
+  let run = fname.split("_")[^1].dup(removeSuffix(".pdf")).parseInt
+  let pFile = (path / &"{tfKind}-2019_run_{run}.pdf").expandTilde
+  doAssert fileExists(pFile)
+  doAssert fileExists(cFile)
+  let plot = subfigureSec(
+    subfigure(caption(isPixel = true), label(tfKind, isPixel = true, run), pFile) &
+    subfigure(caption(isPixel = false), label(tfKind, isPixel = false, run), cFile) &
+    fullCaption(tfKind, run) &
+    fullLabel(tfKind, run)   
+  )
+  plots.add plot
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Mn-Cr-12kV-2019.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_mnCr12kV}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Mn-Cr-12kVCharge-2019.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_mnCr12kV}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_mnCr12kV}
-  \caption{\subref{fig:appendix:cdl_pixel_mnCr12kV} Pixel spectrum including fit parameters and raw and cut data
-  of the Mn-Cr (target-filter) dataset at $\SI{12}{kV}$ voltage. \subref{fig:appendix:cdl_charge_mnCr12kV} equivalent
-  for the charge spectrum.}
-\end{figure}
+for plt in plots.reversed:
+  echo plt
+#+end_src
 
-\begin{figure}[htbp]
-  \centering
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-Ni-15kV-2019.pdf}
-    \caption{Pixel spectrum}
-    \label{fig:appendix:cdl_pixel_cuNi15kV}
-  \end{subfigure}%
-  \begin{subfigure}{0.5\linewidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{/home/basti/phd/Figs/CDL/Cu-Ni-15kVCharge-2019.pdf}
-    \caption{Charge spectrum}
-    \label{fig:appendix:cdl_charge_cuNi15kV}
-  \end{subfigure}%
-  \label{fig:appendix:cdl_charge_cuNi15kV}c
-  \caption{\subref{fig:appendix:cdl_pixel_cuNi15kV} Pixel spectrum including fit parameters and raw and cut data
-  of the Cu-Ni (target-filter) dataset at $\SI{12}{kV}$ voltage. \subref{fig:appendix:cdl_charge_cuNi15kV} equivalent
-  for the charge spectrum.}
-\end{figure}
+#+RESULTS:
+:results:
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ti-Ti-9kV_run_349")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kV-2019_run_349.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ti-Ti-9kV_run_349")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kVCharge-2019_run_349.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Ti-Ti-9kV_run_349")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Ti-Ti-9kV_run_349")
+         ", including fit parameters, raw and cut data of the Ti-Ti-9kV dataset for run 349.")
+        (label "fig:appendix:cdl_Ti-Ti-9kV_run_349")
+)
+#+end_src
+
+#+begin_src subfigure 
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ti-Ti-9kV_run_326")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kV-2019_run_326.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ti-Ti-9kV_run_326")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kVCharge-2019_run_326.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Ti-Ti-9kV_run_326")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Ti-Ti-9kV_run_326")
+         ", including fit parameters, raw and cut data of the Ti-Ti-9kV dataset for run 326.")
+        (label "fig:appendix:cdl_Ti-Ti-9kV_run_326")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ti-Ti-9kV_run_325")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kV-2019_run_325.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ti-Ti-9kV_run_325")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ti-Ti-9kVCharge-2019_run_325.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Ti-Ti-9kV_run_325")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Ti-Ti-9kV_run_325")
+         ", including fit parameters, raw and cut data of the Ti-Ti-9kV dataset for run 325.")
+        (label "fig:appendix:cdl_Ti-Ti-9kV_run_325")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Mn-Cr-12kV_run_347")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kV-2019_run_347.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Mn-Cr-12kV_run_347")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kVCharge-2019_run_347.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Mn-Cr-12kV_run_347")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Mn-Cr-12kV_run_347")
+         ", including fit parameters, raw and cut data of the Mn-Cr-12kV dataset for run 347.")
+        (label "fig:appendix:cdl_Mn-Cr-12kV_run_347")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Mn-Cr-12kV_run_323")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kV-2019_run_323.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Mn-Cr-12kV_run_323")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kVCharge-2019_run_323.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Mn-Cr-12kV_run_323")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Mn-Cr-12kV_run_323")
+         ", including fit parameters, raw and cut data of the Mn-Cr-12kV dataset for run 323.")
+        (label "fig:appendix:cdl_Mn-Cr-12kV_run_323")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Mn-Cr-12kV_run_315")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kV-2019_run_315.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Mn-Cr-12kV_run_315")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Mn-Cr-12kVCharge-2019_run_315.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Mn-Cr-12kV_run_315")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Mn-Cr-12kV_run_315")
+         ", including fit parameters, raw and cut data of the Mn-Cr-12kV dataset for run 315.")
+        (label "fig:appendix:cdl_Mn-Cr-12kV_run_315")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-Ni-15kV_run_345")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kV-2019_run_345.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-Ni-15kV_run_345")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kVCharge-2019_run_345.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-Ni-15kV_run_345")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-Ni-15kV_run_345")
+         ", including fit parameters, raw and cut data of the Cu-Ni-15kV dataset for run 345.")
+        (label "fig:appendix:cdl_Cu-Ni-15kV_run_345")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-Ni-15kV_run_320")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kV-2019_run_320.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-Ni-15kV_run_320")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kVCharge-2019_run_320.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-Ni-15kV_run_320")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-Ni-15kV_run_320")
+         ", including fit parameters, raw and cut data of the Cu-Ni-15kV dataset for run 320.")
+        (label "fig:appendix:cdl_Cu-Ni-15kV_run_320")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-Ni-15kV_run_319")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kV-2019_run_319.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-Ni-15kV_run_319")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-Ni-15kVCharge-2019_run_319.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-Ni-15kV_run_319")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-Ni-15kV_run_319")
+         ", including fit parameters, raw and cut data of the Cu-Ni-15kV dataset for run 319.")
+        (label "fig:appendix:cdl_Cu-Ni-15kV_run_319")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-EPIC-2kV_run_337")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kV-2019_run_337.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-EPIC-2kV_run_337")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kVCharge-2019_run_337.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-EPIC-2kV_run_337")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-EPIC-2kV_run_337")
+         ", including fit parameters, raw and cut data of the Cu-EPIC-2kV dataset for run 337.")
+        (label "fig:appendix:cdl_Cu-EPIC-2kV_run_337")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-EPIC-2kV_run_336")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kV-2019_run_336.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-EPIC-2kV_run_336")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kVCharge-2019_run_336.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-EPIC-2kV_run_336")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-EPIC-2kV_run_336")
+         ", including fit parameters, raw and cut data of the Cu-EPIC-2kV dataset for run 336.")
+        (label "fig:appendix:cdl_Cu-EPIC-2kV_run_336")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-EPIC-2kV_run_335")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kV-2019_run_335.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-EPIC-2kV_run_335")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-2kVCharge-2019_run_335.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-EPIC-2kV_run_335")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-EPIC-2kV_run_335")
+         ", including fit parameters, raw and cut data of the Cu-EPIC-2kV dataset for run 335.")
+        (label "fig:appendix:cdl_Cu-EPIC-2kV_run_335")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-EPIC-0.9kV_run_340")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kV-2019_run_340.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-EPIC-0.9kV_run_340")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kVCharge-2019_run_340.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-EPIC-0.9kV_run_340")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-EPIC-0.9kV_run_340")
+         ", including fit parameters, raw and cut data of the Cu-EPIC-0.9kV dataset for run 340.")
+        (label "fig:appendix:cdl_Cu-EPIC-0.9kV_run_340")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Cu-EPIC-0.9kV_run_339")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kV-2019_run_339.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Cu-EPIC-0.9kV_run_339")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kVCharge-2019_run_339.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Cu-EPIC-0.9kV_run_339")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Cu-EPIC-0.9kV_run_339")
+         ", including fit parameters, raw and cut data of the Cu-EPIC-0.9kV dataset for run 339.")
+        (label "fig:appendix:cdl_Cu-EPIC-0.9kV_run_339")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_C-EPIC-0.6kV_run_343")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/C-EPIC-0.6kV-2019_run_343.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_C-EPIC-0.6kV_run_343")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/C-EPIC-0.6kVCharge-2019_run_343.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_C-EPIC-0.6kV_run_343")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_C-EPIC-0.6kV_run_343")
+         ", including fit parameters, raw and cut data of the C-EPIC-0.6kV dataset for run 343.")
+        (label "fig:appendix:cdl_C-EPIC-0.6kV_run_343")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_C-EPIC-0.6kV_run_342")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/C-EPIC-0.6kV-2019_run_342.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_C-EPIC-0.6kV_run_342")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/C-EPIC-0.6kVCharge-2019_run_342.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_C-EPIC-0.6kV_run_342")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_C-EPIC-0.6kV_run_342")
+         ", including fit parameters, raw and cut data of the C-EPIC-0.6kV dataset for run 342.")
+        (label "fig:appendix:cdl_C-EPIC-0.6kV_run_342")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Al-Al-4kV_run_333")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Al-Al-4kV-2019_run_333.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Al-Al-4kV_run_333")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Al-Al-4kVCharge-2019_run_333.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Al-Al-4kV_run_333")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Al-Al-4kV_run_333")
+         ", including fit parameters, raw and cut data of the Al-Al-4kV dataset for run 333.")
+        (label "fig:appendix:cdl_Al-Al-4kV_run_333")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Al-Al-4kV_run_332")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Al-Al-4kV-2019_run_332.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Al-Al-4kV_run_332")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Al-Al-4kVCharge-2019_run_332.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Al-Al-4kV_run_332")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Al-Al-4kV_run_332")
+         ", including fit parameters, raw and cut data of the Al-Al-4kV dataset for run 332.")
+        (label "fig:appendix:cdl_Al-Al-4kV_run_332")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ag-Ag-6kV_run_351")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kV-2019_run_351.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ag-Ag-6kV_run_351")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kVCharge-2019_run_351.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Ag-Ag-6kV_run_351")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Ag-Ag-6kV_run_351")
+         ", including fit parameters, raw and cut data of the Ag-Ag-6kV dataset for run 351.")
+        (label "fig:appendix:cdl_Ag-Ag-6kV_run_351")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ag-Ag-6kV_run_329")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kV-2019_run_329.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ag-Ag-6kV_run_329")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kVCharge-2019_run_329.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Ag-Ag-6kV_run_329")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Ag-Ag-6kV_run_329")
+         ", including fit parameters, raw and cut data of the Ag-Ag-6kV dataset for run 329.")
+        (label "fig:appendix:cdl_Ag-Ag-6kV_run_329")
+)
+#+end_src
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "Pixel spectrum") (label "fig:appendix:cdl_pixel_Ag-Ag-6kV_run_328")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kV-2019_run_328.pdf"))
+        (subfigure (linewidth 0.5) (caption "Charge spectrum") (label "fig:appendix:cdl_charge_Ag-Ag-6kV_run_328")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "/home/basti/phd/Figs/CDL/Ag-Ag-6kVCharge-2019_run_328.pdf"))
+        (caption
+         "Pixel spectrum, "
+         (subref "fig:appendix:cdl_pixel_Ag-Ag-6kV_run_328")
+         ", and charge spectrum, "
+         (subref "fig:appendix:cdl_charge_Ag-Ag-6kV_run_328")
+         ", including fit parameters, raw and cut data of the Ag-Ag-6kV dataset for run 328.")
+        (label "fig:appendix:cdl_Ag-Ag-6kV_run_328")
+)
+#+end_src
+
+:end:
 
 
 * CAST Detector Lab variations and fitting by run                  :Appendix:
@@ -43770,12 +44402,18 @@ peaks in the charge spectrum. As such each run is fit separately. The
 one question about this approach is whether the cluster properties are
 stable under gas gain
 changes. Sec. [[#sec:appendix:fit_by_run:gas_gain_var_cluster_prop]] shows
-that this is indeed the case. 
+that this is indeed the case.
+
+** TODOs for this section [/]                                     :noexport:
 
 - [ ] *THINK ABOUT WHERE TO PUT TEMPERATURE INFORMATION FROM CDL
   DATA!*
   -> the temperature plot split by run is relatively
   interesting. Should appear at least in extended version.
+  -> Isn't that already in the CDL section as extended after in the
+  main text?
+
+- [ ]   
 
 ** Influence of gas gain variations on cluster properties
 :PROPERTIES:
@@ -43789,15 +44427,81 @@ estimations. Outside the number of hits and total charge in a cluster
 (which are expected to vary with gas gain of course) the properties
 remain stable even in the cases that vary strongly.
 
-- [ ] *ADD CAPTIONS AND LABELS TO THESE FIGURES!*
-[[~/phd/Figs/CDL/C-EPIC-0.6kV_ridgeline_kde_by_run.pdf]]
-[[~/phd/Figs/CDL/Cu-EPIC-0.9kV_ridgeline_kde_by_run.pdf]]
-[[~/phd/Figs/CDL/Cu-EPIC-2kV_ridgeline_kde_by_run.pdf]]
-[[~/phd/Figs/CDL/Al-Al-4kV_ridgeline_kde_by_run.pdf]]
-[[~/phd/Figs/CDL/Ag-Ag-6kV_ridgeline_kde_by_run.pdf]]
-[[~/phd/Figs/CDL/Ti-Ti-9kV_ridgeline_kde_by_run.pdf]]
-[[~/phd/Figs/CDL/Mn-Cr-12kV_ridgeline_kde_by_run.pdf]]
-[[~/phd/Figs/CDL/Cu-Ni-15kV_ridgeline_kde_by_run.pdf]]
+#+begin_comment
+Below is the code we use to produce all the ~subsection~ DSL side by
+side figures, their labels and captions. Too much work to do by hand,
+if it's all the same anyway. :)
+#+end_comment
+
+
+
+#+begin_src nim :exports results :results drawer
+import std / [os, algorithm, strformat, strutils]
+import ingrid / ingrid_types
+const path = "~/phd/Figs/CDL/"
+
+proc caption(tfKind: TargetFilterKind): string =
+  result = """
+$#CAPTION: Ridgeline plot of kernel density estimations of all cluster properties
+$#CAPTION: split by each CDL run. Target/filter: $#
+""" % ["#+", "#+", $tfKind]
+
+proc label(tfKind: TargetFilterKind): string =
+  result = &"#+NAME: fig:appendix:cdl_ridgeline_kde_{$tfKind}_by_run\n"
+
+var plots = newSeq[string]()
+for tfKind in TargetFilterKind:
+  let file = (path / $tfKind & "_ridgeline_kde_by_run.pdf").expandTilde
+  let plot = caption(tfKind) & label(tfKind) & &"[[{file}]]\n"
+  plots.add plot
+
+for plt in plots.reversed:
+  echo plt
+#+end_src
+
+#+RESULTS:
+:results:
+#+CAPTION: Ridgeline plot of kernel density estimations of all cluster properties
+#+CAPTION: split by each CDL run. Target/filter: C-EPIC-0.6kV
+#+NAME: fig:appendix:cdl_ridgeline_kde_C-EPIC-0.6kV_by_run
+[[/home/basti/phd/Figs/CDL/C-EPIC-0.6kV_ridgeline_kde_by_run.pdf]]
+
+#+CAPTION: Ridgeline plot of kernel density estimations of all cluster properties
+#+CAPTION: split by each CDL run. Target/filter: Cu-EPIC-0.9kV
+#+NAME: fig:appendix:cdl_ridgeline_kde_Cu-EPIC-0.9kV_by_run
+[[/home/basti/phd/Figs/CDL/Cu-EPIC-0.9kV_ridgeline_kde_by_run.pdf]]
+
+#+CAPTION: Ridgeline plot of kernel density estimations of all cluster properties
+#+CAPTION: split by each CDL run. Target/filter: Cu-EPIC-2kV
+#+NAME: fig:appendix:cdl_ridgeline_kde_Cu-EPIC-2kV_by_run
+[[/home/basti/phd/Figs/CDL/Cu-EPIC-2kV_ridgeline_kde_by_run.pdf]]
+
+#+CAPTION: Ridgeline plot of kernel density estimations of all cluster properties
+#+CAPTION: split by each CDL run. Target/filter: Al-Al-4kV
+#+NAME: fig:appendix:cdl_ridgeline_kde_Al-Al-4kV_by_run
+[[/home/basti/phd/Figs/CDL/Al-Al-4kV_ridgeline_kde_by_run.pdf]]
+
+#+CAPTION: Ridgeline plot of kernel density estimations of all cluster properties
+#+CAPTION: split by each CDL run. Target/filter: Ag-Ag-6kV
+#+NAME: fig:appendix:cdl_ridgeline_kde_Ag-Ag-6kV_by_run
+[[/home/basti/phd/Figs/CDL/Ag-Ag-6kV_ridgeline_kde_by_run.pdf]]
+
+#+CAPTION: Ridgeline plot of kernel density estimations of all cluster properties
+#+CAPTION: split by each CDL run. Target/filter: Ti-Ti-9kV
+#+NAME: fig:appendix:cdl_ridgeline_kde_Ti-Ti-9kV_by_run
+[[/home/basti/phd/Figs/CDL/Ti-Ti-9kV_ridgeline_kde_by_run.pdf]]
+
+#+CAPTION: Ridgeline plot of kernel density estimations of all cluster properties
+#+CAPTION: split by each CDL run. Target/filter: Mn-Cr-12kV
+#+NAME: fig:appendix:cdl_ridgeline_kde_Mn-Cr-12kV_by_run
+[[/home/basti/phd/Figs/CDL/Mn-Cr-12kV_ridgeline_kde_by_run.pdf]]
+
+#+CAPTION: Ridgeline plot of kernel density estimations of all cluster properties
+#+CAPTION: split by each CDL run. Target/filter: Cu-Ni-15kV
+#+NAME: fig:appendix:cdl_ridgeline_kde_Cu-Ni-15kV_by_run
+[[/home/basti/phd/Figs/CDL/Cu-Ni-15kV_ridgeline_kde_by_run.pdf]]
+
+:end:
 
 ** Data overview with pixel spectra [/]                           :noexport:
 
