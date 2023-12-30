@@ -20748,45 +20748,45 @@ proc calcInterp(ctx: LikelihoodContext, df: DataFrame): DataFrame =
 ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations") + 
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac.pdf")
+  ggsave("~/phd/Figs/background/correlation_ecc_ldiv_frac.pdf", dataAsBitmap = true)
 
 ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv.pdf")
+  ggsave("~/phd/Figs/background/correlation_ecc_frac_ldiv.pdf", dataAsBitmap = true)
 
 ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc.pdf")
+  ggsave("~/phd/Figs/background/correlation_ldiv_frac_ecc.pdf", dataAsBitmap = true)
 
 
 df = df.filter(f{`eccentricity` < 2.5})
 ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac_ecc_smaller_2_5.pdf")
+  ggsave("~/phd/Figs/background/correlation_ecc_ldiv_frac_ecc_smaller_2_5.pdf", dataAsBitmap = true)
 
 ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv_ecc_smaller_2_5.pdf")
+  ggsave("~/phd/Figs/background/correlation_ecc_frac_ldiv_ecc_smaller_2_5.pdf", dataAsBitmap = true)
 
 ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc_ecc_smaller_2_5.pdf")
+  ggsave("~/phd/Figs/background/correlation_ldiv_frac_ecc_ecc_smaller_2_5.pdf", dataAsBitmap = true)
 
 
 from std/sequtils import concat
 # now generate the plot of the logL values for all cleaned CDL data. We will compare the
 # case of no morphing with the linear morphing case
 proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) = 
-  let ctx = initLikelihoodContext(cdlFile, yr2018, crGold, igEnergyFromCharge, Timepix1, mk)
+  let ctx = initLikelihoodContext(cdlFile, yr2018, crGold, igEnergyFromCharge, Timepix1, mk, useLnLCut = true)
   var dfMorph = ctx.calcInterp(df)
   dfMorph["Morphing?"] = $mk
   let cutVals = ctx.calcCutValueTab()
-  case cutVals.kind
+  case cutVals.morphKind
   of mkNone:
     let lineEnergies = getEnergyBinning()
     let tab = getInverseXrayRefTable()
@@ -20806,13 +20806,13 @@ proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) =
       lastE = E
     cuts.add cuts[^1] # add last value again to draw line up 
     echo energies.len, " vs ", cuts.len
-    let dfCuts = toDf({energies, cuts, "Morphing?" : $cutVals.kind})
+    let dfCuts = toDf({energies, cuts, "Morphing?" : $cutVals.morphKind})
     result = (dfCuts, dfMorph)
   of mkLinear:
-    let energies = concat(@[0.0], cutVals.cutEnergies, @[20.0])
-    let cutsSeq = cutVals.cutValues.toSeq1D
-    let cuts = concat(@[cutVals.cutValues[0]], cutsSeq, @[cutsSeq[^1]])
-    let dfCuts = toDf({"energies" : energies, "cuts" : cuts, "Morphing?" : $cutVals.kind})
+    let energies = concat(@[0.0], cutVals.lnLCutEnergies, @[20.0])
+    let cutsSeq = cutVals.lnLCutValues.toSeq1D
+    let cuts = concat(@[cutVals.lnLCutValues[0]], cutsSeq, @[cutsSeq[^1]])
+    let dfCuts = toDf({"energies" : energies, "cuts" : cuts, "Morphing?" : $cutVals.morphKind})
     result = (dfCuts, dfMorph)
 
 var dfMorph = newDataFrame()
@@ -20825,12 +20825,17 @@ var dfCuts = newDataFrame()
 dfCuts.add dfCutsNone
 dfCuts.add dfCutsLinear
 
+#dfCuts.showBrowser()
+
+echo dfMorph
 ggplot(dfMorph, aes("logL", "energy", color = factor("Target"))) +
   facet_wrap("Morphing?") +
   geom_point(size = 1.0) +
   geom_line(data = dfCuts, aes = aes("cuts", "energies")) + # , color = "Morphing?")) + 
-  ggtitle("lnL values of all (cleaned) CDL data against energy") + 
-  ggsave("/home/basti/phd/Figs/background/logL_of_CDL_vs_energy.pdf", width = 1000, height = 600)
+  ggtitle(r"$\ln\mathcal{L}$ values of all (cleaned) CDL data against energy") +
+  themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +
+  ylab("Energy [keV]") + xlab(r"$\ln\mathcal{L}$") + 
+  ggsave("~/phd/Figs/background/logL_of_CDL_vs_energy.pdf", width = 1000, height = 600, dataAsBitmap = true)
 #+end_src
 
 
@@ -21040,6 +21045,9 @@ which also all live in ~phd/Figs/CDL~.
 
 
 *** Energy interpolation of likelihood distributions [/]
+:PROPERTIES:
+:CUSTOM_ID: sec:cdl:cdl_morphing_energy_logL
+:END:
 
 For the GridPix detector used in 2014/15 similar X-ray tube data was
 taken and each of the 8 X-ray tube energies were assigned an energy
@@ -21205,14 +21213,24 @@ energies the largest error on the energy is $<\SI{5}{eV}$ anyhow.
 
 
 **** Generate plots for morphing / interpolation                :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:background:generated_morphing_plots
+:END:
 
 The plots are created with ~TimepixAnalysis/Tools/cdlMorphing~:
 
 #+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/cdlMorphing/
-./cdlMorphing \
+WRITE_PLOT_CSV=true USE_TEX=true ./cdlMorphing \
     --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
     --outpath ~/phd/Figs/CDL/cdlMorphing/
 #+end_src
+
+*Note*: The script produces the ~cdl_as_raster_interpolated_*~
+plots. These use the terminology ~mtNone~ for "no" morphing, but that
+is only because we perform the morphing 'manually' in the code using
+the same function as in ~likelihood_utils.nim~. Because the other
+morphing happening in that script is one using an offset of 2 (to skip
+the center line!).
 
 *** Study of interpolation of CDL distributions [/]              :extended:
 
@@ -44804,23 +44822,173 @@ for plt in plots.reversed:
 :CUSTOM_ID: sec:appendix:morphing_cdl_spectra
 :END:
 
+This appendix contains further figures about the interpolation of the
+reference distributions entering the likelihood method as discussed in
+sec. [[#sec:cdl:cdl_morphing]] and
+sec. [[#sec:cdl:cdl_morphing_energy_logL]]. Fig. [[fig:appendix:cdl_morphing_logL_vs_energy]]
+directly shows the impact of interpolating the reference distributions
+on the likelihood values (colored points for each different
+target/filter combination) and the cut value (black line). Both the
+points and the cut values become smoother utilizing the
+interpolation. Note that even the interpolation is not perfectly
+smooth, as the underlying reference data is still binned to a
+histogram.
 
-- [ ] *NEED TO REREAD THIS AND FIX UP THE WORST ISSUES!*
-  -> especially if this is to remain in the final thesis!
+Further, section [[#sec:appendix:morphing_cdl_spectra:tilemaps]] contains
+tilemaps of the not interpolated reference data for each dataset and
+sec. [[#sec:appendix:morphing_cdl_spectra:interpolation_raster]] shows the
+fully interpolated space for each dataset. Finally,
+sec. [[#sec:appendix:morphing_cdl_spectra:binwise_linear]] contains the
+histograms of the binwise linear interpolations where for each ridge
+one dataset is skipped.
 
-- [ ] *PLACE ME SOMEWHERE MORE IMPORTANT?*  
+See the extended thesis for the development notes of the interpolation
+technique, including different approaches (e.g. binwise spline interpolation
+instead of linear interpolation).
+
 #+CAPTION: $\ln\mathcal{L}$ values for all the cleaned CDL cluster data against the
-#+CAPTION: energy of the cluster. Left is the calculation using the old cite:krieger2018search
-#+CAPTION: approach of fixed energy intervals and right the linear interpolation explained below
-#+CAPTION: in this appendix. The bin wise linear interpolation clearly significantly helps to
+#+CAPTION: energy of the cluster. Left is the binwise linear interpolation and
+#+CAPTION: right is the calculation using the old cite:krieger2018search
+#+CAPTION: approach of fixed energy intervals. The bin wise linear interpolation helps to
 #+CAPTION: provide a smoother description of the $\ln\mathcal{L}$ data.
 #+NAME: fig:appendix:cdl_morphing_logL_vs_energy
 [[~/phd/Figs/background/logL_of_CDL_vs_energy.pdf]]
 
+** TODOs for this section [/]                                     :noexport:
+
+
+- [ ] *NEED TO REREAD THIS AND FIX UP THE WORST ISSUES!*
+  -> especially if this is to remain in the final thesis!
+
+- [ ] *PLACE ME SOMEWHERE MORE IMPORTANT?*
+  -> The logL of CDL vs energy plot
+
+- [ ] CDL tile maps
+- [ ] CDL raster for all
+- [ ] linear binwise morph mtLinear
+
+** Generate all morphing / tile related plots                     :extended:
+
+In principle the plots are produced with the same command as in
+sec. [[#sec:background:generated_morphing_plots]], but here we wish to
+have wider versions that are not side-by-side:
+
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/cdlMorphing/
+FWIDTH=0.9 HEIGHT=420 WRITE_PLOT_CSV=true USE_TEX=true ./cdlMorphing \
+    --cdlFile ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 \
+    --outpath ~/phd/Figs/CDL/cdlMorphing/fWidth0.9/
+#+end_src
+
+** Generate plot comparing likelihood behavior :extended:
+
+Fig. [[fig:appendix:cdl_morphing_logL_vs_energy]] is produced in sec. [[#sec:background:correlation_lnL_variables]].
+
+** Tilemap of each likelihood dataset
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:morphing_cdl_spectra:tilemaps
+:END:
+
+The tilemaps shown here should be compared to the resulting raster
+plots of the next section,
+sec. [[#sec:appendix:morphing_cdl_spectra:interpolation_raster]]. For each
+dataset entering the likelihood method the reference distribution
+computed for each target/filter combination is spread over its
+applicable energy range. In the plots the colormap is the height of
+the distribution. The fluorescence lines are indicated that define the
+X-ray energy of each target. This illustrates how a cluster energy is
+mapped to a probability from each of the 8 target/filter
+distributions. The distinct jump in the distributions is visible in
+the form of a cut along the horizontal axis at different energies.
+
+#+CAPTION: Tilemap of the eccentricity dataset against energy. The colormap corresponds to the
+#+CAPTION: height of the eccentricity distribution at that point. Along the energy axis the
+#+CAPTION: data is constant within the applicable energy range of the target/filter kind. The
+#+CAPTION: energy of each fluorescence line is indicated.
+#+NAME: fig:appendix:morphing_cdl_spectra:cdl_as_tile_eccentricity
+[[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/cdl_as_tile_morph_mtNone_eccentricity.pdf]]
+
+#+CAPTION: Tilemap of the fractionInTransverseRms dataset against energy. The colormap corresponds to the
+#+CAPTION: height of the fractionInTransverseRms distribution at that point. Along the energy axis the
+#+CAPTION: data is constant within the applicable energy range of the target/filter kind. The
+#+CAPTION: energy of each fluorescence line is indicated.
+#+NAME: fig:appendix:morphing_cdl_spectra:cdl_as_tile_fracRms
+[[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/cdl_as_tile_morph_mtNone_fractionInTransverseRms.pdf]]
+
+#+CAPTION: Tilemap of the lengthDivRmsTrans dataset against energy. The colormap corresponds to the
+#+CAPTION: height of the lengthDivRmsTrans distribution at that point. Along the energy axis the
+#+CAPTION: data is constant within the applicable energy range of the target/filter kind. The
+#+CAPTION: energy of each fluorescence line is indicated.
+#+NAME: fig:appendix:morphing_cdl_spectra:cdl_as_tile_ldiv
+[[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/cdl_as_tile_morph_mtNone_lengthDivRmsTrans.pdf]]
+
+
+** Interpolation of each likelihood dataset
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:morphing_cdl_spectra:interpolation_raster
+:END:
+
+In contrast to the plots of the previous section,
+sec. [[#sec:appendix:morphing_cdl_spectra:tilemaps]] all plots of the
+different datasets entering the likelihood method here show the
+distribution in property / energy space after binwise linear
+interpolation. Compared to the previous plots it results in a smooth
+transition over the entire energy range.
+
+#+CAPTION: Raster plot of the eccentricity dataset against energy after binwise linear interpolation.
+#+CAPTION: The colormap corresponds to the height of the eccentricity distribution at that point. The
+#+CAPTION: energy of each fluorescence line is indicated.
+#+NAME: fig:appendix:morphing_cdl_spectra:cdl_as_raster_eccentricity
+[[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/cdl_as_raster_interpolated_morph_mtNone_eccentricity.pdf]]
+
+#+CAPTION: Raster plot of the fractionInTransverseRms dataset against energy after binwise linear interpolation.
+#+CAPTION: The colormap corresponds to the height of the fractionInTransverseRms distribution at that point. The
+#+CAPTION: energy of each fluorescence line is indicated.
+#+NAME: fig:appendix:morphing_cdl_spectra:cdl_as_raster_fracRms
+[[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/cdl_as_raster_interpolated_morph_mtNone_fractionInTransverseRms.pdf]]
+
+#+CAPTION: Raster plot of the lengthDivRmsTrans dataset against energy after binwise linear interpolation.
+#+CAPTION: The colormap corresponds to the height of the lengthDivRmsTrans distribution at that point. The
+#+CAPTION: energy of each fluorescence line is indicated.
+#+NAME: fig:appendix:morphing_cdl_spectra:cdl_as_raster_ldiv
+[[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/cdl_as_raster_interpolated_morph_mtNone_lengthDivRmsTrans.pdf]]
+
+** Binwise linear interpolations for each likelihood dataset
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:morphing_cdl_spectra:binwise_linear
+:END:
+
+The figures in this section show the binwise linear interpolation by
+skipping the dataset in each ridge and interpolating using the nearest
+neighbors above/below in energy. These are the same as shown in
+fig. sref:fig:cdl:cdl_morphing_frac_known_lines for all three datasets
+(i.e. fig. [[fig:appendix:morphing_cdl_spectra:fracRms_binwise]] is the
+same). As mentioned in the main text, skipping the dataset at each
+ridge means the interpolation errors are much larger than used in
+practice (as shown in the previous section [[#sec:appendix:morphing_cdl_spectra:interpolation_raster]]).
+
+#+CAPTION: Binwise linear interpolation of the eccentricity dataset skipping the
+#+CAPTION: target/filter dataset being interpolated. 
+#+NAME: fig:appendix:morphing_cdl_spectra:eccentricity_binwise
+[[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/eccentricity_ridgeline_morph_mtLinear_calibration-cdl-2018.h5_2018.pdf]]
+
+#+CAPTION: Binwise linear interpolation of the fractionInTransverseRms dataset skipping the
+#+CAPTION: target/filter dataset being interpolated. 
+#+NAME: fig:appendix:morphing_cdl_spectra:fracRms_binwise
+[[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/fractionInTransverseRms_ridgeline_morph_mtLinear_calibration-cdl-2018.h5_2018.pdf]]
+
+#+CAPTION: Binwise linear interpolation of the lengthDivRmsTrans dataset skipping the
+#+CAPTION: target/filter dataset being interpolated. 
+#+NAME: fig:appendix:morphing_cdl_spectra:ldiv_binwise
+[[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/lengthDivRmsTrans_ridgeline_morph_mtLinear_calibration-cdl-2018.h5_2018.pdf]]
+
+** Notes on CDL morphing development                               :extended:
+
 This section of the (not exported) appendix contains our notes about
-building and implementing the linear interpolation of CDL data. It
-should give an understanding of what was considered and why the final
-choice is a linear interpolation.
+building and implementing the linear interpolation of CDL data (when
+talking about 'current approach' in the below, we refer to the old,
+non interpolating approach). It should give an understanding of what
+was considered and why the final choice is a linear interpolation.
+
 
 
 One problem with the current approach of utilizing the CDL data is that the
@@ -44835,7 +45003,8 @@ datasets.
 This is the likely cause for the sudden steps visible in the background
 rate. With a fully morphed function this should hopefully disappear.
 
-** References & ideas
+
+*** References & ideas
 
 Read up on morphing of different functions:
 - in HEP: https://indico.cern.ch/event/507948/contributions/2028505/attachments/1262169/1866169/atlas-hcomb-morphwshop-intro-v1.pdf
@@ -44897,7 +45066,7 @@ also be easy, provided I finish the implementation finally.
 We will investigate different ideas in
 [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/cdlMorphing/cdlMorphing.nim]].
 
-*** DONE Visualize CDL data as a 2D heatmap
+**** DONE Visualize CDL data as a 2D heatmap
 
 In each of the following plots each distribution (= target filter
 combination) is normalized to 1.
@@ -44950,7 +45119,7 @@ of the lines are highly asymmetric.
 #+NAME: logL_tile_fracRmsTrans
 [[~/phd/Figs/CDL/cdlMorphing/cdl_as_tile_fractionInTransverseRms.pdf]]
 
-*** DONE Morph by linear interpolation bin by bin
+**** DONE Morph by linear interpolation bin by bin
 
 Based on the tile maps in the previous section it seems like a decent idea to
 perform a linear interpolation for any point in between two intervals:
@@ -45021,7 +45190,7 @@ is shown in red.
 [[~/phd/Figs/CDL/cdlMorphing/fractionInTransverseRms_ridgeline_XrayReferenceFile2018.h5_2018.pdf]]
 
 
-*** DONE Compute all reference spectra from neighbors
+**** DONE Compute all reference spectra from neighbors
 
 Similar to the plots in the previous section we can now compute all
 reference spectra based on the next neighboring spectras.
@@ -45056,7 +45225,7 @@ This is done in fig. [[linear_interpolation_morph_eccentricity_all]],
 [[~/phd/Figs/CDL/cdlMorphing/fractionInTransverseRms_ridgeline_morph_all_XrayReferenceFile2018.h5_2018.pdf]]
 
 
-*** DONE Compute full linear interpolation between fluorescence lines
+**** DONE Compute full linear interpolation between fluorescence lines
 
 We can now apply the lessons from the last section to compute
 arbitrary reference spectra. We will use this to compute a heatmap of
@@ -45085,7 +45254,7 @@ For all three logL variables, these are shown in fig.
 [[~/phd/Figs/CDL/cdlMorphing/cdl_as_raster_interpolated_fractionInTransverseRms.pdf]]
 
 
-** KDE approach                                                   :extended:
+*** KDE approach                                                  :extended:
 
 Using a KDE is problematic, because our data is already pre-binned of
 course. This leads to a very sparse phase space, which either makes
@@ -45195,7 +45364,7 @@ should be placed etc.
 [[~/phd/Figs/CDL/cdlMorphing/eccentricity_raster_kde_small_bw.pdf]]
 
 
-** Spline approach
+*** Spline approach
 
 Another idea is to use a spline interpolation. This has the advantage
 that the existing distributions will be correctly predicted (as for
@@ -45244,7 +45413,7 @@ bin-wise).
 
 \clearpage
 
-** Summary
+*** Summary
 
 For the time being we will use the linear interpolation method and see
 where this leads us. Should definitely be a big improvement over the
@@ -45253,7 +45422,7 @@ current interval based option.
 For the results of applying linear interpolation based morphing to the
 likelihood analysis see section [[Effects of Morphing on background rate]].
 
-** Implementation in =likelihood.nim=
+*** Implementation in =likelihood.nim=
 
 Thoughts on the implememntition in =likelihood.nim= or CDL morphing.
 
@@ -45287,7 +45456,7 @@ With these steps we should have a working interpolation routine. The
 code used in the =cdlMorphing.nim= test script needs to be added of
 course to provide the linearly interpolated logic (see step 0).
 
-*** Bizarre Al-Al 4kV behavior with =mkLinear=
+**** Bizarre Al-Al 4kV behavior with =mkLinear=
 
 After the first implementation we see some very bizarre behavior in
 the case of linear interpolation for the logL distributions.

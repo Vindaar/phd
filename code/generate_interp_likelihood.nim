@@ -50,45 +50,45 @@ proc calcInterp(ctx: LikelihoodContext, df: DataFrame): DataFrame =
 ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations") + 
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac.pdf")
+  ggsave("~/phd/Figs/background/correlation_ecc_ldiv_frac.pdf", dataAsBitmap = true)
 
 ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv.pdf")
+  ggsave("~/phd/Figs/background/correlation_ecc_frac_ldiv.pdf", dataAsBitmap = true)
 
 ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc.pdf")
+  ggsave("~/phd/Figs/background/correlation_ldiv_frac_ecc.pdf", dataAsBitmap = true)
 
 
 df = df.filter(f{`eccentricity` < 2.5})
 ggplot(df, aes("eccentricity", "lengthDivRmsTrans", color = "fractionInTransverseRms")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_ldiv_frac_ecc_smaller_2_5.pdf")
+  ggsave("~/phd/Figs/background/correlation_ecc_ldiv_frac_ecc_smaller_2_5.pdf", dataAsBitmap = true)
 
 ggplot(df, aes("eccentricity", "fractionInTransverseRms", color = "lengthDivRmsTrans")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ecc_frac_ldiv_ecc_smaller_2_5.pdf")
+  ggsave("~/phd/Figs/background/correlation_ecc_frac_ldiv_ecc_smaller_2_5.pdf", dataAsBitmap = true)
 
 ggplot(df, aes("lengthDivRmsTrans", "fractionInTransverseRms", color = "eccentricity")) +
   geom_point(size = 1.0) +
   ggtitle("lnL variables of all (cleaned) CDL data for correlations (ε < 2.5)") +   
-  ggsave("/home/basti/phd/Figs/background/correlation_ldiv_frac_ecc_ecc_smaller_2_5.pdf")
+  ggsave("~/phd/Figs/background/correlation_ldiv_frac_ecc_ecc_smaller_2_5.pdf", dataAsBitmap = true)
 
 
 from std/sequtils import concat
 # now generate the plot of the logL values for all cleaned CDL data. We will compare the
 # case of no morphing with the linear morphing case
 proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) = 
-  let ctx = initLikelihoodContext(cdlFile, yr2018, crGold, igEnergyFromCharge, Timepix1, mk)
+  let ctx = initLikelihoodContext(cdlFile, yr2018, crGold, igEnergyFromCharge, Timepix1, mk, useLnLCut = true)
   var dfMorph = ctx.calcInterp(df)
   dfMorph["Morphing?"] = $mk
   let cutVals = ctx.calcCutValueTab()
-  case cutVals.kind
+  case cutVals.morphKind
   of mkNone:
     let lineEnergies = getEnergyBinning()
     let tab = getInverseXrayRefTable()
@@ -108,13 +108,13 @@ proc getLogL(df: DataFrame, mk: MorphingKind): (DataFrame, DataFrame) =
       lastE = E
     cuts.add cuts[^1] # add last value again to draw line up 
     echo energies.len, " vs ", cuts.len
-    let dfCuts = toDf({energies, cuts, "Morphing?" : $cutVals.kind})
+    let dfCuts = toDf({energies, cuts, "Morphing?" : $cutVals.morphKind})
     result = (dfCuts, dfMorph)
   of mkLinear:
-    let energies = concat(@[0.0], cutVals.cutEnergies, @[20.0])
-    let cutsSeq = cutVals.cutValues.toSeq1D
-    let cuts = concat(@[cutVals.cutValues[0]], cutsSeq, @[cutsSeq[^1]])
-    let dfCuts = toDf({"energies" : energies, "cuts" : cuts, "Morphing?" : $cutVals.kind})
+    let energies = concat(@[0.0], cutVals.lnLCutEnergies, @[20.0])
+    let cutsSeq = cutVals.lnLCutValues.toSeq1D
+    let cuts = concat(@[cutVals.lnLCutValues[0]], cutsSeq, @[cutsSeq[^1]])
+    let dfCuts = toDf({"energies" : energies, "cuts" : cuts, "Morphing?" : $cutVals.morphKind})
     result = (dfCuts, dfMorph)
 
 var dfMorph = newDataFrame()
@@ -127,9 +127,14 @@ var dfCuts = newDataFrame()
 dfCuts.add dfCutsNone
 dfCuts.add dfCutsLinear
 
+#dfCuts.showBrowser()
+
+echo dfMorph
 ggplot(dfMorph, aes("logL", "energy", color = factor("Target"))) +
   facet_wrap("Morphing?") +
   geom_point(size = 1.0) +
   geom_line(data = dfCuts, aes = aes("cuts", "energies")) + # , color = "Morphing?")) + 
-  ggtitle("lnL values of all (cleaned) CDL data against energy") + 
-  ggsave("/home/basti/phd/Figs/background/logL_of_CDL_vs_energy.pdf", width = 1000, height = 600)
+  ggtitle(r"$\ln\mathcal{L}$ values of all (cleaned) CDL data against energy") +
+  themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +
+  ylab("Energy [keV]") + xlab(r"$\ln\mathcal{L}$") + 
+  ggsave("~/phd/Figs/background/logL_of_CDL_vs_energy.pdf", width = 1000, height = 600, dataAsBitmap = true)
