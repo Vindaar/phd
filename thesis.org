@@ -25174,7 +25174,7 @@ itself into the gas.
   - [X] energy of X-rays (calibration mainly, escape & photo)
     - [ ] Look into CDL data!
 
-- [ ] *INSERT SKEWNESS PLOT INTO APPENDIX*
+- [X] *INSERT SKEWNESS PLOT INTO APPENDIX*
   -> In ~statusAndProgress~ sec. [[#sec:fadc:noisy_events_and_fadc_veto]]
 
 - [X] *INSERT FADC RISE TIME EXAMPLE*
@@ -25531,7 +25531,10 @@ Generated: /home/basti/phd/Figs/background/background_rate_crGold_scinti_fadc.pd
  ~/org/resources/lhood_limits_automation_preliminary/lhood_outputs_adaptive_fadc/likelihood_cdl2018_Run3_crGold_scinti_vetoPercentile_0.99_fadc_vetoPercentile_0.99.h5 \
 )
 
-**** Generate plots of rise/fall time for CDL data :extended:
+**** Generate plots of rise/fall time for CDL data              :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:background:fadc_veto:gen_signal_back_fadc_plots
+:END:
 
 This code snippet is the original code that we used for the first
 plots, when it was still part of
@@ -25642,8 +25645,19 @@ when isMainModule:
   dispatch main
 #+end_src
 
+
+Run-2:
+#+begin_src sh :results none
+WRITE_PLOT_CSV=true ESCAPE_LATEX=true USE_TEX=true plotFadc \
+    -c ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+    -b ~/CastData/data/DataRuns2017_Reco.h5 \
+    --year 2017 \
+    --outpath ~/phd/Figs/FADC/ \
+    --riseTimeHigh 500
+#+end_src
+Run-3:
 #+begin_src sh
-USE_TEX=true plotFadc \
+WRITE_PLOT_CSV=true ESCAPE_LATEX=true USE_TEX=true plotFadc \
     -c ~/CastData/data/CalibrationRuns2018_Reco.h5 \
     -b ~/CastData/data/DataRuns2018_Reco.h5 \
     --year 2018 \
@@ -25975,6 +25989,7 @@ when isMainModule:
   related parts, concluding in the explicit code using the gas
   property CSV to compute the expected values explicitly.
 
+We estimate the rise times in sec. [[file:~/org/Doc/StatusAndProgress.org::#sec:fadc:estimate_rise_times]].
 
 *** Outer GridPix as veto - 'septem veto'
 :PROPERTIES:
@@ -45508,6 +45523,51 @@ in fig. [[cdl_logL_no_interp]].
 :CUSTOM_ID: sec:appendix:occupancy
 :END:
 
+In this appendix we find a few plots of the entire Septemboard
+activity during the CAST Run-2 and Run-3 campaigns. For each a plot of
+the raw pixel activity in the form of counts (how many times was each
+pixel activated) and in the form of summing the Time over Threshold 
+(ToT) values is shown. In both cases the color scale is cut to the
+$95^{\text{th}}$ quantile of the data for better visibility. In each
+plot small regions that see infrequent sparks show up. Different chips
+have different amounts of activity, due to imperfect calibrations, in
+particular of the 6 outer chips. 
+
+** Run-2
+
+#+CAPTION: Occupancy maps of the Septemboard during the Run-2 data taking campaign
+#+CAPTION: at CAST based on the raw pixel activity counts. Color scale saturates at $95^{\text{th}}$ quantile
+#+CAPTION: of all data. Some regions with sparks are
+#+CAPTION: visible. Top right chip on the left edge and bottom right, center right chip
+#+CAPTION: bottom left and bottom right chip in multiple spots. Generally activity is
+#+CAPTION: slightly different between chips, due to different threshold calibrations.
+#+NAME: fig:appendix:occupancy_maps:run2_counts
+[[~/phd/Figs/occupancyMaps/run2_occupancy_map_by_count_perc95.pdf]]
+
+#+CAPTION: Occupancy maps of the Septemboard during the Run-2 data taking campaign
+#+CAPTION: at CAST based on the sum of raw pixel ToT values. Color scale saturates at $95^{\text{th}}$ quantile
+#+CAPTION: of all data. Any pixel activity exceeding $\mathtt{ToT} > 1000$ are filtered out.
+#+NAME: fig:appendix:occupancy_maps:run2_charge
+[[~/phd/Figs/occupancyMaps/run2_occupancy_map_by_charge_perc95_max1000.pdf]]
+
+\clearpage
+** Run-3
+
+#+CAPTION: Occupancy maps of the Septemboard during the Run-3 data taking campaign
+#+CAPTION: at CAST based on the raw pixel activity counts. Color scale saturates at $95^{\text{th}}$ quantile
+#+CAPTION: of all data. Less spark activity visible than in Run-2. Differing levels of
+#+CAPTION: activity are still visible.
+#+NAME: fig:appendix:occupancy_maps:run3_counts
+[[~/phd/Figs/occupancyMaps/run3_occupancy_map_by_count_perc95.pdf]]
+
+#+CAPTION: Occupancy maps of the Septemboard during the Run-3 data taking campaign
+#+CAPTION: at CAST based on the sum of raw pixel ToT values. Color scale saturates at $95^{\text{th}}$ quantile
+#+CAPTION: of all data. Any pixel activity exceeding $\mathtt{ToT} > 1000$ are filtered out.
+#+NAME: fig:appendix:occupancy_maps:run2_charge
+[[~/phd/Figs/occupancyMaps/run3_occupancy_map_by_charge_perc95_max1000.pdf]]
+
+** TODOs for this section [/]                                     :noexport:
+
 - [ ] This *might* become an extended appendix, we'll see. 
 
 - [ ] *PUT IN THE RAW OCCUPANCIES OF ALL CHIPS IN BACKGROUND OF EACH
@@ -45520,32 +45580,322 @@ in fig. [[cdl_logL_no_interp]].
   into a ~plotSeptemOccupancy~ file with single run / multiple run
   arguments etc.!
 
-* FADC rise time additions                                         :Appendix:
+
+** Generate occupancy map plots                                   :extended:
+
+Run-2:
+#+begin_src sh
+./plotBackgroundSeptemboard \
+    -f ~/CastData/data/DataRuns2017_Reco.h5 \
+    --title "Run-2 CAST data occupancy" \
+    --outfile ~/phd/Figs/occupancyMaps/run2_occupancy_map_by_count_perc95.pdf &
+./plotBackgroundSeptemboard \
+    -f ~/CastData/data/DataRuns2017_Reco.h5 \
+    --title "Run-2 CAST data occupancy" \
+    --outfile ~/phd/Figs/occupancyMaps/run2_occupancy_map_by_charge_perc95_max1000.pdf \
+    --onlyCount=false \
+    --chargeCut 1000
+#+end_src
+
+Run-3:
+#+begin_src sh
+./plotBackgroundSeptemboard \
+    -f ~/CastData/data/DataRuns2018_Reco.h5 \
+    --title "Run-3 CAST data occupancy" \
+    --outfile ~/phd/Figs/occupancyMaps/run3_occupancy_map_by_count_perc95.pdf &
+./plotBackgroundSeptemboard \
+    -f ~/CastData/data/DataRuns2018_Reco.h5 \
+    --title "Run-3 CAST data occupancy" \
+    --outfile ~/phd/Figs/occupancyMaps/run3_occupancy_map_by_charge_perc95_max1000.pdf \
+    --onlyCount=false \
+    --chargeCut 1000
+#+end_src
+
+* FADC                                                             :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:fadc
 :END:
+
+This appendix contains a few extra figures about the FADC
+signals. Sec. [[#sec:appendix:fadc:rise_fall]] contains additional figures 
+-- similar to fig. [[fig:background:fadc_rise_time]] used in the main
+thesis -- about the distribution of rise and fall
+times. Sec. [[#sec:appendix:background:fadc]] contains more specifics
+related to the FADC veto. In the context of the FADC veto in the main
+body the expected cluster size is mentioned, which is supported by a
+figure in sec. [[#sec:appendix:fadc_veto_empirical_cluster_length]].
+
+** TODOs for this section [/]                                     :noexport:
+
+- [X] FADC fall times
+- [X] FADC rise signal eff / back eff?
+- [X] FADC different settings rise / fall  
+
+** FADC rise and fall time
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:fadc:rise_fall
+:END:
+
+These figures show a few extra figures of the FADC signal rise and
+fall times comparing the \cefe calibration data with background data,
+for Run-2 and Run-3 of the CAST data taking campaign. In the Run-2
+figures more variation is visible, due to the different FADC amplifier
+settings. These are similar (and include)
+fig. [[fig:background:fadc_rise_time]] shown in the main body. See in
+particular figures
+[[fig:background:fadc_rise_time_run2_different_settings]] and
+[[fig:background:fadc_fall_time_run2_different_settings]] for the impact
+of the rise and fall time based on the different settings. The fall
+time figures show that the difference between signal and background is
+not very pronounced. This is expected, as the fall times are dominated
+by the resistor-capacitor behavior of the circuit.
+
+#+CAPTION: KDE of the rise time of the FADC signals in the \cefe and background data
+#+CAPTION: of the CAST Run-2 dataset. The X-ray data is a single peak with a mean of
+#+CAPTION: about $\SI{70}{ns}$ while the background distribution is extremely wide,
+#+CAPTION: motivating a veto based on this data.
+#+NAME: fig:background:fadc_rise_time_run2
+[[~/phd/Figs/FADC/fadc_riseTime_kde_signal_vs_background_run2.pdf]]
+
+#+CAPTION: KDE of the rise time of the FADC signals in the \cefe and background data
+#+CAPTION: of the CAST Run-3 dataset. The X-ray data is a single peak with a mean of
+#+CAPTION: about $\SI{55}{ns}$ while the background distribution is extremely wide,
+#+CAPTION: motivating a veto based on this data.
+#+NAME: fig:appendix:fadc_rise_time_run3
+[[~/phd/Figs/FADC/fadc_riseTime_kde_signal_vs_background_run3.pdf]]
+
+#+CAPTION: KDE of the rise time of the FADC signals in the \cefe and background data
+#+CAPTION: of the CAST Run-2 dataset. Difference in the two signal types is negligible.
+#+CAPTION: Multi-peak structure is due to different FADC settings, see fig. [[fig:background:fadc_rise_time_run2_different_settings]].
+#+NAME: fig:background:fadc_fall_time_run2
+[[~/phd/Figs/FADC/fadc_fallTime_kde_signal_vs_background_run2.pdf]]
+
+#+CAPTION: KDE of the fall time of the FADC signals in the \cefe and background data
+#+CAPTION: of the CAST Run-3 dataset. Difference in the two signal types is negligible.
+#+NAME: fig:background:fadc_rise_time_run3
+[[~/phd/Figs/FADC/fadc_fallTime_kde_signal_vs_background_run3.pdf]]
+
+#+CAPTION: KDE of the rise time of the FADC signals in the \cefe data of Run-2 split
+#+CAPTION: by the different FADC settings. 
+#+NAME: fig:background:fadc_rise_time_run2_different_settings
+[[~/phd/Figs/FADC/fadc_riseTime_kde_signal_vs_background_different_fadc_amp_settings_run2.pdf]]
+
+#+CAPTION: KDE of the fall time of the FADC signals in the \cefe data of Run-2 split
+#+CAPTION: by the different FADC settings. Impact on the fall time is more pronounced
+#+CAPTION: than on the rise time above.
+#+NAME: fig:background:fadc_fall_time_run2_different_settings
+[[~/phd/Figs/FADC/fadc_fallTime_kde_signal_vs_background_different_fadc_amp_settings_run2.pdf]]
+
+*** Generate plots for signal and background comparison          :extended:
+
+These plots are generated using ~plotFadc~ in
+sec. [[#sec:background:fadc_veto:gen_signal_back_fadc_plots]].
 
 ** FADC veto [/]
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:background:fadc
 :END:
 
-- [ ] INSERT PLOTS OF RISE TIME, FALL TIME, BY RUN, BY SETTING,
-  SKEWNESS VS RISE TIME AND MORE!
+Only briefly mentioned in sec. [[#sec:background:fadc_veto]] is the
+addition of a cut on the skewness of the FADC signal, namely a
+skewness $< -0.4$. Fig. [[fig:appendix:fadc_veto:rise_skewness_run2]]
+shows the FADC signal rise times of all events in Run-2 and fig. [[fig:appendix:fadc_veto:rise_skewness_run3]]
+for Run-3 against the skewness of the signal (i.e. a measure of how
+one sided the signal is due to the negative from baseline shape of a
+single FADC pulse). The color scale indicates whether the event is
+considered 'noisy' by our noise filter.
+
+We can see the majority of all noise events above skewness values of
+$\geq 0.4$, roughly. There are pockets of non-noisy events above this
+skewness value, in particular rise times of $\numrange{180}{210}$ and
+skewness $\numrange{-0.7}{0.3}$ in Run-2. Events in this range were
+inspected by eye (see extended thesis). They contain other noisy
+events not registered by the noise filter and certain types of multi
+cluster events resulting in peculiar shapes.
+
+Finally, fig. [[fig:appendix:fadc_veto:fadc_sig_back_efficiency]] shows
+the achievable signal efficiencies against background suppression as a
+function of the rise time. In this case only the upper range is cut
+(in practice the cut is symmetric on lower and upper end). This
+illustrates the efficiency of the FADC veto without any additional
+detector parts. At our used $\SI{99}{\%}$ upper range cut the
+background is suppressed to about $\SI{60}{\%}$ of the full background
+in the energy range of the \cefe photopeak.
+
+#+CAPTION: Scatter plot of all FADC events in Run-2 of the rise time of each event
+#+CAPTION: against the skewness. Colorcoded is whether each event is considered noisy
+#+CAPTION: by our noise filter.
+#+NAME: fig:appendix:fadc_veto:rise_skewness_run2
+[[~/phd/Figs/FADC/fadc_risetime_skewness_run2.pdf]]
+
+#+CAPTION: Scatter plot of all FADC events in Run-3 of the rise time of each event
+#+CAPTION: against the skewness. Colorcoded is whether each event is considered noisy
+#+CAPTION: by our noise filter.
+#+NAME: fig:appendix:fadc_veto:rise_skewness_run3
+[[~/phd/Figs/FADC/fadc_risetime_skewness_run3.pdf]]
+
+#+CAPTION: Signal efficency achievable using only the FADC veto for \cefe calibration data
+#+CAPTION: by cutting on the rise time (only the upper end) compared to the corresponding
+#+CAPTION: background suppression (for Run-3 data).
+#+NAME: fig:appendix:fadc_veto:fadc_sig_back_efficiency
+[[~/phd/Figs/FADC/fadc_rise_time_efficiencies_run3.pdf]]
+
+** Generate plot of rise time vs skewness                         :extended:
+
+The code here originates from:
+[[file:~/org/Doc/StatusAndProgress.org::#sec:fadc:noisy_events_and_fadc_veto]]
+
+That section also contains the commands and studies of the
+aforementioned regions of non noisy events in 'larger than veto'
+skewness values at low rise times.
+
+#+begin_src nim :tangle /tmp/fadc_data_skewness.nim
+import nimhdf5, ggplotnim
+import std / [strutils, os, sequtils, stats, strformat]
+import ingrid / [tos_helpers, fadc_helpers, ingrid_types, fadc_analysis]
+
+proc getFadcSkewness(h5f: H5File, run: int): DataFrame =
+  let fadcRun = readRecoFadcRun(h5f, run)
+  let recoFadc = readRecoFadc(h5f, run)
+  let num = fadcRun.eventNumber.len
+  var skews = newSeqOfCap[float](num)
+  for idx in 0 ..< fadcRun.eventNumber.len:
+    skews.add fadcRun.fadcData[idx, _].squeeze.toSeq1D.skewness()
+  result = toDf({skews, "riseTime" : recoFadc.riseTime.asType(float), "noisy" : recoFadc.noisy})
+  echo result
+
+proc main(fname: string,
+          outpath = "/tmp/",
+          suffix = "") =
+  let tmpFile = "/tmp/" & fname.extractFilename.replace(".h5", ".csv")
+  var df = newDataFrame()
+  if not fileExists tmpFile:
+    var h5f = H5open(fname, "r")
+    let fileInfo = h5f.getFileInfo()
+    var dfs = newSeq[DataFrame]()
+    for run in fileInfo.runs:
+      echo "Run = ", run
+      let fadcGroup = fadcRecoPath(run)
+      if fadcGroup in h5f: # there were some runs at end of data taking without any FADC (298, 299)
+        dfs.add h5f.getFadcSkewness(run)
+    df = assignStack(dfs)
+    df.writeCsv(tmpFile)
+  else:
+    df = readCsv(tmpFile)
+  echo df
+  df = df.mutate(f{int -> bool: "noisy" ~ (if `noisy` == 0: false else: true)})
   
-** FADC 
+  ggplot(df, aes("skews")) +
+    geom_density() +
+    ggsave(&"{outpath}/fadc_skewness_kde_{suffix}.pdf")
+
+  ggplot(df, aes("skews", "riseTime", color = "noisy")) +
+    #geom_point(size = 1.0, alpha = 0.2) +
+    geom_point(size = 0.5, alpha = 0.75) +
+    xlab("Skewness") + ylab("riseTime [ns]") + 
+    themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) + 
+    ggsave(&"{outpath}/fadc_risetime_skewness_{suffix}.pdf", dataAsBitmap = true)
+    
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+Run-2:
+#+begin_src sh
+WRITE_PLOT_CSV=true \
+    ./fadc_data_skewness \
+    -f ~/CastData/data/DataRuns2017_Reco.h5 \
+    --outpath ~/phd/Figs/FADC/ \
+    --suffix "run2"
+#+end_src
+and for sanity, Run-3:
+#+begin_src sh
+WRITE_PLOT_CSV=true \
+    ./fadc_data_skewness \
+    -f ~/CastData/data/DataRuns2018_Reco.h5 \
+    --outpath ~/phd/Figs/FADC/ \
+    --suffix "run3"
+#+end_src
+
+  
+** Expected cluster size
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:fadc_veto_empirical_cluster_length
 :END:
 
-- [ ] Include the plot about empirical length of clusters
+While not strictly speaking FADC data, the expected size of clusters
+was mentioned in sec. [[#sec:background:fadc_veto]] to be about
+$\SI{6}{mm}$ in length for \cefe calibration data. This is shown in
+fig. [[fig:appendix:empirical_cluster_lengths]]. 
+
+#+CAPTION: Cluster lengths in millimeter of \cefe calibration data during the Run-2 data taking campaign.
+#+CAPTION: These $\SI{5.9}{keV}$ clusters clearly peak at around $\SI{6}{mm}$ in length.
+#+NAME: fig:appendix:empirical_cluster_lengths
+[[~/phd/Figs/expectedClusterSize/length_run83_187_chip3_0.04833333333333333_binSize_binRange-0.0_14.5_region_crSilver_rmsTransverse_0.1_1.1_applyAll_true.pdf]]
+
+
+*** Generate cluster length plot                                 :extended:
+
+#+begin_src sh
+WRITE_PLOT_CSV=true LINE_BREAK=true T_MARGIN=1.75 USE_TEX=true WIDTH=600 HEIGHT=420 \
+   plotData --h5file ~/CastData/data/CalibrationRuns2017_Reco.h5 \
+            --runType rtCalibration \
+            --chips 3 \
+            --config ~/CastData/ExternCode/TimepixAnalysis/Plotting/karaPlot/config.toml \
+            --ingrid \
+            --cuts '("rmsTransverse", 0.1, 1.1)' \
+            --applyAllCuts \
+            --region crSilver \
+            --plotPath ~/phd/Figs/expectedClusterSize/
+#+end_src
+
+
+*** TODOs for this section [/]                                   :noexport:
+
+- [X] Include the plot about empirical length of clusters
   -> What plot is that?
   -> I guess a plot of the transverse RMS?
+  -> Ahh, not quite! It refers to the literal *length* of \cefe X-ray clusters, mentioned in
+  sec. [[#sec:background:fadc_veto]]
+  -> Based on [[file:~/org/Doc/StatusAndProgress.org::#sec:fadc:estimate_rise_times]].
+  #+begin_quote
+  From the CAST \cefe data we see a peak at around $\SI{6}{mm}$ of
+  transverse cluster size along the longer axis, which matches well
+  with our expectation (see appendix
+  [[#sec:appendix:fadc_veto_empirical_cluster_length]] for the length
+  data).
+  #+end_quote
+  
+  
 
-* Background rate and vetoes                                       :Appendix:
+* Raw data and background rates                                    :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:background_rates
 :END:
+
+In this appendix we find a few more figures and numbers about the
+background rates and a comparison to the raw data
+rates. Fig. [[fig:appendix:background_rates:all_cast_data]] shows the raw
+data rate of the full center chip of the entire CAST data taking campaign
+in the same units as used for the normal background rate plots. The
+background increases towards low energies, but a hump is visible in the
+$\SIrange{2}{3}{keV}$ range, matching the expected energies for muon
+tracks. The rates are roughly four orders of magnitude larger than the
+best achieved background rates. 
+
+#+CAPTION: All CAST data of the entire center chip without any classifier or other cuts.
+#+CAPTION: Uses the same units as all background plots for easier comparison.
+#+NAME: fig:appendix:background_rates:all_cast_data
+[[~/phd/Figs/CAST_raw_data/all_cast_data_rate_crAll_chip_3_log.pdf]]
+
+Further, in sec. [[#sec:appendix:background_rates:full_chip]] we find
+background rates not only for the \goldArea region, but for the
+entire center chip. Both to compare with
+fig. [[fig:appendix:background_rates:all_cast_data]] as well as to get a
+better idea of the efficiency of the vetoes. 
+
+** TODOs for this section [/]                                     :noexport:
 
 - [ ] Possibly more background rate plots?
 
@@ -45555,20 +45905,197 @@ in fig. [[cdl_logL_no_interp]].
 - [ ] Background rates over the entire chip for different veto setups!
   Emphasizes even more effect of vetoes!
 - [ ] Raw data rate without any classifier or vetoes!
-- [ ]
 
-#+CAPTION: All CAST data of the entire center chip without any classifier or other cuts.
-#+CAPTION: Uses the same units as all background plots for easier comparison.
-#+NAME: fig:appendix:background_rates:all_cast_data
-[[~/phd/Figs/CAST_raw_data/all_cast_data_rate_crAll_chip_3_log.pdf]]
+- [ ] Table of rates over whole chip  
 
-** Generate background rates over full chip
+
+** Background rates over full chip 
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:background_rates:full_chip
+:END:
+
+Fig. [[fig:appendix:background_rates:full_chip_crAll_lnL80]] shows the
+effect of the different vetoes over the entire chip using the \lnL method
+at $\SI{80}{\%}$ software efficiency as a base. It better highlights the
+efficiency of some vetoes, for example the FADC veto is more effective
+over the entire chip, than in the center \goldArea region alone (compare
+with fig. [[fig:background:background_rate_fadc_veto]]). Of course, the
+septem and line vetoes are even more efficient over the entire chip, as
+expected and previously seen in the form of the background suppression
+plots (for example
+fig. sref:fig:background:background_suppression_comparison).
+
+Fig. [[fig:appendix:background_rates:full_chip_crAll_lnL_mlp_setups]] shows
+how the different software efficiencies affect the background rate
+comparing different \lnL and MLP efficiencies including all vetoes.
+
+Finally, tab. [[tab:appendix:background_rates:mean_background_rates]] shows
+the mean background rates over the entire chip for all considered \lnL and MLP
+veto setups in the energy range $\SIrange{0}{8}{keV}$. 
+
+#+CAPTION: Background rate over the entire center chip of all CAST data, comparing the
+#+CAPTION: \lnL cut method at $\SI{80}{\%}$ software efficiency without any vetoes with
+#+CAPTION: each veto setup (vetoes are additive again). 
+#+NAME: fig:appendix:background_rates:full_chip_crAll_lnL80
+[[~/phd/Figs/background/background_rate_crAll_lnL80.pdf]]
+
+#+CAPTION: Background rate over the entire center chip of all CAST data, comparing the
+#+CAPTION: \lnL cut method and the MLP at different software efficiencies including all
+#+CAPTION: vetoes.
+#+NAME: fig:appendix:background_rates:full_chip_crAll_lnL_mlp_setups
+[[~/phd/Figs/background/background_rate_crAll_all_vetoes_lnL_mlp.pdf]]
+
+#+CAPTION: Mean background rates in $\si{keV^{-1}.cm^{-2}.s^{-1}}$ over the entire chip comparing all different \lnL and MLP setups
+#+CAPTION: in an energy range from $\SIrange{0}{8}{keV}$. Due to its efficiency at lower energies, where
+#+CAPTION: the majority of background is, the MLP produces the lowest mean rates.
+#+NAME: tab:appendix:background_rates:mean_background_rates
+#+ATTR_LATEX: :booktabs t
+|------------+-----------------+--------+-------+--------+-------+-------------------+-----------|
+| Classifier | $ε_{\text{eff}}$ | Scinti | FADC  | Septem | Line  | $ε_{\text{total}}$ |      Rate |
+|------------+-----------------+--------+-------+--------+-------+-------------------+-----------|
+| MLP        |           0.865 | true   | true  | true   | true  |             0.621 | 1.431e-05 |
+| MLP        |           0.912 | true   | true  | true   | true  |             0.655 | 1.839e-05 |
+| LnL        |           0.700 | true   | true  | true   | true  |             0.503 | 2.181e-05 |
+| MLP        |           0.957 | true   | true  | true   | true  |             0.687 | 2.768e-05 |
+| LnL        |           0.800 | true   | true  | true   | true  |             0.574 | 2.821e-05 |
+| MLP        |           0.865 | true   | true  | false  | true  |             0.729 | 3.750e-05 |
+| LnL        |           0.900 | true   | true  | true   | true  |             0.646 | 3.866e-05 |
+| MLP        |           0.983 | true   | true  | true   | true  |             0.706 | 4.415e-05 |
+| LnL        |           0.800 | true   | true  | true   | false |             0.615 | 4.604e-05 |
+| MLP        |           0.912 | true   | true  | false  | true  |             0.769 | 4.748e-05 |
+| LnL        |           0.700 | true   | true  | false  | true  |             0.590 | 5.416e-05 |
+| MLP        |           0.957 | true   | true  | false  | true  |             0.807 | 6.811e-05 |
+| LnL        |           0.800 | true   | true  | false  | true  |             0.674 | 6.906e-05 |
+| LnL        |           0.900 | true   | true  | false  | true  |             0.759 | 9.093e-05 |
+| MLP        |           0.983 | true   | true  | false  | true  |             0.829 | 9.970e-05 |
+| MLP        |           0.865 | false  | false | false  | false |             0.865 | 2.392e-04 |
+| LnL        |           0.700 | false  | false | false  | false |             0.700 | 2.832e-04 |
+| MLP        |           0.912 | false  | false | false  | false |             0.912 | 3.004e-04 |
+| LnL        |           0.800 | true   | true  | false  | false |             0.784 | 3.149e-04 |
+| LnL        |           0.800 | true   | false | false  | false |             0.800 | 3.544e-04 |
+| LnL        |           0.800 | false  | false | false  | false |             0.800 | 3.589e-04 |
+| MLP        |           0.957 | false  | false | false  | false |             0.957 | 4.106e-04 |
+| LnL        |           0.900 | false  | false | false  | false |             0.900 | 4.728e-04 |
+| MLP        |           0.983 | false  | false | false  | false |             0.983 | 5.605e-04 |
+
+
+** Generate rate without any vetoes over full chip                :extended:
+
+We will use the same units as for the background rate for easier
+comparison! i.e. 1e-5 keV⁻¹·cm⁻²·s⁻¹
+#+begin_src sh
+plotBackgroundRate \
+    ~/CastData/data/DataRuns2017_Reco.h5 \
+    ~/CastData/data/DataRuns2018_Reco.h5 \
+    --names "All" --names "All" \
+    --centerChip 3 \
+    --title "Raw CAST data rate" \
+    --showNumClusters \
+    --region crAll \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --energyMin 0.0 \
+    --outfile all_cast_data_rate_crAll_chip_3_log.pdf \
+    --outpath ~/phd/Figs/CAST_raw_data \
+    --useTeX \
+    --quiet
+#+end_src
+
+#+RESULTS:
+  
+** Generate background rates over full chip                       :extended:
 
 - [ ] Adjust the below to use the interesting input files. The region
-  is already ~crAll~. Just need to 
-
+  is already ~crAll~. Just need to remove the files we don't want for
+  different plots.
+  
+LnL 80% veto setups:
 #+begin_src sh :results drawer
-plotBackgroundRate \
+WRITE_PLOT_CSV=true plotBackgroundRate \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_line_vQ_0.99.h5 \
+    --names "No vetoes" --names "No vetoes" \
+    --names "Scinti" --names "Scinti" \
+    --names "FADC" --names "FADC" \
+    --names "Septem" --names "Septem" \
+    --names "All vetoes" --names "All vetoes" \
+    --names "Line" --names "Line" \
+    --centerChip 3 \
+    --title "Background rate from CAST data over entire chip, lnL@80% incl. vetoes" \
+    --showNumClusters \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --outfile background_rate_crAll_lnL80.pdf \
+    --outpath ~/phd/Figs/background/ \
+    --region crAll \
+    --useTeX \
+    --logPlot \
+    --hidePoints --hideErrors \
+    --quiet
+#+end_src
+
+Comparison of different lnL and MLP setups with all vetoes in place:
+#+begin_src sh :results drawer
+WRITE_PLOT_CSV=true plotBackgroundRate \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    --names "lnL@80" --names "lnL@80" \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.7_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.7_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    --names "lnL@70" --names "lnL@70" \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.9_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.9_lnL_scinti_fadc_septem_line_vQ_0.99.h5 \
+    --names "lnL@90" --names "lnL@90" \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "MLP@85" --names "MLP@85" \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.9_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "MLP@90" --names "MLP@90" \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "MLP@95" --names "MLP@95" \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.98_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.98_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --names "MLP@98" --names "MLP@98" \
+    --centerChip 3 \
+    --title "Background rate from CAST data over entire chip, all vetoes" \
+    --showNumClusters \
+    --showTotalTime \
+    --topMargin 1.5 \
+    --energyDset energyFromCharge \
+    --outfile background_rate_crAll_all_vetoes_lnL_mlp.pdf \
+    --outpath ~/phd/Figs/background/ \
+    --region crAll \
+    --energyMin 0.2 \
+    --useTeX \
+    --logPlot \
+    --hidePoints --hideErrors \
+    --quiet
+#+end_src
+
+
+
+
+** Generate table of background rates for all setups              :extended:
+
+We use the background rate plotting tool to produce a table of the
+background rates over the entire chip in an energy range from 0 to 8
+keV. Note the ~--rateTable~ argument at the end in the massive wall below:
+#+begin_src sh :results drawer
+WRITE_PLOT_CSV=true plotBackgroundRate \
     ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL.h5 \
     ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R3_crAll_sEff_0.8_lnL.h5 \
     ~/org/resources/lhood_lnL_17_11_23_septem_fixed/lhood_c18_R2_crAll_sEff_0.8_lnL_scinti.h5 \
@@ -45651,123 +46178,11 @@ plotBackgroundRate \
     --outpath ~/phd/Figs/background/ \
     --region crAll \
     --energyMin 0.2 \
-#    --rateTable ~/phd/resources/background_rate_comparisons_crAll.org \
+    --logPlot --hidePoints --hideErrors \
+    --rateTable ~/phd/resources/background_rate_comparisons_crAll.org \
     --quiet
 #+end_src
 
-** Generate rate without any vetoes over full chip
-
-We will use the same units as for the background rate for easier
-comparison! i.e. 1e-5 keV⁻¹·cm⁻²·s⁻¹
-#+begin_src sh
-plotBackgroundRate \
-    /mnt/1TB/CAST/2017/DataRuns2017_Reco.h5 \
-    /mnt/1TB/CAST/2018_2/DataRuns2018_Reco.h5 \
-    --names "All" --names "All" \
-    --centerChip 3 \
-    --title "Raw CAST data rate" \
-    --showNumClusters \
-    --region crAll \
-    --showTotalTime \
-    --topMargin 1.5 \
-    --energyDset energyFromCharge \
-    --energyMin 0.0 \
-    --outfile all_cast_data_rate_crAll_chip_3_log.pdf \
-    --outpath ~/phd/Figs/CAST_raw_data \
-    --quiet
-#+end_src
-
-#+RESULTS:
-|  [INFO]:Dataset: |        All |            |           |                                                                            |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |      rate |                                                                         in | range:   |       0.0 |        .. | 12.0:    |       6.0421e-02 cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |  rate/keV |                                                                         in | range:   |       0.0 |        .. | 12.0:    | 5.0351e-03 keV⁻¹·cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|  [INFO]:Dataset: |        All |            |           |                                                                            |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |      rate |                                                                         in | range:   |       0.5 |        .. | 2.5:     |       2.4681e-02 cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |  rate/keV |                                                                         in | range:   |       0.5 |        .. | 2.5:     | 1.2341e-02 keV⁻¹·cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|  [INFO]:Dataset: |        All |            |           |                                                                            |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |      rate |                                                                         in | range:   |       0.5 |        .. | 5.0:     |       4.2564e-02 cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |  rate/keV |                                                                         in | range:   |       0.5 |        .. | 5.0:     | 9.4587e-03 keV⁻¹·cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|  [INFO]:Dataset: |        All |            |           |                                                                            |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |      rate |                                                                         in | range:   |       0.0 |        .. | 2.5:     |       3.5066e-02 cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |  rate/keV |                                                                         in | range:   |       0.0 |        .. | 2.5:     | 1.4026e-02 keV⁻¹·cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|  [INFO]:Dataset: |        All |            |           |                                                                            |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |      rate |                                                                         in | range:   |       4.0 |        .. | 8.0:     |       9.4525e-03 cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |  rate/keV |                                                                         in | range:   |       4.0 |        .. | 8.0:     | 2.3631e-03 keV⁻¹·cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|  [INFO]:Dataset: |        All |            |           |                                                                            |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |      rate |                                                                         in | range:   |       2.0 |        .. | 8.0:     |       2.8220e-02 cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |  rate/keV |                                                                         in | range:   |       2.0 |        .. | 8.0:     | 4.7033e-03 keV⁻¹·cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|  [INFO]:Dataset: |        All |            |           |                                                                            |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |      rate |                                                                         in | range:   |       0.0 |        .. | 8.0:     |       5.8227e-02 cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|          [INFO]: | Integrated | background |  rate/keV |                                                                         in | range:   |       0.0 |        .. | 8.0:     | 7.2783e-03 keV⁻¹·cm⁻²·s⁻¹ |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|                  |            | Classifier |           |                                                                            | ε_eff     |           |           | Scinti   |                         |          | FADC       |          |          | Septem   |          |   | Line  |   |   | ε_total |   |   |  Rate |   |
-|                  |            |        MLP |           |                                                                            | 0.0      |           |           | false    |                         |          | false      |          |          | false    |          |   | false |   |   |    1.0 |   |   | 0.007 |   |
-|                  |            |            |           |                                                                            |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-| [INFO]:DataFrame |       with |         15 |   columns |                                                                        and | 61       |     rows: |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|              Idx |     Energy |       Rate | totalTime |                                                                    RateErr | Dataset  |      yMin |      yMax | File     |                  ε_total |     ε_eff | Classifier | Scinti   | FADC     | Septem   | Line     |   |       |   |   |        |   |   |       |   |
-|           dtype: |      float |      float |  constant |                                                                      float | constant |     float |     float | constant |                constant | constant | constant   | constant | constant | constant | constant |   |       |   |   |        |   |   |       |   |
-|                0 |          0 |  915.38221 | 3318.3817 |                                                                  4.3898806 | All      | 910.99233 | 919.77209 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                1 |        0.2 |  2229.0139 | 3318.3817 |                                                                  6.8502727 | All      | 2222.1636 | 2235.8642 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                2 |        0.4 |  1730.4705 | 3318.3817 |                                                                  6.0357823 | All      | 1724.4347 | 1736.5063 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                3 |        0.6 |  1550.6614 | 3318.3817 |                                                                  5.7136016 | All      | 1544.9478 |  1556.375 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                4 |        0.8 |  1443.6096 | 3318.3817 |                                                                  5.5128522 | All      | 1438.0967 | 1449.1224 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                5 |          1 |  1402.1994 | 3318.3817 |                                                                  5.4332083 | All      | 1396.7662 | 1407.6326 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                6 |        1.2 |  1389.4416 | 3318.3817 |                                                                  5.4084351 | All      | 1384.0332 |   1394.85 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                7 |        1.4 |    1396.81 | 3318.3817 |                                                                  5.4227569 | All      | 1391.3872 | 1402.2327 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                8 |        1.6 |  1381.3996 | 3318.3817 |                                                                  5.3927604 | All      | 1376.0068 | 1386.7923 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                9 |        1.8 |  1358.6208 | 3318.3817 |                                                                  5.3481133 | All      | 1353.2727 | 1363.9689 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               10 |          2 |  1326.9579 | 3318.3817 |                                                                  5.2854265 | All      | 1321.6725 | 1332.2433 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               11 |        2.2 |  1268.2215 | 3318.3817 |                                                                  5.1671257 | All      | 1263.0544 | 1273.3886 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               12 |        2.4 |  1195.9484 | 3318.3817 |                                                                  5.0177347 | All      | 1190.9307 | 1200.9661 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               13 |        2.6 |  1124.2437 | 3318.3817 |                                                                  4.8649872 | All      | 1119.3787 | 1129.1087 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               14 |        2.8 |  1027.7603 | 3318.3817 |                                                                  4.6515467 | All      | 1023.1087 | 1032.4118 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               15 |          3 |  929.76104 | 3318.3817 |                                                                  4.4242244 | All      | 925.33682 | 934.18526 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               16 |        3.2 |  848.85642 | 3318.3817 |                                                                  4.2273537 | All      | 844.62907 | 853.08377 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               17 |        3.4 |  761.23606 | 3318.3817 |                                                                  4.0032356 | All      | 757.23283 |  765.2393 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               18 |        3.6 |  686.87876 | 3318.3817 |                                                                  3.8026952 | All      | 683.07606 | 690.68145 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               19 |        3.8 |  604.81625 | 3318.3817 |                                                                  3.5683151 | All      | 601.24794 | 608.38457 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               20 |          4 |   545.0062 | 3318.3817 |                                                                  3.3872885 | All      | 541.61891 | 548.39349 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               21 |        4.2 |  483.61721 | 3318.3817 |                                                                  3.1908203 | All      | 480.42639 | 486.80803 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               22 |        4.4 |  434.01761 | 3318.3817 |                                                                  3.0227703 | All      | 430.99484 | 437.04038 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               23 |        4.6 |  389.42849 | 3318.3817 |                                                                    2.86329 | All      |  386.5652 | 392.29178 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               24 |        4.8 |  349.70249 | 3318.3817 |                                                                  2.7133189 | All      | 346.98917 | 352.41581 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               25 |          5 |  316.62907 | 3318.3817 |                                                                  2.5818254 | All      | 314.04724 | 319.21089 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               26 |        5.2 |  287.95561 | 3318.3817 |                                                                  2.4621485 | All      | 285.49346 | 290.41776 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               27 |        5.4 |  260.96635 | 3318.3817 |                                                                  2.3439251 | All      | 258.62242 | 263.31027 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               28 |        5.6 |  236.50339 | 3318.3817 |                                                                  2.2313626 | All      | 234.27202 | 238.73475 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               29 |        5.8 |  218.98774 | 3318.3817 |                                                                   2.147145 | All      | 216.84059 | 221.13488 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               30 |          6 |  197.76685 | 3318.3817 |                                                                  2.0404606 | All      | 195.72639 | 199.80731 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               31 |        6.2 |  183.93538 | 3318.3817 |                                                                  1.9678143 | All      | 181.96757 |  185.9032 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               32 |        6.4 |  169.66181 | 3318.3817 |                                                                  1.8899204 | All      | 167.77189 | 171.55173 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               33 |        6.6 |   152.9251 | 3318.3817 |                                                                  1.7942827 | All      | 151.13082 | 154.71938 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               34 |        6.8 |   141.3673 | 3318.3817 |                                                                  1.7251464 | All      | 139.64215 | 143.09245 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               35 |          7 |  134.77788 | 3318.3817 |                                                                  1.6844603 | All      | 133.09342 | 136.46234 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               36 |        7.2 |  123.62007 | 3318.3817 |                                                                  1.6132288 | All      | 122.00684 |  125.2333 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               37 |        7.4 |   116.5675 | 3318.3817 |                                                                  1.5665354 | All      | 115.00096 | 118.13403 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               38 |        7.6 |  107.59915 | 3318.3817 |                                                                  1.5050672 | All      | 106.09408 | 109.10421 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               39 |        7.8 |  99.641314 | 3318.3817 |                                                                  1.4483422 | All      | 98.192972 | 101.08966 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               40 |          8 |   96.18871 | 3318.3817 |                                                                  1.4230283 | All      | 94.765682 | 97.611738 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               41 |        8.2 |  88.399298 | 3318.3817 |                                                                  1.3641932 | All      | 87.035105 | 89.763491 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               42 |        8.4 |  82.378293 | 3318.3817 |                                                                  1.3169154 | All      | 81.061378 | 83.695209 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               43 |        8.6 |  80.462519 | 3318.3817 |                                                                  1.3015123 | All      | 79.161007 | 81.764031 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               44 |        8.8 |  73.009947 | 3318.3817 |                                                                  1.2397739 | All      | 71.770173 | 74.249721 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               45 |          9 |  69.894182 | 3318.3817 |                                                                  1.2130312 | All      | 68.681151 | 71.107213 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               46 |        9.2 |  63.620548 | 3318.3817 |                                                                  1.1573112 | All      | 62.463236 | 64.777859 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               47 |        9.4 |  61.431091 | 3318.3817 |                                                                  1.1372229 | All      | 60.293868 | 62.568314 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               48 |        9.6 |  59.094268 | 3318.3817 |                                                                  1.1153833 | All      | 57.978884 | 60.209651 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               49 |        9.8 |  55.494296 | 3318.3817 |                                                                  1.0808754 | All      | 54.413421 | 56.575172 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               50 |         10 |   53.55747 | 3318.3817 |                                                                  1.0618459 | All      | 52.495624 | 54.619315 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               51 |       10.2 |  48.504878 | 3318.3817 |                                                                  1.0105183 | All      |  47.49436 | 49.515396 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               52 |       10.4 |  47.031206 | 3318.3817 |                                                                 0.99504914 | All      | 46.036156 | 48.026255 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               53 |       10.6 |  43.831231 | 3318.3817 |                                                                  0.9606016 | All      | 42.870629 | 44.791833 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               54 |       10.8 |  41.241778 | 3318.3817 |                                                                 0.93179454 | All      | 40.309983 | 42.173572 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               55 |         11 |  39.789158 | 3318.3817 |                                                                 0.91523758 | All      |  38.87392 | 40.704395 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               56 |       11.2 |  37.304967 | 3318.3817 |                                                                 0.88620624 | All      | 36.418761 | 38.191173 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               57 |       11.4 |  36.357606 | 3318.3817 |                                                                 0.87488126 | All      | 35.482725 | 37.232487 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               58 |       11.6 |  33.704996 | 3318.3817 |                                                                 0.84236169 | All      | 32.862634 | 34.547357 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               59 |       11.8 |  33.936573 | 3318.3817 |                                                                 0.84525055 | All      | 33.091322 | 34.781823 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|               60 |         12 |          0 | 3318.3817 |                                                                          0 | All      |         0 |         0 | All      |                       1 |        0 | MLP        | false    | false    | false    | false    |   |       |   |   |        |   |   |       |   |
-|                  |            |            |           |                                                                            |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
-|     [INFO]:INFO: |    storing |       plot |        in | /home/basti/phd/Figs/CAST_raw_data/all_cast_data_rate_crAll_chip_3_log.pdf |          |           |           |          |                         |          |            |          |          |          |          |   |       |   |   |        |   |   |       |   |
 
 * Background interpolation chip cutout correction                  :Appendix:
 :PROPERTIES:
@@ -45878,16 +46293,21 @@ where we emphasize that $E(x,y)$ depends on the position, before normalizing wit
 #+ATTR_LATEX: :width 1.0\linewidth
 [[~/phd/Figs/circleCutout/circle_cutout_explanation.pdf]]
 
+
 * Solar tracking candidates [/]                                    :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:solar_candidates
 :END:
 
-- [ ] *INSERT FIGS OF THE SOLAR TRACKING CANDIDATES*
+
+** TODOs for this section [/]                                     :noexport:
+
+- [X] *INSERT FIGS OF THE SOLAR TRACKING CANDIDATES*
   -> the distribution over the chip w/ axion image
   -> rate background vs candidates
   -> s/b plot
-
+  -> These are all already in the main body now!
+  
 
 * Software                                                         :Software:Appendix:
 :PROPERTIES:
