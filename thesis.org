@@ -46315,6 +46315,19 @@ where we emphasize that $E(x,y)$ depends on the position, before normalizing wit
 :END:
 #+LATEX: \minitoc
 
+In this appendix we will go over the software developed and used in
+the course of this thesis with a bit more detail than in the main
+thesis (beginning of chapter [[#sec:reconstruction]]). The focus is
+more on the technical and usability side and not the physics
+application. Read this appendix either if you
+
+- are simply interested,
+- are intending to reproduce the analysis or use (parts of) the software
+  for your own data,
+- wish to further process data produced by these tools with your own software.
+
+** TODOs for this section [/]                                     :noexport:  
+
 Essentially we aim to move the chapter [[Software]] here and extend it to:
 - give an overview of all tools we use in this thesis behind the
   scenes (means what they do, what their CLI looks like and how to use
@@ -46330,18 +46343,125 @@ new detector features would be beyond the scope of the framework.
   that appendix and at the same time then don't have to worry about
   keeping it very focused on things that "should be" in a thesis.
 
-- [ ] *IN APPENDIX ABOUT THIS, EXPLAIN CONFIG FILE OF TPA!*  
-  
-** Nim
+- [ ] *IN APPENDIX ABOUT THIS, EXPLAIN CONFIG FILE OF TPA!*
 
-Shortly introduce Nim & why it was chosen.
+** Why did I start writing my own analysis framework?             :extended:
 
-Efficient, productive, gets out of my way.
+Some of you may wonder why I wrote all this code in order to analyze
+my data. It is a huge undertaking with not much upside in the context
+of finishing my PhD after all.
+
+The reason boils down to 2 main points:
+
+1. Christoph [[cite:&krieger2018search]] used the software framework
+   [[https://ilcsoft.desy.de/portal/software_packages/marlintpc/][MarlinTPC]] (see also [fn:marlin_paper]). It is an extension
+   to the [[https://github.com/iLCSoft/Marlin]['Marlin']] framework intended for the application of TPCs in
+   the context of the International Linear Collider (ILC).
+   I had multiple issues with this:
+   - it is mostly intended for TPCs. While a GridPix is a TPC of
+     sorts, most regular TPCs use strips or pads as a readout and not
+     pixels. This made the GridPix introduction inefficient.
+   - Christoph's existing code was written for a single GridPix. The
+     addition of the Septemboard and more importantly detector vetoes
+     would have anyhow meant significant time investment. From a
+     simple glance it did not seem like MarlinTPC would make for an
+     easy platform to introduce the required features.
+   - it is a framework based on a base program, which is controlled by
+     XML filed called 'steering files'. These describe the processes
+     to be run in order. Instead of building small programs that do
+     one thing, the main program is large and decides at runtime which
+     processes to run. All this is built in a very heavy object
+     oriented manner, resulting in massive amounts of boilerplate code
+     for each new feature. In addition assembling processes in such a
+     way results in generally low performance.
+   - it uses CERN's ROOT internally, of which I am not a fan,
+     especially not for projects that are not LHC scale.
+2. I was a bit naive in some respects. Less so in terms of
+   underestimating the amount of code needing to write to reproduce
+   the basic reconstruction of Christoph's code. Yes, that also was
+   quite some work, but manageable. Firstly, I was naive enough to
+   think people would "accept" my results easily, in case their are
+   discrepancies between my and Christoph's results (of which there
+   were many). As it turns out two competing pieces of code often
+   don't produce the exact same results. Understanding and minimizing
+   discrepancies was a serious hindrance. Some boiled down to bugs in
+   my own code, but others due to bugs in MarlinTPC.
+   Secondly, by choosing Nim as the target language I underestimated
+   the amount of code I would / had to write completely independent of
+   the actual ~TimepixAnalysis~ code base. Things like a plotting
+   library, dataframe library etc. Initially I thought I would either
+   not need these ore simply use Python for additional processing, but
+   the joy of building things and my urge for "purity" (few external
+   dependencies) lead me down the path to replace more and more of my
+   dependencies by my own code.
+
+It was a lot of work of course. But while it certainly delayed the
+end of my thesis by a significant time, I learned /way/ more than I
+would have otherwise.
+
+On another note: Having looked into MarlinTPC now
+(<2024-01-04 Thu 16:38>) again, the choice was /very much/ the right
+one. Development seemingly has halted or at the very least is not
+public. This page https://znwiki3.ifh.de/MarlinTPC/ mentions a
+migration to DESY's GitLab here:
+https://gitlab.desy.de/users/sign_in. Let me be blunt: screw non
+public code access!
+
+Second note: [[https://github.com/rest-for-physics/framework][REST]] was not known to me at the time when I started
+development. But more importantly, it pretty much follows in the
+footsteps of MarlinTPC (in terms of XML steering files plus a base
+~rest-manager~ program, being based on CERN's ROOT, heavy OOP paradigm
+etc.). We'll see how REST holds up in 10 years time (maybe it blooms
+in the context of BabyIAXO!). At the very least I'm pretty confident
+I'll be able to get this code up and running with little work at that
+point.
+
+[fn:marlin_paper] https://arxiv.org/abs/0709.0790
+
+** Nim                                                            :extended:
+
+As briefly mentioned already in the main body, Nim is a -- relatively
+-- young programming language that offers C-like performance combined
+with Lisp-like metaprogramming, Python-like whitespace-sensitive, few
+operator based syntax and an Ada-like type system. Combined, these
+provide the perfect base for the single developer to be productive and
+build fast, safe software.
+
+In other words: the language gets out of my way and let's me build
+stuff that is fast and should /in theory/ be understandable to people
+coming after me. 
+
 
 ** TimepixAnalysis
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:timepix_analysis
 :END:
+
+Introduced in the main part, in sec. [[#sec:reco:tpa]], ~TimepixAnalysis~
+[[cite:&TPA]] is the name for the repository containing a large collection
+of different programs for the data reconstruction and analysis of
+Timepix based detectors.
+
+Generally, the ~README~ in the repository gives an overview of all the
+relevant programs, installation instructions and more. For further
+details therefore check there or simply open an issue in the
+repository [[cite:&TPA]].
+
+Here we will now go over the main programs required to handle the
+Septemboard data taken at CAST so that in appendix
+[[#sec:appendix:full_data_reconstruction]] we can present the commands to
+for the entire CAST data reconstruction.
+
+#+begin_quote
+Note: in the PDF and HTML version of the thesis I provide some links
+to different parts of the repository. These generally point to Github,
+because the main public repository of ~TimepixAnalysis~ is found
+there. This is mostly out of convenience though. It should be
+straightforward to map them to the paths inside of your local copy of
+the repository, but that makes it trickier to link to.
+#+end_quote
+
+*** TODOs for this section [/]                                   :noexport:
 
 Framework written for data analysis.
 
@@ -46361,69 +46481,47 @@ the analysis, the details of which will be explained in the next
 section? In that case one might merge the whole chapter with the next
 one and simply have these as the introductory part of the chapter.
 
-*** ~InGridDatabase~
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:software:ingrid_database
-:END:
+*** Common points between all TimepixAnalysis programs
 
-- explain database
-- explain data structure needed to add to DB
-- show how to add    
+All programs in the TimepixAnalysis repository are command line
+only. While it would be quite doable to merge the different programs
+into a single graphical user interface (GUI), I'm personally not much
+of a GUI person. Each program usually has a large number of (optional)
+parameters. Keeping the GUI up to date with (in the past, quickly)
+changing features is just extra work, which I personally did not have
+any use for (if someone wishes to write a GUI for TimepixAnalysis, I'd
+be more than happy to mentor though).
 
-Section about InGrid database (or maybe :noexport: instead
-of :optional: ?), which explains the idea of storing the chip
-calibration data in a single HDF5 file, which can then be easily
-accessed from the reconstruction / calibration
+Every program uses ~cligen~ [fn:cligen], a command line interface
+generator. Based on the definition of the main procedure(s) in the
+program, a command line interface is generated. While ~cligen~
+provides extremely simplified command line argument parsing for the
+developer, it also gives a nice ~help~ screen for every program. For
+example, running the first program of the analysis pipeline
+~raw_data_manipulation~ with the ~-h~ or ~--help~ option:
 
+#+begin_src sh
+raw_data_manipulation -h
+#+end_src
 
-(or :noexport: ?)
-- [ ] introduce database including the data structure needed to add a
-  detector to the database?
+yields the help screen as shown in listing
+[[list:raw_data_manipulation_help]] [fn:colors]. Keep this in mind, if you
+are unsure about how to use any of the here mentioned programs.
 
-- [ ] *OR SHOULD THIS BE PART OF THE APPENDIX ABOUT SOFTWARE AND IN
-  SECTION ABOVE WE MENTOIN AND REFER TO THAT?*
+Further, there is a TOML configuration file in the repository
+(~Analysis/ingrid/config.toml~ from the repository root), which
+controls many aspects of the different programs. Most of these can be
+overwritten by command line arguments to the appropriate programs and
+some also via environment variables. See the extended thesis for
+information about this, it is mentioned where important.
 
-*** =raw_data_manipulation=
-
-*LINK TO HDF5 FORMAT IF FIRST TIME MENTIONING*
-
-The first step of the analysis pipeline is essentially just a parsing
-stage of the data generated by TOS (see section [[#sec:daq:tos_output_format]]
-for an explanation of it) and storing it in a compressed HDF5 data
-file.
-
-The program is fed with a directory containing a TOS run, i.e. a
-single data taking period ranging typically from minutes to days in
-length, or a directory that itself contains multiple TOS run directories.
-
-All data files contained in a run directory will then be parsed in a
-multithreaded way. The files are memory mapped and parsed in parallel
-into a =Run= data structure, which itself contains =Event= structures.
-
-Depending on the designated run type of a file, some slight
-processing steps are performed. *WHAT?*
-
-If FADC files are present in a directory, these will also be parsed
-into =FadcEvent= structures in a similar fashion.
-
-Each run is then written into the output HDF5 file as a group. The
-meta data about each run and event are stored as attributes and
-additional datasets, respectively.
-
-An example structure of a resulting HDF5 file is shown in:
-*EXAMPLE LAYOUT WITH EXAMPLE ATTRIBUTES AND DATASETS?*
-
-In addition the tool also supports input from HDF5 files containing
-the raw data from a Timepix3 detector. That data is parsed and
-reprocessed into the same kind of file structure.
-
-#+CAPTION: Usage of the =raw_data_manipulation= tool. Input is in the form of a run directory / a directory
-#+CAPTION: containing multiple run directories. The parsed output is stored in compressed HDF5 files.
+#+CAPTION: Example help output of the ~raw_data_manipulation~ program when run with ~-h~ or ~--help~
+#+CAPTION: (some options were removed here to shorten the output).
 #+NAME: list:raw_data_manipulation_help
 #+begin_src sh
 Usage:
   main [REQUIRED,optional-params]
-Version: fd93033 built on: 2023-11-16 at 13:25:47
+Version: 44c0c91 built on: 2023-12-06 at 13:01:35
 Options:
   -h, --help                               print this cligen-erated help
 
@@ -46432,7 +46530,8 @@ Options:
   -p=, --path=        string      REQUIRED set path
 
   -r=, --runType=     RunTypeKind REQUIRED Select run type (Calib | Back | Xray)
-                                           The following are parsed case insensetive:
+                                           The following are parsed case
+                                           insensetive:
                                              Calib = {"calib", "calibration", "c"}
                                              Back = {"back", "background", "b"}
                                              Xray = {"xray", "xrayfinger", "x"}
@@ -46445,38 +46544,80 @@ Options:
   -i, --ignoreRunList bool        false    If set ignores the run list 2014/15
                                            to indicate using any rfOldTos run
 
-  -c=, --config=      string      ""       Path to the configuration file to use. Default is config.toml
-                                           in directory of this source file.
-
-  --overwrite         bool        false    If set will overwrite runs already existing in the
-                                           file. By default runs found in the file will be skipped.
-                                           HOWEVER: overwriting is assumed, if you only hand a
-                                           run folder!
+  -c=, --config=      string      ""       Path to the configuration file to use.
+                                           Default is config.toml in directory of
+                                           this source file.
+  ...                                         
 
   -t, --tpx3          bool        false    Convert data from a Timepix3 H5 file
                                            to TPA format instead of a Tpx1 run
                                            directory
-
-  -k, --keepExtracted bool        false    If a .tar.gz archive is given for a run folder and this flag is true
-                                           we won't remove the extracted archive afterwards.
-
-  -e=, --extractTo=   string      "/tmp/"  If a .tar.gz archive is given extract
-                                           the data to this directory.
+  ...                                         
 #+end_src
 
-**** HDF5 data layout generated by ~raw_data_manipulation~       :optional:
+[fn:cligen] [[https://github.com/c-blake/cligen]]
+[fn:colors] You can have a ~$HOME/.config/cligen/config~ configuration
+file to adjust the output style (color, column widths, drop entire
+columns etc.).
+
+
+*** Dependencies
+
+TimepixAnalysis mainly has a single noteworthy external dependency,
+namely the HDF5 [[cite:&hdf5]] library. The vast majority of code (inside
+the repository itself and its dependencies) is pure Nim.
+
+Common other dependencies are the ~cairo~ graphics library [fn:cairo]
+and a working BLAS and LAPACK installation.
+
+[fn:cairo] https://cairographics.org/download/
+
+
+*** =raw_data_manipulation=
+
+~raw_data_manipulation~ is the first step of the analysis
+pipeline. Essentially, it is a parsing stage of the data generated by
+TOS (see section [[#sec:daq:tos_output_format]] for an explanation of it)
+and storing it in a compressed HDF5 [[cite:&hdf5]] data file.
+
+The program is fed a directory containing a TOS run via the ~-p /
+--path~ argument. Either a directory containing a single run (i.e. a
+data taking period ranging typically from minutes to days in length),
+or a directory that itself contains multiple TOS run directories.
+
+All data files contained in a run directory will then be parsed in a
+multithreaded way. The files are memory mapped and parsed in parallel
+into a =Run= data structure, which itself contains =Event= structures.
+
+If FADC files are present in a directory, these will also be parsed
+into =FadcEvent= structures in a similar fashion, unless explicitly
+disabled via the ~--nofadc~ option.
+
+Each run is then written into the output HDF5 file as a 'group' (HDF5
+terminology). The meta data about each run and event are stored as
+'attributes' and additional 'datasets', respectively. The structure of
+the produced HDF5 file is shown in sec. [[#sec:appendix:tos:raw_data_layout]].
+
+In addition, the tool also supports input from HDF5 files containing
+the raw data from a Timepix3 detector. That data is parsed and
+reprocessed into the same kind of file structure.
+
+**** HDF5 data layout generated by ~raw_data_manipulation~
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:tos:raw_data_layout
+:END:
 
 The listing [[code:reco:abstract_hdf5_layout]] shows the layout of the
 data stored in the HDF5 files after the ~raw_data_manipulation~
-program has processed the TOS run folders. The data is structured
-in groups based on each run, chip and the FADC (if
-available). Generally each "property" is stored in its own dataset
-for performance reasons to allow faster access to individual subsets
-of the data (read only the hits, only $x/y$ data, etc.). While HDF5
-supports even heterogeneous compound datasets (that is different data
-types in different "columns" of a 2D like dataset), these are only
-used sparingly and not at all in the ~raw_data_manipulation~ output,
-as reading individual columns from these is inefficient. 
+program has processed the TOS run folders. The data is structured in
+groups based on each run, chip and the FADC (if available). Generally
+each "property" is stored in its own dataset for performance reasons
+to allow faster access to individual subsets of the data (read only
+the hits, only $x/y$ data, etc.). While HDF5 supports even
+heterogeneous compound datasets (that is different data types in
+different "columns" of a 2D like dataset), these are only used
+sparingly and not at all in the ~raw_data_manipulation~ output, as
+reading individual columns from these is inefficient.
 
 #+CAPTION: An abstract overview of the general layout of the generated HDF5 files.
 #+CAPTION: Each entry shown that does not have any children is an HDF5 group. Every
@@ -46513,31 +46654,62 @@ as reading individual columns from these is inefficient.
 
 ***** Notes on data layout                                      :extended:
 
-Of course we generate the layout from real data files. Either using
-~h5ls~ or using ~nimhdf5~, most conveniently using its iterators
+Of course we could generate the layout from real data files. Either
+using ~h5ls~ or using ~nimhdf5~, most conveniently using its iterators
 and/or the JSON interface of it.
-
 
 *** =reconstruction=
 :PROPERTIES:
-:CUSTOM_ID: sec:reconstruction
+:CUSTOM_ID: sec:appendix:tpa:reconstruction
 :END:
 
 After the raw data has been converted to storage in HDF5, the
 =reconstruction= tool is used to start the actual analysis of the
-data.
+data. The program receives an input HDF5 file via the ~-i / --input~
+argument. As the name implies, the first stage of data analysis is in
+the form of reconstructing the basic properties of each event. In this
+stage all events are processed in a multithreaded way. The steps for
+cluster finding and [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366][geometric]] [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569][cluster]] reconstruction (as mentioned in
+sec. [[#sec:reco:data_reconstruction]]) are performed and the data is
+written to the desired output file given by ~-o / --outfile~.
 
-As the name implies, the first stage of data analysis is in the form
-of reconstructing the basic properties of each event. In this stage
-all events are processed in a multithreaded way. A cluster finding
-algorithm is applied to each event on each chip separately, splitting
-a single event into possibly multiple clusters. Clusters are defined
-based on a certain notion of distance (the details depend on the
-clustering algorithm used). The multiple clusters from a single event
-are then treated fully equally for the rest of the analysis. The fact
-that they originate from the same event has no further relevance (with
-a slight exception for one veto technique, which utilizes clustering
-over multiple chips, more on that in section [[sec:septem_veto]]).
+The produced output HDF5 file then also acts as the /input/ file for
+~reconstruction~ for all further, optional reconstruction steps. These
+are mentioned at different parts in the thesis, but we will explain
+them shortly here now.
+
+- ~--only_fadc~ :: Performs the reconstruction of the FADC data to
+  calculate FADC values such as rise and fall times.
+- ~--only_fe_spec~ :: If the input file contains \cefe calibration
+  runs, creates the \cefe spectra and performs fits to them. Also
+  performs the energy calibration for each run.
+- ~--only_charge~ :: Performs the ~ToT~ calibration of all runs to
+  compute the detected charges in electrons. Requires each chip to be
+  present in the InGrid database (see sec. [[#sec:appendix:software:ingrid_database]]).
+- ~--only_gas_gain~ :: Computes the gas gain in the desired interval
+  lengths via Pólya fits.
+- ~--only_gain_fit~ :: If the input file contains \cefe calibration
+  runs, performs the fit of energy calibration runs against the gas
+  gain of each interval. Required to perform energy calibration in
+  background runs.
+- ~--only_energy_from_e~ :: Performs the energy calibration for each
+  cluster in the input file.
+
+**** TODOs for this section [/]                                 :noexport:
+
+*NOTE:* How should we take care of linking to our code? Of course need
+tagged version that corresponds to stuff in the thesis, but beyond
+that?
+
+A cluster finding algorithm is applied to each event on each chip
+separately, splitting a single event into possibly multiple
+clusters. Clusters are defined based on a certain notion of distance
+(the details depend on the clustering algorithm used). The multiple
+clusters from a single event are then treated fully equally for the
+rest of the analysis. The fact that they originate from the same event
+has no further relevance (with a slight exception for one veto
+technique, which utilizes clustering over multiple chips, more on that
+in section [[sec:septem_veto]]).
 
 For the individual clusters geometric properties will be
 computed. These are the long and short axis, the eccentricity as well
@@ -46578,15 +46750,6 @@ axis. The full list is shown in tab. [[tab:geometric_properties]].
 | igLengthDivRadius         | length divided by radius                                         |
 |---------------------------+------------------------------------------------------------------|
 
-The properties are computed here:
-https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366
-and here:
-https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569
-
-*NOTE:* How should we take care of linking to our code? Of course need
-tagged version that corresponds to stuff in the thesis, but beyond
-that?
-
 
 After all geometrical properties have been computed, the next step is
 to apply the ~ToT~ calibration
@@ -46607,6 +46770,11 @@ Second step of analysis, performs most of the major steps.
 - energy calibration
 - ...
 
+
+**** Command line interface of ~reconstruction~                 :extended:
+
+
+  
 #+CAPTION: Usage of the =reconstruction= tool. Input is in the form of a run directory / a directory
 #+CAPTION: containing multiple run directories. The parsed output is stored in compressed HDF5 files.
 #+NAME: list:reconstruction_help
@@ -46686,7 +46854,7 @@ Options:
 #+end_src
 
 
-**** HDF5 data layout generated by ~reconstruction~             :optional:
+**** HDF5 data layout generated by ~reconstruction~         
 
 The HDF5 file generated by ~reconstruction~ follows closely the one
 from ~raw_data_manipulation~. The main difference is that within each
@@ -46728,24 +46896,153 @@ similar fashion to the equivalent for ~raw_data_manipulation~ before.
 
 
 
-*** =likelihood=
-
-Apply likelihood method for background suppression.
-
-*** =mcmc_limit_calculation=
-
-Computes the limit
-
 *** =cdl_spectrum_creation=
 
-Generates the data from the CDL data that is used as X-ray reference
-data for the likelihood method.
+This is a helper program responsible for the treatment of the X-ray
+reference data taken at the CAST Detector Lab in Feb. 2019. It
+receives an HDF5 file as input that is fully reconstructed using
+~raw_data_manipulation~ and ~reconstruction~ containing all runs taken
+in the CDL. An additional Org table is used as reference to map each
+run to the correct target/filter kind, found in
+~resources/cdl_runs_2019.org~.
 
+The program performs the fits to the correct fluorescence lines for
+each run based on the target/filter kind in use. It can also produce a
+helper HDF5 file called ~calibration-cdl-2018.h5~ via the ~genCdlFile~
+argument, which contains all CDL data split by target/filter
+kind. This file is used in the context of the likelihood cut method to
+produce the reference distributions for each cluster property used.
+
+*** =likelihood=
+
+The ~likelihood~ program is the (historically named) tool that applies
+the classifier and any selection of vetoes to an input file. The input
+files are a fully reconstructed background HDF5 file, corresponding
+calibration runs and the ~calibration-cdl-2018.h5~ file mentioned
+above. It has a large number of command line options to adjust the
+classifier that is used, software efficiency, vetoes, region of the
+chip to cut to, whether tracking data or background data is selected
+and more. The program writes the remaining clusters (with additional
+meta information) to the HDF5 file given by the ~--h5out~
+argument. The structure is essentially identical to that of the
+~reconstruction~ tool (the data is stored in a ~likelihood~ group
+instead of a ~reconstruction~ group).
+
+The selection of tracking or non-tracking data requires information
+about when solar trackings took place as attributes inside of the
+background HDF5 files. These are added using the ~cast_log_reader~,
+see sec. [[#sec:appendix:software:cast_log_reader]]. 
+
+It is also used directly to estimate the random coincidences of the
+septem and line vetoes, as mentioned in sec. [[#sec:background:calculate_random_coincidences]].
+
+*** ~InGridDatabase~
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:software:ingrid_database
+:END:
+
+The InGrid database is both a library part of the TimepixAnalysis
+repository (~InGridDatabase~ directory) as well as a binary tool and
+the name for a very simple 'database' storing information about
+different GridPix chips.
+
+At its core the 'database' part is an HDF5 file containing chip
+calibrations (ToT, SCurve, ...) mapped to timestamps or run numbers in
+which these are applicable. This allows (mainly) the ~reconstruction~
+program to retrieve the required calibrations automatically without
+user input based on the given input files.
+
+To utilize it, the [[https://github.com/Vindaar/TimepixAnalysis/tree/master/InGridDatabase][~databaseTool~]] needs to be compiled as a
+binary. Chips are added to the database using this tool. A directory
+describing the applicable run period and containing calibration files
+for the chip need to follow the format seen for example in:
+
+https://github.com/Vindaar/TimepixAnalysis/tree/master/resources/ChipCalibrations/Run2
+
+for the Run-2 period of the Septemboard. The ~runPeriod.toml~ file
+describes the applicability of the data, see listing
+[[list:ingrid_databes:run_period_config]] for the file in this case. For
+each chip there is simply a directly with the calibration files as
+produced by TOS and an additional ~chipInfo.txt~ file, see listing
+[[list:ingrid_databes:chip_info]]. Note that the ~runPeriod~ name needs to
+match the name of one of the run periods listed in the TOML
+file. 
+
+The ~databaseTool~ also allows to perform fits to the calibration
+data, if needed (for example to analyze SCurves or the raw ToT
+calibration data). 
+
+#+CAPTION: Example of a ~runPeriod.toml~ file.
+#+NAME: list:ingrid_databes:run_period_config
+#+begin_src toml
+title = "Run period 2 of CAST, 2017/18"
+# list of the run periods defined in the file
+runPeriods = ["Run2"]
+
+[Run2]
+start = 2017-10-30
+stop = 2018-04-11
+# either as a sequence of run numbers
+validRuns = [ 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89
+  90, 91, 92, 93, 94, 95, 96, 97, 98, 99,100,101,102,103
+  104,105,106,107,108,109,110,111,112,113,114,115,116,117
+  118,119,120,121,122,123,124,125,126,127,128,145,146,147
+  148,149,150,151,152,153,154,155,156,157,158,159,160,161
+  162,163,164,165,166,167,168,169,170,171,172,173,174,175
+  176,177,178,179,180,181,182,183,184,185,186,187,188,189
+]
+# or as simply a range given as start and stop values
+firstRun = 76
+lastRun = 189
+#+end_src
+
+#+CAPTION: An example of a ~chipInfo.txt~ file describing a single chip for a run period.
+#+NAME: list:ingrid_database:chip_info
+#+begin_src
+chipName: H10 W69
+runPeriod: Run2
+board: SeptemH
+chipNumber: 3
+Info: This calibration data is valid for Run 2 starting until March 2018!
+#+end_src
+
+**** TODOs for this section                                     :noexport:
+- explain database
+- explain data structure needed to add to DB
+- show how to add    
+
+Section about InGrid database (or maybe :noexport: instead
+of :optional: ?), which explains the idea of storing the chip
+calibration data in a single HDF5 file, which can then be easily
+accessed from the reconstruction / calibration
+
+
+(or :noexport: ?)
+- [ ] introduce database including the data structure needed to add a
+  detector to the database?
+
+- [ ] *OR SHOULD THIS BE PART OF THE APPENDIX ABOUT SOFTWARE AND IN
+  SECTION ABOVE WE MENTION AND REFER TO THAT?*
 
 *** =cast_log_reader=
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:software:cast_log_reader
 :END:
+
+The [[https://github.com/Vindaar/TimepixAnalysis/tree/master/LogReader][~cast_log_reader~]] is a utility to work with the slow control and
+tracking log files produced by CAST. It can parse and analyze the
+different log file formats used over the years and provide different
+information (magnet operation statistics for example). For the
+Septemboard detector it provides the option to parse the tracking
+log files and add the tracking information to the background HDF5
+files.
+
+The CAST log files relevant for the Septemboard detector can be found
+together with the binary data.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *LINK LOG FILES!!!*
 
 - [ ] *IMPORTANT* to read log files for tracking info
 
@@ -46757,32 +47054,107 @@ data for the likelihood method.
 See sec. [[#sec:cast:log_files:add_tracking_info]] on how to use
 ~cast_log_reader~ to add the tracking information to the HDF5 files.
 
-*** ~ingridDatabase~ library / ~databaseTool~
+*** =mcmc_limit_calculation=
 
+~mcmc_limit_calculation~ is the 'final' tool relevant for this
+thesis. As the name implies it performs the limit calculation using
+Markov Chain Monte Carlo (MCMC) as explained in detail in chapter
+[[#sec:limit]]. See the extended thesis on how to use it.
 
+*** ~Tools~ directory
 
-*** Plotting tools
+Multitude of tools for various things that were analyzed over the
+years. Includes things like computing the gas properties of the
+Septemboard gas mixture and detection efficiency. For 'historical'
+reasons it also still contains the code to train the MLP used as a
+classifier (inside the ~NN_playground~ directory). The latter will be
+moved over to the main ~ingrid~ directory in the future.
+
+*** ~resources~ directory
+
+A large number of resources required or simply useful about different
+data takings, efficiencies, log files and more, which are small enough
+to be part of a non LFS git repository.
+
+*** ~Plotting~ directory
+
+From a practical analysis point of view, the [[https://github.com/Vindaar/TimepixAnalysis/tree/master/Plotting][~Plotting~]] directory is
+one of the most interesting parts of the repository. It contains
+different tools to visualize data at various stages of the analysis
+pipeline. The most relevant are mentioned briefly here.
 
 **** ~plotBackgroundClusters~
+
+[[https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/plotBackgroundClusters/plotBackgroundClusters.nim][~plotBackgroundCluster~]] produces plots of the distribution of cluster
+center left after application of the ~likelihood~ program. This is
+used to produce figures like [[fig:detector:cluster_centers_likelihood]]
+and fig. sref:fig:background:background_suppression_comparison. 
+
 **** ~plotBackgroundRate~
+
+[[https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/plotBackgroundRate/plotBackgroundRate.nim][~plotBackgroundRate~]] is the main tool to visualize background (or raw
+data) spectra. All such plots in the thesis are produced with
+it. Input files are reconstructed HDF5 files or the result of the
+~likelihood~ program.
+
 **** ~plotCalibration~
+
+[[https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/plotCalibration/plotCalibration.nim][~plotCalibration~]] is a tool to produce visualizations of the different
+Timepix calibration steps, e.g. ToT calibration, SCurve scans and so
+on. The figures in sec. [[#sec:appendix:calibration:timepix]] are produced
+with it.
+
 **** ~plotData~
 
-**** ...
+[[https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/karaPlot/plotData.nim][~plotData~]] is a very versatile tool to produce a variety of different
+plots. It can produce histograms of the different geometric
+properties, occupancy maps, event displays and more. If desired it can
+produce a large number of plots for an input data file in one go. It
+is very powerful, because it can receive an arbitrary number of cuts
+on any dataset present in the input. This allows to produce
+visualizations for any desired subset of the data. For example to
+produce event displays or histograms for only those events with
+specific geometric properties. It is an exceptionally useful tool to
+understand certain subsets of data that appear 'interesting'.
 
-Many other tools are present. Mainly different plotting tools and
-tools dealing with other data, e.g. log files of the CAST experiment.
+In sec. [[#sec:appendix:background:fadc]] we mention non noisy FADC events
+in a region of the rise time / skewness space of
+fig. [[fig:appendix:fadc_veto:rise_skewness_run2]]. These are easily
+filtered to and investigated using ~plotData~.
 
-*** Other libraries
+Fig. [[fig:appendix:empirical_cluster_lengths]] and
+fig. [[fig:reco:fadc_reco_example]] are produced with it, among
+others. Generally, it favors information (density) over aesthetically
+pleasing visualizations though.
 
-Relevant for thesis, developed:
-- Datamancer ::
-- ggplotnim ::
-- xrayAttenuation ::
-- Measuremancer ::   
-- nimhdf5 ::
-- TrAXer ::
-- Optimization :: Several optimization related packages
+
+** Other libraries relevant for TimepixAnalysis
+
+A few other libraries not part of the TimepixAnalysis repository bear
+mentioning, due to their importance. They were written alongside TimepixAnalysis.
+
+- [[https://github.com/Vindaar/ggplotnim][ggplotnim]] :: A ~ggplot2~ [fn:ggplot2] inspired plotting library. All
+  plots in this thesis are produced with it.
+- [[https://github.com/SciNim/Datamancer][Datamancer]] :: A ~dpylr~ [fn:dplyr] inspired data frame library.
+- [[https://github.com/Vindaar/nimhdf5][nimhdf5]] :: A high level interface to the HDF5
+  [[cite:&cowan1998statistical]] library, somewhat similar to
+  ~h5py~ [fn:h5py] for Python.
+- [[https://github.com/SciNim/Unchained][Unchained]] :: A library to perform zero runtime overhead,
+  compile-time checking and conversion of physical
+  units. Exceptionally useful to avoid bugs due to wrong unit
+  conversions and a big help when dealing with natural units.
+- [[https://github.com/SciNim/Measuremancer][Measuremancer]] :: A library to deal with measurements with
+  uncertainties. Performs automatic Gaussian error propagation when
+  performing calculations with measurements.
+- [[https://github.com/SciNim/xrayAttenuation][xrayAttenuation]] :: A library dealing with the interaction of X-rays
+  with matter (gases and solids). It is used to calculate things like
+  absorption of gas and reflectivities of the X-ray telescope in this thesis.
+- [[https://github.com/Vindaar/TrAXer][TrAXer]] :: The raytracer used to compute the axion image, expanded on
+  in appendix [[#sec:appendix:raytracing]].
+
+[fn:ggplot2] https://ggplot2.tidyverse.org/
+[fn:dplyr] https://dplyr.tidyverse.org/
+[fn:h5py] https://www.h5py.org/
 
 * Full data reconstruction [/]                                     :Appendix:
 :PROPERTIES:
