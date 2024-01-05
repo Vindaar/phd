@@ -46565,12 +46565,48 @@ columns etc.).
 
 TimepixAnalysis mainly has a single noteworthy external dependency,
 namely the HDF5 [[cite:&hdf5]] library. The vast majority of code (inside
-the repository itself and its dependencies) is pure Nim.
+the repository itself and its dependencies) is pure Nim. Two
+optimization libraries written in C ~mpfit~
+(Levenberg-Marquardt) [fn:mpfit] and NLopt [fn:nlopt] are wrapped from
+Nim and are further minor dependencies. Local compilation and
+installation of these is trivial and explained in the TimepixAnalysis
+README.
+
+For those programs related to the multilayer perceptron (MLP) training
+or usage, PyTorch [[cite:&Paszke_PyTorch_An_Imperative_2019]] is an
+additional dependency via [[cite:&flambeau]]. Flambeau installs a suitable
+PyTorch version for you. 
 
 Common other dependencies are the ~cairo~ graphics library [fn:cairo]
 and a working BLAS and LAPACK installation.
 
 [fn:cairo] https://cairographics.org/download/
+[fn:mpfit] https://pages.physics.wisc.edu/~craigm/idl/cmpfit.html
+[fn:nlopt] https://nlopt.readthedocs.io/en/latest/
+
+*** Compilation
+
+Nim being a compiled language means we need to compile the programs
+mentioned below. It can target a C or C++ backend (among others). The
+compilation commands differ slightly between the different programs
+and can depend on usage. The ~likelihood~ program below for example
+can be compiled for the C or C++ backend. In the latter case, the MLP
+as a classifier is compiled in.
+
+Generally, compilation is done via:
+#+begin_src sh
+nim c -d:release foo.nim
+#+end_src
+where ~foo.nim~ is any of the programs below. ~-d:release~ tells the
+Nim compiler to compile with optimizations (you can compile with
+~-d:danger~ for even faster, but less safe, code). Replace ~c~ by
+~cpp~ to compile to the C++ backend.
+
+See the TimepixAnalysis README for further details on how to compile
+each program.
+
+Unless otherwise specified, each program mentioned below is located in
+~Analysis/ingrid~ from the root of the TimepixAnalysis repository.
 
 
 *** =raw_data_manipulation=
@@ -46934,7 +46970,33 @@ background HDF5 files. These are added using the ~cast_log_reader~,
 see sec. [[#sec:appendix:software:cast_log_reader]]. 
 
 It is also used directly to estimate the random coincidences of the
-septem and line vetoes, as mentioned in sec. [[#sec:background:calculate_random_coincidences]].
+septem and line vetoes, as mentioned in
+sec. [[#sec:background:estimate_veto_efficiency]].
+
+*** ~determineDiffusion~ directory
+
+The ~Analysis/ingrid/determineDiffusion~ directory contains the
+library / binary to empirically determine the gas diffusion parameters
+from input data, as explained in
+sec. [[#sec:background:mlp:determine_gas_diffusion]]. It can either be
+compiled as a standalone program or be used as a library.
+
+*** ~nn~ directory
+
+The ~Analysis/ingrid/nn~ subdirectory in the TimepixAnalysis
+repository contains the programs related to the training and
+evaluation of the multilayer perceptrons (MLP) used in the thesis. Of
+note is the ~train_ingrid~ program, which is the program to train a
+network. It allows to customize the network to be trained based on
+command line arguments describing the number of neurons, hidden
+layers, optimizers, activation functions and so forth. The extended
+thesis contains the command to train the best performing network.
+
+Secondly, the ~simulate_xrays~ program is a helper program to produce
+an HDF5 file containing simulated X-rays as described in
+sec. [[#sec:background:mlp:event_generation]]. It makes use of the
+~fake_event_generator.nim~ file in the ~ingrid~ directory, which
+contains the actual logic.
 
 *** ~InGridDatabase~
 :PROPERTIES:
@@ -46961,10 +47023,10 @@ https://github.com/Vindaar/TimepixAnalysis/tree/master/resources/ChipCalibration
 
 for the Run-2 period of the Septemboard. The ~runPeriod.toml~ file
 describes the applicability of the data, see listing
-[[list:ingrid_databes:run_period_config]] for the file in this case. For
+[[list:ingrid_database:run_period_config]] for the file in this case. For
 each chip there is simply a directly with the calibration files as
 produced by TOS and an additional ~chipInfo.txt~ file, see listing
-[[list:ingrid_databes:chip_info]]. Note that the ~runPeriod~ name needs to
+[[list:ingrid_database:chip_info]]. Note that the ~runPeriod~ name needs to
 match the name of one of the run periods listed in the TOML
 file. 
 
@@ -46973,7 +47035,7 @@ data, if needed (for example to analyze SCurves or the raw ToT
 calibration data). 
 
 #+CAPTION: Example of a ~runPeriod.toml~ file.
-#+NAME: list:ingrid_databes:run_period_config
+#+NAME: list:ingrid_database:run_period_config
 #+begin_src toml
 title = "Run period 2 of CAST, 2017/18"
 # list of the run periods defined in the file
@@ -46998,7 +47060,7 @@ lastRun = 189
 
 #+CAPTION: An example of a ~chipInfo.txt~ file describing a single chip for a run period.
 #+NAME: list:ingrid_database:chip_info
-#+begin_src
+#+begin_src sh
 chipName: H10 W69
 runPeriod: Run2
 board: SeptemH
@@ -47029,7 +47091,7 @@ accessed from the reconstruction / calibration
 :CUSTOM_ID: sec:appendix:software:cast_log_reader
 :END:
 
-The [[https://github.com/Vindaar/TimepixAnalysis/tree/master/LogReader][~cast_log_reader~]] is a utility to work with the slow control and
+The [[https://github.com/Vindaar/TimepixAnalysis/tree/master/LogReader][~LogReader/cast_log_reader~]] is a utility to work with the slow control and
 tracking log files produced by CAST. It can parse and analyze the
 different log file formats used over the years and provide different
 information (magnet operation statistics for example). For the
@@ -47038,7 +47100,7 @@ log files and add the tracking information to the background HDF5
 files.
 
 The CAST log files relevant for the Septemboard detector can be found
-together with the binary data.
+together with the Septemboard CAST data.
 
 **** TODOs for this section [/]                                 :noexport:
 
@@ -47060,6 +47122,7 @@ See sec. [[#sec:cast:log_files:add_tracking_info]] on how to use
 thesis. As the name implies it performs the limit calculation using
 Markov Chain Monte Carlo (MCMC) as explained in detail in chapter
 [[#sec:limit]]. See the extended thesis on how to use it.
+
 
 *** ~Tools~ directory
 
@@ -47136,9 +47199,8 @@ mentioning, due to their importance. They were written alongside TimepixAnalysis
 - [[https://github.com/Vindaar/ggplotnim][ggplotnim]] :: A ~ggplot2~ [fn:ggplot2] inspired plotting library. All
   plots in this thesis are produced with it.
 - [[https://github.com/SciNim/Datamancer][Datamancer]] :: A ~dpylr~ [fn:dplyr] inspired data frame library.
-- [[https://github.com/Vindaar/nimhdf5][nimhdf5]] :: A high level interface to the HDF5
-  [[cite:&cowan1998statistical]] library, somewhat similar to
-  ~h5py~ [fn:h5py] for Python.
+- [[https://github.com/Vindaar/nimhdf5][nimhdf5]] :: A high level interface to the HDF5 [[cite:&hdf5]] library,
+  somewhat similar to ~h5py~ [fn:h5py] for Python.
 - [[https://github.com/SciNim/Unchained][Unchained]] :: A library to perform zero runtime overhead,
   compile-time checking and conversion of physical
   units. Exceptionally useful to avoid bugs due to wrong unit
@@ -47160,6 +47222,303 @@ mentioning, due to their importance. They were written alongside TimepixAnalysis
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:full_data_reconstruction
 :END:
+
+We will now go over how to fully reconstruct all CAST data from the
+Run-2 and Run-3 data taking campaigns. This assumes the following:
+
+- all CAST data files are located in a directory accessible by a
+  ~DATA~ environment variable. Inside should be the directory
+  structure containing directories ~2017~, ~2018~, ~2018_2~ and
+  ~CDL_2019~ as downloaded from XXX.
+- all binaries used below are compiled and their location is in your
+  ~PATH~ variable. There is a ~bin~ directory in the repository root,
+  which contains symbolic links to the binaries if they are placed
+  next to the source file. I recommend adding this directory to your
+  ~PATH~.
+  
+#+begin_quote
+Note: There is also the ~Analysis/ingrid/runAnalysisChain~ program,
+which automates a majority of these calls. See the section below on
+how it replaces the data parsing and reconstruction. Here I wish to
+illustrate the actual steps and don't hide any.
+#+end_quote
+
+Furthermore, the commands below produce the correct results assuming
+the ~Analysis/ingrid/config.toml~ file is used as committed as part of
+the ~phd~ tag in the TimepixAnalysis repository.
+
+** Raw data parsing and reconstruction
+
+If this is all in place, first perform the raw data parsing. 
+
+Run-2, background and calibration:
+#+begin_src sh
+raw_data_manipulation -p $DATA/2017/DataRuns \
+                      --runType rtBackground \
+                      --out $DATA/DataRuns2017_Raw.h5
+raw_data_manipulation -p $DATA/2017/CalibrationRuns \
+                      --runType rtCalibration \
+                      --out $DATA/DataRuns2017_Raw.h5
+#+end_src
+
+Run-3:
+#+begin_src sh
+raw_data_manipulation -p $DATA/2018_2/DataRuns \
+                      --runType rtBackground \
+                      --out $DATA/DataRuns2018_Raw.h5
+raw_data_manipulation -p $DATA/2018_2/CalibrationRuns \
+                      --runType rtCalibration \
+                      --out $DATA/DataRuns2018_Raw.h5
+#+end_src
+
+Next, the initial data reconstruction (geometric properties):
+
+Run-2:
+#+begin_src sh
+reconstruction -i $DATA/DataRuns2017_Raw.h5 \
+               -o $DATA/DataRuns2017_Reco.h5
+reconstruction -i $DATA/CalibrationRuns2017_Raw.h5 \
+               -o $DATA/CalibrationRuns2017_Reco.h5
+#+end_src
+Run-3:
+#+begin_src sh
+reconstruction -i $DATA/DataRuns2018_Raw.h5 \
+               -o $DATA/DataRuns2018_Reco.h5
+reconstruction -i $DATA/CalibrationRuns2018_Raw.h5 \
+               -o $DATA/CalibrationRuns2018_Reco.h5
+#+end_src
+
+Now, the next steps of the reconstruction (charge calibration, gas
+gain and FADC reconstruction):
+
+#+begin_src sh
+DATA=~/CastData/data
+for typ in Data Calibration; do
+    for year in 2017 2018; do
+        file="${DATA}/${typ}Runs${year}_Reco.h5"
+        reconstruction -i $file --only_charge
+        reconstruction -i $file --only_fadc
+        reconstruction -i $file --only_gas_gain
+    done
+done
+#+end_src
+
+where we simply loop over the ~Data~ and ~Calibration~ prefixes and
+years.
+
+With this done, we can perform the \cefe calibration fits:
+#+begin_src sh
+reconstruction -i $DATA/CalibrationRuns2017_Reco.h5 --only_fe_spec
+reconstruction -i $DATA/CalibrationRuns2018_Reco.h5 --only_fe_spec
+#+end_src
+and then finally the fit of energy calibration factors determined from
+each fit against its gas gain:
+#+begin_src sh
+reconstruction -i $DATA/CalibrationRuns2017_Reco.h5 --only_gain_fit
+reconstruction -i $DATA/CalibrationRuns2018_Reco.h5 --only_gain_fit
+#+end_src
+
+This then allows to calibrate the energy for each file:
+#+begin_src sh
+reconstruction -i $DATA/DataRuns2017_Reco.h5 --only_energy_from_e
+reconstruction -i $DATA/DataRuns2018_Reco.h5 --only_energy_from_e
+reconstruction -i $DATA/CalibrationRuns2017_Reco.h5 --only_energy_from_e
+reconstruction -i $DATA/CalibrationRuns2018_Reco.h5 --only_energy_from_e
+#+end_src
+
+** Parse and reconstruct the CDL data 
+
+In order to use the likelihood cut method we also need to parse and
+reconstruct the CDL data. Note that this can be done before even
+reconstructing any of the CAST data files (with the exception of
+~--only_energy_from_e~, which is optional anyway).
+#+begin_src sh
+raw_data_manipulation -p $DATA/CDL_2019/ -r Xray -o $DATA/CDL_2019/CDL_2019_Raw.h5
+reconstruction -i $DATA/CDL_2019/CDL_2019_Raw.h5 -o $DATA/CDL_2019/CDL_2019_Reco.h5
+reconstruction -i $DATA/CDL_2019/CDL_2019_Reco.h5 --only_charge
+reconstruction -i $DATA/CDL_2019/CDL_2019_Reco.h5 --only_fadc
+reconstruction -i $DATA/CDL_2019/CDL_2019_Reco.h5 --only_gas_gain
+reconstruction -i $DATA/CDL_2019/CDL_2019_Reco.h5 --only_energy_from_e
+#+end_src
+
+With this file we can then run ~cdl_spectrum_calibration~ in order to
+produce the ~calibration-cdl-2018.h5~ file:
+#+begin_src sh
+cdl_spectrum_creation $DATA/CDL_2019/CDL_2019_reco.h5 \
+                      --genCdlFile --year=2018
+#+end_src
+
+** Add tracking information to background files
+
+To add the tracking information, the CAST log files are needed. The
+default path (which may be a symbolic link of course) is in
+~resources/LogFiles/tracking-logs~ from the TimepixAnalysis root. 
+
+#+begin_src sh
+for year in 2017 2018; do
+    cast_log_reader tracking \
+                -p $TPXDIR/resources/LogFiles/tracking-logs \
+                --startTime "2017/01/01" \
+                --endTime "2018/12/31" \
+                --h5out "${DATA}/DataRuns${year}_Reco.h5"
+done
+#+end_src
+
+Here we assume ~TPXDIR~ is an environment variable to the root of the
+TimepixAnalysis repository. Feel free to adjust if your path differs.
+
+** Using ~runAnalysisChain~
+
+All of the commands above can also be performed in one by using ~runAnalysisChain~:
+#+begin_src sh
+./runAnalysisChain \
+    -i $DATA \
+    --outpath $DATA \
+    --years 2017 --years 2018 \
+    --calib --back --cdl \
+    --raw --reco \
+    --logL \
+    --tracking
+#+end_src
+which tells the ~runAnalysisChain~ helper to parse all data files for
+Run-2 and Run-3, do the same for the CDL data files, reconstruct with
+all steps, compute the likelihood values and add the tracking
+information to the background data files. It makes the same
+assumptions about the location of the data files as in the above.
+
+In particular, if the tracking log files are in a different location,
+add the ~--trackingLogs~ argument to the above with the correct path.
+
+** Applying a classifier
+
+To apply a classifier we use the ~likelihood~ program. We will show
+how to apply it for one file now here. Generally, manual calling of
+~likelihood~ is not needed, more on that below.
+
+Let's apply the likelihood cut method using all vetoes for the Run-2
+data:
+#+begin_src sh
+likelihood \
+    -f $DATA/DataRuns2017_Reco.h5 \
+    --h5out $DATA/classifier/run2_lnL_80_all_vetoes.h5 \
+    --region=crAll \
+    --cdlYear=2018 \
+    --lnL --signalEfficiency=0.8 \
+    --scintiveto --fadcveto --septemveto --lineveto \
+    --vetoPercentile=0.99 \
+    --cdlFile=$DATA/CDL_2019/calibration-cdl-2018.h5 \
+    --calibFile=$DATA/CalibrationRuns2017_Reco.h5
+#+end_src
+which should be mostly self explanatory. The ~--signalEfficiency~
+argument is the software efficiency of the likelihood
+cut. ~--vetoPercentile~ refers to the FADC veto cut. The method is
+applied to the entire center chip (~--region=crAll~). A ~--tracking~
+flag could be added to apply the classifier only to the tracking data
+(in this case it is applied only to /non/ tracking data).
+
+As explained in sec. [[#sec:background:all_vetoes_combined]], many
+different veto setups were considered. For this reason a helper tool
+~createAllLikelihoodCombinations~ (excuse the verbose name, heh)
+exists to simplify the process of calling ~likelihood~. It is located
+in the ~Analysis~ directory.
+
+For example:
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Analysis/
+./createAllLikelihoodCombinations \
+    --f2017 $DATA/DataRuns2017_Reco.h5 \
+    --f2018 $DATA/DataRuns2018_Reco.h5 \
+    --c2017 $DATA/CalibrationRuns2017_Reco.h5 \
+    --c2018 $DATA/CalibrationRuns2018_Reco.h5 \
+    --regions crAll \
+    --vetoSets "{fkMLP, fkFadc, fkScinti, fkSeptem, fkLineVeto, fkExclusiveLineVeto}" \
+    --mlpPath $MLP/<mlp_of_choice>.pt \
+    --fadcVetoPercentile 0.99 \
+    --signalEfficiency 0.85 --signalEfficiency 0.90 \
+    --signalEfficiency 0.95 --signalEfficiency 0.98 \
+    --out $DATA/classifier/mlp \
+    --cdlFile $DATA/CDL_2019/calibration-cdl-2018.h5 \
+    --multiprocessing \
+    --jobs 6 \
+    --dryRun
+#+end_src
+
+would apply the MLP classifier (here with a dummy name) with
+successive additions of all vetoes in ~vetoSets~ at 4 different signal
+efficiencies and store the HDF5 output files in
+~DATA/classifier/mlp~. Multiple ~vetoSets~ arguments can be given in
+one call. Also each ~fk~ entry can be prefixed with a ~+~ to indicate
+that this veto should not be run on its own. This allows
+flexibility. As indicated by ~--multiprocessing~ and ~--jobs 6~ this
+would run 8 processes in parallel. Note that each process can peak at
+up to 10 GB of RAM (depending on the used classifier and vetoes).
+
+** Computing limits
+
+To compute limits we now feed each of the produced HDF5 output files
+of the ~likelihood~ program (in pairs including Run-2 and Run-3 output
+files) into ~mcmc_limit_calculation~. As the number of combinations
+can be quite large, this can again be automated using the
+~Analysis/runLimits~ program.
+
+Let's continue with the example from above and pretend we wish to run
+~1000~ toy candidate sets for each input pair, but only those that
+include the line veto. This can be accomplished by using the
+~--prefix~ argument to ~runLimits~, which understands standard glob patterns. 
+#+begin_src sh
+./runLimits \
+    --path $DATA/classifier/mlp \
+    --prefix "lhood_c18_R2_crAll_*line*" \
+    --exclude "_septem_" \
+    --outpath $DATA/limits/mlp/ \
+    --energyMin 0.2 --energyMax 12.0 \
+    --axionModel <path_to_differential_axion_flux>.csv \
+    --axionImage <path_to_axion_image>.csv \
+    --combinedEfficiencyFile <path_to_detection_efficiency>.csv \
+    --switchAxes \
+    --nmc 1000 \
+    --dryRun
+#+end_src
+
+Note that the CSV files mentioned here are found in the ~resources~
+directory of the repository of this thesis. See the extended thesis on
+how to produce them.
+
+To produce the observed limit, we run:
+#+begin_src sh
+mcmc_limit_calculation \
+    limit \
+    -f <path_to_background_run2>.h5 \
+    -f <path_to_background_run3>.h5 \
+    --tracking <path_to_tracking_run2>.h5 \
+    --tracking <path_to_tracking_run3>.h5 \
+    --axionModel <path_to_differential_axion_flux>.csv \
+    --axionImage <path_to_axion_image>.csv \
+    --combinedEfficiencyFile <path_to_detection_efficiency>.csv \
+    --switchAxes \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --limitKind lkMCMC \
+    --outpath ~/phd/Figs/trackingCandidates/ \
+    --suffix ""
+#+end_src
+
+where the ~<path_to_*_run>~ refers to the output HDF5 file of the
+~likelihood~ program for the best setup as described in
+sec. [[#sec:limit:expected_limits]]. ~--σ_p~ refers to the position
+uncertainty to use. The signal and background uncertainties have the
+real value placed as the default.
+
+*** Produce the axion model, axion image and detection efficiency file :extended:
+
+For the axion model and axion image, see
+sec. [[#sec:appendix:raytracing:generate_axion_image]]. For the detection
+efficiency see sec. [[#sec:limit:ingredients:gen_detection_eff]].
+
+
+** TODOs for this section                                         :noexport:
+
 
 - [ ] well, actually we want to reduce all this to a single script...
 - [ ] Replace all this by a call to ~runAnalysisChain~.
@@ -47220,153 +47579,57 @@ reconstruction ~/CastData/data/DataRuns2018_Reco_withFadc.h5 --only_fadc
 :CUSTOM_ID: sec:appendix:average_depth_xrays_argon
 :END:
 
-- [ ] *REWRITE INTRODUCTION*
 
 #+begin_quote
 Note: This section and its subsections are also available as a
-standalone document titled ~SolarAxionConversionPoint~.
+standalone document titled ~SolarAxionConversionPoint~. It is linked
+in the extended thesis and this appendix is only a minor modification.
 #+end_quote
 
 In order to be able to compute the correct distance to use in the
 raytracer for the position of the axion image, we need a good
-understanding of where the average X-ray will convert in the gas.
+understanding of where the X-ray will generally convert in the gas.
 
-By combining the expected axion flux (or rather that folded with the
-telescope and window transmission to get the correct energy
-distribution) with the absorption length of X-rays at different
-energies we can compute a weighted mean of all X-rays and come up with
-a single number.
+By combining the expected axion flux (folded with the telescope
+efficiency and window transmission to get the correct energy
+distribution) with the absorption length [fn:xrayAtt] of X-rays at
+different energies we can compute a weighted mean of all X-rays and
+come up with a single number. The difficulty lies in combining the
+statistical process of absorption with the incoming flux
+distribution. We implement a numerical Monte Carlo approach in
+literate programming style below.
 
-For that reason we wrote [[https://github.com/SciNim/xrayAttenuation][xrayAttenuation]].
+[fn:xrayAtt] This was one of the reasons I wrote [[https://github.com/SciNim/xrayAttenuation][xrayAttenuation]].
 
-Let's give it a try.
+** TODOs for this section                                         :noexport:
 
-** Analytical approach                                            :extended:
-:PROPERTIES:
-:CUSTOM_ID: sec:axion_conversion_point:analytical
-:END:
+- [ ] *REWRITE INTRODUCTION*
+- [ ] *UPLOAD ORIGINAL DOC*  
 
-- [ ] *ADD TEXT, REWRITE A BIT*
+** Reference to original document                                 :extended:
 
-#+begin_src nim :tangle /tmp/entrance_distance_xrays_cast.nim
-import xrayAttenuation, ggplotnim, unchained
+As mentioned in the note above, the original document is titled
+~SolarAxionConversionPoint.org~. From the Org file a PDF and HTML
+version is produced.
 
-# 1. read the file containing efficiencies
-var effDf = readCsv("/home/basti/org/resources/combined_detector_efficiencies.csv")
-  .mutate(f{"NoGasEff" ~ idx("300nm SiN") * idx("20nm Al") * `LLNL`})
+These can be found on
 
-# 2. compute the absorption length for Argon
-let ar = Argon.init()
-let ρ_Ar = density(1050.mbar.to(Pascal), 293.K, ar.molarMass)
-effDf = effDf
-  .filter(f{idx("Energy [keV]") > 0.05})
-  .mutate(f{float: "l_abs" ~ absorptionLength(ar, ρ_Ar, idx("Energy [keV]").keV).float})
-# compute the weighted mean of the effective flux behind the window with the
-# absorption length, i.e.
-# `<x> = Σ_i (ω_i x_i) / Σ_i ω_i`
-let weightedMean = (effDf["NoGasEff", float] *. effDf["l_abs", float]).sum() /
-  effDf["NoGasEff", float].sum()
-echo "Weighted mean of distance: ", weightedMean.Meter.to(cm)
-# for reference the effective flux:
-ggplot(effDf, aes("Energy [keV]", "NoGasEff")) +
-  geom_line() +
-  ggsave("/tmp/combined_efficiency_no_gas.pdf")
-ggplot(effDf, aes("Energy [keV]", "l_abs")) +
-  geom_line() +
-  ggsave("/tmp/absorption_length_argon_cast.pdf")
-#+end_src
+http://phd.vindaar.de/docs/SolarAxionConversionPoint/
 
-#+RESULTS:
-| /home/basti/CastData/ExternCode/xrayAttenuation/resources/nist_mass_attenuation/data_element_Argon_Z_18.csv |      |    |           |            |
-| /home/basti/CastData/ExternCode/xrayAttenuation/resources/henke_form_factors/ar.nff                         |      |    |           |            |
-| Weighted                                                                                                    | mean | of | distance: | 1.22082 cm |
+That document contains an attempt to compute the same thing
+analytically, which as I later realized produces wrong results of
+course (at least if done the way I did it there). See the document.
 
-This means the "effective" position of the axion image should be
-0.0122 m or 1.22 cm in the detector. This is (fortunately) relatively
-close to the 1.5 cm (center of the detector) that we used so far.
 
-- [X] Is the above even correct? The absorption length describes the
-  distance at which only 1/e particles are left. That means at that
-  distance (1 - 1/e) have disappeared. To get a number don't we need
-  to do a monte carlo (or some kind of integral) of the average?
-  -> Well, the mean of an exponential distribution is 1/λ (if defined
-  as $\exp(-λx)$!), from that point of view I think the above is
-  perfectly adequate!
-  Note however that the _median_ of the distribution is $\frac{\ln
-  2}{λ}$! When looking at the distribution of our transverse RMS
-  values for example the peak corresponds to something that is _closer 
-  to the median_ (but is not exactly the median either; the peak is
-  the 'mode' of the distribution).
-  Arguably more interesting is the cutoff we see in the data as that
-  corresponds to the largest _possible_ diffusion (but again that is
-  being folded with the statistics of getting a larger RMS! :/ )
+** Calculate conversion point numerically
 
-  *UPDATE*: <2023-06-14 Wed 17:24>
-  See the section below for the numerical approach. As it turns out
-  the above unfortunately is not correct for 3 important reasons (2 of
-  which we were aware of):
-  1. It does not include the axion spectrum, it changes the location of
-     the mean slightly.
-  2. It implicitly assumes all X-rays of all energies will be
-     detected. This implies an infinitely long detector and not our
-     detector limited by a length of 3 cm!
-     This skews the actual mean to *lower values*, because the mean of
-     those that _are_ detected are at smaller values.
-  3. Point 2 implies not only that some X-rays won't be detected, but
-     effectively it gives a _higher weight_ to energies that are
-     absorbed with certainty compared to those that sometimes are not
-     absorbed! This _further_ reduces the mean.
-     This can be interpreted as reducing the input flux by the
-     percentage of the absorption probability for each energy. 
-     In this sense the above needs to be multiplied by the absorption
-     probability to be more correct! Yet this still does not make it
-     completely right, as that just assumes the fraction of photons of
-     a given energy are reduced, but not that all detected ones have
-     lengths consistent with a 3cm long volume!
-  4. (minor) does not include isobutane.
-
-A (shortened and) improved version of the above (but still not quite correct!):
-#+begin_src nim :tangle /tmp/entrance_distance_xrays_cast_incl_gas.nim
-import xrayAttenuation, ggplotnim, unchained
-# 1. read the file containing efficiencies
-var effDf = readCsv("/home/basti/org/resources/combined_detector_efficiencies.csv")
-  .mutate(f{"NoGasEff" ~ idx("300nm SiN") * idx("20nm Al") * `LLNL` * idx("30mm Ar Abs.")})
-# 2. compute the absorption length for Argon
-let ar = Argon.init()
-let ρ_Ar = density(1050.mbar.to(Pascal), 293.K, ar.molarMass)
-effDf = effDf.filter(f{idx("Energy [keV]") > 0.05})
-  .mutate(f{float: "l_abs" ~ absorptionLength(ar, ρ_Ar, idx("Energy [keV]").keV).float})
-let weightedMean = (effDf["NoGasEff", float] *. effDf["l_abs", float]).sum() /
-  effDf["NoGasEff", float].sum()
-echo "Weighted mean of distance: ", weightedMean.Meter.to(cm)
-#+end_src
-
-#+RESULTS:
-| /home/basti/CastData/ExternCode/xrayAttenuation/resources/nist_mass_attenuation/data_element_Argon_Z_18.csv |      |    |           |            |
-| /home/basti/CastData/ExternCode/xrayAttenuation/resources/henke_form_factors/ar.nff                         |      |    |           |            |
-| Weighted                                                                                                    | mean | of | distance: | 1.06606 cm |
-
-We could further multiply in the axion flux of course, but as this
-cannot be fully correct in this way, we'll do it numerically. We would
-have to calculate the real mean of the exponential distribution for
-each energy based on the truncated exponential
-distribution. Effectively we have a bonded exponential between 0 and 3
-cm, whose mean is of course going to differ from the parameter $λ$.
-
-** Numerical approach
-
-- [ ] *CLEAN UP A LITTLE BIT*
-  
-Let's write a version of the above code that computes the result by
-sampling from the exponential distribution for the conversion point.
-
-What we need:
-- our sampling logic
+In order to calculate the conversion point, we we need:
+- random sampling logic
 - sampling from exponential distribution depending on energy
-- the axion flux
+- the axion flux, telescope effective area and window absorption
 
 Let's start by importing the modules we need:  
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 import helpers / sampling_helper # sampling distributions
 import unchained                 # sane units
 import ggplotnim                 # see something!
