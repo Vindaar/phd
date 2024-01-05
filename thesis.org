@@ -32378,6 +32378,9 @@ And the second old plot
 [[~/phd/Figs/limit/combined_detection_efficiency.pdf]]
 
 ***** Generate plot of detection efficiency [/]                :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:ingredients:gen_detection_eff
+:END:
 
 *NOTE*: We also have
 [[file:~/CastData/ExternCode/TimepixAnalysis/Tools/septemboardDetectionEff/septemboardDetectionEff.nim]]
@@ -46299,6 +46302,8 @@ where we emphasize that $E(x,y)$ depends on the position, before normalizing wit
 :CUSTOM_ID: sec:appendix:solar_candidates
 :END:
 
+- [ ] Plot of conversion probability scaling 
+
 
 ** TODOs for this section [/]                                     :noexport:
 
@@ -47640,10 +47645,15 @@ where the ~sampling_helpers~ is a small module to sample from a
 procedure or a sequence.
 
 In addition let's define some helpers:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-from os import `/`
-const ResourcePath = "/home/basti/org/resources"
-const OutputPath = "/home/basti/org/Figs/statusAndProgress/axion_conversion_point_sampling/"
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
+from os import `/`, expandTilde
+const ResourcePath = "~/org/resources".expandTilde
+const OutputPath = "~/phd/Figs/axion_conversion_point_sampling/".expandTilde
+
+proc thm(): Theme =
+  ## A shorthand to define a `ggplotnim` theme that looks nice 
+  ## in the thesis
+  result = themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot)
 #+end_src
 
 Now let's read the LLNL telescope efficiency as well as the axion flux
@@ -47652,10 +47662,12 @@ only for a specific axion flux model, but potentially any other kind
 of signal. We'll build in functionality to disable different
 contributions.
 
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
-let dfAx = readCsv(ResourcePath / "solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15.csv")
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
+let flux = "solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15.csv"
+let dfAx = readCsv(ResourcePath / flux)
   .filter(f{`type` == "Total flux"})
-let dfLLNL = readCsv(ResourcePath / "llnl_xray_telescope_cast_effective_area_parallel_light_DTU_thesis.csv")
+let llnl = "llnl_xray_telescope_cast_effective_area_parallel_light_DTU_thesis.csv"
+let dfLLNL = readCsv(ResourcePath / llnl)
   .mutate(f{"Efficiency" ~ idx("EffectiveArea[cm²]") / (PI * 2.15 * 2.15)})
 #+end_src
 Note: to get the differential axion flux use ~readOpacityFile~ from
@@ -47664,7 +47676,7 @@ file.
 
 Next up we need to define the material properties of the detector
 window in order to compute its transmission.
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 let Si₃N₄ = compound((Si, 3), (N, 4)) # actual window
 const ρSiN = 3.44.g•cm⁻³
 const lSiN = 300.nm                  # window thickness
@@ -47701,16 +47713,18 @@ differential fluxes are fine.
 The idea is to define the interpolators and then create a procedure
 that captures the previously defined properties and interpolators.
 
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 from numericalnim import newLinear1D, eval
-let axInterp = newLinear1D(dfAx["Energy", float].toSeq1D, dfAx["diffFlux", float].toSeq1D)
-let llnlInterp = newLinear1D(dfLLNL["Energy[keV]", float].toSeq1D, dfLLNL["Efficiency", float].toSeq1D)
+let axInterp = newLinear1D(dfAx["Energy", float].toSeq1D,
+                           dfAx["diffFlux", float].toSeq1D)
+let llnlInterp = newLinear1D(dfLLNL["Energy[keV]", float].toSeq1D,
+                             dfLLNL["Efficiency", float].toSeq1D)
 #+end_src
 
 With the interpolators defined let's write the implementation for
 $I(E)$:
 
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 proc I(E: keV): float =
   ## Compute the intensity of the axion flux after telescope & window eff.
   ##
@@ -47725,12 +47739,12 @@ proc I(E: keV): float =
 #+end_src
 
 Let's test it and see what we get for e.g. $\SI{1}{keV}$:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 echo I(1.keV)
 #+end_src
 yields $1.249e20$. Not the most insightful, but it seems to
 work. Let's plot it:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 let energies = linspace(0.01, 10.0, 1000).mapIt(it.keV)
 let Is = energies.mapIt(I(it))
 block PlotI:
@@ -47738,7 +47752,8 @@ block PlotI:
                   "I" : Is })
   ggplot(df, aes("E [keV]", "I")) +
     geom_line() +
-    ggtitle("Intensity entering the detector gas") + 
+    ggtitle("Intensity entering the detector gas") +
+    margin(left = 3.0) + thm() + 
     ggsave(OutputPath / "intensity_axion_conversion_point_simulation.pdf")
 #+end_src
 shown in fig. [[fig:axion_converison_point:intensity]]. It looks exactly
@@ -47747,18 +47762,18 @@ as we would expect.
 #+CAPTION: Intensity that enters the detector taking into account LLNL telescope and window
 #+CAPTION: efficiencies as well as the solar axion flux
 #+NAME: fig:axion_converison_point:intensity
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/intensity_axion_conversion_point_simulation.pdf]]
+[[~/phd/Figs/axion_conversion_point_sampling/intensity_axion_conversion_point_simulation.pdf]]
 
 Now we define the sampler for the intensity distribution $I(E)$, which
 returns an energy weighted by $I(E)$:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 let Isampler = sampler(
   (proc(x: float): float = I(x.keV)), # wrap `I(E)` to take `float`
   0.01, 10.0, num = 1000 # use 1000 points for EDF & sample in 0.01 to 10 keV
 )
 #+end_src
 and define a random number generator:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 import random
 var rnd = initRand(0x42)
 #+end_src
@@ -47766,13 +47781,14 @@ var rnd = initRand(0x42)
 First we will sample 100,000 energies from the distribution to
 see if we recover the intensity plot from before. 
 
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 block ISampled:
   const nmc = 100_000
   let df = toDf( {"E [keV]" : toSeq(0 ..< nmc).mapIt(rnd.sample(Isampler)) })
   ggplot(df, aes("E [keV]")) +
     geom_histogram(bins = 200, hdKind = hdOutline) +
     ggtitle("Energies sampled from I(E)") +
+    thm() + 
     ggsave(OutputPath / "energies_intensity_sampled.pdf")
 #+end_src
 
@@ -47784,7 +47800,7 @@ clearly shows the sampling works as intended.
 #+CAPTION: The shape is nicely reproduced, here plotted using a histogram of
 #+CAPTION: 200 bins.
 #+NAME: fig:axion_conversion_point:energies_sampled_intensity
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/energies_intensity_sampled.pdf]]
+[[~/phd/Figs/axion_conversion_point_sampling/energies_intensity_sampled.pdf]]
 
 The final piece now is to use the same sampling logic to generate
 energies according to $I(E)$, which correspond to X-rays of said
@@ -47825,7 +47841,7 @@ tabulated for different elements, for example by [[https://www.nist.gov/pml/x-ra
 implementation of [[https://github.com/SciNim/xrayAttenuation][~xrayAttenuation~]].
 
 We will now go ahead and define the CAST gas mixture:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 proc initCASTGasMixture(): GasMixture =
   ## Returns the absorption length for the given energy in keV for CAST
   ## gas conditions:
@@ -47861,7 +47877,7 @@ too large a weight to the energies that should sometimes not be detected!
 Let's define the sampler now. It takes the gas mixture and the target
 energy. A constant ~SampleTo~ is defined to adjust the position to
 which we sample at compile time (to play around with different numbers).
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 proc generateSampler(gm: GasMixture, targetEnergy: keV): Sampler =
   ## Generate the exponential distribution to sample from based on the
   ## given absorption length
@@ -47870,8 +47886,8 @@ proc generateSampler(gm: GasMixture, targetEnergy: keV): Sampler =
   let fnSample = (proc(x: float): float =
                     result = expFn(x, λ.float) # expFn = 1/λ · exp(-x/λ)
   )
-  const SampleTo {.intdefine.} = 20 ## `SampleTo` can be set via `-d:SampleTo=<int>`
-  let num = (SampleTo.float / 3.0 * 1000).round.int # number of points to sample at
+  const SampleTo {.intdefine.} = 20 ## `SampleTo`, set via `-d:SampleTo=<int>`
+  let num = (SampleTo.float / 3.0 * 1000).round.int # # of points to sample at
   result = sampler(fnSample, 0.0, SampleTo, num = num)
 #+end_src
 Note that this is inefficient, because we generate a new sampler from
@@ -47884,24 +47900,27 @@ pre-bin the energies.
 
 For reference let's compute the absorption length as a function of
 energy for the CAST gas mixture:
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 block GasAbs:
-  let df = toDf({ "E [keV]" : linspace(0.03, 10.0, 1000),
-                  "l_abs [cm]" : linspace(0.03, 10.0, 1000).mapIt(absorptionLength(gm, it.keV).m.to(cm).float) })
+  let Es = linspace(0.03, 10.0, 1000)
+  let lAbs = Es.mapIt(absorptionLength(gm, it.keV).m.to(cm).float)
+  let df = toDf({ "E [keV]" : Es,
+                  "l_abs [cm]" : lAbs })
   ggplot(df, aes("E [keV]", "l_abs [cm]")) +
     geom_line() +
-    ggtitle("Absorption length of X-rays in CAST gas mixture: " & $gm) +
-    margin(top = 1.5) + 
+    ggtitle(r"Absorption length of X-rays in CAST gas mixture: \\" & $gm) +
+    margin(top = 1.5) +
+    thm() + 
     ggsave(OutputPath / "cast_gas_absorption_length.pdf")
 #+end_src
 which yields fig. [[fig:axion_conversion_point:absorption_length]]
 
 #+CAPTION: Absorption length in the CAST gas mixture as a function of X-ray energy.
 #+NAME: fig:axion_conversion_point:absorption_length
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/cast_gas_absorption_length.pdf]]
+[[~/phd/Figs/axion_conversion_point_sampling/cast_gas_absorption_length.pdf]]
 
 So, finally: let's write the MC sampling!
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 const nmc = 500_000 # start with 100k samples
 var Es = newSeqOfCap[keV](nmc)
 var zs = newSeqOfCap[cm](nmc)
@@ -47932,7 +47951,7 @@ Great, now we have sampled the conversion points according to the
 correct intensity. We can now ask for statistics or create different
 plots (e.g. conversion point by energies etc.).
 
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 import stats, seqmath # mean, variance and percentile
 let zsF = zs.mapIt(it.float) # for math
 echo "Mean conversion position = ", zsF.mean().cm
@@ -47954,18 +47973,21 @@ only $\SI{0.29}{cm}$.
 
 Let's plot the conversion points of all sampled (and recorded!) X-rays
 as well as what their distribution against energy looks like.
-#+begin_src nim :tangle /tmp/sample_axion_xrays_conversion_points.nim
+#+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
 let dfZ = toDf({ "E [keV]" : Es.mapIt(it.float),
                  "z [cm]"  : zs.mapIt(it.float) })
 ggplot(dfZ, aes("z [cm]")) +
   geom_histogram(bins = 200, hdKind = hdOutline) +
   ggtitle("Conversion points of all sampled X-rays according to I(E)") +
+  thm() + 
   ggsave(OutputPath / "sampled_axion_conversion_points.pdf")
 ggplot(dfZ, aes("E [keV]", "z [cm]")) +
-  geom_point(size = 1.0, alpha = 0.2) + 
-  ggtitle("Conversion points of all sampled X-rays according to I(E) against their energy") +
-  ggsave(OutputPath / "sampled_axion_conversion_points_vs_energy.png",
-        width = 1200, height = 800)  
+  geom_point(size = 0.5, alpha = 0.2) + 
+  ggtitle("Conversion points of all sampled X-rays according to I(E) " &
+    "against their energy") +
+  thm() + 
+  ggsave(OutputPath / "sampled_axion_conversion_points_vs_energy.pdf",
+         dataAsBitmap = true)
 #+end_src
 
 The former is shown in
@@ -47980,13 +48002,13 @@ conversion points for each energy!
 #+CAPTION: Distribution of the conversion points of all sampled X-rays for which
 #+CAPTION: conversion in the detector took place as sampled from $I(E)$.
 #+NAME: fig:axion_conversion_point:sampled_axion_conversion_points
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/sampled_axion_conversion_points.pdf]]
+[[~/phd/Figs/axion_conversion_point_sampling/sampled_axion_conversion_points.pdf]]
 
 #+CAPTION: Distribution of the conversion points of all sampled X-rays for which
 #+CAPTION: conversion in the detector took place as sampled from $I(E)$ as a scatter
 #+CAPTION: plot against the energy for each X-ray.
 #+NAME: fig:axion_conversion_point:sampled_axion_conversion_points_by_energy
-[[~/org/Figs/statusAndProgress/axion_conversion_point_sampling/sampled_axion_conversion_points_vs_energy.png]]
+[[~/phd/Figs/axion_conversion_point_sampling/sampled_axion_conversion_points_vs_energy.pdf]]
 
 
 ** Compiling and running the code                                 :extended:
@@ -47996,11 +48018,11 @@ and run it we use ~ntangle~ to extract it from the Org file:
 #+begin_src nim
 ntangle <file>
 #+end_src
-which generates [[file:/tmp/sample_axion_xrays_conversion_points.nim]].
+which generates [[file:code/sample_axion_xrays_conversion_points.nim]].
 
 Compiling and running it can be done via:
 #+begin_src nim
-nim r -d:danger /tmp/sample_axion_xrays_conversion_points.nim
+nim r -d:danger code/sample_axion_xrays_conversion_points.nim
 #+end_src
 which compiles and runs it as an optimized build.
 
@@ -48022,7 +48044,7 @@ We have the following compilation flags to compute different cases:
 
 Configurations of note:
 #+begin_src nim
-nim r -d:danger -d:noAxionFlux /tmp/sample_axion_xrays_conversion_points.nim
+nim r -d:danger -d:noAxionFlux code/sample_axion_xrays_conversion_points.nim
 #+end_src
 $⇒$ realistic case for a flat input spectrum
 Yields:
@@ -48033,7 +48055,7 @@ Variance of conversion position = 0.528094 cm
 #+end_src
 
 #+begin_src nim
-nim r -d:danger -d:noAxionFlux -d:UnboundedVolume /tmp/sample_axion_xrays_conversion_points.nim
+nim r -d:danger -d:noAxionFlux -d:UnboundedVolume code/sample_axion_xrays_conversion_points.nim
 #+end_src
 $⇒$ the closest analogue to the analytical calculation from section
 [[#sec:axion_conversion_point:analytical]] (outside of including isobutane
@@ -48046,7 +48068,7 @@ Variance of conversion position = 3.63818 cm
 #+end_src
 
 #+begin_src nim
-nim r -d:danger /tmp/sample_axion_xrays_conversion_points.nim
+nim r -d:danger code/sample_axion_xrays_conversion_points.nim
 #+end_src
 $⇒$ the case we most care about and of which the numbers are mentioned
 in the text above. 
