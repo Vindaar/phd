@@ -49060,7 +49060,7 @@ good. The "bow tie" shape can be seen in all three figures.
                                     "/home/basti/phd/Figs/raytracing/llnlPanter/PANTER_LLNL_CCM_slide_11_cropped_simulation.pdf"))
         (subfigure (linewidth 0.39) (caption "TrAXer") (label "fig:appendix:raytracing:traxer_sim_alK")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm.pdf"))
+                                    "~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_fWidth0.3.pdf"))
         (caption
          (subref "fig:appendix:raytracing:panter_data_alK")
          ": Data of the telescope taken at PANTER. "
@@ -49210,6 +49210,9 @@ than the other, increasing the HPD in size.
 
 
 *** Definition of the figure error and parameter determination
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:raytracing:figure_error_model
+:END:
 
 The figure error implementation has multiple free
 parameters. Generally speaking upon reflection on a mirror surface,
@@ -49275,10 +49278,10 @@ is massive in the sharpness of the data.
 (figure ()
         (subfigure (linewidth 0.5) (caption "Perfect mirrors") (label "fig:appendix:raytracing:traxer_alK_perfect")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm.pdf"))
+                                    "~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_fWidth0.5.pdf"))
         (subfigure (linewidth 0.5) (caption "Imperfect mirrors") (label "fig:appendix:raytracing:traxer_alK_imperfect")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm.pdf"))
+                                    "~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_fWidth0.5.pdf"))
         (caption
          (subref "fig:appendix:raytracing:traxer_alK_perfect")
          ": TrAXer simulation for Al Kα without any figure error. The resulting image is
@@ -49464,9 +49467,27 @@ on your keyboard to save all buffers to binary files. The output
 filenames will be printed to the terminal. 
 
 And then with the produced binary files we can plot them and compute
-the HPDs:
+the HPDs (note: we produce it such that text matches for the 3 plots
+side by side and then with ~F_WIDTH=0.9~ for the HPD plot and with
+~F_WIDTH=0.5~ for the perfect/imperfect comparison):
 #+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
-./plotBinary \
+F_WIDTH=0.3333333 USE_TEX=true ./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-12T12:56:26+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_fWidth0.3.pdf \
+    --inPixels=false \
+    --title "Al Kα, 1.49 keV, 3x3 mm, figure errors, source optical axis" \
+    --xrange 1.5
+F_WIDTH=0.5 USE_TEX=true ./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2023-11-12T12:56:26+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_fWidth0.5.pdf \
+    --inPixels=false \
+    --title "Al Kα, 1.49 keV, 3x3 mm, figure errors, source optical axis" \
+    --xrange 1.5
+USE_TEX=true ./plotBinary \
     --dtype float \
     -f out/image_sensor_0_2023-11-12T12:56:26+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
     --invertY \
@@ -49528,11 +49549,11 @@ Perfect mirror:
 
 Create the plots (only in 3x3 mm):
 #+Begin_src sh :dir ~/CastData/ExternCode/RayTracing/
-./plotBinary \
+F_WIDTH=0.5 USE_TEX=true ./plotBinary \
     --dtype float \
     -f out/image_sensor_0_2023-11-11T09:31:09+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
     --invertY \
-    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm.pdf \
+    --out ~/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_fWidth0.5.pdf \
     --inPixels=false \
     --title "Al Kα, 1.49 keV, 3x3 mm, source optical axis" \
     --xrange 1.5
@@ -49891,10 +49912,10 @@ the focal point.
 (figure ()
         (subfigure (linewidth 0.5) (caption "TrAXer") (label "fig:appendix:raytracing:traxer_solar_axion_image")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "/home/basti/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.pdf"))
+                                    "~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.pdf"))
         (subfigure (linewidth 0.5) (caption "LLNL") (label "fig:appendix:raytracing:llnl_solar_axion_image")
                    (includegraphics (list (cons 'width (linewidth 1.0)))
-                                    "/home/basti/phd/Figs/raytracing/raytracing_axion_image_llnl_jaime_all_energies_gridpix_size.pdf"))
+                                    "~/phd/Figs/raytracing/raytracing_axion_image_llnl_jaime_all_energies.pdf"))
         (caption
          (subref "fig:appendix:raytracing:traxer_solar_axion_image")
          ": TrAXer simulation of the solar axion image using the correct Sun-Earth distance with the
@@ -49905,7 +49926,6 @@ the focal point.
          seen.")
         (label "fig:appendix:raytracing:comparison_traxer_llnl_axion_image"))
 #+end_src
-
 
 
 [fn:have_access] Let alone the fact that we only got access to these
@@ -50147,7 +50167,7 @@ Which we also plot:
 | HPD   | along | y:      | 1.176             | as | angle: | 158.5407610313404 '' |    |        |        |             |           |     |          |    |          |         |    |            |     |   |           |         |
 
 #+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
-./plotBinary \
+F_WIDTH=0.5 USE_TEX=true ./plotBinary \
     --dtype float \
     -f out/image_sensor_0_2023-11-12T16:23:18+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
     --invertY \
@@ -50241,9 +50261,57 @@ FUZZ_ORTH=0.0 ./raytracer \
 
 Ok, the plot looks near identical. :)
 
-
-
 *** Generating the plot of the LLNL axion image                  :extended:
+
+The origin of the raytracing plot is
+[[file:~/org/Doc/StatusAndProgress.org::#sec:raytracing:llnl_raytracing_results]],
+but we reproduce the code here to change it slightly. The code
+requires the text data of the LLNL raytracing simulations.
+
+- [ ] *FIND OUT IF I CAN PUBLISH THEM*
+
+#+begin_src nim :tangle code/raytracing_axion_images_llnl_jaime.nim
+import ggplotnim, seqmath
+import std / [os, sequtils, strutils]
+proc readRT(p: string): DataFrame =
+  result = readCsv(p, sep = ' ', skipLines = 4, colNames = @["x", "y", "z"])
+  result["File"] = p  
+proc meanData(df: DataFrame): DataFrame =
+  result = df.mutate(f{"x" ~ `x` - mean(col("x"))},
+                     f{"y" ~ `y` - mean(col("y"))})
+proc customSideBySide(): Theme =
+  result = sideBySide()
+  result.titleFont = some(font(8.0))
+
+proc plots(df: DataFrame, title, outfile: string) =
+  var customInferno = inferno()
+  customInferno.colors[0] = 0 # transparent
+  ggplot(df.filter(f{`x` >= -7.0 and `x` <= 7.0 and `y` >= -7.0 and `y` <= 7.0}),
+         aes("x", "y", fill = "z")) +
+    geom_raster() +
+    scale_fill_gradient(customInferno) +
+    xlab("x [mm]") + ylab("y [mm]") +
+    xlim(-7.0, 7.0) + ylim(-7.0, 7.0) +
+    coord_fixed(1.0) + 
+    ggtitle(title) +
+    themeLatex(fWidth = 0.5, width = 600, baseTheme = customSideBySide, useTeX = true) + 
+    ggsave(outfile)
+  
+var dfs = newSeq[DataFrame]()
+for f in walkFiles("/home/basti/org/resources/llnl_cast_nature_jaime_data/2016_DEC_Final_CAST_XRT/*2Dmap.txt"):
+  echo "Reading: ", f
+  dfs.add readRT(f)
+echo "Summarize"
+var df = dfs.assignStack()
+df = df.group_by(@["x", "y"])
+  .summarize(f{float: "z" << sum(`z`)},
+             f{float: "zMean" << mean(`z`)})
+  .mutate(f{"y" ~ col("y").max - idx(`y`)}) # invert the y axis
+df = df.meanData()
+plots(df,
+      "LLNL raytracing of axion image (sum all energies)",
+      "~/phd/Figs/raytracing/raytracing_axion_image_llnl_jaime_all_energies.pdf")
+#+end_src
 
 ** Reproducing an X-ray finger run with TrAXer                    :extended:
 
