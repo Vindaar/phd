@@ -37261,7 +37261,105 @@ The log file:
 
 - [ ] How is the axion emission modeled for the axion-photon flux?
   -> Figure out, just need that!
-  
+
+**** Calculate differential axion-photon flux and emission rates :extended:  
+
+Same as for the axion-electron coupling, we use ~readOpacityFile~ with
+the ~~--fluxKind fkAxionPhoton~ argument (see also [[#sec:appendix:raytracing:generate_axion_image]]):
+#+begin_src sh :dir ~/CastData/ExternCode/AxionElectronLimit/src
+./readOpacityFile \
+    --suffix "_0.989AU" \
+    --distanceSunEarth 0.9891144450781392.AU \
+    --fluxKind fkAxionPhoton \
+    --plotPath ~/phd/Figs/readOpacityFile/ \
+    --outpath ~/phd/resources/readOpacityFile/
+#+end_src
+
+**** Generate axion image for axion-photon emission :extended:
+
+Now we just run the raytracer, using the correct position (1492.93 mm
+effective distance from telescope center) and produced emission file:
+#+begin_src sh
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 \
+    --llnl --focalPoint --sourceKind skSun \
+    --solarModelFile ~/phd/resources/readOpacityFile/solar_model_dataframe_fluxKind_fkAxionPhoton_0.989AU.csv \
+    --sensorKind sSum \
+    --usePerfectMirror=false \
+    --rayAt 0.995286666667 \
+    --ignoreWindow
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2024-01-08T13:19:16+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2024-01-08T13:19:16+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2024-01-08T13:19:16+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+And plot it, produce the CSV axion image for the limit:
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+F_WIDTH=0.5 USE_TEX=true ./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2024-01-08T13:19:16+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.pdf \
+    --inPixels=false \
+    --gridpixOutfile ~/phd/resources/axionImages/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.csv \
+    --title "Solar axion image (g_aγ) at 0.989 AU from Sun, 1492.93 mm"
+#+end_src
+
+yields:
+- [[~/phd/Figs/raytracing/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.pdf]]
+- [[~/phd/Figs/raytracing/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm_log10.pdf]]
+- [[~/phd/Figs/raytracing/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm_hpd_via_eef_50.pdf]]
+
+**** Compute an expected limit                                  :extended:
+
+Given that this is only an 'add-on', we will just compute O(10k) toy
+limits for an expected limit using the best performing setup from the
+axion-electron limit. Based on those we will then compute the observed
+limit too.
+
+Sanity checks:
+#+begin_src sh
+mcmc_limit_calculation \
+    sanity --limitKind lkMCMC \
+    --axionModel ~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionPhoton_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --switchAxes --sanityPath /t/sanity \
+    --axionPhotonLimit
+#+end_src
+-> Looking reasonable now, I would say.
+
+See sec. [[#sec:limit:expected_limits:best_expected_50k]] for the command
+for axion-electron using 50k toys. The main differences:
+- axion photon differential flux
+- axion photon axion image  
+- couplingKind: g_aγ
+#+begin_src sh
+mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --axionModel ~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionPhoton_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --switchAxes \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --limitKind lkMCMC \
+    --couplingKind ck_g_aγ² \
+    --outpath ~/org/resources/lhood_limits_axion_photon_08_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/ \
+    --suffix "" \
+    --nmc 10000
+#+end_src
+
+Running above with 1k for a test:
+<2024-01-08 Mon 18:07>
+
 *** Chameleon coupling
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:observed_chameleon
