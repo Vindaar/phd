@@ -10800,6 +10800,9 @@ adjusted around the global value. See appendix
   
 
 **** Generate the FSR tables for all chips and each run period  :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:calib:generate_fsr_table
+:END:
 
 Let's generate the tables containing the table for the FSR DAC values
 for all chips for each of the different run periods.
@@ -10896,13 +10899,17 @@ for period in periods:
   echo "Run: ", period
   echo tab.invertTable.toOrgTable(header)
 
+echo df["THL", float].min  
 ggplot(df.filter(f{`THL` > 100}), aes("THL", fill = factor("chip"))) +
   facet_wrap("Run") + 
   geom_histogram(binWidth = 1.0, position = "identity", alpha = 0.7, hdKind = hdOutline) +
   ggtitle("Optimized THL distribution of the noise peak for each chip") +
-  ylab(r"\# pixels") +
-  facetHeaderText(font = font(12.0, alignKind = taCenter)) + 
-  ggsave("/home/basti/phd/Figs/detector/calibration/sepemboard_all_thl_optimized.pdf",
+  ylab(r"\# pixels", margin = 2.0) +
+  facetHeaderText(font = font(12.0, alignKind = taCenter)) +
+  themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +
+  scale_x_continuous(breaks = 8) + 
+  margin(left = 3.0, right = 3.5) + 
+  ggsave("/home/basti/phd/Figs/detector/calibration/septemboard_all_thl_optimized.pdf",
          useTeX = true, standalone = true,
          width = 1000, height = 600)
 #+end_src
@@ -40655,10 +40662,12 @@ distributions of all chips after threshold equalization for run 2
 #+CAPTION: Distributions of the =THL= values of all Septemboard (board H) chips
 #+CAPTION: at the noise peak with the calibration for for run 2 on the left and
 #+CAPTION: run 3 on the right.
-#+ATTR_LATEX: :width 1\textwidth
 #+NAME: fig:daq:thl_optimized_distributinons
-[[~/phd/Figs/detector/calibration/sepemboard_all_thl_optimized.pdf]]
+[[~/phd/Figs/detector/calibration/septemboard_all_thl_optimized.pdf]]
 
+**** Generate facet plot of THL optimization                    :extended:
+
+The plot is generated as part of sec. [[#sec:calib:generate_fsr_table]].
 
 ** Calibration measurements of the veto scintillator paddle
 :PROPERTIES:

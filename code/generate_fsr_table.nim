@@ -83,12 +83,16 @@ for period in periods:
   echo "Run: ", period
   echo tab.invertTable.toOrgTable(header)
 
+echo df["THL", float].min  
 ggplot(df.filter(f{`THL` > 100}), aes("THL", fill = factor("chip"))) +
   facet_wrap("Run") + 
   geom_histogram(binWidth = 1.0, position = "identity", alpha = 0.7, hdKind = hdOutline) +
   ggtitle("Optimized THL distribution of the noise peak for each chip") +
-  ylab(r"\# pixels") +
-  facetHeaderText(font = font(12.0, alignKind = taCenter)) + 
-  ggsave("/home/basti/phd/Figs/detector/calibration/sepemboard_all_thl_optimized.pdf",
+  ylab(r"\# pixels", margin = 2.0) +
+  facetHeaderText(font = font(12.0, alignKind = taCenter)) +
+  themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +
+  scale_x_continuous(breaks = 8) + 
+  margin(left = 3.0, right = 3.5) + 
+  ggsave("/home/basti/phd/Figs/detector/calibration/septemboard_all_thl_optimized.pdf",
          useTeX = true, standalone = true,
          width = 1000, height = 600)
