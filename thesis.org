@@ -37843,7 +37843,40 @@ mcmc_limit_calculation \
     --suffix "" \
     --nmc 10000
 #+end_src
+:RESULTS:
+Expected limit: 1.690834101979812e+42
+Generating group /ctx/trackingDf
+Generating group /ctx/axionModel
+Serializing Interpolator by evaluating 0.01 to 2.0 of name: axionSpl
+Serializing Interpolator by evaluating 0.0 to 10.0 of name: efficiencySpl
+Serializing Interpolator by evaluating 0.2 to 12.0 of name: backgroundSpl
+Generating group /ctx/backgroundDf
+Wrote outfile /home/basti/org/resources/lhood_limits_chameleon_11_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+:END:
+
 Started <2024-01-11 Thu 18:00>.
+
+It, uhh, 'finished' some time before <2024-01-11 Thu 20:22>, however,
+it gave a segmentation fault:
+#+begin_src
+WARNING: Unexpected data type VNull of column: limits!
+WARNING: Unexpected data type VNull of column: 4.6269e+41!
+WARNING: Unexpected data type VNull of column: 1.6908e+42!
+WARNING: Unexpected data type VNull of column: 0!
+WARNING: Unexpected data type VNull of column: 0!
+WARNING: Unexpected data type VNull of column: 0!
+WARNING: Unexpected data type VNull of column: 0!
+WARNING: Unexpected data type VNull of column: 1000!
+WARNING: Unexpected data type VNull of column: 1000!
+WARNING: Unexpected data type VNull of column: candsInSens!
+SIGSEGV: Illegal storage access. (Attempt to read from nil?)
+zsh: segmentation fault  mcmc_limit_calculation limit -f  -f  --axionModel  --isChameleon --axionImage
+#+end_src
+I guess something about the positive numbers of the chameleon limit
+yields rubbish somewhere? :)
+
+Ahh, I think I didn't adjust the ~candsInSens~ threshold value.
+
 
 
 *** Note about shape of likelihood in ~g_aγ~ and ~β~ limits      :extended:
