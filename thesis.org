@@ -37297,6 +37297,130 @@ Old limit:
 g_{ae} · g_{aγ} = \SI{6.56e-23}{GeV⁻¹},
 \]
 
+**** Sanity check                                               :extended:
+
+This is only one of them, but quick, gives an overview:
+
+Running the sanity checks for the limits by varying ~g²_ae~ as
+described in the thesis:
+#+begin_src sh
+mcmc_limit_calculation \
+    sanity --limitKind lkMCMC \
+    --axionModel ~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionElectronPhoton_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --switchAxes --sanityPath ~/phd/Figs/limit/sanity/axionElectronSanity/ \
+    --axionElectronLimit
+#+end_src
+See the plots in [[~/phd/Figs/limit/sanity/axionElectronSanity/]] and the
+sanity log:
+#+begin_src
+[2024-01-11 - 15:39:15] - INFO: =============== Input ===============
+[2024-01-11 - 15:39:15] - INFO: 	Input path: 
+[2024-01-11 - 15:39:15] - INFO: 	Input files: @[(2017, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5"), (2018, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5")]
+[2024-01-11 - 15:39:15] - INFO: =============== Time ===============
+[2024-01-11 - 15:39:15] - INFO: 	Total background time: 3158.01 h
+[2024-01-11 - 15:39:15] - INFO: 	Total tracking time: 159.899 h
+[2024-01-11 - 15:39:15] - INFO: 	Ratio of tracking to background time: 1 UnitLess
+[2024-01-11 - 15:39:16] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronSanity/candidates_signal_over_background_axion_electron.pdf
+[2024-01-11 - 15:39:16] - INFO: =============== Chameleon coupling constant ===============
+[2024-01-11 - 15:39:16] - INFO: 	Conversion probability using default g_aγ² = 9.999999999999999e-25, yields P_a↦γ = 1.62702e-21 UnitLess
+[2024-01-11 - 15:39:25] - INFO: Limit with default g_ae² = 1e-26 is = 4.773876062173374e-21, and as g_ae = 6.909324179811926e-11
+[2024-01-11 - 15:39:25] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronSanity/candidates_signal_over_background_axion_electron.pdf
+[2024-01-11 - 15:39:37] - INFO: 2. Limit with default g_ae² = 1e-26 is = 8.300544615154112e-21, and as g_ae = 9.110732470638194e-11
+[2024-01-11 - 15:39:37] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronSanity/candidates_signal_over_background_axion_electron.pdf
+[2024-01-11 - 15:39:46] - INFO: 3. Limit with default g_ae² = 1e-26 is = 5.284512161896287e-21, and as g_ae = 7.26946501600791e-11
+[2024-01-11 - 15:39:47] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronSanity/candidates_signal_over_background_axion_electron.pdf
+[2024-01-11 - 15:39:58] - INFO: 4. Limit with default g_ae² = 1e-26 is = 5.92914993487365e-21, and as g_ae = 7.700097359692051e-11
+#+end_src
+
+And by varying g²_ae·g²_aγ instead (equivalent):
+#+begin_src sh
+mcmc_limit_calculation \
+    sanity --limitKind lkMCMC \
+    --axionModel ~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionElectronPhoton_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --switchAxes --sanityPath ~/phd/Figs/limit/sanity/axionElectronAxionPhotonSanity/ \
+    --axionElectronAxionPhotonLimit
+#+end_src
+see [[~/phd/Figs/limit/sanity/axionElectronAxionPhotonSanity/]] and the
+sanity log:
+#+begin_src
+[2024-01-11 - 15:42:04] - INFO: =============== Input ===============
+[2024-01-11 - 15:42:04] - INFO: 	Input path: 
+[2024-01-11 - 15:42:04] - INFO: 	Input files: @[(2017, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5"), (2018, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5")]
+[2024-01-11 - 15:42:05] - INFO: =============== Time ===============
+[2024-01-11 - 15:42:05] - INFO: 	Total background time: 3158.01 h
+[2024-01-11 - 15:42:05] - INFO: 	Total tracking time: 159.899 h
+[2024-01-11 - 15:42:05] - INFO: 	Ratio of tracking to background time: 1 UnitLess
+[2024-01-11 - 15:42:05] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronAxionPhotonSanity/candidates_signal_over_background_axion_electron_axion_photon.pdf
+[2024-01-11 - 15:42:05] - INFO: =============== Axion-electron axion-photon coupling constant ===============
+[2024-01-11 - 15:42:05] - INFO: 	Conversion probability using default g_aγ² = 9.999999999999999e-25, yields P_a↦γ = 1.62702e-21 UnitLess
+[2024-01-11 - 15:42:14] - INFO: Limit is g_ae²·g_aγ² = 4.722738218023592e-45, as g_ae·g_aγ = 6.872218141199821e-23
+[2024-01-11 - 15:42:14] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronAxionPhotonSanity/candidates_signal_over_background_axion_electron_axion_photon.pdf
+[2024-01-11 - 15:42:25] - INFO: 2. Limit is g_ae²·g_aγ² = 8.597830720112351e-45, as g_ae·g_aγ = 9.272448824400355e-23
+[2024-01-11 - 15:42:25] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronAxionPhotonSanity/candidates_signal_over_background_axion_electron_axion_photon.pdf
+[2024-01-11 - 15:42:35] - INFO: 3. Limit is g_ae²·g_aγ² = 5.266187342850787e-45, as g_ae·g_aγ = 7.256850103764572e-23
+[2024-01-11 - 15:42:35] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronAxionPhotonSanity/candidates_signal_over_background_axion_electron_axion_photon.pdf
+[2024-01-11 - 15:42:46] - INFO: 4. Limit is g_ae²·g_aγ² = 6.027243097935441e-45, as g_ae·g_aγ = 7.763532120069731e-23
+#+end_src
+Compare the limits with the above to see that they are basically the
+same limits (the variation is down to the MCMC uncertainty for a
+single limit).
+
+*NOTE*: Running the limit using ~--axionElectronAxionPhotonLimitWrong~
+will run it by varying ~g_ae·g_aγ~ (without the square) directly. This
+is to illustrate the explanation of
+sec. [[#sec:limit:mcmc:notes_variation_coupling_parameter]]. It will show
+a distorted histogram and different limits than in the above two
+cases:
+
+#+begin_src sh
+mcmc_limit_calculation \
+    sanity --limitKind lkMCMC \
+    --axionModel ~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionElectronPhoton_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --switchAxes --sanityPath ~/phd/Figs/limit/sanity/axionElectronAxionPhotonWrongSanity/ \
+    --axionElectronAxionPhotonLimitWrong
+#+end_src
+See [[~/phd/Figs/limit/sanity/axionElectronAxionPhotonWrongSanity/]] and
+the sanity log:
+#+begin_src
+[2024-01-11 - 15:43:43] - INFO: =============== Input ===============
+[2024-01-11 - 15:43:43] - INFO: 	Input path: 
+[2024-01-11 - 15:43:43] - INFO: 	Input files: @[(2017, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5"), (2018, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5")]
+[2024-01-11 - 15:43:43] - INFO: =============== Time ===============
+[2024-01-11 - 15:43:43] - INFO: 	Total background time: 3158.01 h
+[2024-01-11 - 15:43:43] - INFO: 	Total tracking time: 159.899 h
+[2024-01-11 - 15:43:43] - INFO: 	Ratio of tracking to background time: 1 UnitLess
+[2024-01-11 - 15:43:43] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronAxionPhotonWrongSanity/candidates_signal_over_background_axion_electron_axion_photon_wrong.pdf
+[2024-01-11 - 15:43:44] - INFO: =============== Axion-electron axion-photon coupling constant via g_ae·g_aγ directly ===============
+[2024-01-11 - 15:43:44] - INFO: 	Conversion probability using default g_aγ² = 9.999999999999999e-25, yields P_a↦γ = 1.62702e-21 UnitLess
+[2024-01-11 - 15:43:53] - INFO: Limit is g_ae·g_aγ = 5.536231179166123e-23
+[2024-01-11 - 15:43:54] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronAxionPhotonWrongSanity/candidates_signal_over_background_axion_electron_axion_photon_wrong.pdf
+[2024-01-11 - 15:44:05] - INFO: 2. Limit is g_ae·g_aγ = 7.677750408651383e-23
+[2024-01-11 - 15:44:05] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronAxionPhotonWrongSanity/candidates_signal_over_background_axion_electron_axion_photon_wrong.pdf
+[2024-01-11 - 15:44:15] - INFO: 3. Limit is g_ae·g_aγ = 5.828448006406443e-23
+[2024-01-11 - 15:44:15] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionElectronAxionPhotonWrongSanity/candidates_signal_over_background_axion_electron_axion_photon_wrong.pdf
+[2024-01-11 - 15:44:27] - INFO: 4. Limit is g_ae·g_aγ = 6.573837668159744e-23
+#+end_src
+See how the limits are much lower than for the two cases above (the
+additional 1e-12 difference is down to ~g_aγ~ not being included, note
+the numbers outside of the power).
+
+And in particular, compare
+
+[[~/phd/Figs/limit/sanity/axionElectronAxionPhotonWrongSanity/mcmc_histo_real_syst_.pdf]]
+
+with the correct 
+
+[[~/phd/Figs/limit/sanity/axionElectronAxionPhotonSanity/mcmc_histo_real_syst_.pdf]] 
+and
+[[~/phd/Figs/limit/sanity/axionElectronSanity/mcmc_histo_real_syst_.pdf]]
+
+which illustrates the sampling behavior nicely.
 
 **** Calculate the observed limit                               :extended:
 
@@ -37404,10 +37528,31 @@ mcmc_limit_calculation \
     --axionModel ~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionPhoton_0.989AU.csv \
     --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.csv \
     --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
-    --switchAxes --sanityPath /t/sanity \
+    --switchAxes --sanityPath ~/phd/Figs/limit/sanity/axionPhotonSanity/ \
     --axionPhotonLimit
 #+end_src
--> Looking reasonable now, I would say.
+see [[~/phd/Figs/limit/sanity/axionPhotonSanity/]] and the sanity log file:
+#+begin_src
+[2024-01-11 - 15:48:04] - INFO: =============== Input ===============
+[2024-01-11 - 15:48:04] - INFO: 	Input path: 
+[2024-01-11 - 15:48:04] - INFO: 	Input files: @[(2017, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5"), (2018, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5")]
+[2024-01-11 - 15:48:05] - INFO: =============== Time ===============
+[2024-01-11 - 15:48:05] - INFO: 	Total background time: 3158.01 h
+[2024-01-11 - 15:48:05] - INFO: 	Total tracking time: 159.899 h
+[2024-01-11 - 15:48:05] - INFO: 	Ratio of tracking to background time: 1 UnitLess
+[2024-01-11 - 15:48:05] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionPhotonSanity/candidates_signal_over_background_axionPhoton.pdf
+[2024-01-11 - 15:48:05] - INFO: =============== Axion-photon coupling constant ===============
+[2024-01-11 - 15:48:05] - INFO: 	Conversion probability using default g_aγ² = 9.999999999999999e-25, yields P_a↦γ = 7.97241e-18 UnitLess
+[2024-01-11 - 15:48:24] - INFO: Limit with default g_aγ² = 9.999999999999999e-25 is = 5.348452506385883e-41, and as g_aγ = 8.551790162182624e-11
+[2024-01-11 - 15:48:24] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionPhotonSanity/candidates_signal_over_background_axionPhoton.pdf
+[2024-01-11 - 15:48:45] - INFO: 2. Limit with default g_aγ² = 9.999999999999999e-25 is = 9.258158870434389e-41, and as g_aγ = 9.809145065039609e-11
+[2024-01-11 - 15:48:45] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionPhotonSanity/candidates_signal_over_background_axionPhoton.pdf
+[2024-01-11 - 15:49:04] - INFO: 3. Limit with default g_aγ² = 9.999999999999999e-25 is = 6.93624112433336e-41, and as g_aγ = 9.126012210624729e-11
+[2024-01-11 - 15:49:04] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/axionPhotonSanity/candidates_signal_over_background_axionPhoton.pdf
+[2024-01-11 - 15:49:25] - INFO: 4. Limit with default g_aγ² = 9.999999999999999e-25 is = 6.105369380817466e-41, and as g_aγ = 8.839505819701355e-11
+#+end_src
+The limits seem reasonable for our detector. Worse than the Nature
+limit by quite a bit, but still acceptable!
 
 See sec. [[#sec:limit:expected_limits:best_expected_50k]] for the command
 for axion-electron using 50k toys. The main differences:
@@ -37428,22 +37573,289 @@ mcmc_limit_calculation \
     --σ_p 0.05 \
     --energyMin 0.2 --energyMax 12.0 \
     --limitKind lkMCMC \
-    --couplingKind ck_g_aγ² \
-    --outpath ~/org/resources/lhood_limits_axion_photon_08_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/ \
+    --couplingKind ck_g_aγ⁴ \
+    --outpath ~/org/resources/lhood_limits_axion_photon_11_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/ \
     --suffix "" \
     --nmc 10000
 #+end_src
+:RESULTS:
+Expected limit: 6.752456878081697e-41
+Generating group /ctx/trackingDf
+Generating group /ctx/axionModel
+Serializing Interpolator by evaluating 0.001 to 15.0 of name: axionSpl
+Serializing Interpolator by evaluating 0.0 to 10.0 of name: efficiencySpl
+Serializing Interpolator by evaluating 0.2 to 12.0 of name: backgroundSpl
+Generating group /ctx/backgroundDf
+Wrote outfile /home/basti/org/resources/lhood_limits_axion_photon_11_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+:END:
 
-Running above with 1k for a test:
-<2024-01-08 Mon 18:07>
+Finished <2024-01-11 Thu 17:53>. It took about 3 hours maybe.
+
+- [ ] Make the output plot prettier! It's super ugly due to a few
+  _very_ large limits.
 
 *** Chameleon coupling
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:observed_chameleon
 :END:
+
 - [ ] For chameleon mainly just need to look at how Christoph sampled
   from the solar radius to compute the axion image in his case. We can
   then plug that into the raytracer.
+
+**** Chameleon references :extended:
+
+For chameleon theory. Best overview in detail:
+
+~/Documents/Papers/PapersHome/Masterarbeit/Chameleons/thorough_chameleon_review_0611816.pdf
+
+later review:
+chameleon_review_1602.03869.pdf
+
+
+To differentiate chameleon gravity from other GR extensions:
+especially
+~/Documents/Papers/brax_distinguishing_modified_gravity_models_1506.01519.pdf
+and
+~/Documents/Papers/brax_lectures_on_screened_modified_gravity_1211.5237v1.pdf
+
+
+Detection in experiments, e.g. CAST
+~/Documents/Papers/brax_detection_chameleons_1110.2583.pdf
+and a bit brax_solar_chameleons_1004.1846v1.pdf (is this a precursor preprint?)
+
+
+Other reading:
+chameleons and solar physics:
+chameleons_and_solar_physics_1405.1581.pdf
+
+
+polarizations_produced_by_chameleons_PhysRevD.79.044028.pdf
+
+**** Chameleon spectrum                                         :extended:
+
+We have the chameleon spectrum from Christoph's limit code back in the
+day. The file [[file:resources/chameleon-spectrum.dat]] contains the flux
+in units of ~1/16mm2/hour/keV~ at ~β_m = β^sun_m = 10^10.81~ assuming
+a magnetic field of 10 T at the solar tachocline, iirc.
+
+[[file:~/org/Misc/chameleon_spectrum.nim]]
+
+- [ ] Insert flux!
+
+**** Conversion probability                                     :extended:
+
+Chameleon references:
+[[cite:&krieger_chameleon_jcap]] 
+[[cite:&chameleons_sdd_cast]]
+
+Conversion probability for back conversion. We are in the coherent
+regime. In this case cite:brax12_chameleons equation 52:
+
+\[
+P_{c↦γ} = \frac{B² L²}{4 M²_γ}
+\]
+
+where $M_γ$ is defined implicitly via the chameleon-photon coupling
+$β_γ$,
+
+\[
+β_γ = \frac{m_{\text{pl}}}{M_γ}
+\]
+
+where $m_{\text{pl}}$ is the /reduced/ Planck mass, $m_{\text{pl}} =
+\frac{M_{\text{pl}}}{\sqrt{8 π}}$ (i.e. using natural units with $G =
+\frac{1}{8π}$ instead of $G = 1$, used in cosmology because it removes
+the $8π$ term from the Einstein field equations). See
+[[cite:&krieger_chameleon_jcap]] for mention that it is the reduced Planck
+constant here. But the $\sim \SI{2e18}{GeV}$ also gives it away. Let's
+check that the numbers hold:
+#+begin_src nim
+import unchained
+
+let M_pl = sqrt ((hp_bar * c) / G_Newton).toDef(kg²)
+echo "Planck mass = ", M_pl, " in GeV = ", M_pl.toNaturalUnit.to(GeV) / sqrt(8 * π)
+#+end_src
+
+#+RESULTS:
+: Planck mass = 2.17643e-08 kg in GeV = 2.43532e+18 GeV
+
+which indeed matches (although *2* is a rough approximation of the
+value!).
+
+Let's compute the conversion probability for a single $β_γ$ value:
+#+begin_src nim
+import unchained
+
+proc conversionProbability(B: Tesla, L: Meter, β_γ: float): float =
+  let M_pl = sqrt(((hp_bar * c) / G_Newton).toDef(kg²)).toNaturalUnit.to(GeV) / sqrt(8 * π)
+  #let M_γ = M_pl / β_γ
+  result = (β_γ * B.toNaturalUnit() * L.toNaturalUnit() / (2 * M_pl))^2
+
+echo "Conversion probability: ", conversionProbability(8.8.T, 9.26.m, 5.6e10)
+#+end_src
+
+#+RESULTS:
+: Conversion probability: 8.603132749603562e-13
+
+O(1e-12) seems somewhat reasonable, given that the flux is generally
+much lower than for axions? But maybe the flux is too low? The flux is
+on the order of 1e-4 keV⁻¹•cm⁻²•s⁻¹ after all. 
+
+
+Let's compare:
+#+begin_src nim
+import unchained, math
+defUnit(cm²)
+defUnit(keV⁻¹)
+
+func conversionProbability(): UnitLess =
+  ## the conversion probability in the CAST magnet (depends on g_aγ)
+  ## simplified vacuum conversion prob. for small masses
+  let B = 9.0.T
+  let L = 9.26.m
+  let g_aγ = 1e-12.GeV⁻¹ # ``must`` be same as reference in Context
+  result = pow( (g_aγ * B.toNaturalUnit * L.toNaturalUnit / 2.0), 2.0 )
+echo conversionProbability()  
+#+end_src
+
+#+RESULTS:
+: 1.70182e-21 UnitLess
+
+#+begin_src nim
+import unchained
+
+let flx = 2e18.keV⁻¹•m⁻²•yr⁻¹
+echo flx.toDef(keV⁻¹•cm⁻²•s⁻¹)
+#+end_src
+
+#+RESULTS:
+: 6.33762e+06 keV⁻¹•cm⁻²•s⁻¹
+
+So 6e6 axions at 1.7e-21 vs 8.6e-13 at 1e-4:
+#+begin_src nim
+echo 6e6 * 1.7e-21
+echo 1e-4 * 8.6e-13
+#+end_src
+
+#+RESULTS:
+| 1.02e-14 |
+|  8.6e-17 |
+
+3 orders of magnitude difference. That seems like it would be too
+much? Surely not made up by the fact that the area of interest is so
+much larger, no? Only one way to find out, I guess.
+
+**** Generate chameleon solar image                             :extended:
+
+#+begin_src sh
+./raytracer \
+    --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 \
+    --llnl --focalPoint --sourceKind skSun \
+    --chameleonFile ~/org/resources/chameleon-spectrum.dat \
+    --sensorKind sSum \
+    --usePerfectMirror=false \
+    --ignoreWindow \
+    --ignoreMagnet
+#+end_src
+:RESULTS:
+[INFO] Writing buffers to binary files.
+[INFO] Writing file: out/buffer_2024-01-08T20:29:05+01:00_type_uint32_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/counts_2024-01-08T20:29:05+01:00_type_int_len_1440000_width_1200_height_1200.dat
+[INFO] Writing file: out/image_sensor_0_2024-01-08T20:29:05+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat
+:END:
+
+#+begin_src sh :dir ~/CastData/ExternCode/RayTracing/
+F_WIDTH=0.5 USE_TEX=true ./plotBinary \
+    --dtype float \
+    -f out/image_sensor_0_2024-01-08T20:29:05+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat \
+    --invertY \
+    --out ~/phd/Figs/raytracing/solar_chameleon_image_0.989AU_1500mm.pdf \
+    --inPixels=false \
+    --gridpixOutfile ~/phd/resources/axionImages/solar_chameleon_image_0.989AU_1500mm.csv \
+    --title "Solar chameleon image at 0.989 AU from Sun, 1500 mm"
+#+end_src
+
+**** Compute an expected limit                                  :extended:
+
+Sanity checks:
+#+begin_src sh
+mcmc_limit_calculation \
+    sanity --limitKind lkMCMC \
+    --axionModel ~/phd/resources/chameleon-spectrum.dat \
+    --isChameleon \
+    --axionImage ~/phd/resources/axionImages/solar_chameleon_image_0.989AU_1500mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --switchAxes --sanityPath ~/phd/Figs/limit/sanity/chameleonSanity \
+    --chameleonLimit 
+#+end_src
+see [[~/phd/Figs/limit/sanity/chameleonSanity/]] and the sanity log file:
+#+begin_src
+[2024-01-11 - 15:50:40] - INFO: =============== Input ===============
+[2024-01-11 - 15:50:40] - INFO: 	Input path: 
+[2024-01-11 - 15:50:40] - INFO: 	Input files: @[(2017, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5"), (2018, "/home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5")]
+[2024-01-11 - 15:50:41] - INFO: =============== Time ===============
+[2024-01-11 - 15:50:41] - INFO: 	Total background time: 3158.01 h
+[2024-01-11 - 15:50:41] - INFO: 	Total tracking time: 159.899 h
+[2024-01-11 - 15:50:41] - INFO: 	Ratio of tracking to background time: 1 UnitLess
+[2024-01-11 - 15:50:41] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/chameleonSanity/candidates_signal_over_background_chameleon.pdf
+[2024-01-11 - 15:50:41] - INFO: =============== Chameleon coupling constant ===============
+[2024-01-11 - 15:50:41] - INFO: 	Conversion probability using default β² = 4.168693834703363e+21, yields P_c↦γ = 1.06716e-14 UnitLess
+[2024-01-11 - 15:50:52] - INFO: Limit with default β² = 4.168693834703363e+21 is = 1.637454027281386e+42, and as β = 3.577192e+10
+[2024-01-11 - 15:50:52] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/chameleonSanity/candidates_signal_over_background_chameleon.pdf
+[2024-01-11 - 15:51:03] - INFO: 2. Limit with default β² = 4.168693834703363e+21 is = 2.129378077440907e+42, and as β = 3.819999e+10
+[2024-01-11 - 15:51:04] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/chameleonSanity/candidates_signal_over_background_chameleon.pdf
+[2024-01-11 - 15:51:15] - INFO: 3. Limit with default β² = 4.168693834703363e+21 is = 1.890732758560203e+42, and as β = 3.708152e+10
+[2024-01-11 - 15:51:15] - INFO: 	Saving plot: /home/basti/phd/Figs/limit/sanity/chameleonSanity/candidates_signal_over_background_chameleon.pdf
+[2024-01-11 - 15:51:26] - INFO: 4. Limit with default β² = 4.168693834703363e+21 is = 1.391973234680927e+42, and as β = 3.434850e+10
+#+end_src
+These limits look good! Quite a bit better than Christoph's (which was 5.5e10).
+
+See sec. [[#sec:limit:expected_limits:best_expected_50k]] for the command
+for axion-electron using 50k toys. The main differences:
+- chameleon differential flux
+- chameleon axion image  
+- couplingKind: β_m
+#+begin_src sh
+mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --axionModel ~/phd/resources/chameleon-spectrum.dat \
+    --isChameleon \
+    --axionImage ~/phd/resources/axionImages/solar_chameleon_image_0.989AU_1500mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --switchAxes \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --limitKind lkMCMC \
+    --couplingKind ck_β⁴ \
+    --outpath ~/org/resources/lhood_limits_chameleon_11_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/ \
+    --suffix "" \
+    --nmc 10000
+#+end_src
+Started <2024-01-11 Thu 18:00>.
+
+
+*** Note about shape of likelihood in ~g_aγ~ and ~β~ limits      :extended:
+
+There is a fundamental difference between computing a limit on the
+axion-electron coupling and computing a limit for either axion-photon
+or chameleon.
+
+In case of axion-photon and chameleon, a change in the coupling
+constant increases / decreases *both* the production and the
+conversion probability by that amount, to be specific
+
+\[
+s(g⁴) = α · f(g²) · P(g²)
+\]
+
+where $α$ is the entire contribution independent of $g$. 
+
+For the axion-electron coupling however, we 
 
 ** Comparison to 2013 limit (using their method)                  :extended:
 
