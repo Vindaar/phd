@@ -35839,6 +35839,82 @@ mcmc_limit_calculation sanity \
                        --rombergIntegrationDepth 3
 #+end_src
 
+*** Notes and thoughts about the coupling as MCMC element       
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:mcmc:notes_variation_coupling_parameter
+:END:
+
+When evaluating the likelihood function using a MCMC approach, the
+choice of $g²_{ae}$ in our case is not arbitrary. It may however seem
+surprising, given that the previous limits for $g_{ae}$ are always
+quoted and given as $g_{ae}·g_{aγ}$. The reason is that when
+calculating a limit on $g_{ae}$ one typically works under the
+assumption that the solar axion flux via the axion-photon coupling
+$g_{aγ}$ is negligible. This means production is $g_{ae}$ based and
+reconversion $g_{aγ}$ based. As a result for $g_{ae}$ searches in
+helioscopes the axion-photon coupling can be taken as constant and
+only $g_{ae}$ be varied. The final limit must be quoted as a product
+regardless.
+
+See the sanity check ~--axionElectronAxionPhoton~ of
+~mcmc_limit_calculation~ for proof that the deduced limit does not
+change as a function of $g_{aγ}$. In it we compute the limit for a
+fixed set of candidates at different $g_{aγ}$ values. The resulting
+limit on $g_{ae}·g_{aγ}$ remains unchanged (of course, the limit
+produced in $g²_{ae}$ space /will/ change, but that is precisely why
+one must never quote the $g²_{ae}$ 'limit' as such. It is still only a
+temporary number).
+
+The choice of coupling parameter to use inside of the MCMC is based on
+linearizing the space. We choose the parameter under which the
+likelihood function is a linear function. For the axion-electron
+coupling -- under the above stated assumptions -- the likelihood via
+the signal $s$ is a linear function of $g²_{ae}$ for a fixed value of
+$g²_{aγ}$. An /equivalent/ way to parametrize the likelihood function
+as a linear function is by usage of $g²_{ae}·g²_{aγ}$, hence this
+being a common choice in past papers. This produces the *same limit*
+as the $g²_{ae}$ limit. See the sanity check
+~--axionElectronAxionPhotonLimit~ of ~mcmc_limit_calculation~, in
+which we compute limits based on $g²_{ae}·g²_{aγ}$ instead and see
+that the limit is the same.
+
+/Importantly though/, using $g_{ae}·g_{aγ}$ (without the square) as an
+argument to the MCMC does *not* linearize it and thus produces a wrong
+limit.
+
+For a search for the axion-photon coupling alone or the chameleon
+coupling, the single coupling constant affects /both/ the production
+in the sun via $g²_{aγ}$, $β²_γ$ as well as the conversion probability
+in the magnet. This means for these searches we /have/ to use
+$g⁴_{aγ}$ and $β⁴_γ$ as arguments to the MCMC.
+
+- Why is that? :: The reason for this behavior is due to the random
+  sampling nature of the MCMC. The basic algorithm that adds new links
+  to the Markov chain works by /uniformly/ sampling new values for
+  each entry of the parameter vector. /Uniform/ is the crucial
+  point. If we work with parameters under which the likelihood
+  function is /not/ linear and we uniformly sample that non-linear
+  parameter, we produce an effective /non-linear/ sampling of the
+  linearized function.
+
+  For example for the axion-photon coupling $g_{aγ}$, if wrongly use
+  $g²_{aγ}$ in the MCMC, sample new values within
+
+  \[
+  \text{rand}([0, 5]) · g²_{aγ, \text{base}} 
+  \]
+
+  and /then/ rescale $s$ via:
+
+  \[
+  s'(g⁴_{aγ}) = α · f(g²_{aγ, \text{base}}) · P(g²_{aγ, \text{base}}) ·
+  \left( \frac{g²_{aγ, \text{base}}}{g²_{aγ, \text{base}}} \right)²
+  \]
+
+  we square $g²_{aγ}$ again. This means we effectively did not perform
+  a /uniform/ sampling at all! This directly affects the samples and
+  as a result the limit. The shape of the histogram of all coupling
+  constants ends up as stretched because of this.
 
 ** Expected limits of different setups
 :PROPERTIES:
