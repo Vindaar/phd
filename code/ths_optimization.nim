@@ -1,6 +1,10 @@
 import std / strformat
 import ggplotnim
 
+proc csbs(): Theme =
+  result = sideBySide()
+  result.titleFont = some(font(7.0))
+
 proc main(fname, runPeriod: string, chip: int) =
   var df = readCsv(fname, sep = '\t', colNames = @["x", "y", "min", "max", "bit", "opt"])
   let breaks = linspace(-0.5, 15.5, 17).toSeq1D
@@ -9,7 +13,9 @@ proc main(fname, runPeriod: string, chip: int) =
     geom_histogram(breaks = breaks, hdKind = hdOutline) +
     scale_x_continuous() +
     xlim(-0.5, 16.5) +
-    xlab("4-bit DAC") + 
+    xlab("4-bit DAC") +
+    margin(left = 3.5) + 
+    themeLatex(fWidth = 0.5, width = 600, height = 420, baseTheme = csbs) + 
     ggtitle(&"All equalization bits after optimization, {runPeriod}, chip {chip}") + 
     ggsave(&"/home/basti/phd/Figs/detector/calibration/optimized_equalization_bits_{runPeriod}_chip_{chip}.pdf",
            useTeX = true, standalone = true)
@@ -17,7 +23,9 @@ proc main(fname, runPeriod: string, chip: int) =
   ggplot(df.filter(f{`THL` > 330.0 and `THL` < 460.0}), aes("THL", fill = "type")) +
     geom_histogram(binWidth = 1.0, position = "identity", hdKind = hdOutline, alpha = 0.7) +
     ggtitle(&"All equalization bits at 0, 15 and optimized, {runPeriod}, chip {chip}") +
-    #xlim(330, 460) + 
+    #xlim(330, 460) +
+    margin(left = 3.5) +     
+    themeLatex(fWidth = 0.5, width = 600, height = 420, baseTheme = csbs) +     
     ggsave(&"/home/basti/phd/Figs/detector/calibration/ths_optimization_distributions_{runPeriod}_chip_{chip}.pdf",
            useTeX = true, standalone = true)
 when isMainModule:

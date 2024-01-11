@@ -13,7 +13,10 @@ proc main(fname, runPeriod: string, chip: int) =
     geom_raster() + 
     #scale_x_continuous() +
     #xlim(-0.5, 16.5) +
-    xlim(0, 255) + ylim(0, 255) + 
+    coord_fixed(1.0) +
+    xlab("x [pixel]") + ylab("y [pixel]") + 
+    xlim(0, 255) + ylim(0, 255) +
+    themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) + 
     ggtitle(&"Equalization bits after optimization, {runPeriod}, chip: {chip}") + 
     ggsave(&"/home/basti/phd/Figs/detector/calibration/heatmap_threshold_equalization_{runPeriod}_chip_{chip}.pdf",
            useTeX = true, standalone = true)
