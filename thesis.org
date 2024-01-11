@@ -10694,7 +10694,7 @@ cd /tmp
 raw_data_manipulation -p Run_267_181108-02-05.tar.gz --runType background --out raw_267.h5
 reconstruction -i raw_267.h5 --out reco_267.h5
 reconstruction -i reco_267.h5 --only_charge
-reconstruction -i reco_267.h5 --only_gas_gain
+reconstruction -i reco_267.h5 --only_gas_gain --useTeX
 #+end_src
 
 where we first copy the raw data to ~/tmp~, parse it, reconstruct it,
@@ -40331,12 +40331,12 @@ range, but clearly a bit higher than the theoretical limit for this
 chip. This matches our expectation.
 
 #+CAPTION: An example of a Pólya distribution of chip 0 using the calibration
-#+CAPTION: of July 2018 based on \SI{30}{min} of background data.
+#+CAPTION: of July 2018 based on \SI{90}{min} of background data.
 #+CAPTION: The lower cutoff is easily visible. The pink line represents the
 #+CAPTION: fit of the Pólya distribution to the data. In the dashed region the
 #+CAPTION: line was extended using the final fit parameters.
 #+NAME: fig:daq:polya_example_chip0
-[[~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf]]
+[[~/phd/Figs/gasGain/gas_gain_run_306_chip_0_2_90_min_1545296149.pdf]]
 
 **** TODOs for this section                                     :noexport:
 
@@ -40356,8 +40356,19 @@ basti at void in /mnt/1TB/CAST/2018_2/out/DataRuns2018_Raw_2020-04-28_16-13-28 �
      ~/phd/Figs/gas_gain_run_306_chip_0_placeholder_example.pdf
 #+end_src
 
-- [ ] *REPLACE BY BETTER PLOT. USING 90MIN AMONG OTHER THINGS*
-  
+- [X] *REPLACE BY BETTER PLOT. USING 90MIN AMONG OTHER THINGS*
+
+We simply use the existing reconstructed data and create the gas gain
+plots again:
+
+#+begin_src sh
+WRITE_PLOT_CSV=true reconstruction -i ~/CastData/data/DataRuns2018_Reco.h5 \
+               --only_gas_gain \
+               --run 306 \
+               --plotOutPath ~/phd/Figs/gasGain/ \
+               --useTeX=true \
+               --overwrite
+#+end_src
 
 ** Septemboard calibration [/]
 :PROPERTIES:
