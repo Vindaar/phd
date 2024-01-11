@@ -37,4 +37,4 @@ df = df.group_by(@["x", "y"])
 df = df.meanData()
 plots(df,
       "LLNL raytracing of axion image (sum all energies)",
-      "~/phd/Figs/rayTracing/raytracing_axion_image_llnl_jaime_all_energies.pdf")
+      "~/phd/Figs/raytracing/raytracing_axion_image_llnl_jaime_all_energies.pdf")
