@@ -47257,14 +47257,83 @@ where we emphasize that $E(x,y)$ depends on the position, before normalizing wit
 #+ATTR_LATEX: :width 1.0\linewidth
 [[~/phd/Figs/circleCutout/circle_cutout_explanation.pdf]]
 
-
-* Solar tracking candidates [/]                                    :Appendix:
+* Conversion probability as a function of mass                     :Appendix:
 :PROPERTIES:
-:CUSTOM_ID: sec:appendix:solar_candidates
+:CUSTOM_ID: sec:appendix:conversion_probability
 :END:
 
-- [ ] Plot of conversion probability scaling 
+Fig. [[fig:appendix:conversion_probability_vs_mass]] shows how the
+axion-photon conversion probability changes as a function of the axion
+mass. This implements
+eq. [[eq:theory:axion_interaction:conversion_probability]], reproduced
+here with slightly changed notation,
 
+\[
+P_{a↦γ}(z) = \left( \frac{g_{aγ} B L}{2} \right)² \left(\frac{\sin\left(\frac{q L}{2}\right)}{\frac{q L}{2}}\right)²,
+\]
+
+with $q = \frac{m²_γ - m²_a}{2 E_a}$. $E_a$ is the energy of the axion
+(or in the context of a limit calculation the energy of a
+candidate). In the vacuum setup $m_γ = 0$. The figure shows this
+conversion probability for different axion energies and based on the
+CAST magnet. We see that the conversion probability starts falling off
+roughly around $m_a \approx \SI{0.01}{eV}$, with the exact value
+depending on energy (and personal $ΔP$ cutoff).
+
+#+CAPTION: Axion-photon conversion probability as a function of axion mass. Using
+#+CAPTION: $g_{aγ} = \SI{1e-12}{GeV⁻¹}, B = \SI{8.8}{T}, L = \SI{9.26}{m}$. Different
+#+CAPTION: axion energies indicated by color.
+#+NAME: fig:appendix:conversion_probability_vs_mass
+[[~/phd/Figs/axions/axion_conversion_probability_vs_mass.pdf]]
+
+** TODOs for this section [1/1]                                   :noexport:
+- [X] Plot of conversion probability scaling 
+
+** Generate the plot of the conversion probability                :extended:
+
+Taken and adapted from
+[[file:~/org/Code/CAST/babyIaxoAxionMassRange/axionMass.org]].
+
+#+begin_src nim
+import ggplotnim, unchained, sequtils
+proc momentumTransfer(m_γ, m_a: eV, E_a = 4.2.keV): eV =
+  ## calculates the momentum transfer for a given effective photon
+  ## mass `m_gamma` and axion mass `m_a` at an axion energy of 
+  ## 4.2 keV `E_a` (by default).
+  result = abs((m_γ * m_γ - m_a * m_a) / (2 * E_a))
+
+proc vacuumConversionProb(E_a: keV, m_a: eV, B: Tesla, L: Meter): float =
+  ## calculates the conversion probability in BabyIAXO for the given axion 
+  ## mass `m_a`
+  # both `g_agamma` and `B` only scale the absolute value `P`, does not matter
+  const g_aγ = 1e-12.GeV⁻¹
+  # convert length in `m` to `eV`
+  let q = momentumTransfer(m_γ = 0.0.eV, m_a = m_a, E_a = E_a)
+  let term1 = pow(g_aγ * B.toNaturalUnit() * L.toNaturalUnit() / 2.0, 2)
+  let term2 = pow(sin(q * L.toNaturalUnit() / 2.0) / (q * L.toNaturalUnit() / 2.0), 2.0)
+  result = term1 * term2
+
+let energies = arange(1, 9, 2)
+var df = newDataFrame()
+for E_a in energies:
+  let masses = logspace(-6, 0, 1000)
+  let Ps = masses.mapIt(vacuumConversionProb(E_a.keV, it.eV, 8.8.T, 9.26.m))
+  df.add toDf({"masses" : masses, "Ps" : Ps, "E_a [keV]" : E_a})
+ggplot(df, aes("masses", "Ps", color = "E_a [keV]")) +
+  geom_line() +
+  xlab("Axion mass [eV]") + ylab("Conversion probability") +
+  themeLatex(fWidth = 0.9, width = 600, baseTheme = singlePlot) +
+  scale_x_log10() + scale_y_log10() + 
+  ggsave("~/phd/Figs/axions/axion_conversion_probability_vs_mass.pdf")
+#+end_src
+
+#+RESULTS:
+| [INFO]:    | No                                                                   | plot              | ratio                       | given,                                                               | using  | golden | ratio. |               |            |    |    |           |    |           |      |          |     |   |    |                         |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |
+| INFO:      | The                                                                  | integer           | column                      | `E_a                                                                 | [keV]` | has    | been   | automatically | determined | to | be | discrete. | To | overwrite | this | behavior | add | a | `+ | scale_x/y_continuous()` | call | to | the | plotting | chain. | Choose | `x` | or | `y` | depending | on | which | axis | this | column | refers | to. |
+| [INFO]     | TeXDaemon                                                            | ready             | for                         | input.                                                               |        |        |        |               |            |    |    |           |    |           |      |          |     |   |    |                         |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |
+| shellCmd:  | command                                                              | -v                | lualatex                    |                                                                      |        |        |        |               |            |    |    |           |    |           |      |          |     |   |    |                         |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |
+| shellCmd:  | lualatex                                                             | -output-directory | /home/basti/phd/Figs/axions | /home/basti/phd/Figs/axions/axion_conversion_probability_vs_mass.tex |        |        |        |               |            |    |    |           |    |           |      |          |     |   |    |                         |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |
+| Generated: | /home/basti/phd/Figs/axions/axion_conversion_probability_vs_mass.pdf |                   |                             |                                                                      |        |        |        |               |            |    |    |           |    |           |      |          |     |   |    |                         |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |
 
 ** TODOs for this section [/]                                     :noexport:
 
