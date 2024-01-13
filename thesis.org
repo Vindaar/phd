@@ -37201,34 +37201,14 @@ top left. Hence you see ~--invertY~ in all calls to ~plotBinary~!
 
 
 
-** Observed limits
+** Observed limit - $g_{ae}$
 :PROPERTIES:
-:CUSTOM_ID: sec:limit:observed_limits
+:CUSTOM_ID: sec:limit:observed_limit
 :END:
 
 With the data fully unblinded and the solar tracking candidates known,
-we can now compute the observed limits.
-
-We will start with the main coupling constant of interest in the
-context of this thesis, the axion-electron coupling $g_{ae}$ in
-sec. [[#sec:limit:observed_axion_electron]].
-
-Afterwards, we will also shortly present the limits achievable by this
-detector, dataset and methodology on the axion-photon coupling
-$g_{aγ}$, sec. [[#sec:limit:observed_axion_photon]], as well as the
-chameleon coupling constant $β$, sec. [[#sec:limit:observed_chameleon]].
-
-- [ ] *MENTION THAT THIS LIMIT IS FOR AXION MASSES < 1e-3 or whatever*
-  - [ ] Refer to scaling of full magnet length (no simplification)
-  - [ ] Add plot to appendix of conversion probability scaling
-
-*** Axion-electron coupling
-:PROPERTIES:
-:CUSTOM_ID: sec:limit:observed_axion_electron
-:END:
-
-Based on the candidates presented in sec. [[#sec:limit:candidates]] we
-compute an observed limit of
+we can now compute the observed limit for the axion-electron coupling
+$g_{ae}$. We compute an observed limit of
 
 \[
 \left(g_{ae} · g_{aγ}\right)_{\text{observed}} = \SI{7.36e-23}{GeV⁻¹},
@@ -37257,7 +37237,23 @@ limit is at the $95^{\text{th}}$ percentile of the histogram, shown by
 the intersection of the blue and red filling. In addition the yellow
 line shows values based on a numerical integration using Romberg's
 method [[cite:&romberg_integration]] at 20 different coupling constants. This is a cross
-validation of the MCMC result. [fn:romberg_integration_performance] 
+validation of the MCMC result. [fn:romberg_integration_performance]
+
+Note that this observed limit is valid for axion masses in the range
+where the coherence condition in the conversion probability is
+met. That is, $qL \ll π$, refer back to equation
+[[eq:theory:axion_interaction:conversion_probability]]. This holds up to
+axion masses around $m_a \lesssim \SI{0.02}{eV}$, but the exact value
+is both energy dependent and based on the desired cutoff in reduction
+of the conversion probability. See fig. *XXX* in appendix *XXX* to see
+how the conversion probability develops as a function of axion
+mass. The expected and observed limits simply (inversely) follow the
+conversion probability, i.e. out of coherence they get exponentially
+worse, superimposed with the periodic modulation seen in the
+conversion probability. As we did not perform a buffer gas run, the
+behavior in that range is not computed, because it is mostly trivial
+(only the exact point at which the limit decreases changes depending
+on the exact energies of the candidates).
 
 #+CAPTION: The marginal posterior likelihood function for the solar candidates
 #+CAPTION: with the observed limit at the intersection between the blue and
@@ -37281,6 +37277,10 @@ uses 8 for Romberg for accuracy). This highlights the need for Monte
 Carlo methods, _especially_ for expected limits.
 
 **** TODOs for this section [/]                                 :noexport:
+
+- [X] *MENTION THAT THIS LIMIT IS FOR AXION MASSES < 1e-3 or whatever*
+  - [X] Refer to scaling of full magnet length (no simplification)
+  - [X] Add plot to appendix of conversion probability scaling
 
 - [X] *REPLACE THIS FIG BY VERSION WITH g_ae·g_aγ!!!*
   -> But they look extremely different! So no.
@@ -37460,10 +37460,124 @@ they should be switched around x/y?
 The log file:
 [[~/phd/Figs/trackingCandidates/real_candidates_limit.log]]
 
+
+** Other coupling constants
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:other_couplings
+:END:
+
+As explained when we introduced the limit calculation method, one
+important aim was to develop method which is agnostic to the coupling
+constant of choice. We will now make use of this to compute expected
+and observed limits for the axion-photon coupling $g_{aγ}$,
+sec. [[#sec:limit:axion_photon]] and chameleon coupling $β_γ$,
+sec. [[#sec:limit:chameleon]]. 
+
+*** TODOs for this section                                       :noexport:
+
+We will start with the main coupling constant of interest in the
+context of this thesis, the axion-electron coupling $g_{ae}$ in
+sec. [[#sec:limit:observed_axion_electron]].
+
+Afterwards, we will also shortly present the limits achievable by this
+detector, dataset and methodology on the axion-photon coupling
+$g_{aγ}$, sec. [[#sec:limit:observed_axion_photon]], as well as the
+chameleon coupling constant $β$, sec. [[#sec:limit:observed_chameleon]].
+
+
 *** Axion-photon coupling
 :PROPERTIES:
-:CUSTOM_ID: sec:limit:observed_axion_photon
+:CUSTOM_ID: sec:limit:axion_photon
 :END:
+
+The axion-photon coupling requires the following changes:
+
+- use $g⁴_{aγ}$ in the vector of the Markov Chain, replacing the
+  $g²_{ae}$ term. As $g_{aγ}$ both affects the production and
+  reconversion it needs to be in the fourth power.
+- the axion flux based on Primakoff production only.
+- the axion image based on the Primakoff flux only.
+
+The axion flux and axion image for the Primakoff production are shown
+in fig. sref:fig:limit:axion_photon:flux_image_inputs. Note that the
+axion image is computed at the same effective conversion position as
+for the axion-electron flux. Strictly speaking this is not quite
+correct, due to the different energies of the two fluxes and therefore
+different absorption lengths. For the purposes here the inaccuracy is
+acceptable.
+
+Based on these we compute an expected limit for the same setup that
+yielded the best expected limit for the axion-electron coupling
+constant. Namely, the MLP classifier at $\SI{95}{\%}$ efficiency using
+all vetoes except the septem veto. We compute an expected limit based
+on $\num{1e4}$ toy
+candidates. Fig. [[fig:limit:axion_photon:expected_limit]] shows the
+obtained limits and expected limit based on these toy candidates. The
+obtained expected limit is
+
+\[
+g_{aγ, \text{expected}} = \SI{9.07e-11}{GeV⁻¹},
+\]
+
+which compared to the observed CAST Nature [[cite:&cast_nature]] limit of
+$g_{aγ, \text{Nature}} = \SI{6.6e-11}{GeV^{−1}}$ is of course
+significantly worse. This is expected however, due to significantly
+less tracking time and higher background rates. The limit without any
+candidates comes out to
+
+\[
+g_{aγ, \text{no candidates}} = \SI{7.95e-11}{GeV⁻¹}.
+\]
+
+With the observed limit based on the same candidates as in
+sec. [[#sec:limit:observed_limit]] we obtain an observed limit of
+
+\[
+g_{aγ, \text{observed}} = \SI{8.96e-11}{GeV⁻¹}. 
+\]
+
+Once again it is better than the expected limit, similar as for the
+axion-electron limit, but the overall result is as expected.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "$g_{aγ}$ flux") (label "fig:limit:axion_photon:flux")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "~/phd/Figs/axions/differential_axion_flux_primakoff.pdf"))
+        (subfigure (linewidth 0.5) (caption "$g_{aγ}$ image") (label "fig:limit:axion_photon:image")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "~/phd/Figs/raytracing/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.pdf"))
+        (caption
+         (subref "fig:limit:axion_photon:flux")
+         ": Differential axion flux arriving on Earth due to Primakoff production assuming "
+         ($ (SI 1e-12 "GeV⁻¹")) ". "
+         (subref "fig:limit:axion_photon:image")
+         ": Axion image for the Primakoff emission in the Sun.")
+        (label "fig:limit:axion_photon:flux_image_inputs"))
+#+end_src
+  
+#+CAPTION: $\num{1e4}$ toy limits for the axion-photon coupling $g⁴_{aγ}$. The expected limit is
+#+CAPTION: determined to $g_{aγ, \text{expected}} = \SI{9.07e-11}{GeV⁻¹}$, with the no candidates limit
+#+CAPTION: being $g_{aγ, \text{no candidates}} = \SI{7.95e-11}{GeV⁻¹}$.
+#+NAME: fig:limit:axion_photon:expected_limit
+[[~/phd/Figs/limit/mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500_axion_photon_nmc_10k_pretty.pdf]]
+
+
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *COMPUTE STANDARD DEVIATION OF EXPECTED LIMIT VIA BOOTSTRAPPING*
+
+
+- [X] subfigure
+  - axion flux
+  - axion image
+- [ ] expected limits 10k samples, histogram
+- [ ] histogram of observed limit      
+  
+
+
+
 - [ ] Show differential solar flux
 - [ ] Show axion image for Primakoff origin
 
@@ -37483,7 +37597,33 @@ the ~~--fluxKind fkAxionPhoton~ argument (see also [[#sec:appendix:raytracing:ge
     --outpath ~/phd/resources/readOpacityFile/
 #+end_src
 
-**** Generate axion image for axion-photon emission :extended:
+**** Generate plot of differential Primakoff flux               :extended:
+
+Produce a standalone plot of the axion-photon flux:
+#+begin_src nim
+import ggplotnim, unchained
+let df = readCsv("~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionPhoton_0.989AU.csv")
+  .mutate(f{float: "Flux" ~ idx("Flux / keV⁻¹ m⁻² yr⁻¹").keV⁻¹•m⁻²•yr⁻¹.toDef(keV⁻¹•cm⁻²•s⁻¹).float})
+  .filter(f{string: `type` == "Total flux"})
+ggplot(df, aes("Energy [keV]", "Flux")) +
+  geom_line() +
+  ylab(r"Flux [$\si{keV⁻¹.cm⁻².s⁻¹}$]") +
+  margin(left = 4.5) +
+  ggtitle(r"Primakoff flux at $g_{aγ} = \SI{1e-12}{GeV⁻¹}$") +
+  xlim(0.0, 15.0) + 
+  themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) +
+  ggsave("~/phd/Figs/axions/differential_axion_flux_primakoff.pdf")
+#+end_src
+
+#+RESULTS:
+| [INFO]:    | No                                                                | plot              | ratio                       | given,                                                            | using | golden | ratio. |
+| [INFO]     | TeXDaemon                                                         | ready             | for                         | input.                                                            |       |        |        |
+| shellCmd:  | command                                                           | -v                | lualatex                    |                                                                   |       |        |        |
+| shellCmd:  | lualatex                                                          | -output-directory | /home/basti/phd/Figs/axions | /home/basti/phd/Figs/axions/differential_axion_flux_primakoff.tex |       |        |        |
+| Generated: | /home/basti/phd/Figs/axions/differential_axion_flux_primakoff.pdf |                   |                             |                                                                   |       |        |        |
+
+
+**** Generate axion image for axion-photon emission             :extended:
 
 Now we just run the raytracer, using the correct position (1492.93 mm
 effective distance from telescope center) and produced emission file:
@@ -37601,12 +37741,230 @@ Finished <2024-01-11 Thu 17:53>. It took about 3 hours maybe.
 - [ ] Make the output plot prettier! It's super ugly due to a few
   _very_ large limits.
 
+**** Generate plot of expected limit histogram                  :extended:
+
+#+begin_src sh
+ESCAPE_LATEX=true USE_TEX=true mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --axionModel ~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionPhoton_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --plotFile ~/org/resources/lhood_limits_axion_photon_11_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.csv \
+    --xLow 2e-41 \
+    --xHigh 2e-40 \
+    --couplingKind ck_g_aγ⁴ \
+    --limitKind lkMCMC \
+    --yHigh 400 \
+    --bins 100 \
+    --linesTo 220 \
+    --xLabel "Limit g_aγ⁴ [GeV⁻⁴]" \
+    --yLabel "MC toy count"  \
+    --outpath ~/phd/Figs/limit/ \
+    --suffix "_axion_photon_nmc_10k_pretty" \
+    --nmc 10000
+#+end_src
+
+**** Calculate the observed limit                               :extended:
+
+We use ~F_WIDTH=0.5~ for the ~ln(1 + s/b)~ plot. The MCMC g_ae²
+histogram is forced to be 0.9 in width anyway.
+#+begin_src sh 
+F_WIDTH=0.5 ESCAPE_LATEX=true USE_TEX=true mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --tracking ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --tracking ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --axionModel ~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionPhoton_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --couplingKind ck_g_aγ⁴ \
+    --switchAxes \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --limitKind lkMCMC \
+    --outpath ~/phd/Figs/trackingCandidates/axionPhoton/ \
+    --suffix ""
+#+end_src
+
+The log file:
+[[~/phd/Figs/trackingCandidates/axionPhoton/real_candidates_limit.log]]
+
+#+begin_src 
+[2024-01-12 - 20:44:39] - INFO: Limit g_ae²              = 6.450444949277269e-41
+#+end_src
+(that should read g_aγ⁴, to be updated),
+yields
+$g_aγ = \SI{8.96184479371e-11}{GeV⁻¹}$
+
+
 *** Chameleon coupling
 :PROPERTIES:
-:CUSTOM_ID: sec:limit:observed_chameleon
+:CUSTOM_ID: sec:limit:chameleon
 :END:
 
-- [ ] For chameleon mainly just need to look at how Christoph sampled
+Let's now have a look at the chameleon coupling. In addition to the
+inputs and MCMC parameter that needs to be changed similarly to the
+axion-photon coupling (flux, image and using $β^4_γ$ in the MCMC), the
+conversion probability needs to be adjusted according to
+eq. [[eq:theory:chameleon_conversion_prob]]. This assumes the conversion
+is fully coherent, restricting to a chameleon-matter coupling $β_m$ of
+
+\[
+1 \leq β_m \leq \num{1e6}.
+\]
+
+Further, because the chameleon production occurs in the solar
+tachocline -- at around $0.7 · R_{\odot}$ -- the angles under which
+chameleons can reach the CAST magnet are much larger than for
+axions. This leads to a significant fraction of chameleons not
+traversing the entire magnet. For any chameleon traversing only parts
+of it, its probability for conversion is decreased. According to
+[[cite:&chameleons_sdd_cast]] this is accounted for by a correction factor
+of $\SI{38.9}{\%}$ in reduction of signal. [[cite:&krieger2018search]]
+used a simplified raytracing model for this. While the distance
+through the magnet can easily be modeled with our raytracer (see
+appendix [[#sec:appendix:raytracing]]), we will still use the correction
+factor [fn:why_factor].
+
+Fig. sref:fig:limit:chameleon:flux_image_inputs shows the differential
+chameleon flux, assuming a magnetic field of $\SI{10}{T}$ at the solar
+tachocline region and using $β_γ = β^{\text{sun}}_γ = \num{6.46e10}$
+(the bound on the chameleon coupling from solar physics). The
+chameleon image is in stark contrast to the very small axion image
+seen in the previous sections. The outer most ring corresponds to
+production in the tachocline regions in which our view is effectively
+tangent to the tachocline normal (i.e. the 'outer ring' of the solar
+tachocline when looking at the Sun). Also visible is the asymmetry in
+the signal on the chip, due to the LLNL telescope. The densest flux
+regions are in the top and bottom. These correspond to the narrow
+sides of the ellipsoid for example in
+fig. sref:fig:limit:axion_photon:image. This 'focusing effect' was not
+visible in the raytracing simulation of [[cite:&krieger2018search]], due
+to the simpler raytracing approach, which approximated the ABRIXAS
+telescope as a lens (slight differences between ABRIXAS and LLNL
+telescope would of course exist). 
+
+The relative size of the chameleon image compared to the size of the
+GridPix was one of the main motivators to implement the background
+interpolation as introduced in
+sec. [[#sec:limit:ingredients:background]]. This allows us to utilize the
+entire chameleon flux and weigh each chameleon candidate
+correctly. This is a significant improvement compared to the 2014/15
+detector result [[cite:&krieger2018search]], in which the entire outer
+ring of the chameleon flux had to be dropped. Not only can we include
+these regions in our calculation due to our approach, but also our
+background level is /significantly/ lower in these outer regions
+thanks to the usage of our vetoes (compare
+fig. sref:fig:background:background_suppression_comparison, where
+sref:fig:background:suppression_lnL80_without is comparable to the
+background level of cite:&krieger2018search).
+
+Again, we follow the approach used for the axion-photon coupling and
+restrict ourselves to a single calculation of an expected limit for
+the best veto setup (MLP at $\SI{95}{\%}$ efficiency using vetoes
+except the septem veto) based on $\num{1e4}$ toy candidate sets. This
+yields an expected limit of
+
+\[
+β_{γ, \text{expected}} = \num{3.61e10},
+\]
+
+and a limit without candidates of
+
+\[
+β_{γ, \text{no candidates}} = \num{2.62e10}.
+\]
+
+We can see that the difference between the 'no candidate' limit and
+the lowest toy limits is much larger than for the two axion
+limits. This is due to the chameleon image covering a large fraction
+of the chip, making it incredibly unlikely to have no
+candidates. Fig. [[fig:limit:chameleon:expected_limit]] shows the
+histograms of these toy limits. The differently colored histograms are
+again based on an arbitrary cutoff in $\ln(1 + s/b)$ for a fixed
+coupling constant. For the chameleon coupling it may be worthwhile to
+investigate other veto setups again, because of the very different
+nature of the chameleon image and even lower peak of the differential
+flux. Based on the same setup we compute an observed limit using the
+same set of candidates as previously of
+
+\[
+β_{γ, \text{observed}} = \num{3.1e10}.
+\]
+
+This is a good improvement over the limit of
+[[cite:&krieger2018search;&krieger_chameleon_jcap]], and the current best
+chameleon-photon bound, of
+
+\[
+β_{γ, \text{Krieger}} = \num{5.53e10},
+\]
+
+despite significantly less solar tracking time than in the former (our
+$\SI{160}{h}$ to $\SI{254}{h}$ in [[cite:&krieger2018search]]), thanks to
+the significant improvements in background due to the detector vetoes,
+higher detection efficiency (thinner window), better classifier and
+improved limit calculation method allowing for the inclusion of the
+entire chameleon flux.
+
+#+begin_src subfigure
+(figure ()
+        (subfigure (linewidth 0.5) (caption "$β_γ$ flux") (label "fig:limit:chameleon:flux")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "~/phd/Figs/axions/differential_chameleon_flux.pdf"))
+        (subfigure (linewidth 0.5) (caption "$β_{γ}$ image") (label "fig:limit:chameleon:image")
+                   (includegraphics (list (cons 'width (linewidth 1.0)))
+                                    "~/phd/Figs/raytracing/solar_chameleon_image_0.989AU_1500mm.pdf"))
+        (caption
+         (subref "fig:limit:chameleon:flux")
+         ": Differential chameleon flux arriving on Earth assuming "
+         ($ "β_γ^{\\text{sun}} = \\num{6.46e10}") " and a magnetic field of "
+         ($ "B = " (SI 10 "T")) " in the solar tachocline. "
+         (subref "fig:limit:chameleon:image")
+         ": Chameleon image for chameleon emission in the Sun.")
+        (label "fig:limit:chameleon:flux_image_inputs"))
+#+end_src
+  
+#+CAPTION: $\num{1e4}$ toy limits for the chameleon coupling $β⁴_{γ}$. The expected limit is
+#+CAPTION: determined to $β_{γ, \text{expected}} = \num{3.61e10}$, with the no candidates limit
+#+CAPTION: being $β_{γ, \text{no candidates}} = \num{2.62e10}$.
+#+NAME: fig:limit:chameleon:expected_limit
+[[~/phd/Figs/limit/mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500_chameleon_nmc_10k_pretty.pdf]]
+
+[fn:why_factor] Including the conversion probability from the
+raytracer would ideally mean to include the reflectivities under
+angles encountered for each ray. However, attempts to reproduce the
+effective area as provided by LLNL raytracing simulations have failed
+so far. In order to avoid complications with potential inaccuracies,
+we stick to the previous approach for simplicity and better comparison.
+
+**** TODOs for this section [/]                                 :noexport:
+
+- [ ] *ONE SHORTCOMING* of this calculation is that our effective area
+  is still the axion effective area from the LLNL raytracing
+  simulation. That means we might be slightly overestimating the
+  efficiency, due to slightly larger incoming angles of the
+  chameleons.
+
+  -> Ideally, we could correctly reproduce the effective area to
+  correctly take this into account!
+
+  -> Also note: the effect is very small anyway. The Sun has an
+  angular diameter of about 32 arc minutes. That means the largest
+  possible angles are on the order of 16 arc minutes. Compared to the
+  angles of the telescope mirrors (1° and more), this is not that
+  significant (16 arc minutes = 0.26°).
+
+- [X] For chameleon mainly just need to look at how Christoph sampled
   from the solar radius to compute the axion image in his case. We can
   then plug that into the raytracer.
 
@@ -37639,7 +37997,7 @@ chameleons_and_solar_physics_1405.1581.pdf
 
 polarizations_produced_by_chameleons_PhysRevD.79.044028.pdf
 
-**** Chameleon spectrum                                         :extended:
+**** Chameleon spectrum and plot                                :extended:
 
 We have the chameleon spectrum from Christoph's limit code back in the
 day. The file [[file:resources/chameleon-spectrum.dat]] contains the flux
@@ -37649,6 +38007,40 @@ a magnetic field of 10 T at the solar tachocline, iirc.
 [[file:~/org/Misc/chameleon_spectrum.nim]]
 
 - [ ] Insert flux!
+
+#+begin_src nim :tangle code/generate_chameleon_flux.nim
+import ggplotnim, unchained
+
+# The data file `chameleon-spectrum.dat` contains the spectrum in units of
+# `keV⁻¹•16mm⁻²•h⁻¹` at β_m = β_m^sun = 6.457e10 or 10^10.81.
+# See fig. 11.2 in Christoph's thesis
+defUnit(keV⁻¹•mm⁻²•h⁻¹)
+defUnit(keV⁻¹•cm⁻²•s⁻¹)
+func conversionProbabilityChameleon(B: Tesla, L: Meter): float =
+  const M_pl = sqrt(((hp_bar * c) / G_Newton).toDef(kg²)).toNaturalUnit.to(GeV) / sqrt(8 * π) # reduced Planck mass in natural units
+  const βγsun = pow(10, 10.81)
+  let M_γ = M_pl / βγsun
+  result = (B.toNaturalUnit * L.toNaturalUnit / (2 * M_γ))^2  
+proc convertChameleon(x: float): float =
+  # divide by 16 to get from  /16mm² to /1mm². Input f
+  # idiotic flux has already taken conversion probability into account.
+  let P = conversionProbabilityChameleon(9.0.T, 9.26.m) # used values by Christop!
+  result = (x.keV⁻¹•mm⁻²•h⁻¹ / 16.0 / P).to(keV⁻¹•cm⁻²•s⁻¹).float
+
+let df = readCsv("~/phd/resources/chameleon-spectrum.dat", sep = '\t', header = "#")
+  .mutate(f{"Flux" ~ convertChameleon(idx("I[/16mm2/hour/keV]"))},
+          f{"Energy [keV]" ~ `energy` / 1000.0})
+ggplot(df, aes("Energy [keV]", "Flux")) +
+  geom_line() +
+  ylab(r"Flux [$\si{keV⁻¹.cm⁻².s⁻¹}$]") +
+  margin(left = 4.5) +
+  ggtitle(r"Chameleon flux at $β^{\text{sun}}_γ = \num{6.46e10}$") +
+  themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) +
+  ggsave("~/phd/Figs/axions/differential_chameleon_flux.pdf")
+#+end_src
+
+#+RESULTS:
+
 
 **** Conversion probability                                     :extended:
 
@@ -37832,17 +38224,22 @@ mcmc_limit_calculation \
     --isChameleon \
     --axionImage ~/phd/resources/axionImages/solar_chameleon_image_0.989AU_1500mm.csv \
     --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --couplingKind ck_β⁴ \
     --switchAxes \
     --path "" \
     --years 2017 --years 2018 \
     --σ_p 0.05 \
     --energyMin 0.2 --energyMax 12.0 \
     --limitKind lkMCMC \
-    --couplingKind ck_β⁴ \
-    --outpath ~/org/resources/lhood_limits_chameleon_11_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/ \
+    --outpath ~/org/resources/lhood_limits_chameleon_12_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/ \
     --suffix "" \
     --nmc 10000
 #+end_src
+Expected limit: 3.605996073373334E10
+Limit no candidates: 4.737234852038135E41 ^ 0.25 = 2.62350096896e10
+
+
+***** Initial run with segfault                                :noexport:
 :RESULTS:
 Expected limit: 1.690834101979812e+42
 Generating group /ctx/trackingDf
@@ -37879,7 +38276,74 @@ Ahh, I think I didn't adjust the ~candsInSens~ threshold value.
 
 
 
-*** Note about shape of likelihood in ~g_aγ~ and ~β~ limits      :extended:
+**** Generate plot of expected limit histogram                  :extended:
+
+#+begin_src sh
+ESCAPE_LATEX=true USE_TEX=true mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --axionModel ~/phd/resources/chameleon-spectrum.dat \
+    --isChameleon \
+    --axionImage ~/phd/resources/axionImages/solar_chameleon_image_0.989AU_1500mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --couplingKind ck_β⁴ \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --plotFile ~/org/resources/lhood_limits_chameleon_12_01_24/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99/mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.csv \
+    --xLow 2e41 \
+    --xHigh 4.2e42 \
+    --limitKind lkMCMC \
+    --yHigh 180 \
+    --bins 100 \
+    --linesTo 100 \
+    --xLabel "Limit β⁴" \
+    --yLabel "MC toy count"  \
+    --outpath ~/phd/Figs/limit/ \
+    --suffix "_chameleon_nmc_10k_pretty" \
+    --nmc 10000
+#+end_src
+
+**** Compute the observed limit                                 :extended:
+
+We use ~F_WIDTH=0.5~ for the ~ln(1 + s/b)~ plot. The MCMC g_ae²
+histogram is forced to be 0.9 in width anyway.
+#+begin_src sh 
+F_WIDTH=0.5 ESCAPE_LATEX=true USE_TEX=true mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --tracking ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --tracking ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --axionModel ~/phd/resources/chameleon-spectrum.dat \
+    --isChameleon \
+    --axionImage ~/phd/resources/axionImages/solar_chameleon_image_0.989AU_1500mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --couplingKind ck_β⁴ \
+    --switchAxes \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --limitKind lkMCMC \
+    --outpath ~/phd/Figs/trackingCandidates/chameleon/ \
+    --suffix ""
+#+end_src
+
+The log file:
+[[~/phd/Figs/trackingCandidates/chameleon/real_candidates_limit.log]]
+
+#+begin_src
+[2024-01-13 - 14:38:33] - INFO: Limit g_ae²              = 9.239804638483544e+41
+#+end_src
+(that should read g_aγ⁴, to be updated),
+yields
+$β⁴_γ = \num{9.239804638483544e+41}$, $β_γ = \num{3.10038550078e10}$
+
+
+*** Further note on the difference between axion-electron and axion-photon/chameleon limits :extended:
 
 There is a fundamental difference between computing a limit on the
 axion-electron coupling and computing a limit for either axion-photon
