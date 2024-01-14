@@ -2809,7 +2809,26 @@ in the Sun. For KSVZ-like axion models (models with only $g_{aγ}$) the
 only interaction allowing for axion production in the Sun is the
 Primakoff effect [fn:primakoff_effect] for axions. For DFSZ models
 with an axion-electron coupling $g_{ae}$ multiple other production
-channels are viable. All relevant axion production channels are:
+channels are viable.
+
+One of the first papers to look at the implications of the axion in
+terms of astrophysical phenomena is cite:PhysRevD.18.3605 by
+K. Mikaelian. G. Raffelt expanded on this later in
+cite:raffelt1986astrophysical with calculations for the Compton and
+Bremsstrahlung production rates for DFSZ axion models. In
+cite:raffelt1988plasmon he further calculates the production rate for
+the Primakoff effect (and later reviews the physics
+cite:raffelt1996stars). J. Redondo combined all production processes
+in cite:Redondo_2013 to compute a full solar axion flux based on the
+axion-electron coupling $g_{ae}$ using numerical calculations of the
+expected metallicity contents at different points in the Sun. This is
+done by making use of the opacities for different elements at
+different pressures and temperatures as tabulated by the 'Opacity
+Project'
+cite:team1995opacity,hummer1988equation,seaton1987atomic,seaton1994opacities,badnell2005updated,seaton2005mnras,
+based on the values provided by the numerical AGSS09
+[[cite:&agss09_chemical]] solar model. All these considered axion
+production channels are:
 - ($P$) Primakoff production via $g_{aγ}$ in both KSVZ and
   DFSZ axion models
   \[
@@ -2843,13 +2862,14 @@ Feynman diagrams.
 
 #+CAPTION: Feynman diagrams of all contributing axion production
 #+CAPTION: channels in the Sun for non-hadronic models. In hadronic models only
-#+CAPTION: the Primakoff has meaningful contributions, because axion-electron
+#+CAPTION: the Primakoff interaction has meaningful contributions, because axion-electron
 #+CAPTION: couplings only arise at loop level. Taken from cite:Redondo_2013.
 #+NAME: fig:theory:axion:axion_couplings
 [[~/phd/Figs/axion_prod_channels_javi.pdf]]
 
-With these production channels we can write down the production rate
-per volume in the Sun as the integral
+With these production channels we can write down the expected axion flux
+on Earth, based on the production rate per volume in the Sun as the
+integral
 \begin{equation}
   \frac{d Φ_a}{dω} = \frac{1}{4π R²_{\text{Earth}}}
     \int_{\text{Sun}} \mathrm{d}V\, \frac{4π ω²}{ (2π)³ } Γ_a(ω).
@@ -2862,7 +2882,49 @@ are all contributing axion production channels. The superscripts
 correspond to the bullet points above. Most important without going
 into the details of how each $Γ$ can be expressed, is that they scale
 with the coupling constant squared. $g²_{aγ}$ for $Γ^P_{e}$ and
-$g²_{ae}$ for the others.
+$g²_{ae}$ for the others. In cite:Redondo_2013 these production rates
+are expressed by relating them to the corresponding photon production
+rates for these processes, which are well known.
+
+For a detailed look, see cite:Redondo_2013 and the master thesis of
+Johanna von Oy cite:vonOy_MSc in which she -- among other things --
+reproduced the calculations done by Redondo. Her work is used as part
+of this thesis to compute the axion production as required for the
+expected axion flux in the limit calculation (and provides the data
+for the plots in this section). The code responsible for computing the
+emission rates for different axion models is cite:JvO_axionElectron,
+in particular the ~readOpacityFile~ program. It also uses the Opacity
+Project as the basis to compute the opacities for different elements.
+
+Fig. sref:fig:theory:solar_axion_flux:differential_flux shows the
+differential axion flux arriving on Earth based on the different
+contributing interactions, in this case using $g_{ae} =
+\num{1e-13}, g_{aγ} = \SI{1e-12}{GeV⁻¹}$. We see that the total flux
+(blue line) peaks at roughly $\SI{1}{keV}$, with the small spikes from
+atomic interactions visible. The Primakoff flux has been amplified by
+a factor of $100$ here to make it more visible, as for this choice of
+coupling constants its contribution is negligible.
+
+As a result of the expected extremely low mass of the axion, the
+expected solar axion spectrum for Primakoff only models is essentially
+a blackbody spectrum corresponding to the temperatures near the core
+of the Sun, $\mathcal{O}(\SI{15e6}{K})$, see fig
+sref:fig:theory:solar_axion_flux:blackbody and compare it to the
+Primakoff flux on the left  [fn:blackbody_differences]. Partially for this reason, in many cases
+analytical expressions are given to describe the Primakoff axion flux,
+which are solutions obtained for specific solar models. One such
+recent result is from cite:weighingSolarAxion,
+
+#+NAME: eq:theory:solar_axion_flux:primakoff
+\begin{equation}
+\frac{\dd Φ_a}{\dd E_a} =
+  Φ_{P10} \left( \frac{g_{aγ}}{\SI{1e-10}{GeV⁻¹}} \right)²
+  \frac{E^{2.481}_a}{e^{E_a / \SI{1.205}{keV}}}
+\end{equation}
+where $Φ_{P10} = \SI{6.02e10}{keV⁻¹.cm⁻².s⁻¹}$ and $E_a$ the energy of
+the axion in $\si{keV}$. cite:weighingSolarAxion also contains
+analytic expressions for the Compton and Bremsstrahlungs
+components. For the atomic processes this is not possible.
 
 #+begin_src subfigure
 (figure ()
@@ -2882,57 +2944,6 @@ the $g_{ae}$ contributions dominate. "
          ($ (SI "15e6" "K")) ", roughly the temperature at the solar core. Up to a scaling factor it is essentially the Primakoff flux.")
         (label "fig:theory:solar_axion_flux:flux_blackbody"))
 #+end_src
-
-One of the first papers to look at the implications of the axion in
-terms of astrophysical phenomena is cite:PhysRevD.18.3605 by
-K. Mikaelian. Raffelt expanded on this later in
-cite:raffelt1986astrophysical with calculations for the Compton and
-Bremsstrahlung production rates for DFSZ axion models. In
-cite:raffelt1988plasmon he further calculates the production rate
-for the Primakoff effect (and later reviews the physics
-cite:raffelt1996stars). J. Redondo combined all production processes
-in cite:Redondo_2013 to compute a full solar axion flux based on the
-axion-electron coupling $g_{ae}$ using numerical calculations of the
-expected metallicity contents at different points in the Sun. In
-addition making use of the opacities for different elements at
-different pressures and temperatures as tabulated by the 'Opacity
-Project'
-cite:team1995opacity,hummer1988equation,seaton1987atomic,seaton1994opacities,badnell2005updated,seaton2005mnras. 
-
-As a result of the expected extremely low mass of the axion, the
-expected solar axion spectrum for Primakoff only models is essentially
-a blackbody spectrum corresponding to the temperatures near the core
-of the Sun,
-$\mathcal{O}(\SI{15e6}{K})$. Fig. sref:fig:theory:solar_axion_flux:flux_blackbody
-shows such a blackbody spectrum next to the expected axion
-spectra. [fn:blackbody_differences] Partially for this reason, in many
-cases analytical expressions are given to describe the Primakoff axion
-flux, which are solutions obtained for specific solar models. One such recent
-result is from cite:weighingSolarAxion,
-
-#+NAME: eq:theory:solar_axion_flux:primakoff
-\begin{equation}
-\frac{\dd Φ_a}{\dd E_a} =
-  Φ_{P10} \left( \frac{g_{aγ}}{\SI{1e-10}{GeV⁻¹}} \right)²
-  \frac{E^{2.481}_a}{e^{E_a / \SI{1.205}{keV}}}
-\end{equation}
-where $Φ_{P10} = \SI{6.02e10}{keV⁻¹.cm⁻².s⁻¹}$ and $E_a$ the energy of
-the axion in $\si{keV}$. cite:weighingSolarAxion also contains
-analytic expressions for the Compton and Bremsstrahlungs
-components. For the atomic processes such is not possible.
-
-In cite:Redondo_2013 these production rates are expressed by relating
-them to the corresponding photon production rates for these processes,
-which are well known. For a detailed look at them, see
-cite:Redondo_2013 and the master thesis of Johanna von Oy
-cite:vonOy_MSc in which she -- among other things -- reproduced the
-calculations done by Redondo. Her work is used as part of this thesis
-to compute the axion production as required for the expected axion
-flux in the limit calculation (and provides the data for the plots in
-this section). The code responsible for computing the emission rates
-for different axion models is cite:JvO_axionElectron, in particular
-the ~readOpacityFile~ program. It also uses the Opacity Project as the
-basis to compute the opacities for different elements.
 
 Fig. sref:fig:theory:solar_axion_flux:flux_vs_energy_and_radius shows
 how the solar axion flux (for DFSZ models) depends both on the energy
@@ -2975,7 +2986,7 @@ uncertainty can reach up to $\mathcal{O}(\SI{5}{\%})$. This is an
 important consideration for the systematic uncertainties later on.
 
 [fn:primakoff_effect] The Primakoff effect -- named after Henry
-Primakoff -- is the production of neutral pions in the presence of a
+Primakoff -- is the production of neutral pions in the presence of an
 atomic nucleus. Due to the pseudoscalar nature and coupling to photons
 of both neutral pions and axions the equivalent process is allowed for
 axions.
