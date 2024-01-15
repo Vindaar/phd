@@ -24,6 +24,5 @@ ggplot(df, aes("Energy [keV]", "Flux")) +
   ylab(r"Flux [$\si{keV⁻¹.cm⁻².s⁻¹}$]") +
   margin(left = 4.5) +
   ggtitle(r"Chameleon flux at $β^{\text{sun}}_γ = \num{6.46e10}$") +
-  #xlim(0.0, 15.0) + 
   themeLatex(fWidth = 0.5, width = 600, baseTheme = sideBySide) +
   ggsave("~/phd/Figs/axions/differential_chameleon_flux.pdf")
