@@ -12970,7 +12970,7 @@ found at *CITE*
 
 - [ ] *ADD REFERENCE TO CODE* https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/fadc_helpers.nim
 
-*** Signal baseline, rise time and fall time                     :analysis:
+*** Signal baseline, rise time and fall time
 :PROPERTIES:
 :CUSTOM_ID: sec:fadc:definition_baseline_rise_fall_time
 :END:
@@ -30045,9 +30045,8 @@ what the individual pieces are and how likelihood values are computed
 such a likelihood function,
 sec. [[#sec:limit:method_computing_a_limit]]. Then we introduce our
 approach to compute an expected limit by sampling toy
-candidates [fn:toys], sec. [[#sec:limit:method_expected_limit]]. 
-
-After this we will extend our approach in sec. [[#sec:limit:method_systematics]]
+candidates [fn:toys], sec. [[#sec:limit:method_expected_limit]]. After
+this we will extend our approach in sec. [[#sec:limit:method_systematics]]
 to include systematic uncertainties. Due to added complexity in
 evaluating the thus produced likelihood function, we discuss our
 Markov Chain Monte Carlo (MCMC) approach to evaluate the likelihood
@@ -30236,7 +30235,7 @@ in mind when we talk about 'limits'.
   the parameter of the likelihood function is the mean $λ$ and not the
   recorded data $k$! The likelihood function describes the likelihood
   for a *fixed set of data* (our real measured counts) for different
-  parameters (our signal & background models - where the background
+  parameters (our signal & background models, where the background
   model is constant as well).
 
   In addition, the method described in the next section is valid under
@@ -30246,7 +30245,7 @@ in mind when we talk about 'limits'.
 
 # - [ ] Why do we use the likelihood ratio that we use?
 
-** Limit method - likelihood function
+** Limit method - likelihood function $\mathcal{L}$
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:method_likelihood
 :END:
@@ -30318,7 +30317,7 @@ to get a combined likelihood to compute a limit for.
   $c_i$ measured counts in each channel and $s_i$ expected signal
   events and $b_i$ expected background events in that channel.
 
-  As mentioned previously though the choice of what a channel is, is
+  As mentioned previously though, the choice of what a channel is, is
   completely up to us! One such choice might be binning the candidates
   in energy. However, there is one choice that is particularly simple
   and is often referred to as the "unbinned likelihood". Namely, we
@@ -30409,17 +30408,17 @@ the candidate has we are currently looking at (e.g. $E_i$ is the energy
 of the recorded candidate $i$ used to compute the expected signal).
 #+NAME: eq:limit_method_signal_si
 \begin{equation}
-s_i(g) = f(g, E_i) · A · t · P_{a \rightarrow γ}(g_{aγ}) · ε(E_i) · r(x_i, y_i)
+s_i(g²) = f(g², E_i) · A · t · P_{a \rightarrow γ}(g²_{aγ}) · ε(E_i) · r(x_i, y_i)
 \end{equation}
 where:
 - $f(g, E_i)$ is the axion flux at energy $E_i$ in units of
-  $\si{keV^{-1}.cm^{-2}.s^{-1}}$ as a function of $g$, sec. [[#sec:limit:ingredients:solar_axion_flux]],
+  $\si{keV^{-1}.cm^{-2}.s^{-1}}$ as a function of $g²$, sec. [[#sec:limit:ingredients:solar_axion_flux]],
 - $A$ is the area of the magnet bore in $\si{cm²}$, sec. [[#sec:limit:ingredients:magnet_tracking]],
 - $t$ is the tracking time in $\si{s}$, also sec. [[#sec:limit:ingredients:magnet_tracking]],
 - $P_{a \rightarrow γ}$ is the conversion probability of the axion
   converting into a photon computed via
   \[
-  P_{a \rightarrow γ}(g_{aγ}) = \left( \frac{g_{aγ} B L}{2} \right)²
+  P_{a \rightarrow γ}(g²_{aγ}) = \left( \frac{g_{aγ} B L}{2} \right)²
   \]
   written in /natural units/ (meaning we need to convert $B$ and $L$
   into values expressed in powers of $\si{eV}$, as discussed in sec. [[#sec:theory:axion_interactions]]),
@@ -30434,11 +30433,11 @@ where:
   raytracing model). It should be expressed as a fractional value in
   units of $\si{cm^{-2}}$. See sec. [[#sec:limit:ingredients:raytracing]].
 As a result the units of $s_i$ are then given in
-$\si{keV^{-1}.cm^{-2}}$ with the tracking time integrated out.
-If one computes a limit for $g_{aγ}$ then $f$ and $P$ both depend on
-the coupling of interest. In case of e.g. an axion-electron coupling
-limit $g_{ae}$ the conversion probability can be treated as constant
-(with a fixed $g_{aγ}$).
+$\si{keV^{-1}.cm^{-2}}$ with the tracking time integrated out.  If one
+computes a limit for $g_{aγ}$ then $f$ and $P$ both depend on the
+coupling of interest, making $s_i$ a function of $g⁴_{aγ}$. In case of
+e.g. an axion-electron coupling limit $g_{ae}$, the conversion
+probability can be treated as constant (with a fixed $g_{aγ}$).
 
 Secondly, the background hypothesis $b_i$ for each channel. Its value
 depends on whether we assume a constant background model, an energy
@@ -30477,14 +30476,15 @@ With the above we are now able to evaluate $\mathcal{L}$ for a set of
 candidates ${c_i(E_i, x_i, y_i)}$. As mentioned before it is
 important to realize that $\mathcal{L}$ is a function of the coupling constant
 $g$, $\mathcal{L}(g)$ with all other parameters effectively constant in the
-context of "one experiment".
+context of "one experiment". $g$ is a placeholder for the parameter,
+in which $\mathcal{L}$ is linear, i.e. $g²_{ae}$ for axion-electron or
+$g⁴_{aγ}$ and $β⁴_γ$ for axion-photon and chameleon, respectively.
 
 With this in mind the 'limit' is defined as the 95-th percentile of
 $\mathcal{L}(g)$ /within the physical region of $g$/. The region $g < 0$ is
 explicitly ignored, as a coupling constant cannot be negative! This
 can be rigorously justified in Bayesian statistics by saying the
-prior $π(g)$ is 0 for $g < 0$. In practice one might even work with
-$g²$ or $g⁴$, but the same idea holds.
+prior $π(g)$ is 0 for $g < 0$. 
 
 We can define the limit implicitly as [fn:note_α]
 #+NAME: eq:limit_method:limit_def
@@ -30529,6 +30529,11 @@ integration range.
   -> Use the binned example limit code to produce it.
   -> Done.
 
+#+begin_quote
+In practice one might even work with $g²$ or $g⁴$, but the same idea
+holds.
+#+end_quote
+
 
 *** Implementing a basic limit calculation method [/]            :extended:
 
@@ -30553,22 +30558,22 @@ const totalTime = 100.0.h # 100 of "tracking time"
 const totalArea = 10.cm² # assume 10 cm² area (magnet bore and chip! This case has no telescope)
 defUnit(cm⁻²•s⁻¹)
 
-proc flux(g: float): cm⁻²•s⁻¹ =
+proc flux(g²: float): cm⁻²•s⁻¹ =
   ## Dummy flux. Just the coupling constant squared · 1e-6
-  result = 1e-6 * (g*g).cm⁻²•s⁻¹
+  result = 1e-6 * (g²).cm⁻²•s⁻¹
 
-proc totalFlux(g: float): float =
+proc totalFlux(g²: float): float =
   ## Flux integrated to total time and area
-  result = flux(g) * totalTime.to(Second) * totalArea
+  result = flux(g²) * totalTime.to(Second) * totalArea
 
 ## Assume signal and background in counts of the single channel!
 ## (Yes, `signal` is the same as `totalFlux` in this case)
-proc signal(g: float): float = flux(g) * totalTime * totalArea ## Signal only depends on coupling in this simple model
+proc signal(g²: float): float = flux(g²) * totalTime * totalArea ## Signal only depends on coupling in this simple model
 proc background(): float = 1e-6.cm⁻²•s⁻¹ * totalTime * totalArea ## Single channel, i.e. constant background
   
-proc likelihood(g: float, cs: int): float = ## `cs` = number of candidates in the single channel
-  result = exp(-totalFlux(g)) # `e^{-s_tot}`
-  result *= pow(1 + signal(g) / background(), cs.float)
+proc likelihood(g²: float, cs: int): float = ## `cs` = number of candidates in the single channel
+  result = exp(-totalFlux(g²)) # `e^{-s_tot}`
+  result *= pow(1 + signal(g²) / background(), cs.float)
 
 proc poisson(k: int, λ: float): float = λ^k * exp(-λ) / (fac(k))
 
@@ -30608,7 +30613,36 @@ ggplot(df, aes("xs", "ys")) +
 Background counts = 3.6. Probabilty to measure 4 counts given background: 0.1912223391751322
 equal to signal counts at g = 1: 3.6
 Likelihood at g = 1 for 4 candidates = 0.4371795591566811
-Limit at : 1.12121212121212
+Limit at : 1.666666666666665
+DataFrame with 2 columns and 45 rows:
+     Idx           xs           ys
+  dtype:        float        float
+       0        1.667       0.1253
+       1        1.697       0.1176
+       2        1.727       0.1103
+       3        1.758       0.1033
+       4        1.788      0.09679
+       5        1.818      0.09062
+       6        1.848      0.08481
+       7        1.879      0.07933
+       8        1.909      0.07417
+       9        1.939      0.06932
+      10         1.97      0.06476
+      11            2      0.06047
+      12         2.03      0.05645
+      13        2.061      0.05267
+      14        2.091      0.04912
+      15        2.121       0.0458
+      16        2.152      0.04268
+      17        2.182      0.03977
+      18        2.212      0.03703
+      19        2.242      0.03448
+
+[INFO]: No plot ratio given, using golden ratio.
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory /home/basti/phd/Figs/limit /home/basti/phd/Figs/limit/simple_likelihood_limit_example.tex
+Generated: /home/basti/phd/Figs/limit/simple_likelihood_limit_example.pdf
 :end:
 
 More realistic implementation, above plus:
@@ -30724,13 +30758,11 @@ Limit at : 6.44645e-11 GeV⁻¹
 :CUSTOM_ID: sec:limit:method_expected_limit
 :END:
 
-Assuming a constant background over some chip area with only an
-energy dependence, the background hypothesis can be used to draw toy
+Assuming a constant background over some chip area with only an energy
+dependence, the background hypothesis can be used to draw toy
 candidates that can be used in place for the real candidates to
-compute limits.
-
-In this situation the background hypothesis can be modeled as
-follows:
+compute limits. In this situation the background hypothesis can be
+modeled as follows:
 
 \[
 B = \{ P_{\text{Pois}}(k; λ = b_i) \: | \: \text{for all energy bins } E_i \},
@@ -30808,14 +30840,13 @@ in our case, signal, background, and two position uncertainties). Each
 adds an additional parameter, a 'nuisance parameter'.
 
 To illustrate the details, let's look at the case of adding a single
-nuisance parameter. In particular we'll look at the nuisance
-parameter for the signal as it requires more care.
-
-The idea is to express our uncertainty of a parameter -- in this case
-the signal -- by introducing an additional parameter $s_i'$. In
-contrast to $s_i$ it describes a possible _other_ value of $s_i$ due
-to our systematic uncertainty. For simplicity we rewrite our
-likelihood $\mathcal{L}$ as $\mathcal{L}'(s_i, s_i', b_i)$:
+nuisance parameter. In particular we'll look at the nuisance parameter
+for the signal as it requires more care. The idea is to express our
+uncertainty of a parameter -- in this case the signal -- by
+introducing an additional parameter $s_i'$. In contrast to $s_i$ it
+describes a possible _other_ value of $s_i$ due to our systematic
+uncertainty. For simplicity we rewrite our likelihood $\mathcal{L}$ as
+$\mathcal{L}'(s_i, s_i', b_i)$:
 
 \[
 \mathcal{L}' = e^{-s'_\text{tot}} \prod_i \left(1 + \frac{s_i'}{b_i}\right) · \exp\left[-\frac{1}{2} \left(\frac{s_i' - s_i}{σ_s'}\right)² \right]
@@ -30873,13 +30904,11 @@ but the $x$ and $y$ coordinates are treated separately.
 
 As shown in eq. [[eq:limit_method_signal_si]] the signal $s_i$ actually
 depends on the positions $(x_i, y_i)$ of each candidate via the
-raytracing image $r$.
-
-With this we can introduce the nuisance parameters by replacing $r$
-by an $r'$ such that \[ r' ↦ r(x_i - x'_i, y_i - y'_i) \] which
-effectively moves the center position by $(x'_i, y'_i)$. In addition
-we need to add penalty terms for each of these introduced
-parameters:
+raytracing image $r$. With this we can introduce the nuisance
+parameters by replacing $r$ by an $r'$ such that \[ r' ↦ r(x_i - x'_i,
+y_i - y'_i) \] which effectively moves the center position by $(x'_i,
+y'_i)$. In addition we need to add penalty terms for each of these
+introduced parameters:
 
 \[
 \mathcal{L}' = \exp[-s] \cdot \prod_i \left(1 + \frac{s'_i}{b_i}\right) \cdot
@@ -30899,8 +30928,8 @@ The substitution for $r'$ means the following for the parameters:
 \[
 r' = r\left(x (1 + ϑ_x), y (1 + ϑ_y)\right)
 \]
-where essentially a deviation of $|ϑ| = 1$ means we move the spot
-to the edge of the chip.
+where essentially a deviation of $|ϑ| = 1$ means we move the center of
+the axion image to the edge of the chip.
 
 Putting all these four nuisance parameters together we have
 
@@ -30926,8 +30955,8 @@ fig. sref:fig:limit:method_systematics:example_theta_0.6 shows how the
 axion image moves when $ϑ_{x,y}$ change, in this example $ϑ_{x,y} =
 0.6$ moves the image center to the bottom left ($ϑ_{x,y} = 1$ would
 move the center into the corner). Note that the window strongback is
-not tied to the axion image, but remains
-fixed. Fig. sref:fig:limit:method_systematics:example_sigma_0.05 and
+not tied to the axion image, but remains fixed (the cut out diagonal
+lines). Fig. sref:fig:limit:method_systematics:example_sigma_0.05 and
 sref:fig:limit:method_systematics:example_sigma_0.25 show the impact
 of the nuisance parameters on the likelihood space. The larger the
 standard deviation $σ_{x,y}$ is, the more of the $ϑ_{x,y}$ space
@@ -31098,7 +31127,7 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
 
   Using standard numerical integration routines (simpson, adaptive
   Gauss-Kronrod etc.) are all too expensive to compute such a
-  four-fold integration under the context of computing many limits for
+  four-fold integration under the context of computing many toy limits for
   an expected limit. For this reason Monte Carlo approaches are used,
   in particular the Metropolis-Hastings
   cite:metropolis53_mcmc,hastings70_mcmc (MH) Markov Chain Monte Carlo
@@ -31116,7 +31145,7 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
 
   Pick a random point in the integration space as a starting
   point $p_0$. Next, pick another random point $p_1$ within the vicinity of
-  $p_0$. If the function evaluates to a larger value at $p_1$, accept
+  $p_0$. If the function $f$ evaluates to a larger value at $p_1$, accept
   it as the new current position. If it is smaller, accept it with a
   probability of $\frac{f(p_i)}{f(p_{i-1})}$ (i.e. if the new
   value is close to the old one we accept it with a high probability
@@ -31131,14 +31160,15 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
   regions. This needs to be taken into account.
 
   If a new point is accepted and becomes the current position, the
-  "chain" of points is extended (hence "Markov Chain"). By creating a
-  chain of reasonable length the integration space is sampled
-  well. Because the initial point is completely random (up to some
-  possible prior) the first $N$ links of the chain are in a region of
-  low interest (and depending on the interpretation of the chain
-  "wrong"). For that reason one defines a cutoff $N_b$ of the first
-  elements that are thrown away as "burn-in" before using the chain to
-  evaluate the integral or parameters.
+  "chain" of points is extended (hence "Markov Chain"). If a point is
+  rejected, extend the chain by duplicating the last point. By
+  creating a chain of reasonable length, the integration space is
+  sampled well. Because the initial point is completely random (up to
+  some possible prior) the first $N$ links of the chain are in a
+  region of low interest (and depending on the interpretation of the
+  chain "wrong"). For that reason one defines a cutoff $N_b$ of the
+  first elements that are thrown away as "burn-in" before using the
+  chain to evaluate the integral or parameters.
 
   In addition it can be valuable to not only start a single Markov
   Chain from one random point, but instead start /multiple/ chains
@@ -31155,8 +31185,8 @@ case without nuisance parameters once $\mathcal{L}'_M(g)$ is defined as such.
   3. sample from random uniform in $[0, 1]$: $u$,
   4. accept $\vec{p}'$ if $u < \frac{f(\vec{p}')}{f(\vec{p})}$, add
     $\vec{p}'$ to chain and iterate (if $f(\vec{p}') > f(\vec{p})$ every
-     new link accepted!),
-  5. long enough chain samples integration space well,
+     new link accepted!). If rejected, add $\vec{p}$ again,
+  5. generate a long enough chain to sample the integration space well,
   6. throw away first N elements as "burn in",
   7. generate multiple chains to be less dependent on starting position.
 
@@ -31506,7 +31536,7 @@ where the 0.95 is, due to normalization, simply the requirement of a
 With this out of the way I implemented this into the limit calculation
 code as the =lkBayesScan= limit.
 
-** Likelihood ingredients in detail [/]
+** Likelihood ingredients in detail
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:ingredients
 :END:
@@ -31524,22 +31554,24 @@ written as
      -\frac{ϑ_s²}{2 σ_s²}
      -\frac{ϑ_x²}{2σ_x²}
      -\frac{ϑ_y²}{2 σ_y²}
-     \right] \, \dd ϑ_b \dd ϑ_s \dd ϑ_x \dd ϑ_y.
+     \right] \, \dd ϑ_b \dd ϑ_s \dd ϑ_x \dd ϑ_y,
 \]
 
-We alluded to the general make up of both the signal terms
-$s_{\text{tot}}$ and $s_i$ as well as the background $b_i$ in
-sec. [[#sec:limit:method_computing_L]]. Let us now look at what goes into
-each of these explicitly and how they are calculated, starting with each
-of the signal contributions in
+where $i$ runs over all candidates. We alluded to the general make up
+of both the signal terms $s_{\text{tot}}$ and $s_i$ as well as the
+background $b_i$ in sec. [[#sec:limit:method_computing_L]]. Let us now
+look at what goes into each of these explicitly and how they are
+calculated, starting with each of the signal contributions in
 
 \[
-s_i(g) = f(g, E_i) · A · t · P_{a \rightarrow γ}(g_{aγ}) · ε(E_i) · r(x_i, y_i),
+s_i(g²_{ae}) = f(g²_{ae}, E_i) · A · t · P_{a \rightarrow γ}(g²_{aγ}) · ε(E_i) · r(x_i, y_i),
 \]
 
 sec. [[#sec:limit:ingredients:magnet_tracking]] to
 sec. [[#sec:limit:ingredients:total_signal]] and the background in
-sec. [[#sec:limit:ingredients:background]]. 
+sec. [[#sec:limit:ingredients:background]]. Finally,
+sec. [[#sec:limit:ingredients:candidates]] explains how we sample toy
+candidate sets.
 
 *** TODOs for this section [/]                                   :noexport:
 
@@ -31660,23 +31692,23 @@ tracking time is
 t = \SI{160.38}{h}.
 \]
 
-*** Solar axion flux - $f(g, E_i)$ [0/3]
+*** Solar axion flux - $f(g, E_i)$ 
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:ingredients:solar_axion_flux
 :END:
 
 The solar axion flux is based on the calculations by J. Redondo
 cite:Redondo_2013 as already introduced in
-sec. [[#sec:theory:solar_axion_flux]]. The $f(g, E_i)$ term of the signal
+sec. [[#sec:theory:solar_axion_flux]]. The $f(g², E_i)$ term of the signal
 refers to the differential solar axion flux. The flux,
 fig. sref:fig:limit:ingredients:solar_axion_flux, is computed for a
 specific axion model and coupling constant, in this case
 $g_{\text{ref}} = g_{ae} = \num{1e-13}$ and $g_{aγ} =
 \SI{1e-12}{GeV^{-1}}$. As the flux scales by the coupling constant
-squared, it is rescaled to a coupling constant $g$ by
+squared, it is rescaled to a new coupling constant $g²_{ae}$ by
 
 \[
-f(g, E_i) = f(g_{\text{ref}}, E_i) · \frac{g²}{g²_{\text{ref}, ae}}.
+f(g²_{ae}, E_i) = f(g²_{ae, \text{ref}}, E_i) · \frac{g²_{ae}}{g²_{\text{ref}, ae}}.
 \]
 
 $g_{aγ}$ is kept constant. At this ratio of the two coupling
@@ -31687,7 +31719,7 @@ $d_{S⇔E} = \SI{0.989}{AU}$ due to the times of the year in which solar
 trackings were taken at
 CAST. Fig. [[sref:fig:limit:ingredients:distance_sun_earth]] shows the distance
 between Sun and Earth during the entire data taking period, with the
-solar trackings marked in purple. The data for the distance is
+solar trackings marked in green. The data for the distance is
 obtained using the JPL Horizons API [[cite:&jplHorizons]].
 
 The code used to calculate the differential flux,
@@ -31903,7 +31935,7 @@ ggplot(df, aes("Timestamp", "delta", color = "Type")) +
 | INFO:    | The      | integer  | column    | `Timestamp` | has                |                  been | automatically | determined | to | be | continuous. | To | overwrite | this | behavior | add | a | `+ | scale_x/y_discrete()` | call | to | the | plotting | chain. | Choose | `x` | or | `y` | depending | on | which | axis | this | column | refers | to. | Or | apply | a | `factor` | to | the | column | name | in | the | `aes` | call, | i.e. | `aes(..., | factor("Timestamp"), | ...)`. |
 
 
-*** Conversion probability - $P_{aγ}(g_{aγ})$
+*** Conversion probability - $P_{aγ}(g²_{aγ})$
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:ingredients:conversion_probability
 :END:
@@ -31911,13 +31943,12 @@ ggplot(df, aes("Timestamp", "delta", color = "Type")) +
 The conversion probability of the arriving axions is simply a constant
 factor, depending on $g_{aγ}$, see section
 [[#sec:theory:axion_interactions]] for the derivation from the general
-formula.
-
-The simplified expression for coherent conversion [fn:incoherent] in a constant
-magnetic field [fn:inhomogeneous_fields] is
+formula. The simplified expression for coherent
+conversion [fn:incoherent] in a constant magnetic
+field [fn:inhomogeneous_fields] is
 
 \[
-P(g_{aγ}, B, L) = \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2
+P(g²_{aγ}, B, L) = \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2
 \]
 where the relevant numbers for the CAST magnet are:
 
@@ -31935,9 +31966,9 @@ above $\SI{13000}{A}$).
 Assuming a fixed axion-photon coupling of $g_{aγ} =
 \SI{1e-12}{GeV^{-1}}$ the conversion probability comes out to:
 \begin{align*}
-P(g_{aγ}, B, L) &= \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2 \\
-               &= \left(\frac{\SI{1e-12}{GeV^{-1}} \cdot \SI{1719.1}{eV^2} \cdot \SI{4.693e7}{eV^{-1}}}{2}\right)^2 \\
-               &= \num{1.627e-21}
+P(g²_{aγ}, B, L) &= \left(\frac{g_{aγ} \cdot B \cdot L}{2}\right)^2 \\
+                &= \left(\frac{\SI{1e-12}{GeV^{-1}} \cdot \SI{1719.1}{eV^2} \cdot \SI{4.693e7}{eV^{-1}}}{2}\right)^2 \\
+                &= \num{1.627e-21}
 \end{align*}
 
 [fn:incoherent] Note that to calculate limits for larger axion masses
@@ -31947,7 +31978,7 @@ eq. [[eq:theory:axion_interaction:conversion_probability]] needs to be included.
 [fn:inhomogeneous_fields] Also note that in a perfect analysis one would
 compute the conversion in a realistic magnetic field, as the field
 strength is not perfectly homogeneous. That would require a very
-precise field map of the magnet. In addition the calculations for
+precise field map of the magnet. In addition, the calculations for
 axion conversions in inhomogeneous magnetic fields is significantly
 more complicated. As far as I understand it requires essentially a
 "path integral like" approach of all possible paths through the
@@ -32029,7 +32060,7 @@ echo "P(SI)      = ", ε0 * (hp / (2*π)) * (c^3) * (1e-12.GeV⁻¹ * 8.8.T * 9.
 As we can see, both approaches yield the same numbers, meaning the
 additional conversion factors are correct.
 
-*** Detection efficiency - $ε(E_i)$ [/]
+*** Detection efficiency - $ε(E_i)$
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:ingredients:detection_eff
 :END:
@@ -32062,13 +32093,12 @@ X-rays transmitted. The effective transmission of an X-ray telescope
 is significantly lower than in the optical range. This is typically
 quoted using the term "effective area". In section
 [[#sec:helioscopes:cast:xray_optics]] the effective area of the two X-ray
-optics used at CAST is shown. 
-
-The term effective area refers to the equivalent area a perfect X-ray
-telescope ($\SI{100}{\%}$ transmission) would cover. As such, the real
-efficiency $ε_{\text{tel}}$ can be computed by the ratio of the
-effective area $A_{\text{eff}}$ and the total area of the optic
-$A_{\text{tel}}$ exposed to light.
+optics used at CAST is shown. The term effective area refers to the
+equivalent area a perfect X-ray telescope ($\SI{100}{\%}$
+transmission) would cover. As such, the real efficiency
+$ε_{\text{tel}}$ can be computed by the ratio of the effective area
+$A_{\text{eff}}$ and the total area of the optic $A_{\text{tel}}$
+exposed to light.
 
 \[
 ε_{\text{tel}}(E) = \frac{A_{\text{eff}}(E)}{A_{\text{tel}}}
@@ -32088,10 +32118,10 @@ together with the window transmission and gas absorption.
 #+begin_quote
 Note: all publicly available effective areas for the LLNL telescope,
 meaning [[cite:&anders_phd]] and [[cite:&llnl_telescope_first_cast_results]],
-are inapplicable or wrong. Jaime Ruz sent me the simulation results
-used for the CAST Nature paper [[cite:&cast_nature]], which include the
-effective area. These numbers are used in the figure below and our
-limit calculation.
+are either inapplicable, outdated or unfortunately wrong. Jaime Ruz
+sent me the simulation results used for the CAST Nature paper
+[[cite:&cast_nature]], which include the effective area. These numbers are
+used in the figure below and our limit calculation.
 #+end_quote
 
 [fn:eff_area_reflectivity] Note that $ε_{\text{tel}}$ here is the average effective
@@ -32471,22 +32501,22 @@ the telescope.
 Therefore we compute $s_{\text{tot}}$ via
 
 \[
-s_{\text{tot}} = ∫_0^{E_{\text{max}}} f(g, E) · A · t · P_{a ↦ γ}(g_{aγ}) · ε(E) \, \dd E,
+s_{\text{tot}}(g²_{ae}) = ∫_0^{E_{\text{max}}} f(g²_{ae}, E) · A · t · P_{a ↦ γ}(g²_{aγ}) · ε(E) \, \dd E,
 \]
 
 making use of the fact that the position dependent function $r(x, y)$
 integrates to $\num{1}$  over the entire axion image. This allows us
 to precompute the integral and only rescale the result for the current
-coupling constant $g$ via
+coupling constant $g²_{ae}$ via
 
 \[
-s_{\text{tot}}(g) = s_{\text{tot}}(g_{\text{ref}}) · \frac{g²}{g²_{\text{ref}, ae}},
+s_{\text{tot}}(g²_{ae}) = s_{\text{tot}}(g²_{ae,\text{ref}}) · \frac{g²_{ae}}{g²_{ae, \text{ref}}},
 \]
 
-where $g_{\text{ref}}$ is the reference coupling constant for which
+where $g²_{ae, \text{ref}}$ is the reference coupling constant for which
 the integral is computed initially. Similar rescaling needs to be done
-for the axion-photon coupling $g_{aγ}$, in case of computing a limit
-for the axion-photon coupling.
+for the axion-photon coupling or chameleon coupling, when computing a
+limit for either.
 
 **** TODOs for this section [0/1]                               :noexport:
 
@@ -32514,7 +32544,7 @@ proc totalSignal(ctx: Context): UnitLess =
   result = integral.cm⁻²•s⁻¹ * areaBore * ctx.totalTrackingTime.to(s) * conversionProbability(ctx)
 #+end_src
 
-*** Background [0/6]
+*** Background
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:ingredients:background
 :END:
@@ -32547,14 +32577,15 @@ The intensity $I$ is given by
 
 \[
 I(\mathbf{x}) = \sum_{b ∈ \{ \mathcal{D}(\mathbf{x}_b, \mathbf{x}) \leq R \}}\mathcal{M}(\mathbf{x}_b, \mathbf{x})
-  = \sum_{b ∈ \{ \mathcal{D}(\mathbf{x}_b, \mathbf{x}) \leq R \} } \exp \left[ -\frac{1}{2} \mathcal{D}² / σ² \right] \text{ for clarity w/o arguments},
+  = \sum_{b ∈ \{ \mathcal{D}(\mathbf{x}_b, \mathbf{x}) \leq R \} } \exp \left[ -\frac{1}{2} \mathcal{D}² / σ² \right], 
 \]
 
 where we introduce $\mathcal{M}$ to refer to a normal
-distribution-like measure and $\mathcal{D}$ to a custom metric. All
-background clusters $\mathbf{x}_b$ within some 'radius' $R$ contribute
-to the intensity $I$, weighted by their distance to the point of
-interest $\mathbf{x}$. The metric is given by
+distribution-like measure and $\mathcal{D}$ to a custom metric (for
+clarity without arguments). All background clusters $\mathbf{x}_b$
+within some 'radius' $R$ contribute to the intensity $I$, weighted by
+their distance to the point of interest $\mathbf{x}$. The metric is
+given by
 
 \begin{equation*}
 \mathcal{D}( \mathbf{x}_1, \mathbf{x}_2) =
@@ -33743,13 +33774,13 @@ In particular this is visible in the artificial high statistics case,
 where the mean value of the error is comparable to the width of the
 =value= histogram.
 
-*** Candidates [/]
+*** Candidates
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:ingredients:candidates
 :END:
 
 Finally, the candidates are the X-ray like clusters remaining after
-the background rejection algorithm has been applied for the data taken
+the background rejection algorithm has been applied to the data taken
 during the solar tracking. For the computation of the expected limit,
 the set of candidates is drawn from the background rate distribution
 via sampling from a Poisson distribution with the mean of the
@@ -33819,7 +33850,7 @@ F_WIDTH=0.5 DEBUG_TEX=true ESCAPE_LATEX=true USE_TEX=true \
 :CUSTOM_ID: sec:limit:systematics
 :END:
 
-As explained previously in sec. [[#sec:limit:method_systematics]] we
+As explained previously in sec. [[#sec:limit:method_systematics]], we
 introduce 4 different nuisance parameters to handle systematics. These
 are split by those impacting the signal, the background and each
 position axis independently.
@@ -35879,7 +35910,7 @@ value for a set of parameters ($g_{ae}²$, and the $θ$ values).
 From here either integrate out $θ$ manually, or sample via MCMC. Goes
 straight to next section.  
 
-** MCMC to sample the distribution and compute a limit [0/0]
+** MCMC to sample the distribution and compute a limit
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:mcmc_calc_limit
 :END:
@@ -35895,7 +35926,9 @@ starting parameters. Ideally, one would construct even more chains,
 but a certain number of steps from the starting parameter are usually
 needed to get into the parameter space of large contributions to the
 integral (unless the starting parameters are chosen in a very confined
-region, which itself is problematic in terms of bias).
+region, which itself is problematic in terms of bias). These are
+removed as the 'burn in' and make the number of chains and links in
+each chain a trade off.
 
 The MCMC is built based on 5 dimensional vectors $\vec{x}$,
 
@@ -35906,8 +35939,11 @@ The MCMC is built based on 5 dimensional vectors $\vec{x}$,
 containing the coupling constant of interest squared as the first
 entry and the four nuisance parameters after. Here we mention the
 axion-electron coupling constant $g²_{ae}$, but generally it can also
-be for example $g_{aγ}²$ or $g_{ae}²·g_{aγ}²$, depending on the search
-to be conducted.
+be for example $g_{ae}²·g_{aγ}²$ (equivalent to $g²_{ae}$!), $g⁴_{aγ}$
+or $β⁴_γ$, depending on the search to be conducted. The important
+point is that the parameter is used, under which the likelihood
+function is /linear/, as we otherwise bias our sampling (see the
+extended thesis for a longer explanation).
 
 Our initial starting vector $\vec{x_i}$  is randomly sampled by
 
@@ -36096,7 +36132,7 @@ mcmc_limit_calculation sanity \
                        --rombergIntegrationDepth 3
 #+end_src
 
-*** Notes and thoughts about the coupling as MCMC element       
+*** Notes and thoughts about the coupling as MCMC element        :extended:   
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:mcmc:notes_variation_coupling_parameter
 :END:
@@ -36183,7 +36219,7 @@ employed in binned likelihood approaches is the so called 'Asimov
 dataset'. The idea is to compute the limit based on the dataset, which
 matches exactly the expectation value for each Poisson in each
 bin. This has the tremendous computational advantage of providing an
-expected limit by only computing the limit for a *single* toy
+expected limit by only computing the limit for a /single, very special/
 candidate set. Unfortunately, for an unbinned approach this is less
 straightforward, because there is no explicit mean of expectation
 values anymore. On the other hand, the Asimov dataset calculation does
@@ -36191,19 +36227,21 @@ not provide information about the possible spread of all limits due to
 the statistical variation possible in toy candidate sets. 
 
 In our case then, we fall back to computing an expected limit based on
-toy candidate sets that we draw from a discretized, grid version of the background
-interpolation, as explained in sec. [[#sec:limit:ingredients:candidates]].
+toy candidate sets (sec. [[#sec:limit:method_expected_limit]]) that we
+draw from a discretized, grid version of the background interpolation,
+as explained in sec. [[#sec:limit:ingredients:candidates]].
 
-We compute expected limits for different parameters, due to the signal
-efficiency penalties that these imply. In a first rough 'scan' we
-compute expected limits based on a smaller number of toy
-candidates. The exact number depends on the particular setup.
+We compute expected limits for different possible combinations of
+classifier and detector vetoes, due to the signal efficiency penalties
+that these imply. In a first rough 'scan' we compute expected limits
+based on a smaller number of toy candidates. The exact number depends
+on the particular setup.
 
 - $\num{1000}$ toys for setups using only a classifier without any
   vetoes. Due to the much more background towards the corners (see
   sec. [[#sec:background:all_vetoes_combined]]), many more candidates are
   sampled making computation significantly slower
-- $\num{2500}$ toys for setups with the line and septem veto. Much
+- $\num{2500}$ toys for setups with the line or septem veto. Much
   fewer total expected number of candidates, and hence much faster.
 
 Then we narrow it down and compute $\num{15000}$ toy limits for the
@@ -36318,24 +36356,24 @@ based on the $\num{50 000}$ toy limits.
 
 The distribution of all toy limits for this best setup can be seen in
 fig. [[fig:limit:expected_limits:toy_limit_histogram]]. It shows both the
-limit for the case without any candidates (red line, equivalent to
-'No signal' in the table above) as well as the expected limit
-(blue line). Depending on the number of candidates that are inside the
+limit for the case without any candidates (red line, equivalent to 'No
+signal' in the table above) as well as the expected limit (blue
+line). Depending on the number of candidates that are inside the
 signal sensitive region (in regions of the solar axion image with
-significant flux expectation) based on $\ln(1 + s_i/b_i) > 0.5$, the
-limits are split into histograms of different colors. Based on the
-location of these histograms and the expected limit, the most likely
-case for the real candidates seems to be 1 or 2 candidates in that
-region. Note that there are some toy limits that are below the red
-line for the case without candidates. This is expected, because the
-calculation of each limit is based on the MCMC evaluation of the
-likelihood. As such it is a statistical random process and the red
-line itself is a single sample. Further, the purple histogram for "0"
-candidates is *not* equivalent to the red line, because the definition
-of the number of signal sensitive candidates is an arbitrary
-cutoff. For the red line literally _no candidates_ at all are
-considered and the limit is based purely on the
-$\exp(-s_{\text{tot}})$ term of the likelihood.
+significant flux expectation) based on $\ln(1 + s_i/b_i) > 0.5$ (at a
+fixed coupling constant, $g²_{ae} = (\num{8.1e-11})²$), the limits are
+split into histograms of different colors. Based on the location of
+these histograms and the expected limit, the most likely case for the
+real candidates seems to be 1 or 2 candidates in that region. Note
+that there are some toy limits that are below the red line for the
+case without candidates. This is expected, because the calculation of
+each limit is based on the MCMC evaluation of the likelihood. As such
+it is a statistical random process and the red line itself is a single
+sample. Further, the purple histogram for "0" candidates is *not*
+equivalent to the red line, because the definition of the number of
+signal sensitive candidates is an arbitrary cutoff. For the red line
+literally _no candidates_ at all are considered and the limit is based
+purely on the $\exp(-s_{\text{tot}})$ term of the likelihood.
 
 #+CAPTION: Distribution of toy limits resulting in the best expected limit based on $\num{50000}$
 #+CAPTION: toy limits. The expected limit -- the median -- is shown as the blue line. The red line
@@ -36716,7 +36754,7 @@ $\SI{85}{pixel}$ radius of the chip center. The axion image is
 underlaid to provide a visual reference of the importance of each
 cluster. Very few candidates of relevant energies are seen within the
 region of interest. Based on the previously mentioned $\ln(1 +
-s_i/b_i) > 0.5$ condition it is 1 candidate in the sensitive
+s_i/b_i) > 0.5$ condition, it is 1 candidate in the sensitive
 region. See fig. sref:fig:limit:candidates_s_b for an overview of the
 weighting of each candidate in this way, with only the single cluster
 near coordinate $(x,y) = (105,125)$ crossing the threshold of $\num{0.5}$.
@@ -37473,17 +37511,23 @@ $g_{ae}$. We compute an observed limit of
 \]
 
 which is lower than the expected limit, due to the distribution of
-candidates and absence of any highly significant candidates. The
-expected limit for this case was $\left(g_{ae} ·
+candidates and absence of any highly significant candidates. Written
+as an upper bound, it is
+
+\[
+\left(g_{ae} · g_{aγ}\right)_{\text{observed}} \leq \SI{7.36e-23}{GeV⁻¹} \text{ at } \SI{95}{\%} \text{ CL}.
+\] 
+
+The expected limit for this case was $\left(g_{ae} ·
 g_{aγ}\right)_{\text{expected}} = \SI{7.88e-23}{GeV⁻¹}$ and the limit
 without any candidates at all $\left(g_{ae} · g_{aγ}\right)_{\text{no
 candidates}} = \SI{6.39e-23}{GeV⁻¹}$.
 
-This is in contrast to the current observed best limit by CAST in 2013
+This is in contrast to the current, best observed limit by CAST in 2013
 cite:Barth_2013, which achieved
 
 \[
-\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} = \SI{8.1e-23}{GeV⁻¹},
+\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} \lesssim \SI{8.1e-23}{GeV⁻¹},
 \]
 
 a good improvement. Unfortunately, [[cite:&Barth_2013]] does not provide
@@ -37525,8 +37569,8 @@ candidates).
 [[~/phd/Figs/trackingCandidates/mcmc_real_limit_likelihood_g_ae2.pdf]]
 
 [fn:likely_expected] Judging by the $χ²$ distribution in
-[[cite:&Barth_2013]] fig. 6 having a minimum for negative $g²_{ae}g²_{gγ}$
-values potentially implies a better observed limit than expected. 
+[[cite:&Barth_2013]], fig. 6, having a minimum for negative $g²_{ae}g²_{gγ}$
+values, potentially implies a better observed limit than expected. 
 
 [fn:romberg_integration_performance] Note though, while the
 calculation of the observed limit via the MCMC takes about
@@ -37727,7 +37771,7 @@ The log file:
 :END:
 
 As explained when we introduced the limit calculation method, one
-important aim was to develop method which is agnostic to the coupling
+important aim was to develop a method which is agnostic to the coupling
 constant of choice. We will now make use of this to compute expected
 and observed limits for the axion-photon coupling $g_{aγ}$,
 sec. [[#sec:limit:axion_photon]] and chameleon coupling $β_γ$,
@@ -37745,7 +37789,7 @@ $g_{aγ}$, sec. [[#sec:limit:observed_axion_photon]], as well as the
 chameleon coupling constant $β$, sec. [[#sec:limit:observed_chameleon]].
 
 
-*** Axion-photon coupling
+*** Axion-photon coupling - $g⁴_{aγ}$
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:axion_photon
 :END:
@@ -38066,7 +38110,7 @@ yields
 $g_aγ = \SI{8.96184479371e-11}{GeV⁻¹}$
 
 
-*** Chameleon coupling
+*** Chameleon coupling - $β⁴_γ$
 :PROPERTIES:
 :CUSTOM_ID: sec:limit:chameleon
 :END:
@@ -38076,7 +38120,8 @@ inputs and MCMC parameter that needs to be changed similarly to the
 axion-photon coupling (flux, image and using $β^4_γ$ in the MCMC), the
 conversion probability needs to be adjusted according to
 eq. [[eq:theory:chameleon_conversion_prob]]. This assumes the conversion
-is fully coherent, restricting to a chameleon-matter coupling $β_m$ of
+is fully coherent and we restrict ourselves to non-resonant
+production. That means a chameleon-matter coupling $β_m$ of
 
 \[
 1 \leq β_m \leq \num{1e6}.
@@ -38144,18 +38189,19 @@ and a limit without candidates of
 β_{γ, \text{no candidates}} = \num{2.62e10}.
 \]
 
-We can see that the difference between the 'no candidate' limit and
-the lowest toy limits is much larger than for the two axion
-limits. This is due to the chameleon image covering a large fraction
-of the chip, making it incredibly unlikely to have no
-candidates. Fig. [[fig:limit:chameleon:expected_limit]] shows the
-histograms of these toy limits. The differently colored histograms are
-again based on an arbitrary cutoff in $\ln(1 + s/b)$ for a fixed
-coupling constant. For the chameleon coupling it may be worthwhile to
-investigate other veto setups again, because of the very different
-nature of the chameleon image and even lower peak of the differential
-flux. Based on the same setup we compute an observed limit using the
-same set of candidates as previously of
+Fig. [[fig:limit:chameleon:expected_limit]] shows the histograms of these
+toy limits. The differently colored histograms are again based on an
+arbitrary cutoff in $\ln(1 + s/b)$ for a fixed coupling constant. We
+can see that the difference between the 'no candidate' limit and the
+lowest toy limits is much larger than for the two axion limits. This
+is due to the chameleon image covering a large fraction of the chip,
+making it incredibly unlikely to have no candidates.
+
+For the chameleon coupling it may be worthwhile to investigate other
+veto setups again, because of the very different nature of the
+chameleon image and even lower peak of the differential flux. Based on
+the same setup we compute an observed limit using the same set of
+candidates as previously of
 
 \[
 β_{γ, \text{observed}} = \num{3.1e10}.
@@ -38654,15 +38700,14 @@ be very easy.
 - [ ] Try to extract the limit calculation from statusAndProgress and
   see if there's something wrong in our current code?
 
-* Outlook                                                             :Part5:
+* Outlook                                                             
 :PROPERTIES:
 :CUSTOM_ID: sec:outlook
 :END:
 
-Having computed a new best limit on the axion-electron coupling
-constant as well as competitive limits for the axion-photon 
-and chameleon couplings, let us think about the next steps that should
-be taken from here.
+Having computed a new best limit on the axion-electron and chameleon
+couplings, as well as presented a limit on the axion-photon coupling,
+let us think about the next steps that should be taken from here.
 
 The first obvious step would be computing a combined limit of the
 dataset from this thesis with the GridPix data from 2014/15
@@ -38844,7 +38889,7 @@ any analog readout parts like an FADC is a big help as handling EMI
 properly is complex.
 #+end_quote
 
-* Summary & conclusion                                                :Part5:
+* Summary & conclusion
 :PROPERTIES:
 :CUSTOM_ID: sec:summary
 :END:
@@ -38871,12 +38916,16 @@ valuable addition. Most notably the Septemboard itself, in the form of
 the 'septem veto' and 'line veto', provide a large improvement to the
 backgrounds seen over the majority of the center GridPix. While the
 improvements to the center \goldArea region are not as large, over the
-entire chip background is suppressed by almost an order of magnitude.
+entire chip background is suppressed by an order of magnitude.
+
+In the course of the thesis, the data reconstruction and analysis code
+written ~TimepixAnalysis~ [[cite:&TPA]], was written with future Timepix3
+based detectors in mind. It is ready for usage for such detectors.
 
 Further, novel ideas were implemented to improve the reliability in
 the form of interpolating the reference datasets the likelihood cut
 classifier is based on. More interestingly though, a machine learning
-approach using a small multi-layer perceptron (MLP) was implemented
+approach using a small multi-layer perceptron (MLP) was implemented,
 trained entirely on synthetic X-ray data and background data of the
 outer chips. This yields a classifier fully defined by data unrelated
 to its main application (background and tracking datasets) and
@@ -38902,7 +38951,7 @@ radial emission profile in the Sun is needed (in addition to the
 losses expected due to the detector window losses and gas
 transmission). To properly characterize the expected 'axion image' on
 the detector, a raytracing simulation taking these into account is
-needed. Such a simulation was implemented in the context of this
+required. Such a simulation was implemented in the context of this
 thesis and verified against PANTER measurements of the LLNL telescope.
 
 Despite the additional detector features producing a more homogeneous
@@ -38941,11 +38990,11 @@ This is a good improvement over the current best limit obtained by CAST in 2013
 [[cite:&Barth_2013]] of
 
 \[
-\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} = \SI{8.1e-23}{GeV⁻¹}.
+\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} \lesssim \SI{8.1e-23}{GeV⁻¹}.
 \]
 
 For the axion-photon coupling our detector was not expected to improve
-on the current best limit ($g_{aγ, \text{Nature}} =
+on the current best limit ($g_{aγ, \text{Nature}} <
 \SI{6.6e-11}{GeV⁻¹}$, cite:cast_nature), which is validated by an
 expected limit of 
 
@@ -38977,10 +39026,11 @@ The observed limit was then computed to
 β_{γ, \text{observed}} = \num{3.1e10},
 \]
 
-which is a good improvement over [[cite:&krieger2018search;&krieger_chameleon_jcap]]
+which is a significant improvement over
+[[cite:&krieger2018search;&krieger_chameleon_jcap]]
 
 \[
-β_{γ, \text{Krieger}} = \num{5.74e10} \text{ at } \SI{95}{\%} \text{ CL}.
+β_{γ, \text{Krieger}} < \num{5.74e10} \text{ at } \SI{95}{\%} \text{ CL},
 \]
 
 the current best bound on the chameleon-photon coupling.
