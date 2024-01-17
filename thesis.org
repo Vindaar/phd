@@ -2481,10 +2481,11 @@ applicable in this thesis. The point at which this condition does not
 strictly hold anymore is the axion mass at which helioscope
 experiments start to lose sensitivity.
 
-Note that the above conversion probability is given in natural
-units. Arguments ($B, L$) need either be converted to natural units as
-well or the missing factors need to be added. The same equation in SI
-units is given by:
+Note that the above conversion probability is given in natural units,
+specifically Lorentz-Heaviside units, $c = \hbar = ε_0 = 1$ (meaning
+$α = e²/4π \approx 1/137$). Arguments ($B, L$) need either be
+converted to natural units as well or the missing factors need to be
+added. The same equation in SI units is given by:
 
 \[
 P_{a↦γ, \text{vacuum}} = ε_0 \hbar c^3 \left( \frac{g_{aγ} B L}{2} \right)^2.
@@ -2739,6 +2740,68 @@ P_{aγ} = ε_0 \hbar c^3 \left( \frac{g_{aγ} B L}{2} \right)^2
 where now only $g_{aγ}$ needs to be expressed in units of
 $\si{J^{-1}}$ for a correct result using tesla and meter.
 
+
+*** Further notes on units of conversion probability             :extended:
+
+The conversion probability follows the derivation by Biljana and
+Kreso: [[file:~/org/Papers/Axion-photon_conversion_report_biljana.pdf]]
+Fortunately, they state explicitly, which units they use, to quote:
+
+#+begin_quote
+We stress that the equations above are written in terms of natural,
+rationalized electromagnetic units (natural Lorentz-Heaviside units)
+where hbar = c = 1 and the fine-structure constant is given as
+α = e² / 4π ≈ 1/137.
+#+end_quote
+
+This is very important to know that we did not miss some 4π or √4π
+factor.
+
+The fine structure constant is defined by
+
+\[
+α = \frac{e²}{4π ε_0 \hbar c}
+\]
+
+in SI units. This means, $ε_0 = 1$ as well (but explicitly *not*
+something like $4π ε_0 = 1$, which one also finds, e.g. here
+http://ilan.schnell-web.net/physics/natural.pdf).
+
+A PDF about natural unit systems I personally like a lot:
+
+https://www.seas.upenn.edu/~amyers/NaturalUnits.pdf
+
+It describes natural units in the same way as we use them here,
+i.e. 'Lorentz-Heaviside'. These are also implemented as the (current
+only) natural units in ~unchained~.
+
+In particular in these units, the conversion factors for tesla and
+meter are as follows:
+#+begin_src nim :results drawer
+import unchained
+echo 1.T, " in natural units = ", 1.T.toNaturalUnit()
+echo 1.m, " in natural units = ", 1.m.toNaturalUnit()
+#+end_src
+
+#+RESULTS:
+:results:
+1 T in natural units = 195.353 eV²
+1 m in natural units = 5.06773e+06 eV⁻¹
+:end:
+
+which are the relevant conversion factors, if one wishes to work with
+the natural unit version (and not relying on a library with an option
+to convert units for you).
+
+See the table of the aforementioned ~NaturalUnits.pdf~ to deduce these
+conversion factors yourself.
+
+Also, there exists a natural unit conversion map for [[https://www.gnu.org/software/units/][GNU Units]]:
+
+https://github.com/misho104/natural_units
+
+which also explicitly mentions it uses Lorentz-Heaviside
+units. Therefore, feel free to use that to help with your conversions.
 
 *** Full simplification of conversion probability in vacuum      :extended:
 
