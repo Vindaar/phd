@@ -6,8 +6,17 @@
 #+LaTeX_HEADER: \usepackage{pdfpages}
 # #+LaTeX_HEADER: \usepackage{tikz}
 
-# Include our default LaTeX setup
-#+SETUPFILE: ~/.emacs.d/default_latex_header.org
+# Include the setup file that configures the majority of LaTeX export settings
+
+# NOTE: for the *PRINT* version, use emacs style color scheme for code
+# ALSO need to adjust the default text color, which we change in
+# ~default_latex_header.org~ to a grey for the monokai dark
+# background. So use the ~/phd/latex_header_print_version.org file
+# as the SETUPFILE!
+# For PDF:
+# #+SETUPFILE: ~/phd/latex_header_pdf_version.org
+# For Print:
+#+SETUPFILE: ~/phd/latex_header_print_version.org
 
 # 'externalize' all TikZ plots, i.e. cache them
 # #+LaTeX_HEADER: \usepackage{pgfplots}
@@ -108,7 +117,6 @@
 #+LATEX_HEADER: \linespread{1.4} % change line spacing to be a bit larger. TODO: find good value!
 #+LATEX_HEADER: \KOMAoptions{fontsize=11pt, paper=a4, twoside=true, DIV=14, BCOR=5mm}
 
-
 # Change the spacing in the table of contents
 #+LATEX_HEADER: \RedeclareSectionCommand[
 #+LATEX_HEADER:   tocnumwidth=2.5em % Adjust the width as needed
@@ -120,8 +128,8 @@
 #+LATEX_HEADER:   tocnumwidth=4em % Adjust the width as needed
 #+LATEX_HEADER: ]{subsubsection}
 
+# Include the submission front page
 #+LATEX: \input{/home/basti/phd/PhD_Submit_title.tex}
-
 
 # Our old crappy title page:
 # \begin{titlepage}
@@ -201,10 +209,30 @@ on disc.
          (setq-local org-export-exclude-tags '("noexport" "extended" "latex")))))
 
 (add-hook 'org-export-before-processing-hook 'my-custom-org-exclude-tags)
+
+;; Finally, use our custom IDs, if present. Otherwise we cannot link to a figure from
+;; the subfigure DSL!
+(setq org-latex-prefer-user-labels t)
 #+end_src
 
 #+RESULTS:
-| my-custom-org-exclude-tags | my/org-process-subfigure-dsl | my/org-html-export-figs |
+: t
+
+For the printed version, the color scheme for code should be using a
+bright background (we remove our background setting):
+#+begin_src emacs-lisp
+(setq org-latex-minted-options
+   '(("frame" "lines") ("linenos=true") ("fontsize=\\footnotesize")))
+#+end_src
+
+#+RESULTS:
+| frame                  | lines |
+| linenos=true           |       |
+| fontsize=\footnotesize |       |
+
+And place in the header of this file:
+#+LATEX_HEADER: \usemintedstyle{emacs}
+
 
 
 
