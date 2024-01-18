@@ -1,0 +1,109 @@
+#+SETUPFILE: ~/.emacs.d/default_latex_header.org
+
+# Better use my full name as author for this!
+#+AUTHOR: Sebastian Schmidt
+
+#+OPTIONS: html-style:nil
+
+* Search for solar axions using a 7-GridPix IAXO prototype detector at CAST
+
+This is the companion website to my PhD thesis of the above title. At
+the time of writing this, <2024-01-18 Thu 18:49>, it does not yet link
+to the entire thesis document. That will only be done once the thesis
+has been defended and published (it seems like otherwise I might get
+into trouble).
+
+** Abstract
+
+The Standard Model of particle physics (SM) is extremely successful at
+describing three out of the four known fundamental forces of
+nature. However, there are several open questions even within the
+SM. One of those is termed the 'strong CP problem'. In a simplified
+way it asks why the neutron does not have an electric dipole
+moment. While only a mathematical problem of sorts, it can be neatly
+solved by the introduction of a new hypothetical particle, the
+/axion/. This particle can interact with photons and leptons, even if
+extremely feebly. If they exist, they will be produced in the 
+core of the Sun at very high rates, but easily escape similar to
+neutrinos. On the Earth we can attempt to detect them using strong
+magnetic fields. The latest such experiment, a solar helioscope, is
+the CERN Axion Solar Telescope (CAST). Axions carry the energy of the
+photons, which initially produced them, placing them in the soft X-ray
+energy range.
+
+In the course of this thesis, a gaseous detector using 7-GridPixes as
+its readout was deployed at the CAST experiment in 2017/18 to follow
+up on previous measurements with a single GridPix detector in
+2014/15. $\SI{3150}{h}$ of background data and $\SI{160}{h}$ of solar
+tracking data was taken. The data taken at such an experiment is
+dominated by cosmic radiation, radioactive background and X-ray
+fluorescence. As such methods to suppress this background and extract
+the few possible axion signals are needed. A software library
+~TimepixAnalysis~ was developed in the course of this thesis to
+reconstruct and analyze the data taken at CAST.
+
+For the classification of event data into background-like or
+signal-like (X-ray) data, a machine learning approach is used. A
+multilayer perceptron (MLP, simple type of an artificial neural
+network) was trained on synthetic X-ray data and CAST background data
+of 6 of the 7 chips (leaving out the chip sensitive to axions). This
+method significantly improves the signal efficiency at comparable
+background rates, when compared to the likelihood cut method used for
+the old detector.
+
+Further, as no excess signal was detected in the solar tracking
+dataset, a limit calculation method was developed. This method builds on the
+unbinned Bayesian likelihood method used in CAST's Nature paper
+in 2017. It is extended to allow the inclusion of systematic
+uncertainties as nuisance parameters. Due to the very expensive
+evaluation of such a likelihood function, a Markov Chain Monte Carlo
+(MCMC) approach is used.
+
+One of the limit calculation inputs is the 'axion image' produced by
+the Lawrence Livermore National Laboratory (LLNL) telescope at
+CAST. To properly characterize this, a raytracing simulation taking
+into account the axion production rates in the Sun and reflection
+through the X-ray optic was developed. It was verified against
+PANTER measurements of the telescope.
+
+With the software advances and improved detector features, world best
+limits could be set on the axion-electron coupling and on the
+chameleon coupling (a separate hypothetical particle). The previous
+best limit on the axion-electron coupling is improved from
+$g_{ae}·g_{aγ} \lesssim \SI{8.1e-23}{GeV⁻¹}$ to $g_{ae}·g_{aγ}
+\lesssim \SI{7.35e-23}{GeV⁻¹}$ and the chameleon coupling from $β_γ <
+\num{5.74e10}$ to $β_γ \lesssim \num{3.1e+10}$.
+
+In addition, the software developed during the course of this thesis
+was written with future detectors in mind. It is in principle ready
+for data analysis for a GridPix3 based future detector.
+
+** Data
+
+One of the most important parts for my thesis has always been being
+able to replicate results. Part of that is providing access to my
+data, including the raw data taken with our detector at CAST.
+
+Due to some technical issues with [[https://zenodo.org][Zenodo]] I haven't been able to
+successfully upload my data to their servers so far (the connection is
+closed before the upload finishes).
+
+For that reason, for the time being until I manage this, you can find
+the entire raw dataset under this Google Drive link:
+
+https://drive.google.com/file/d/1o57wgDeVW82BmL_lHH-ZRm5zHXRWWVYI/view?usp=drive_link
+
+(I hope I don't regret this :) )
+
+** Software
+
+The main repository used in my thesis is [[https://github.com/Vindaar/TimepixAnalysis][TimepixAnalysis]]. See the
+appendix about the software and how to reconstruct all data in the
+thesis for more information.
+
+The results in the thesis were all produced with the git tag ~phd_rc0~
+(at the time of writing, I still have to finalize the git tags for
+~datamancer~, ~ggplotnim~, ~unchained~, ~nimhdf5~ and maybe a couple
+more libraries that I've tinkered with in the final days of
+writing). Once the final thesis is published I'll create a ~phd~ tag
+(and make sure I didn't break anything in between).
