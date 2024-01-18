@@ -36305,18 +36305,13 @@ efficiency of course!). This is the setup we will mainly consider for
 the data unblinding. The expected limit for this setup is
 
 \[
-\left(g_{ae} · g_{aγ}\right)_{\text{expected}} = \SI{7.88e-23}{GeV^{-1}},
+\left(g_{ae} · g_{aγ}\right)_{\text{expected}} = \SI{7.878225(6464)e-23}{GeV^{-1}},
 \]
 
-based on the $\num{50 000}$ toy limits.
-
-- [ ] *FOR TABLE:* Add 'uncertainty' to the expected limit by adding
-  maybe 5, 25, 75, 95 percentiles!
-  Clarify that ~Exp σ~ is the potential variation *OF THE EXPECTED
-  LIMIT* and not of a potential real limit!
-  Maybe we can print them as ~X ± 25/75 ± 5/95~ in the same way we
-  would combine stat. and syst. uncertainties?
-- [ ] *ADD STANDARD DEVIATION FOR LIMIT INTO EXPECTED PRESENTATION!*  
+based on the $\num{50 000}$ toy limits. The uncertainty is based on
+the standard deviation computed via bootstrapping as mentioned
+above. It is the uncertainty on the expected limit from a statistical
+point of view. 
 
 \footnotesize
 #+CAPTION: The FADC veto is always in use (if either the septem or line veto are active) at an efficiency of $ε_{\text{FADC}} = 0.98$ and so is the
@@ -36385,10 +36380,31 @@ purely on the $\exp(-s_{\text{tot}})$ term of the likelihood.
 #+CAPTION: by $\ln(1 + s_i/b_i) > 0.5$. The most likely number of candidates in the sensitive region
 #+CAPTION: seems to be 0, 1 or 2.
 #+NAME: fig:limit:expected_limits:toy_limit_histogram
-#+ATTR_LATEX: :width 0.85\textwidth
 [[~/phd/Figs/limit/mc_limit_lkMCMC_skInterpBackground_nmc_50000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500_nmc_50k_pretty.pdf]]
 
+To see how the limit might change as a function of different
+candidates, see tab. [[tab:appendix:expected_limits_percentiles]] in
+appendix [[#sec:appendix:exp_limit_percentiles]]. It contains different
+percentiles of the computed toy limit distribution for each veto
+setup. The percentiles -- and ranges between them -- give insight into
+the probabilities to obtain a specific observed limit. Each observed
+limit is associated with a single possible set of candidates,
+measureable in the experiment, out of all possible sets of candidates
+compatible with the background hypothesis (as the toy limits are
+sampled from it). For example, the experiment will measure an observed
+limit in the range from $P_{25}$ to $P_{75}$ with a chance of
+$\SI{50}{\%}$.
+
 *** TODOs for this section [/]                                   :noexport:
+
+- [X] *FOR TABLE:* Add 'uncertainty' to the expected limit by adding
+  maybe 5, 25, 75, 95 percentiles!
+  Clarify that ~Exp σ~ is the potential variation *OF THE EXPECTED
+  LIMIT* and not of a potential real limit!
+  Maybe we can print them as ~X ± 25/75 ± 5/95~ in the same way we
+  would combine stat. and syst. uncertainties?
+- [X] *ADD STANDARD DEVIATION FOR LIMIT INTO EXPECTED PRESENTATION!*  
+
 
 - [ ] *ASIMOV DATASET* and how we can / cannot use it
   -> Check note somewhere else here about using c_i = rational number
@@ -36500,70 +36516,144 @@ All the notes about the expected limits are here:
 [[file:~/org/journal.org::#sec:journal:27_11_2023:final_limits_thesis]].
 
 *** Generate expected limits table                               :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:gen_expected_limit_table
+:END:
 
 Originally written in
 [[file:~/org/journal.org::#sec:journal:23_11_23:gen_expected_limits]].
 
 #+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/generateExpectedLimitsTable/ :results drawer
-./generateExpectedLimitsTable --path ~/org/resources/lhood_limits_21_11_23/ --prefix "mc_limit_lkMCMC"
+./generateExpectedLimitsTable --path ~/org/resources/lhood_limits_21_11_23/ --prefix "mc_limit_lkMCMC" 
 #+end_src
 
 #+RESULTS:
 :results:
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.9_lnL.h5
+Standard deviation of existing limits: 1.881181322027084e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.7_lnL_scinti_fadc_line_vQ_0.99.h5
+Standard deviation of existing limits: 1.483388243259433e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.8_lnL.h5
+Standard deviation of existing limits: 1.971701121346722e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.9_lnL_scinti_fadc_septem_line_vQ_0.99.h5
+Standard deviation of existing limits: 1.700245106804615e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.7_lnL_scinti_fadc_septem_line_vQ_0.99.h5
+Standard deviation of existing limits: 1.445520680284464e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.9_lnL_scinti_fadc_line_vQ_0.99.h5
+Standard deviation of existing limits: 1.452619094436602e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.7_lnL.h5
+Standard deviation of existing limits: 1.372285385785803e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_line_vQ_0.99.h5
+Standard deviation of existing limits: 1.823407217117141e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0323_σb_0.0028_posUncertain_puUncertain_σp_0.0500lhood_c18_R2_crAll_sEff_0.8_lnL_scinti_fadc_septem_line_vQ_0.99.h5
+Standard deviation of existing limits: 1.306608632559617e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.621471862633583e-20
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.772272479247486e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.948710824120741e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.619168145135281e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_50000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.612857470644874e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.334752143815905e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0278_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.532833375151509e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.533064601717784e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0278_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.914237763454698e-20
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0278_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.522621089145412e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0278_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.087184457140814e-20
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.667094463823567e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.409073748826422e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.612856288124452e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 8.031501687857109e-21
 File: mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.836230785643679e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty_ukUncertain_σs_0.0278_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 7.527443150348715e-21
+File: mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.598536107791305e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.639619796624626e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.537689957889617e-20
 File: mc_limit_lkMCMC_skInterpBackground_nmc_1000_uncertainty_ukUncertain_σs_0.0274_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
-|   ε_eff |   nmc | Type | Scinti | FADC  | ε_FADC | Septem | Line  | eccLineCut | ε_Septem |  ε_Line | ε_SeptemLine | ε_total | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] | Exp. limit variance [GeV⁻²] | Exp. limit σ [GeV⁻¹] |
-|--------+-------+------+--------+-------+-------+--------+-------+------------+---------+--------+-------------+--------+------------------------+-----------------------+----------------------------+---------------------|
-| 0.9804 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9804 |              5.739e-23 |             7.805e-23 |                 1.3548e-49 |          3.6807e-25 |
-| 0.9059 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9059 |             6.0109e-23 |             7.856e-23 |                 1.8498e-49 |           4.301e-25 |
-| 0.9523 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9523 |             5.7685e-23 |            7.8599e-23 |                  2.609e-49 |          5.1078e-25 |
-| 0.9523 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7969 |             6.3874e-23 |            7.8615e-23 |                 8.6918e-50 |          2.9482e-25 |
-| 0.9523 | 50000 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7969 |             6.3874e-23 |            7.8782e-23 |                 4.1777e-51 |          6.4635e-26 |
-| 0.9804 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8204 |             6.1992e-23 |            7.8833e-23 |                 8.9862e-50 |          2.9977e-25 |
-| 0.8587 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.8587 |             6.1067e-23 |            7.9597e-23 |                 2.5787e-49 |          5.0781e-25 |
-| 0.9059 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7581 |             6.4704e-23 |            7.9886e-23 |                  6.989e-50 |          2.6437e-25 |
-| 0.9804 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7554 |             6.5492e-23 |            8.0852e-23 |                 8.5409e-50 |          2.9225e-25 |
-| 0.9523 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7756 |             6.4906e-23 |            8.1135e-23 |                 1.2737e-49 |          3.5689e-25 |
-| 0.9523 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7338 |             6.6833e-23 |            8.1251e-23 |                 9.5886e-50 |          3.0965e-25 |
-| 0.9804 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7985 |             6.2664e-23 |            8.1314e-23 |                 1.0198e-49 |          3.1934e-25 |
-| 0.8587 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7186 |             6.8094e-23 |            8.1561e-23 |                 8.9356e-50 |          2.9893e-25 |
-| 0.9059 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7378 |             6.5184e-23 |            8.2169e-23 |                 8.2755e-50 |          2.8767e-25 |
-|    0.9 |  2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7531 |             6.4097e-23 |            8.2171e-23 |                 1.3874e-49 |          3.7248e-25 |
-| 0.9059 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6981 |             6.8486e-23 |            8.2868e-23 |                 1.0623e-49 |          3.2593e-25 |
-| 0.8587 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.6994 |             6.7322e-23 |            8.4007e-23 |                 8.7013e-50 |          2.9498e-25 |
-|    0.9 |  2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6935 |             6.7386e-23 |            8.4274e-23 |                 1.1319e-49 |          3.3644e-25 |
-| 0.8587 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6617 |             6.9981e-23 |            8.4589e-23 |                 1.2226e-49 |          3.4966e-25 |
-|    0.8 |  2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.6695 |             6.9115e-23 |            8.4993e-23 |                 1.0229e-49 |          3.1983e-25 |
-|    0.9 |  2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.9 |             5.9862e-23 |            8.5786e-23 |                 1.3869e-49 |          3.7241e-25 |
-|    0.8 |  2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.8 |             6.3885e-23 |            8.7385e-23 |                 1.5233e-49 |           3.903e-25 |
-|    0.8 |  2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6165 |             7.1705e-23 |             8.747e-23 |                 1.6802e-49 |           4.099e-25 |
-|    0.7 |  2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.5858 |             7.4553e-23 |            8.9298e-23 |                 1.6399e-49 |          4.0495e-25 |
-|    0.7 |  2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.7 |             6.7647e-23 |            9.0856e-23 |                 1.1046e-49 |          3.3235e-25 |
-|    0.7 |  2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.5394 |             7.7018e-23 |            9.2565e-23 |                 1.1953e-49 |          3.4573e-25 |
+Standard deviation of existing limits: 2.477371464091158e-20
+|   ε_eff |   nmc | Type | Scinti | FADC  | ε_FADC | Septem | Line  | eccLineCut | ε_Septem |  ε_Line | ε_SeptemLine | ε_total | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] | Exp. limit variance [GeV⁻²] | Exp. limit σ [GeV⁻¹] |        P_5 |       P_16 |       P_25 |       P_75 |       P_84 |       P_95 |
+|--------+-------+------+--------+-------+-------+--------+-------+------------+---------+--------+-------------+--------+------------------------+-----------------------+----------------------------+---------------------+------------+------------+------------+------------+------------+------------|
+| 0.9804 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9804 |              5.739e-23 |             7.805e-23 |                 1.3548e-49 |          3.6807e-25 | 6.4404e-23 | 6.8193e-23 | 7.0894e-23 | 8.6464e-23 | 9.0882e-23 | 1.0288e-22 |
+| 0.9059 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9059 |             6.0109e-23 |             7.856e-23 |                 1.8498e-49 |           4.301e-25 | 6.5886e-23 | 6.9554e-23 |  7.207e-23 |   8.75e-23 |  9.249e-23 | 1.0254e-22 |
+| 0.9523 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.9523 |             5.7685e-23 |            7.8599e-23 |                  2.609e-49 |          5.1078e-25 |  6.525e-23 | 6.8712e-23 | 7.1372e-23 | 8.7422e-23 |  9.182e-23 | 1.0231e-22 |
+| 0.9523 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7969 |             6.3874e-23 |            7.8615e-23 |                 8.6918e-50 |          2.9482e-25 | 6.7667e-23 | 7.0732e-23 | 7.2588e-23 | 8.7165e-23 | 9.1732e-23 | 1.0296e-22 |
+| 0.9804 | 15000 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8204 |             6.1992e-23 |            7.8681e-23 |                 1.2956e-50 |          1.1382e-25 | 6.7049e-23 | 6.9989e-23 | 7.2022e-23 | 8.7221e-23 | 9.1995e-23 | 1.0233e-22 |
+| 0.9523 | 50000 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7969 |             6.3874e-23 |            7.8782e-23 |                 4.1777e-51 |          6.4635e-26 | 6.7535e-23 | 7.0369e-23 | 7.2457e-23 | 8.7211e-23 | 9.1778e-23 | 1.0231e-22 |
+| 0.9523 | 15000 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7969 |             6.3874e-23 |             7.879e-23 |                 1.4226e-50 |          1.1927e-25 | 6.7542e-23 | 7.0374e-23 | 7.2442e-23 | 8.7233e-23 | 9.1633e-23 | 1.0254e-22 |
+| 0.9804 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.8204 |             6.1992e-23 |            7.8833e-23 |                 8.9862e-50 |          2.9977e-25 | 6.7296e-23 | 7.0113e-23 | 7.1929e-23 | 8.7164e-23 | 9.2161e-23 | 1.0231e-22 |
+| 0.8587 |  1000 | MLP  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 | 0.8587 |             6.1067e-23 |            7.9597e-23 |                 2.5787e-49 |          5.0781e-25 | 6.7402e-23 | 7.0765e-23 | 7.3144e-23 | 8.8834e-23 | 9.3483e-23 | 1.0254e-22 |
+| 0.9059 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7581 |             6.4704e-23 |            7.9886e-23 |                  6.989e-50 |          2.6437e-25 | 6.9099e-23 |  7.184e-23 | 7.3827e-23 | 8.8958e-23 | 9.2975e-23 | 1.0267e-22 |
+| 0.9059 | 15000 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7581 |             6.4704e-23 |            8.0045e-23 |                 1.1797e-50 |          1.0861e-25 | 6.9007e-23 | 7.1793e-23 |  7.376e-23 | 8.8706e-23 | 9.3435e-23 | 1.0392e-22 |
+| 0.9804 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7554 |             6.5492e-23 |            8.0852e-23 |                 8.5409e-50 |          2.9225e-25 | 6.9252e-23 | 7.2012e-23 | 7.4187e-23 | 8.9739e-23 | 9.4743e-23 | 1.0586e-22 |
+| 0.9523 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7756 |             6.4906e-23 |            8.1135e-23 |                 1.2737e-49 |          3.5689e-25 | 6.9101e-23 |  7.223e-23 | 7.4278e-23 | 9.0755e-23 | 9.5269e-23 |  1.065e-22 |
+| 0.9523 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.7338 |             6.6833e-23 |            8.1251e-23 |                 9.5886e-50 |          3.0965e-25 | 6.9912e-23 | 7.2854e-23 | 7.4904e-23 | 9.0028e-23 | 9.4577e-23 | 1.0503e-22 |
+| 0.9804 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7985 |             6.2664e-23 |            8.1314e-23 |                 1.0198e-49 |          3.1934e-25 | 6.8161e-23 | 7.1565e-23 |  7.424e-23 | 9.0196e-23 | 9.4627e-23 | 1.0585e-22 |
+| 0.8587 |  2500 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7186 |             6.8094e-23 |            8.1561e-23 |                 8.9356e-50 |          2.9893e-25 | 7.0315e-23 |  7.315e-23 | 7.5378e-23 | 9.0887e-23 | 9.5784e-23 | 1.0594e-22 |
+| 0.8587 | 15000 | MLP  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7186 |             6.8094e-23 |            8.1826e-23 |                 1.6937e-50 |          1.3014e-25 | 7.0331e-23 | 7.3208e-23 | 7.5405e-23 | 9.0593e-23 | 9.5135e-23 | 1.0593e-22 |
+| 0.9059 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.7378 |             6.5184e-23 |            8.2169e-23 |                 8.2755e-50 |          2.8767e-25 | 7.0347e-23 |  7.332e-23 | 7.5414e-23 | 9.1199e-23 |  9.628e-23 | 1.0712e-22 |
+|    0.9 |  2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.7531 |             6.4097e-23 |            8.2171e-23 |                 1.3874e-49 |          3.7248e-25 | 6.9605e-23 | 7.2788e-23 | 7.4878e-23 | 9.1329e-23 | 9.6121e-23 | 1.0624e-22 |
+| 0.9059 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6981 |             6.8486e-23 |            8.2868e-23 |                 1.0623e-49 |          3.2593e-25 | 7.1015e-23 | 7.4215e-23 | 7.6216e-23 | 9.1682e-23 | 9.6429e-23 | 1.0821e-22 |
+| 0.8587 |  2500 | MLP  | true   | true  |  0.98 | true   | false |          1 |  0.8311 |      1 |           1 | 0.6994 |             6.7322e-23 |            8.4007e-23 |                 8.7013e-50 |          2.9498e-25 | 7.1866e-23 | 7.4964e-23 | 7.7161e-23 | 9.2693e-23 | 9.7118e-23 | 1.0756e-22 |
+|    0.9 |  2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6935 |             6.7386e-23 |            8.4274e-23 |                 1.1319e-49 |          3.3644e-25 |  7.209e-23 | 7.5171e-23 | 7.7407e-23 | 9.3793e-23 | 9.8875e-23 | 1.1055e-22 |
+| 0.8587 |  2500 | MLP  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6617 |             6.9981e-23 |            8.4589e-23 |                 1.2226e-49 |          3.4966e-25 | 7.3152e-23 | 7.5953e-23 | 7.7906e-23 | 9.3755e-23 | 9.7631e-23 |  1.078e-22 |
+|    0.8 |  2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.6695 |             6.9115e-23 |            8.4993e-23 |                 1.0229e-49 |          3.1983e-25 | 7.2997e-23 | 7.6045e-23 | 7.8319e-23 | 9.4028e-23 | 9.9097e-23 | 1.0938e-22 |
+|    0.9 |  2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.9 |             5.9862e-23 |            8.5786e-23 |                 1.3869e-49 |          3.7241e-25 |  6.909e-23 | 7.4264e-23 | 7.7309e-23 | 9.5704e-23 | 1.0069e-22 | 1.1172e-22 |
+|    0.8 |  2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.8 |             6.3885e-23 |            8.7385e-23 |                 1.5233e-49 |           3.903e-25 | 7.1267e-23 | 7.5857e-23 | 7.8839e-23 | 9.7896e-23 | 1.0328e-22 | 1.1451e-22 |
+|    0.8 |  2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.6165 |             7.1705e-23 |             8.747e-23 |                 1.6802e-49 |           4.099e-25 | 7.5205e-23 | 7.8191e-23 | 8.0272e-23 | 9.6782e-23 | 1.0246e-22 | 1.1303e-22 |
+|    0.7 |  2500 | LnL  | true   | true  |  0.98 | false  | true  |          1 |       1 | 0.8539 |           1 | 0.5858 |             7.4553e-23 |            8.9298e-23 |                 1.6399e-49 |          4.0495e-25 | 7.7223e-23 |  8.017e-23 |  8.205e-23 | 9.8623e-23 | 1.0401e-22 | 1.1601e-22 |
+|    0.7 |  2500 | LnL  | false  | false |  0.98 | false  | false |          1 |       1 |      1 |           1 |    0.7 |             6.7647e-23 |            9.0856e-23 |                 1.1046e-49 |          3.3235e-25 | 7.4035e-23 | 7.8682e-23 | 8.2286e-23 | 1.0096e-22 | 1.0656e-22 | 1.1869e-22 |
+|    0.7 |  2500 | LnL  | true   | true  |  0.98 | true   | true  |          1 |       1 |      1 |      0.7863 | 0.5394 |             7.7018e-23 |            9.2565e-23 |                 1.1953e-49 |          3.4573e-25 | 8.0091e-23 | 8.2758e-23 | 8.5076e-23 | 1.0242e-22 | 1.0769e-22 | 1.2037e-22 |
+
+|   ε_eff |   nmc | Type   | ε_total |        P_5 |       P_16 |       P_25 |       P_75 |       P_84 |       P_95 |           Expected |
+|--------+-------+--------+--------+------------+------------+------------+------------+------------+------------+--------------------|
+| 0.9804 |  1000 | MLP -  | 0.9804 | 6.4404e-23 | 6.8193e-23 | 7.0894e-23 | 8.6464e-23 | 9.0882e-23 | 1.0288e-22 |  7.80503(3681)e-23 |
+| 0.9059 |  1000 | MLP -  | 0.9059 | 6.5886e-23 | 6.9554e-23 |  7.207e-23 |   8.75e-23 |  9.249e-23 | 1.0254e-22 |  7.85600(4301)e-23 |
+| 0.9523 |  1000 | MLP -  | 0.9523 |  6.525e-23 | 6.8712e-23 | 7.1372e-23 | 8.7422e-23 |  9.182e-23 | 1.0231e-22 |  7.85990(5108)e-23 |
+| 0.9523 |  2500 | MLP L  | 0.7969 | 6.7667e-23 | 7.0732e-23 | 7.2588e-23 | 8.7165e-23 | 9.1732e-23 | 1.0296e-22 |  7.86154(2948)e-23 |
+| 0.9804 | 15000 | MLP L  | 0.8204 | 6.7049e-23 | 6.9989e-23 | 7.2022e-23 | 8.7221e-23 | 9.1995e-23 | 1.0233e-22 |  7.86812(1138)e-23 |
+| 0.9523 | 50000 | MLP L  | 0.7969 | 6.7535e-23 | 7.0369e-23 | 7.2457e-23 | 8.7211e-23 | 9.1778e-23 | 1.0231e-22 | 7.878225(6464)e-23 |
+| 0.9523 | 15000 | MLP L  | 0.7969 | 6.7542e-23 | 7.0374e-23 | 7.2442e-23 | 8.7233e-23 | 9.1633e-23 | 1.0254e-22 |  7.87895(1193)e-23 |
+| 0.9804 |  2500 | MLP L  | 0.8204 | 6.7296e-23 | 7.0113e-23 | 7.1929e-23 | 8.7164e-23 | 9.2161e-23 | 1.0231e-22 |  7.88333(2998)e-23 |
+| 0.8587 |  1000 | MLP -  | 0.8587 | 6.7402e-23 | 7.0765e-23 | 7.3144e-23 | 8.8834e-23 | 9.3483e-23 | 1.0254e-22 |  7.95967(5078)e-23 |
+| 0.9059 |  2500 | MLP L  | 0.7581 | 6.9099e-23 |  7.184e-23 | 7.3827e-23 | 8.8958e-23 | 9.2975e-23 | 1.0267e-22 |  7.98858(2644)e-23 |
+| 0.9059 | 15000 | MLP L  | 0.7581 | 6.9007e-23 | 7.1793e-23 |  7.376e-23 | 8.8706e-23 | 9.3435e-23 | 1.0392e-22 |  8.00447(1086)e-23 |
+| 0.9804 |  2500 | MLP SL | 0.7554 | 6.9252e-23 | 7.2012e-23 | 7.4187e-23 | 8.9739e-23 | 9.4743e-23 | 1.0586e-22 |  8.08523(2922)e-23 |
+| 0.9523 |  2500 | MLP S  | 0.7756 | 6.9101e-23 |  7.223e-23 | 7.4278e-23 | 9.0755e-23 | 9.5269e-23 |  1.065e-22 |  8.11348(3569)e-23 |
+| 0.9523 |  2500 | MLP SL | 0.7338 | 6.9912e-23 | 7.2854e-23 | 7.4904e-23 | 9.0028e-23 | 9.4577e-23 | 1.0503e-22 |  8.12513(3097)e-23 |
+| 0.9804 |  2500 | MLP S  | 0.7985 | 6.8161e-23 | 7.1565e-23 |  7.424e-23 | 9.0196e-23 | 9.4627e-23 | 1.0585e-22 |  8.13137(3193)e-23 |
+| 0.8587 |  2500 | MLP L  | 0.7186 | 7.0315e-23 |  7.315e-23 | 7.5378e-23 | 9.0887e-23 | 9.5784e-23 | 1.0594e-22 |  8.15611(2989)e-23 |
+| 0.8587 | 15000 | MLP L  | 0.7186 | 7.0331e-23 | 7.3208e-23 | 7.5405e-23 | 9.0593e-23 | 9.5135e-23 | 1.0593e-22 |  8.18263(1301)e-23 |
+| 0.9059 |  2500 | MLP S  | 0.7378 | 7.0347e-23 |  7.332e-23 | 7.5414e-23 | 9.1199e-23 |  9.628e-23 | 1.0712e-22 |  8.21687(2877)e-23 |
+|    0.9 |  2500 | LnL L  | 0.7531 | 6.9605e-23 | 7.2788e-23 | 7.4878e-23 | 9.1329e-23 | 9.6121e-23 | 1.0624e-22 |  8.21714(3725)e-23 |
+| 0.9059 |  2500 | MLP SL | 0.6981 | 7.1015e-23 | 7.4215e-23 | 7.6216e-23 | 9.1682e-23 | 9.6429e-23 | 1.0821e-22 |  8.28676(3259)e-23 |
+| 0.8587 |  2500 | MLP S  | 0.6994 | 7.1866e-23 | 7.4964e-23 | 7.7161e-23 | 9.2693e-23 | 9.7118e-23 | 1.0756e-22 |  8.40075(2950)e-23 |
+|    0.9 |  2500 | LnL SL | 0.6935 |  7.209e-23 | 7.5171e-23 | 7.7407e-23 | 9.3793e-23 | 9.8875e-23 | 1.1055e-22 |  8.42741(3364)e-23 |
+| 0.8587 |  2500 | MLP SL | 0.6617 | 7.3152e-23 | 7.5953e-23 | 7.7906e-23 | 9.3755e-23 | 9.7631e-23 |  1.078e-22 |  8.45894(3497)e-23 |
+|    0.8 |  2500 | LnL L  | 0.6695 | 7.2997e-23 | 7.6045e-23 | 7.8319e-23 | 9.4028e-23 | 9.9097e-23 | 1.0938e-22 |  8.49926(3198)e-23 |
+|    0.9 |  2500 | LnL -  |    0.9 |  6.909e-23 | 7.4264e-23 | 7.7309e-23 | 9.5704e-23 | 1.0069e-22 | 1.1172e-22 |  8.57864(3724)e-23 |
+|    0.8 |  2500 | LnL -  |    0.8 | 7.1267e-23 | 7.5857e-23 | 7.8839e-23 | 9.7896e-23 | 1.0328e-22 | 1.1451e-22 |  8.73846(3903)e-23 |
+|    0.8 |  2500 | LnL SL | 0.6165 | 7.5205e-23 | 7.8191e-23 | 8.0272e-23 | 9.6782e-23 | 1.0246e-22 | 1.1303e-22 |  8.74702(4099)e-23 |
+|    0.7 |  2500 | LnL L  | 0.5858 | 7.7223e-23 |  8.017e-23 |  8.205e-23 | 9.8623e-23 | 1.0401e-22 | 1.1601e-22 |  8.92978(4050)e-23 |
+|    0.7 |  2500 | LnL -  |    0.7 | 7.4035e-23 | 7.8682e-23 | 8.2286e-23 | 1.0096e-22 | 1.0656e-22 | 1.1869e-22 |  9.08559(3323)e-23 |
+|    0.7 |  2500 | LnL SL | 0.5394 | 8.0091e-23 | 8.2758e-23 | 8.5076e-23 | 1.0242e-22 | 1.0769e-22 | 1.2037e-22 |  9.25655(3457)e-23 |
 
 :end:
 
@@ -37510,39 +37600,45 @@ we can now compute the observed limit for the axion-electron coupling
 $g_{ae}$. We compute an observed limit of
 
 \[
-\left(g_{ae} · g_{aγ}\right)_{\text{observed}} = \SI{7.36e-23}{GeV⁻¹},
+\left(g_{ae} · g_{aγ}\right)_{\text{observed}} = \SI{7.34(9)e-23}{GeV⁻¹},
 \]
 
 which is lower than the expected limit, due to the distribution of
-candidates and absence of any highly significant candidates. Written
-as an upper bound, it is
+candidates and absence of any highly significant candidates. This
+limit is the mean value out of $\num{200}$ limits computed via 3
+Markov Chains of $\num{150000}$ links (same as for the expected limits)
+computed for the real candidates. The printed uncertainty represents
+the standard deviation out of those limits. Therefore, we may wish to
+present an upper bound,
 
 \[
-\left(g_{ae} · g_{aγ}\right)_{\text{observed}} \leq \SI{7.36e-23}{GeV⁻¹} \text{ at } \SI{95}{\%} \text{ CL}.
+\left(g_{ae} · g_{aγ}\right)_{\text{observed}} \lesssim \SI{7.35e-23}{GeV⁻¹} \text{ at } \SI{95}{\%} \text{ CL}.
 \] 
 
 The expected limit for this case was $\left(g_{ae} ·
-g_{aγ}\right)_{\text{expected}} = \SI{7.88e-23}{GeV⁻¹}$ and the limit
-without any candidates at all $\left(g_{ae} · g_{aγ}\right)_{\text{no
-candidates}} = \SI{6.39e-23}{GeV⁻¹}$.
+g_{aγ}\right)_{\text{expected}} = \SI{7.878225(6464)e-23}{GeV⁻¹}$ and
+the limit without any candidates at all $\left(g_{ae} ·
+g_{aγ}\right)_{\text{no candidates}} = \SI{6.39e-23}{GeV⁻¹}$.
 
-This is in contrast to the current, best observed limit by CAST in 2013
-cite:Barth_2013, which achieved
+This is a good improvement compared to the current, best observed
+limit by CAST in 2013 cite:Barth_2013, which achieved
 
 \[
-\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} \lesssim \SI{8.1e-23}{GeV⁻¹},
+\left(g_{ae} · g_{aγ}\right)_{\text{CAST2013}} \lesssim \SI{8.1e-23}{GeV⁻¹}.
 \]
 
-a good improvement. Unfortunately, [[cite:&Barth_2013]] does not provide
-an expected limit to compare to. [fn:likely_expected] 
+Unfortunately, [[cite:&Barth_2013]] does not provide an expected limit to
+compare to. [fn:likely_expected]
 
 Fig. [[fig:limit:observed_axion_electron]] shows the marginal posterior
-likelihood function for the observed solar tracking candidates. The
-limit is at the $95^{\text{th}}$ percentile of the histogram, shown by
-the intersection of the blue and red filling. In addition the yellow
-line shows values based on a numerical integration using Romberg's
-method [[cite:&romberg_integration]] at 20 different coupling constants. This is a cross
-validation of the MCMC result. [fn:romberg_integration_performance]
+likelihood function for the observed solar tracking candidates, for a
+single calculation run (out of the $\num{200}$ mentioned). The limit
+is at the $95^{\text{th}}$ percentile of the histogram, shown by the
+intersection of the blue and red filling. In addition the yellow line
+shows values based on a numerical integration using Romberg's method
+[[cite:&romberg_integration]] at 20 different coupling constants. This is
+a cross validation of the MCMC
+result. [fn:romberg_integration_performance]
 
 Note that this observed limit is valid for axion masses in the range
 where the coherence condition in the conversion probability is
@@ -37562,14 +37658,24 @@ computed, because it is mostly trivial (only the exact point at which
 the limit decreases changes depending on the exact energies of the
 candidates).
 
+Finally, note that if one combines the existing astrophysical limits
+on $g_{ae}$ alone (for example tip of the red giant branch star
+brightness limits, cite:&capozzi20_axion_neutr_bound_improv_with at
+$g_{ae} < \num{1.3e-13}$) with an axion-photon coupling of choice (for
+example the current best limit of [[cite:&cast_nature]]) one may very well
+obtain a 'better' limit on $g_{ae}·g_{aγ}$. In that sense the above,
+at the very least, represents the best helioscope limit on the product
+of both coupling constants. It also suffers less from uncertainties as
+astrophysical limits, see for example cite:&dennis2023tip.
+
 #+CAPTION: The marginal posterior likelihood function for the solar candidates
 #+CAPTION: with the observed limit at the intersection between the blue and
 #+CAPTION: red filling. Also shown is a line based on a numerical integration of
 #+CAPTION: the 4-fold integral at 20 steps as a cross check of the MCMC. The x-axis
 #+CAPTION: is the parameter we sample, namely $g²_{ae}$. Limit at
-#+CAPTION: $g² \approx \num{5.4e-21} ⇒ g \approx \num{7.36e-11}$.
+#+CAPTION: $g² \approx \num{5.4e-21} ⇒ g \approx \num{7.35e-11}$.
 #+NAME: fig:limit:observed_axion_electron
-[[~/phd/Figs/trackingCandidates/mcmc_real_limit_likelihood_g_ae2.pdf]]
+[[~/phd/Figs/trackingCandidates/mcmc_real_limit_likelihood_ck_g_ae².pdf]]
 
 [fn:likely_expected] Judging by the $χ²$ distribution in
 [[cite:&Barth_2013]], fig. 6, having a minimum for negative $g²_{ae}g²_{gγ}$
@@ -37577,8 +37683,8 @@ values, potentially implies a better observed limit than expected.
 
 [fn:romberg_integration_performance] Note though, while the
 calculation of the observed limit via the MCMC takes about
-$\SI{10}{s}$, the numerical integration using Romberg's method took
-$\sim\SI{1.5}{h}$ for only 20 points. And that is only using an
+$\SI{10}{s}$, the numerical integration using Romberg's method takes
+$\sim\SI{1}{h}$ for only 20 points. And that is only using an
 integration level of 5 (a parameter of the Romberg method, one often
 uses 8 for Romberg for accuracy). This highlights the need for Monte
 Carlo methods, _especially_ for expected limits.
@@ -37819,11 +37925,15 @@ constant. Namely, the MLP classifier at $\SI{95}{\%}$ efficiency using
 all vetoes except the septem veto. We compute an expected limit based
 on $\num{1e4}$ toy
 candidates. Fig. [[fig:limit:axion_photon:expected_limit]] shows the
-obtained limits and expected limit based on these toy candidates. The
-obtained expected limit is
+distribution of limits obtained for different toy candidates,
+including the expected limit. In appendix
+[[#sec:appendix:exp_limit_percentiles]],
+tab. [[tab:appendix:expected_limits_percentiles_axion_photon]] the
+different percentiles for this distribution are shown. The obtained
+expected limit is
 
 \[
-g_{aγ, \text{expected}} = \SI{9.07e-11}{GeV⁻¹},
+g_{aγ, \text{expected}} = \SI{9.0650(75)e-11}{GeV⁻¹},
 \]
 
 which compared to the observed CAST Nature [[cite:&cast_nature]] limit of
@@ -37836,15 +37946,26 @@ candidates comes out to
 g_{aγ, \text{no candidates}} = \SI{7.95e-11}{GeV⁻¹}.
 \]
 
-With the observed limit based on the same candidates as in
-sec. [[#sec:limit:observed_limit]] we obtain an observed limit of
+Based on the same candidates as in sec. [[#sec:limit:observed_limit]] we
+obtain an observed limit of
 
 \[
-g_{aγ, \text{observed}} = \SI{8.96e-11}{GeV⁻¹}. 
+g_{aγ, \text{observed}} = \SI{8.99(7)e-11}{GeV⁻¹},
 \]
 
-Once again it is better than the expected limit, similar as for the
-axion-electron limit, but the overall result is as expected.
+which again is the mean out of 200 MCMC limits. Once again it is
+better than the expected limit, similar as for the axion-electron
+limit, but the overall result is as expected.
+
+As a bound then, it is
+
+\[
+g_{aγ, \text{observed}} \lesssim \SI{9.0e-11}{GeV⁻¹} \text{ at } \SI{95}{\%} \text{ CL}.
+\]
+
+The distribution of the posterior likelihood function can be found in
+fig. [[fig:appendix:posterior_likelihood_axion_photon]] of appendix
+[[#sec:appendix:limit_additional:axion_photon]]. 
 
 #+begin_src subfigure
 (figure ()
@@ -37864,7 +37985,7 @@ axion-electron limit, but the overall result is as expected.
 #+end_src
   
 #+CAPTION: $\num{1e4}$ toy limits for the axion-photon coupling $g⁴_{aγ}$. The expected limit is
-#+CAPTION: determined to $g_{aγ, \text{expected}} = \SI{9.07e-11}{GeV⁻¹}$, with the no candidates limit
+#+CAPTION: determined to $g_{aγ, \text{expected}} = \SI{9.0650(75)e-11}{GeV⁻¹}$, with the no candidates limit
 #+CAPTION: being $g_{aγ, \text{no candidates}} = \SI{7.95e-11}{GeV⁻¹}$.
 #+NAME: fig:limit:axion_photon:expected_limit
 [[~/phd/Figs/limit/mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500_axion_photon_nmc_10k_pretty.pdf]]
@@ -38048,6 +38169,24 @@ Finished <2024-01-11 Thu 17:53>. It took about 3 hours maybe.
 - [ ] Make the output plot prettier! It's super ugly due to a few
   _very_ large limits.
 
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/generateExpectedLimitsTable/ :results drawer
+./generateExpectedLimitsTable --path ~/org/resources/lhood_limits_axion_photon_11_01_24/ --prefix "mc_limit_lkMCMC" --precision 2 --coupling ck_g_aγ⁴
+#+end_src
+
+#+RESULTS:
+:results:
+File: mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.451446348780004e-40
+| ε_eff |   nmc | Type | Scinti | FADC | ε_FADC | Septem | Line | eccLineCut | ε_Septem | ε_Line | ε_SeptemLine | ε_total | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] | Exp. limit variance [GeV⁻²] | Exp. limit σ [GeV⁻¹] |      P_5 |    P_16 |     P_25 |     P_75 |     P_84 |     P_95 |
+|------+-------+------+--------+------+-------+--------+------+------------+---------+-------+-------------+--------+------------------------+-----------------------+----------------------------+---------------------+----------+---------+----------+----------+----------+----------|
+| 0.95 | 10000 | MLP  | true   | true |  0.98 | false  | true |          1 |       1 |  0.85 |           1 |    0.8 |               7.84e-11 |              9.06e-11 |                   5.57e-27 |            7.46e-14 | 8.24e-11 | 8.5e-11 | 8.66e-11 | 9.56e-11 | 9.83e-11 | 1.04e-10 |
+
+| ε_eff |   nmc | Type  | ε_total |      P_5 |    P_16 |     P_25 |     P_75 |     P_84 |     P_95 |       Expected |
+|------+-------+-------+--------+----------+---------+----------+----------+----------+----------+----------------|
+| 0.95 | 10000 | MLP L |    0.8 | 8.24e-11 | 8.5e-11 | 8.66e-11 | 9.56e-11 | 9.83e-11 | 1.04e-10 | 9.0650(75)e-11 |
+
+:end:
+
 **** Generate plot of expected limit histogram                  :extended:
 
 #+begin_src sh
@@ -38106,12 +38245,15 @@ The log file:
 [[~/phd/Figs/trackingCandidates/axionPhoton/real_candidates_limit.log]]
 
 #+begin_src 
-[2024-01-12 - 20:44:39] - INFO: Limit g_ae²              = 6.450444949277269e-41
+[2024-01-18 - 14:18:05] - INFO: Mean of 200 real limits (3·150k MCMC) = 8.999457e-11
+[2024-01-18 - 14:18:05] - INFO: Median of 200 real limits (3·150k MCMC) = 8.991653e-11
+[2024-01-18 - 14:18:05] - INFO: σ of 200 real limits (3·150k MCMC) = 7.388529e-13
+[2024-01-18 - 14:18:05] - INFO: Combined real limit (200 times 3·150k MCMC) = 8.99946(7389)e-11
+[2024-01-18 - 14:18:05] - INFO: Real limit based on 3 150k long MCMCs: g_aγ = 8.961844793705987e-11
 #+end_src
 (that should read g_aγ⁴, to be updated),
 yields
-$g_aγ = \SI{8.96184479371e-11}{GeV⁻¹}$
-
+$g_aγ = \SI{8.99946(7389)e-11}{GeV⁻¹}$
 
 *** Chameleon coupling - $β⁴_γ$
 :PROPERTIES:
@@ -38183,10 +38325,12 @@ except the septem veto) based on $\num{1e4}$ toy candidate sets. This
 yields an expected limit of
 
 \[
-β_{γ, \text{expected}} = \num{3.61e10},
+β_{γ, \text{expected}} = \num{3.6060(39)e+10}.
 \]
 
-and a limit without candidates of
+Without any candidates, which for the chameleon due to its large
+much larger focused image is significantly more extreme, the limit
+comes out to
 
 \[
 β_{γ, \text{no candidates}} = \num{2.62e10}.
@@ -38198,7 +38342,10 @@ arbitrary cutoff in $\ln(1 + s/b)$ for a fixed coupling constant. We
 can see that the difference between the 'no candidate' limit and the
 lowest toy limits is much larger than for the two axion limits. This
 is due to the chameleon image covering a large fraction of the chip,
-making it incredibly unlikely to have no candidates.
+making it incredibly unlikely to have no candidates. Further, in appendix
+[[#sec:appendix:exp_limit_percentiles]] we find
+tab. [[tab:appendix:expected_limits_percentiles_chameleon]], containing
+the different percentiles for the distribution of toy limits.
 
 For the chameleon coupling it may be worthwhile to investigate other
 veto setups again, because of the very different nature of the
@@ -38207,8 +38354,15 @@ the same setup we compute an observed limit using the same set of
 candidates as previously of
 
 \[
-β_{γ, \text{observed}} = \num{3.1e10}.
+β_{γ, \text{observed}} = \num{3.10(2)e+10}.
 \]
+
+or as an upper bound
+
+\[
+β_{γ, \text{observed}} \lesssim \num{3.1e+10} \text{ at } \SI{95}{\%} \text{ CL}.
+\] 
+
 
 This is a good improvement over the limit of
 [[cite:&krieger2018search;&krieger_chameleon_jcap]], and the current best
@@ -38224,6 +38378,24 @@ the significant improvements in background due to the detector vetoes,
 higher detection efficiency (thinner window), better classifier and
 improved limit calculation method allowing for the inclusion of the
 entire chameleon flux.
+
+A figure of the sampled coupling constants, similar to
+fig. [[fig:limit:observed_axion_electron]] can be found in appendix
+[[#sec:appendix:limit_additional:chameleon]],
+fig. [[fig:appendix:posterior_likelihood_chameleon]].
+
+Note however, that it is somewhat surprising that the observed
+limit is also an improvement over the expected limit, as the total
+number of clusters in the tracking data is almost exactly as expected
+(850 for 840 expected). Based on all evaluations I have done, it seems
+to be a real effect of the candidates. In
+fig. [[sref:fig:limit:rate_candidates_background]] of the spectrum
+comparing candidates to background, we see that there is a slight, but
+noticeable lower rate at energies below $\SI{2}{keV}$ relevant for
+chameleons. As such it may very well be a real effect, despite putting
+it below the $5^{\text{th}}$ percentile of the toy limits (compare
+tab. [[tab:appendix:expected_limits_percentiles_chameleon]]). Further 
+investigation seems appropriate. 
 
 #+begin_src subfigure
 (figure ()
@@ -38244,7 +38416,7 @@ entire chameleon flux.
 #+end_src
   
 #+CAPTION: $\num{1e4}$ toy limits for the chameleon coupling $β⁴_{γ}$. The expected limit is
-#+CAPTION: determined to $β_{γ, \text{expected}} = \num{3.61e10}$, with the no candidates limit
+#+CAPTION: determined to $β_{γ, \text{expected}} = \num{3.6060(39)e10}$, with the no candidates limit
 #+CAPTION: being $β_{γ, \text{no candidates}} = \num{2.62e10}$.
 #+NAME: fig:limit:chameleon:expected_limit
 [[~/phd/Figs/limit/mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500_chameleon_nmc_10k_pretty.pdf]]
@@ -38257,6 +38429,9 @@ so far. In order to avoid complications with potential inaccuracies,
 we stick to the previous approach for simplicity and better comparison.
 
 **** TODOs for this section [/]                                 :noexport:
+
+- [ ] *INVESTIGATE REAL LIMIT FOR CHAMELEONS A BIT MORE!!!*
+
 
 - [ ] *ONE SHORTCOMING* of this calculation is that our effective area
   is still the axion effective area from the LLNL raytracing
@@ -38645,12 +38820,36 @@ The log file:
 [[~/phd/Figs/trackingCandidates/chameleon/real_candidates_limit.log]]
 
 #+begin_src
-[2024-01-13 - 14:38:33] - INFO: Limit g_ae²              = 9.239804638483544e+41
+[2024-01-18 - 14:45:00] - INFO: Mean of 200 real limits (3·150k MCMC) = 3.103796e+10
+[2024-01-18 - 14:45:00] - INFO: Median of 200 real limits (3·150k MCMC) = 3.103509e+10
+[2024-01-18 - 14:45:00] - INFO: σ of 200 real limits (3·150k MCMC) = 2.299418e+08
+[2024-01-18 - 14:45:00] - INFO: Combined real limit (200 times 3·150k MCMC) = 3.10380(2299)e+10
+[2024-01-18 - 14:45:00] - INFO: Real limit based on 3 150k long MCMCs: β_γ = 31003855007.8231
 #+end_src
 (that should read g_aγ⁴, to be updated),
 yields
-$β⁴_γ = \num{9.239804638483544e+41}$, $β_γ = \num{3.10038550078e10}$
+$β_γ = \num{3.10380(2299)e+10}$
 
+**** Generate a plot of the chameleon spectrum with the candidates :extended:
+
+#+begin_src sh
+plotBackgroundClusters \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --title "MLP@95+FADC+Scinti+Line tracking clusters" \
+    --outpath ~/phd/Figs/trackingCandidates/chameleon/ \
+    --suffix "mlp_0.95_scinti_fadc_line_tracking_candidates_chameleon_below_2keV" \
+    --energyMin 0.2 --energyMax 2.001 \
+    --filterNoisyPixels \
+    --axionImage ~/phd/resources/axionImages/solar_chameleon_image_0.989AU_1500mm.csv \
+    --energyText \
+    --colorBy energy \
+    --switchAxes \
+    --useTikZ \
+    --singlePlot
+#+end_src
+
+[[~/phd/Figs/trackingCandidates/chameleon/background_cluster_centersmlp_0.95_scinti_fadc_line_tracking_candidates_chameleon_below_2keV.pdf]]
 
 *** Further note on the difference between axion-electron and axion-photon/chameleon limits :extended:
 
@@ -38980,13 +39179,13 @@ The expected limit for the best method based on $\num{50 000}$ toy
 candidate sets came out to
 
 \[
-\left(g_{ae} · g_{aγ}\right)_{\text{expected}} = \SI{7.88e-23}{GeV^{-1}},
+\left(g_{ae} · g_{aγ}\right)_{\text{expected}} = \SI{7.878225(6464)e-23}{GeV^{-1}},
 \]
 
 while the observed limit was computed to
 
 \[
-\left(g_{ae} · g_{aγ}\right)_{\text{observed}} = \SI{7.36e-23}{GeV⁻¹}.
+\left(g_{ae} · g_{aγ}\right)_{\text{observed}} \lesssim \SI{7.35e-23}{GeV⁻¹} \text{ at } \SI{95}{\%} \text{ CL}.
 \]
 
 This is a good improvement over the current best limit obtained by CAST in 2013
@@ -39002,7 +39201,7 @@ on the current best limit ($g_{aγ, \text{Nature}} <
 expected limit of 
 
 \[
-g_{aγ, \text{expected}} = \SI{9.07e-11}{GeV⁻¹},
+g_{aγ, \text{expected}} = \SI{9.0650(75)e-11}{GeV⁻¹},
 \]
 with an observed limit of
 \[
@@ -39020,14 +39219,14 @@ yields an expected limit of
 
 
 \[
-β_{γ, \text{expected}} = \num{3.61e10}.
+β_{γ, \text{expected}} = \num{3.6060(39)e+10}.
 \]
 
 The observed limit was then computed to 
 
 \[
-β_{γ, \text{observed}} = \num{3.1e10},
-\]
+β_{γ, \text{observed}} \lesssim \num{3.1e+10} \text{ at } \SI{95}{\%} \text{ CL}.
+\] 
 
 which is a significant improvement over
 [[cite:&krieger2018search;&krieger_chameleon_jcap]]
@@ -47530,7 +47729,13 @@ where we emphasize that $E(x,y)$ depends on the position, before normalizing wit
 #+ATTR_LATEX: :width 1.0\linewidth
 [[~/phd/Figs/circleCutout/circle_cutout_explanation.pdf]]
 
-* Conversion probability as a function of mass                     :Appendix:
+* Additional limit information                                     :Appendix:
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:limit_additional
+:END:
+
+
+** Conversion probability as a function of mass                   :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:conversion_probability
 :END:
@@ -47559,10 +47764,11 @@ depending on energy (and personal $ΔP$ cutoff).
 #+NAME: fig:appendix:conversion_probability_vs_mass
 [[~/phd/Figs/axions/axion_conversion_probability_vs_mass.pdf]]
 
-** TODOs for this section [1/1]                                   :noexport:
+\clearpage
+*** TODOs for this section [1/1]                                 :noexport:
 - [X] Plot of conversion probability scaling 
 
-** Generate the plot of the conversion probability                :extended:
+*** Generate the plot of the conversion probability              :extended:
 
 Taken and adapted from
 [[file:~/org/Code/CAST/babyIaxoAxionMassRange/axionMass.org]].
@@ -47607,6 +47813,218 @@ ggplot(df, aes("masses", "Ps", color = "E_a [keV]")) +
 | shellCmd:  | command                                                              | -v                | lualatex                    |                                                                      |        |        |        |               |            |    |    |           |    |           |      |          |     |   |    |                         |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |
 | shellCmd:  | lualatex                                                             | -output-directory | /home/basti/phd/Figs/axions | /home/basti/phd/Figs/axions/axion_conversion_probability_vs_mass.tex |        |        |        |               |            |    |    |           |    |           |      |          |     |   |    |                         |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |
 | Generated: | /home/basti/phd/Figs/axions/axion_conversion_probability_vs_mass.pdf |                   |                             |                                                                      |        |        |        |               |            |    |    |           |    |           |      |          |     |   |    |                         |      |    |     |          |        |        |     |    |     |           |    |       |      |      |        |        |     |
+
+** Expected limit table with percentiles
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:exp_limit_percentiles
+:END:
+
+The table shown in tab. [[tab:appendix:expected_limits_percentiles]] shows
+the same table as tab. [[tab:limit:expected_limits]] in the main part of
+the thesis, but with a focus on the variation of the limits. The focus
+is on different percentiles of the distribution of sampled toy
+limits. The $P_i$ columns correspond to the limit at the
+$i^{\text{th}}$ percentile of all toy limits. $P_{50}$ would be the
+median and thus expected limit. The table yields insight into the
+probabilities with which limits are expected for certain setups, given
+the pure statistical fluctuation possible by the measured candidates.
+
+The veto information has been merged into the 'Type' column. A suffix
+(L) indicates 'line veto', 'S' the 'septem veto' and 'SL' both
+vetoes. '-' means no vetoes. FADC and scintillators are implicitly
+included if any of septem or line vetoes are in use. The units are
+excluded in the column names to save space. For the axion-electron and
+axion-photon tables they are all in $\si{GeV⁻¹}$. For the expected
+limit (last column) the uncertainty is again a bootstrapped standard
+deviation.
+
+The same table for the expected axion-photon limit and chameleon
+limits are tab. [[tab:appendix:expected_limits_percentiles_axion_photon]]
+and tab. [[tab:appendix:expected_limits_percentiles_chameleon]],
+respectively. They only have a single row, because we only computed
+the expected limit for one veto setup.
+
+\footnotesize
+#+CAPTION: Table of the expected limits for different veto setups, comparable to tab. [[tab:limit:expected_limits]],
+#+CAPTION: with a focus on the percentiles $P_i$ of the computed toy limits.
+#+CAPTION: For example $P_{25}$ is the $25^{\text{th}}$ percentile of the distribution of toy limits.
+#+CAPTION: All values in units of $\si{GeV⁻¹}$.
+#+NAME: tab:appendix:expected_limits_percentiles
+#+ATTR_LATEX: :booktabs t :environment longtable
+| ε_eff |   nmc | Type   | ε_total |    $P_5$ | $P_{16}$ | $P_{25}$ | $P_{75}$ | $P_{84}$ | $P_{95}$ |       Expected |
+|------+-------+--------+--------+----------+----------+----------+----------+----------+----------+----------------|
+| 0.98 |  1000 | MLP -  |   0.98 | 6.44e-23 | 6.82e-23 | 7.09e-23 | 8.65e-23 | 9.09e-23 | 1.03e-22 |  7.805(37)e-23 |
+| 0.91 |  1000 | MLP -  |   0.91 | 6.59e-23 | 6.96e-23 | 7.21e-23 | 8.75e-23 | 9.25e-23 | 1.03e-22 |  7.856(43)e-23 |
+| 0.95 |  1000 | MLP -  |   0.95 | 6.53e-23 | 6.87e-23 | 7.14e-23 | 8.74e-23 | 9.18e-23 | 1.02e-22 |  7.860(51)e-23 |
+| 0.95 |  2500 | MLP L  |    0.8 | 6.77e-23 | 7.07e-23 | 7.26e-23 | 8.72e-23 | 9.17e-23 | 1.03e-22 |  7.862(29)e-23 |
+| 0.98 | 15000 | MLP L  |   0.82 |  6.7e-23 |    7e-23 |  7.2e-23 | 8.72e-23 |  9.2e-23 | 1.02e-22 |  7.868(11)e-23 |
+| 0.95 | 50000 | MLP L  |    0.8 | 6.75e-23 | 7.04e-23 | 7.25e-23 | 8.72e-23 | 9.18e-23 | 1.02e-22 | 7.8782(65)e-23 |
+| 0.95 | 15000 | MLP L  |    0.8 | 6.75e-23 | 7.04e-23 | 7.24e-23 | 8.72e-23 | 9.16e-23 | 1.03e-22 |  7.879(12)e-23 |
+| 0.98 |  2500 | MLP L  |   0.82 | 6.73e-23 | 7.01e-23 | 7.19e-23 | 8.72e-23 | 9.22e-23 | 1.02e-22 |  7.883(30)e-23 |
+| 0.86 |  1000 | MLP -  |   0.86 | 6.74e-23 | 7.08e-23 | 7.31e-23 | 8.88e-23 | 9.35e-23 | 1.03e-22 |  7.960(51)e-23 |
+| 0.91 |  2500 | MLP L  |   0.76 | 6.91e-23 | 7.18e-23 | 7.38e-23 |  8.9e-23 |  9.3e-23 | 1.03e-22 |   7.99(16)e-23 |
+| 0.91 | 15000 | MLP L  |   0.76 |  6.9e-23 | 7.18e-23 | 7.38e-23 | 8.87e-23 | 9.34e-23 | 1.04e-22 |  8.004(11)e-23 |
+| 0.98 |  2500 | MLP SL |   0.76 | 6.93e-23 |  7.2e-23 | 7.42e-23 | 8.97e-23 | 9.47e-23 | 1.06e-22 |  8.085(29)e-23 |
+| 0.95 |  2500 | MLP S  |   0.78 | 6.91e-23 | 7.22e-23 | 7.43e-23 | 9.08e-23 | 9.53e-23 | 1.07e-22 |  8.113(36)e-23 |
+| 0.95 |  2500 | MLP SL |   0.73 | 6.99e-23 | 7.29e-23 | 7.49e-23 |    9e-23 | 9.46e-23 | 1.05e-22 |  8.125(31)e-23 |
+| 0.98 |  2500 | MLP S  |    0.8 | 6.82e-23 | 7.16e-23 | 7.42e-23 | 9.02e-23 | 9.46e-23 | 1.06e-22 |  8.131(32)e-23 |
+| 0.86 |  2500 | MLP L  |   0.72 | 7.03e-23 | 7.32e-23 | 7.54e-23 | 9.09e-23 | 9.58e-23 | 1.06e-22 |  8.156(30)e-23 |
+| 0.86 | 15000 | MLP L  |   0.72 | 7.03e-23 | 7.32e-23 | 7.54e-23 | 9.06e-23 | 9.51e-23 | 1.06e-22 |  8.183(13)e-23 |
+| 0.91 |  2500 | MLP S  |   0.74 | 7.03e-23 | 7.33e-23 | 7.54e-23 | 9.12e-23 | 9.63e-23 | 1.07e-22 |   8.22(19)e-23 |
+|  0.9 |  2500 | LnL L  |   0.75 | 6.96e-23 | 7.28e-23 | 7.49e-23 | 9.13e-23 | 9.61e-23 | 1.06e-22 |  8.217(37)e-23 |
+| 0.91 |  2500 | MLP SL |    0.7 |  7.1e-23 | 7.42e-23 | 7.62e-23 | 9.17e-23 | 9.64e-23 | 1.08e-22 |  8.287(33)e-23 |
+| 0.86 |  2500 | MLP S  |    0.7 | 7.19e-23 |  7.5e-23 | 7.72e-23 | 9.27e-23 | 9.71e-23 | 1.08e-22 |  8.401(29)e-23 |
+|  0.9 |  2500 | LnL SL |   0.69 | 7.21e-23 | 7.52e-23 | 7.74e-23 | 9.38e-23 | 9.89e-23 | 1.11e-22 |  8.427(34)e-23 |
+| 0.86 |  2500 | MLP SL |   0.66 | 7.32e-23 |  7.6e-23 | 7.79e-23 | 9.38e-23 | 9.76e-23 | 1.08e-22 |  8.459(35)e-23 |
+|  0.8 |  2500 | LnL L  |   0.67 |  7.3e-23 |  7.6e-23 | 7.83e-23 |  9.4e-23 | 9.91e-23 | 1.09e-22 |  8.499(32)e-23 |
+|  0.9 |  2500 | LnL -  |    0.9 | 6.91e-23 | 7.43e-23 | 7.73e-23 | 9.57e-23 | 1.01e-22 | 1.12e-22 |  8.579(37)e-23 |
+|  0.8 |  2500 | LnL -  |    0.8 | 7.13e-23 | 7.59e-23 | 7.88e-23 | 9.79e-23 | 1.03e-22 | 1.15e-22 |  8.738(39)e-23 |
+|  0.8 |  2500 | LnL SL |   0.62 | 7.52e-23 | 7.82e-23 | 8.03e-23 | 9.68e-23 | 1.02e-22 | 1.13e-22 |  8.747(41)e-23 |
+|  0.7 |  2500 | LnL L  |   0.59 | 7.72e-23 | 8.02e-23 | 8.21e-23 | 9.86e-23 | 1.04e-22 | 1.16e-22 |  8.930(40)e-23 |
+|  0.7 |  2500 | LnL -  |    0.7 |  7.4e-23 | 7.87e-23 | 8.23e-23 | 1.01e-22 | 1.07e-22 | 1.19e-22 |  9.086(33)e-23 |
+|  0.7 |  2500 | LnL SL |   0.54 | 8.01e-23 | 8.28e-23 | 8.51e-23 | 1.02e-22 | 1.08e-22 |  1.2e-22 |  9.257(35)e-23 |
+\normalsize
+
+
+\footnotesize
+#+CAPTION: Table of the different percentiles for the single axion-photon expected limit.
+#+CAPTION: All values in units of $\si{GeV⁻¹}$.
+#+NAME: tab:appendix:expected_limits_percentiles_axion_photon
+#+ATTR_LATEX: :booktabs t :environment longtable
+| ε_eff |   nmc | Type  | ε_total |      P_5 |    P_16 |     P_25 |     P_75 |     P_84 |     P_95 |       Expected |
+|------+-------+-------+--------+----------+---------+----------+----------+----------+----------+----------------|
+| 0.95 | 10000 | MLP L |    0.8 | 8.24e-11 | 8.5e-11 | 8.66e-11 | 9.56e-11 | 9.83e-11 | 1.04e-10 | 9.0650(75)e-11 |
+
+\footnotesize
+#+CAPTION: Table of the different percentiles for the single chameleon expected limit.
+#+NAME: tab:appendix:expected_limits_percentiles_chameleon
+#+ATTR_LATEX: :booktabs t :environment longtable
+| ε_eff |   nmc | Type  | ε_total |      P_5 |     P_16 |     P_25 |     P_75 |     P_84 |     P_95 |       Expected |
+|------+-------+-------+--------+----------+----------+----------+----------+----------+----------+----------------|
+| 0.95 | 10000 | MLP L |    0.8 | 3.22e+10 | 3.35e+10 | 3.43e+10 | 3.82e+10 | 3.93e+10 | 4.16e+10 | 3.6060(39)e+10 |
+
+*** Generate the expected limit table with percentiles           :extended:
+
+Following sec. [[#sec:limit:gen_expected_limit_table]],
+
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/generateExpectedLimitsTable/ :results drawer
+./generateExpectedLimitsTable --path ~/org/resources/lhood_limits_21_11_23/ --prefix "mc_limit_lkMCMC" --precision 2
+#+end_src
+
+#+RESULTS:
+:results:
+| ε_eff | nmc | Type | ε_total | P_5 | P_16 | P_25 | P_75 | P_84 | P_95 | Expected |
+|----|----|----|----|----|----|----|----|----|----|----|
+|0.98|1000|MLP -|0.98|6.44e-23|6.82e-23|7.09e-23|8.65e-23|9.09e-23|1.03e-22|7.805(37)e-23|
+|0.91|1000|MLP -|0.91|6.59e-23|6.96e-23|7.21e-23|8.75e-23|9.25e-23|1.03e-22|7.856(43)e-23|
+|0.95|1000|MLP -|0.95|6.53e-23|6.87e-23|7.14e-23|8.74e-23|9.18e-23|1.02e-22|7.860(51)e-23|
+|0.95|2500|MLP L|0.8|6.77e-23|7.07e-23|7.26e-23|8.72e-23|9.17e-23|1.03e-22|7.862(29)e-23|
+|0.98|15000|MLP L|0.82|6.7e-23|7e-23|7.2e-23|8.72e-23|9.2e-23|1.02e-22|7.868(11)e-23|
+|0.95|50000|MLP L|0.8|6.75e-23|7.04e-23|7.25e-23|8.72e-23|9.18e-23|1.02e-22|7.8782(65)e-23|
+|0.95|15000|MLP L|0.8|6.75e-23|7.04e-23|7.24e-23|8.72e-23|9.16e-23|1.03e-22|7.879(12)e-23|
+|0.98|2500|MLP L|0.82|6.73e-23|7.01e-23|7.19e-23|8.72e-23|9.22e-23|1.02e-22|7.883(30)e-23|
+|0.86|1000|MLP -|0.86|6.74e-23|7.08e-23|7.31e-23|8.88e-23|9.35e-23|1.03e-22|7.960(51)e-23|
+|0.91|2500|MLP L|0.76|6.91e-23|7.18e-23|7.38e-23|8.9e-23|9.3e-23|1.03e-22|7.99(16)e-23|
+|0.91|15000|MLP L|0.76|6.9e-23|7.18e-23|7.38e-23|8.87e-23|9.34e-23|1.04e-22|8.004(11)e-23|
+|0.98|2500|MLP SL|0.76|6.93e-23|7.2e-23|7.42e-23|8.97e-23|9.47e-23|1.06e-22|8.085(29)e-23|
+|0.95|2500|MLP S|0.78|6.91e-23|7.22e-23|7.43e-23|9.08e-23|9.53e-23|1.07e-22|8.113(36)e-23|
+|0.95|2500|MLP SL|0.73|6.99e-23|7.29e-23|7.49e-23|9e-23|9.46e-23|1.05e-22|8.125(31)e-23|
+|0.98|2500|MLP S|0.8|6.82e-23|7.16e-23|7.42e-23|9.02e-23|9.46e-23|1.06e-22|8.131(32)e-23|
+|0.86|2500|MLP L|0.72|7.03e-23|7.32e-23|7.54e-23|9.09e-23|9.58e-23|1.06e-22|8.156(30)e-23|
+|0.86|15000|MLP L|0.72|7.03e-23|7.32e-23|7.54e-23|9.06e-23|9.51e-23|1.06e-22|8.183(13)e-23|
+|0.91|2500|MLP S|0.74|7.03e-23|7.33e-23|7.54e-23|9.12e-23|9.63e-23|1.07e-22|8.22(19)e-23|
+|0.9|2500|LnL L|0.75|6.96e-23|7.28e-23|7.49e-23|9.13e-23|9.61e-23|1.06e-22|8.217(37)e-23|
+|0.91|2500|MLP SL|0.7|7.1e-23|7.42e-23|7.62e-23|9.17e-23|9.64e-23|1.08e-22|8.287(33)e-23|
+|0.86|2500|MLP S|0.7|7.19e-23|7.5e-23|7.72e-23|9.27e-23|9.71e-23|1.08e-22|8.401(29)e-23|
+|0.9|2500|LnL SL|0.69|7.21e-23|7.52e-23|7.74e-23|9.38e-23|9.89e-23|1.11e-22|8.427(34)e-23|
+|0.86|2500|MLP SL|0.66|7.32e-23|7.6e-23|7.79e-23|9.38e-23|9.76e-23|1.08e-22|8.459(35)e-23|
+|0.8|2500|LnL L|0.67|7.3e-23|7.6e-23|7.83e-23|9.4e-23|9.91e-23|1.09e-22|8.499(32)e-23|
+|0.9|2500|LnL -|0.9|6.91e-23|7.43e-23|7.73e-23|9.57e-23|1.01e-22|1.12e-22|8.579(37)e-23|
+|0.8|2500|LnL -|0.8|7.13e-23|7.59e-23|7.88e-23|9.79e-23|1.03e-22|1.15e-22|8.738(39)e-23|
+|0.8|2500|LnL SL|0.62|7.52e-23|7.82e-23|8.03e-23|9.68e-23|1.02e-22|1.13e-22|8.747(41)e-23|
+|0.7|2500|LnL L|0.59|7.72e-23|8.02e-23|8.21e-23|9.86e-23|1.04e-22|1.16e-22|8.930(40)e-23|
+|0.7|2500|LnL -|0.7|7.4e-23|7.87e-23|8.23e-23|1.01e-22|1.07e-22|1.19e-22|9.086(33)e-23|
+|0.7|2500|LnL SL|0.54|8.01e-23|8.28e-23|8.51e-23|1.02e-22|1.08e-22|1.2e-22|9.257(35)e-23|
+:end:
+
+**** Axion-photon:
+
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/generateExpectedLimitsTable/ :results drawer
+./generateExpectedLimitsTable --path ~/org/resources/lhood_limits_axion_photon_11_01_24// --prefix "mc_limit_lkMCMC" --precision 2 --coupling ck_g_aγ⁴
+#+end_src
+
+#+RESULTS:
+:results:
+File: mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 1.451446348780004e-40
+| ε_eff | nmc | Type | Scinti | FADC | ε_FADC | Septem | Line | eccLineCut | ε_Septem | ε_Line | ε_SeptemLine | ε_total | Limit no signal [GeV⁻¹] | Expected limit [GeV⁻¹] | Exp. limit variance [GeV⁻²] | Exp. limit σ [GeV⁻¹] | P_5 | P_16 | P_25 | P_75 | P_84 | P_95 |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|0.95|10000|MLP|true|true|0.98|false|true|1|1|0.85|1|0.8|7.84e-11|9.06e-11|5.57e-27|7.46e-14|8.24e-11|8.5e-11|8.66e-11|9.56e-11|9.83e-11|1.04e-10|
+
+| ε_eff | nmc | Type | ε_total | P_5 | P_16 | P_25 | P_75 | P_84 | P_95 | Expected |
+|----|----|----|----|----|----|----|----|----|----|----|
+|0.95|10000|MLP L|0.8|8.24e-11|8.5e-11|8.66e-11|9.56e-11|9.83e-11|1.04e-10|9.0650(75)e-11|
+
+:end:
+
+**** Chameleon
+
+#+begin_src sh :dir ~/CastData/ExternCode/TimepixAnalysis/Tools/generateExpectedLimitsTable/ :results drawer
+./generateExpectedLimitsTable --path ~/org/resources/lhood_limits_chameleon_12_01_24/ --prefix "mc_limit_lkMCMC" --precision 2 --coupling ck_β⁴
+#+end_src
+
+#+RESULTS:
+:results:
+File: mc_limit_lkMCMC_skInterpBackground_nmc_10000_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500.h5
+Standard deviation of existing limits: 2.481905781358339e+42
+| ε_eff | nmc | Type | Scinti | FADC | ε_FADC | Septem | Line | eccLineCut | ε_Septem | ε_Line | ε_SeptemLine | ε_total | Limit no signal | Expected limit | Exp. limit variance | Exp. limit σ | P_5 | P_16 | P_25 | P_75 | P_84 | P_95 |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+|0.95|10000|MLP|true|true|0.98|false|true|1|1|0.85|1|0.8|2.61e+10|3.61e+10|1.5e+15|3.88e+07|3.22e+10|3.35e+10|3.43e+10|3.82e+10|3.93e+10|4.16e+10|
+
+| ε_eff | nmc | Type | ε_total | P_5 | P_16 | P_25 | P_75 | P_84 | P_95 | Expected |
+|----|----|----|----|----|----|----|----|----|----|----|
+|0.95|10000|MLP L|0.8|3.22e+10|3.35e+10|3.43e+10|3.82e+10|3.93e+10|4.16e+10|3.6060(39)e+10|
+
+:end:
+
+
+
+
+** Observed limit - axion photon $g_{aγ}$
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:limit_additional:axion_photon
+:END:
+
+Fig. [[fig:appendix:posterior_likelihood_axion_photon]] shows the sampled
+coupling constants in $g⁴_{aγ}$ of the calculation for the observed
+limit, i.e. the marginal posterior likelihood function for the real
+candidates for the axion-photon coupling. 
+
+#+CAPTION: Marginal posterior likelihood function of the real candidates for the axion-photon
+#+CAPTION: coupling constant in $g⁴_{aγ}$ space. The yellow line is a numerical integration
+#+CAPTION: of the likelihood function using Romberg's method [[cite:&romberg_integration]].
+#+CAPTION: Limit at $g⁴ \approx \SI{6.56e-41}{GeV⁻⁴} ⇒ g \approx \SI{9e-11}{GeV⁻¹}$.
+#+NAME: fig:appendix:posterior_likelihood_axion_photon
+[[~/phd/Figs/trackingCandidates/axionPhoton/mcmc_real_limit_likelihood_ck_g_aγ⁴.pdf]]
+
+
+** Observed limit - chameleon $β_γ$
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:limit_additional:chameleon
+:END:
+
+Fig. [[fig:appendix:posterior_likelihood_chameleon]] shows the sampled
+coupling constants in $β⁴_γ$ of the calculation for the observed
+limit, i.e. the marginal posterior likelihood function for the real
+candidates for the chameleon coupling.
+
+#+CAPTION: Marginal posterior likelihood function of the real candidates for the chameleon
+#+CAPTION: coupling constant in $β⁴_γ$ space. The yellow line is a numerical integration
+#+CAPTION: of the likelihood function using Romberg's method [[cite:&romberg_integration]].
+#+CAPTION: Limit at $β⁴ \approx \num{9.2e41} ⇒ β \approx \num{3.1e10}$.
+#+NAME: fig:appendix:posterior_likelihood_chameleon
+[[~/phd/Figs/trackingCandidates/chameleon/mcmc_real_limit_likelihood_ck_β⁴.pdf]]
+
 
 ** TODOs for this section [/]                                     :noexport:
 
