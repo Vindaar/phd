@@ -2332,7 +2332,7 @@ of the strong CP problem via the QCD vacuum structure and the
 $\mathrm{U}(1)$ problem, it may be worthwhile to look at (some of) the
 original papers. See Weinberg's paper introducing it
 [[cite:&PhysRevD.11.3583]] and 't Hooft's paper on symmetry breaking via the
-Adler-Bell-Jackiw anomaly [[cite:&PhysRevLett.37.8]] as the next logical
+Adler-Bell-Jackiw anomaly [[cite:&tHooftU1]] as the next logical
 step. In [[cite:&hooft1986instantons]] 't Hooft then shows how instantons
 solve the $\mathrm{U}(1)$ problem. In 1999 't Hooft also wrote a
 'historical review' [[cite:&hooft1999glorious]] about renormalization of gauge
@@ -9368,7 +9368,7 @@ sec. [[#sec:daq:temperature_readout]] for more information about the
 temperature logging and readout). In the run shown in
 fig. [[fig:detector:occupancy_sparking_run_241]] the temperature sensors
 were not functional yet, as the readout software was not written. The
-required logic was added to the Timepix Operating System (TOS), the
+required logic was added to the Timepix Operating Software (TOS), the
 readout software of the detector, motivated by this noise activity to
 monitor the temperature before and during a data taking period. The
 temperature on the carrier board indicated temperatures of
@@ -12092,10 +12092,6 @@ scintillator. [fn:threshold_choice]
 #+NAME: fig:daq:veto_scintillator_coincidence
 [[~/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.pdf]]
 
-See the appendix [[#sec:appendix:scintillator_calibration_notes]] for a
-reproduction of the notes taken during the calibration of the veto
-paddle scintillator.
-
 [fn:threshold_choice] While it is unclear to me now given it's been
 over 5 years, I believe at the time of the calibration we wrongly
 assumed a muon rate of $\SI{100}{Hz.m⁻².sr⁻¹}$ instead of about
@@ -12160,6 +12156,12 @@ ggplot(df, aes("Thr", "Coinc")) +
 | shellCmd:  | lualatex                                                                               | -output-directory | /home/basti/phd/Figs/detector/calibration | /home/basti/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.tex |       |        |        |
 | Generated: | /home/basti/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.pdf |                   |                                           |                                                                                        |       |        |        |
   
+
+**** Notes taken of calibration before CAST data taking         :extended:
+
+See the appendix [[#sec:appendix:scintillator_calibration_notes]] for a
+reproduction of the notes taken during the calibration of the veto
+paddle scintillator.
 
 **** Raw scintillator data  :extended:
 
@@ -18641,7 +18643,7 @@ easiest way to do this is the following: we read the energies of all
 events on the center GridPix, then map them to their FADC
 events. Although not common in calibration data, some events may not
 trigger the FADC. By then computing -- for example -- the first
-quantile of the energy data (the absolute lowest value may be some
+percentile of the energy data (the absolute lowest value may be some
 outlier) we automatically get the lowest equivalent GridPix energy
 that triggers the FADC. Doing this leads to yet another similar plot
 to the previous,
@@ -18658,7 +18660,7 @@ ideas. Especially because there is a high likelihood that other
 settings might have run back into noise problems. 
 
 #+CAPTION: The activation threshold of the FADC for each calibration run in 2017.
-#+CAPTION: Computed by the first quantile of the corresponding energies recorded
+#+CAPTION: Computed by the first percentile of the corresponding energies recorded
 #+CAPTION: by the GridPix.
 #+CAPTION: '∫': integration time, '∂': differentiation time, 'G': coarse gain.
 #+NAME: fig:fadc:activation_threshold_gridpix_55fe_run2_settings
@@ -25520,7 +25522,7 @@ signals appearing 'noisy') is accepted for the certainty of not
 falsely rejecting noisy FADC events (as they would represent a random
 coincidence to the event on the center chip).
 
-Applying the FADC veto with a target quantile of 1 from both the lower
+Applying the FADC veto with a target percentile of 1 from both the lower
 and upper end ($1^{\text{st}}$ and $99^{\text{th}}$ percentiles; thus
 a $\SI{98}{\%}$ signal efficiency) in addition to the scintillator
 veto presented in the previous section, results in a background rate as
@@ -30429,7 +30431,7 @@ with $a' = a ( 1 + θ_a )$ and $a'' = a ( 1 + θ_a ) ( 1 + θ_x ) ( 1 +
 θ_y )$. This keeps the possibility of variance due to systematics
 including the penalization embedded in the marginal likelihood, but
 restores a single variable likelihood function with a well defined
-single value for the $95^{\text{th}}$ quantile.
+single value for the $95^{\text{th}}$ percentile.
 
 The limit $g'_{ae}$ is then defined by
 
@@ -39529,10 +39531,10 @@ bibliography:references.bib
 :END:
 #+LATEX: \minitoc
 
-Having introduced the detector used for the data taking in chapter
-[[#sec:detector]], this appendix introduces the data acquisition (DAQ)
+Having introduced the detector used for the data taking in chapter 
+[[#sec:septemboard]], this appendix introduces the data acquisition (DAQ)
 software for the detector (sec. [[#sec:daq:tof]] and [[#sec:daq:tos]]),
-discuss the data formats used for readout as well as the logging
+discusses the data formats used for readout as well as the logging
 facilities. In the last section [[#sec:daq:septemboard_event_display]] we
 will discuss the event display tool used to monitor daily data taking
 at CAST.
@@ -39548,7 +39550,7 @@ at CAST.
 
 - [X] *INTRODUCE DAQ ACRONYM*  
 
-** Timepix Operating Firmware - TOF [0/2]
+** Timepix Operating Firmware - TOF
 :PROPERTIES:
 :CUSTOM_ID: sec:daq:tof
 :END:
@@ -39557,15 +39559,14 @@ Starting with the firmware of the detector, the \textbf{T}imepix
 \textbf{O}perating \textbf{F}irmware (TOF), which runs on the Virtex-6
 FPGA, specifically a Xilinx Virtex-6 (V6) ML605 evaluation board. TOF
 controls the Timepix ASICs of the Septemboard (both the slow control
-aspects and data taking) as well as coordinating the scintillator
+aspects and data taking) as well as coordinates the scintillator
 signals and FADC trigger. It is a VHDL project, intended to run at a
 clock frequency of $\SI{40}{MHz}$. Communication with the GridPixes is
 done via two \textbf{H}igh-\textbf{D}efinition \textbf{M}ultimedia
 \textbf{I}nterface (HDMI) cables, while communication with the readout
-software on the DAQ computer is handled via Ethernet.
-
-For a detailed introduction to TOF, see cite:lupberger2016pixel as
-well as cite:schiffer_phd.
+software on the DAQ computer is handled via Ethernet. For a detailed
+introduction to TOF, see cite:lupberger2016pixel as well as
+cite:schiffer_phd.
 
 See sec. [[#sec:appendix:configuration:tos_tof_versions]] for a few notes
 on the used firmware versions during data taking.
@@ -39576,12 +39577,12 @@ on the used firmware versions during data taking.
   -> Confirmed by Tobi on discord.
 - [X] *LUPBERGER THESIS*
 
-** Timepix Operating Software - TOS [0/2]
+** Timepix Operating Software - TOS
 :PROPERTIES:
 :CUSTOM_ID: sec:daq:tos
 :END:
 
-The \textbf{T}imepix \textbf{O}perating \textbf{S}ystem (TOS) is the
+The \textbf{T}imepix \textbf{O}perating \textbf{S}oftware (TOS) is the
 computer-side data acquisition software to read out Timepix based
 detectors. It is an object oriented C++ project, available at cite:TOS_github. [fn:TOS_versions] 
 The project needs to be used in conjunction with the \textbf{T}imepix
@@ -39636,8 +39637,8 @@ sec. [[#sec:daq:temperature_readout]]).
 The HV controls are specific to Wiener HV power supplies. In principle
 the implemented functionality is a fully featured HV controller that
 supports all Wiener functionality like grouping different channels to
-ramp up together, kill channels on a trip and more. Most importantly
-it implements a custom slow HV ramping logic, which keeps the
+ramp up together, kill channels on a trip and more. Most importantly,
+it implements a custom, slow HV ramping logic, which keeps the
 relative potentials constant between channels in a group to avoid
 tripping a channel.
 
@@ -39736,9 +39737,9 @@ the suffix is the date and time of day when starting the run. This
 directory contains the configuration of all DACs for each chip,
 ~fsr<chip number>.txt~, the written configuration matrix for all
 pixels, ~matrix<chip number>.txt~ and finally the data files
-~data<event number>.txt~. If an FADC is used for the readout additional
-~data<event number>.txt-fadc~ files are created, one for each file the
-FADC triggered (sec. [[#sec:daq:fadc_data_files]]). 
+~data<event number>.txt~. If an FADC is used for the readout
+additional ~data<event number>.txt-fadc~ files are created, one for
+each file in which the FADC triggered (sec. [[#sec:daq:fadc_data_files]]).
 
 The Timepix data files are stored -- for historic reasons -- in raw ASCII
 format. Two different readout modes (with different output
@@ -39772,7 +39773,8 @@ the detector in that event, see listing
 
 #+CAPTION: TOS generated data files start with a general header, which mainly contains 
 #+CAPTION: information about the run the data file is part of. The only exception is the
-#+CAPTION: =dateTime= field, which represents the timestamp of the event. [fn:daq_datetime_header]
+#+CAPTION: =dateTime= field, which represents the timestamp of the event (an oversight, should
+#+CAPTION: have been in the ~[Event]~ header).
 #+NAME: code:daq:zero_suppressed_readout_run_header
 #+begin_src toml
 ## [General]
@@ -39790,7 +39792,7 @@ the detector in that event, see listing
 #+end_src
 
 #+CAPTION: After the general header follows the event header in similar fashion. It records
-#+CAPTION: the event number and information about the FADC and scintillators. If the FADC triggered
+#+CAPTION: the event number and information about the FADC and scintillators. If the FADC triggered,
 #+CAPTION: ~fadcReadout~ is 1. Scintillator triggers may then be values in $[0, 4096)$. The ~fadcTriggerClock~
 #+CAPTION: is the clock cycle of the Timepix frame in which the FADC trigger was received.
 #+NAME: code:daq:zero_suppressed_readout_event_header
@@ -39824,9 +39826,6 @@ the detector in that event, see listing
 106     160     75
 211     142     2
 #+end_src
-
-[fn:daq_datetime_header] It is an oversight that the =dateTime= field
-is part of the =[General]= header instead of the =[Event]= header.
 
 **** TODOs for this section                                     :noexport:
 
@@ -39864,7 +39863,7 @@ is part of the =[General]= header instead of the =[Event]= header.
   -> This is explained later where we talk about extracting
   information from the data files in sec. [[#sec:reco:event_duration]].
 
-**** FADC data files [/]
+**** FADC data files
 :PROPERTIES:
 :CUSTOM_ID: sec:daq:fadc_data_files
 :END:
@@ -39964,7 +39963,7 @@ represents a pure memory dump of the cyclic register. See listing
 #+CAPTION: As such each $4^{\text{th}}$ line corresponds to one channel. This is why the
 #+CAPTION: values jump so much from line to line.
 #+CAPTION: The last 3 lines are information to recover the trigger point in the acquisition
-#+CAPTION: window [fn:fadc_data_last_3_lines].
+#+CAPTION: window.
 #+NAME: code:daq:fadc_data_raw
 #+begin_src sh
 2028 # register 0, channel 0
@@ -40054,8 +40053,8 @@ we observed at times etc., which will be mentioned later.
 
 Everything related to the =HFManager= in TOS is controlled by a
 configuration file, normally located in
-=TOS/config/HFM_settings.ini=. The TOS configuration files used during
-CAST data taking are found in appendix
+=TOS/config/HFM_settings.ini=. The TOS configuration file used during
+CAST data taking is found in appendix
 [[#sec:appendix:configuration:tos_config]]. We will go through the
 sections of it one by one and explain them.
 
@@ -40328,10 +40327,9 @@ the smooth ramping process (see listing [[code:daq:ramp_hv_channels]]).
 #+end_src
 
 If the HV is to be ramped down, a call to =ShutdownHFM= will ask
-whether the channels should be ramped down.
-
-There are a multitude of further commands available to communicate
-with the module, check the voltages, print status information etc.
+whether the channels should be ramped down. There are a multitude of
+further commands available to communicate with the module, check the
+voltages, print status information etc.
 
 Note that TOS can be started without ramping the HV channels and
 stopped without ramping the channels down. It is capable of connecting
@@ -40404,18 +40402,18 @@ disabled manually in code for the data taking at CAST. This however
 triggered a secondary code path for the temperature logging, storing
 it in the default location outside the specific run directories. As an
 effect the majority of CAST temperature logging data has been lost, as
-most of it was overwritten several times. About daily manual
-temperature measurements are still left and show the detector
-operating in a good temperature range. Precise correlations with
-certain detector behaviors are unfortunately impossible. The two
-different code paths for the temperature logging are essentially a bug
-in the code that was never intended, stemming from the fact that
-temperature logging must be done to a 'global' location outside of
-data taking (as no data taking specific directory exists). Due to how
-the temperature logging and HV & FADC controls were added to TOS,
-these things were more entangled than necessary. A more thorough
-testing period of the detector and software package should have been
-performed, but was not in scope.
+most of it was overwritten several times. Roughly daily manual temperature
+measurements are still left and show the detector operating in a good
+temperature range. Precise correlations with certain detector
+behaviors are unfortunately impossible. The two different code paths
+for the temperature logging are essentially a bug in the code that was
+never intended, stemming from the fact that temperature logging must
+be done to a 'global' location outside of data taking (as no data
+taking specific directory exists). Due to how the temperature logging
+and HV & FADC controls were added to TOS, these things were more
+entangled than necessary. A more thorough testing period of the
+detector and software package should have been performed, but was not
+in scope.
 
 **** TODOs for this section [/]                                 :noexport:
 
@@ -40474,7 +40472,7 @@ for the PhD thesis.
 
 - [X] *THIS IS IN DETECTOR OVERVIEW NOW*
 
-** Septemboard event display [0/0]
+** Septemboard event display
 :PROPERTIES:
 :CUSTOM_ID: sec:daq:septemboard_event_display
 :END:
@@ -40559,7 +40557,7 @@ exceeds one frame per second significantly.
 - [X] *CITE SOMETHING FOR VIRIDIS COLORSCALE*
 
 
-* Configurations and TOS / TOF versions                            :Appendix:
+* Configuration and TOS / TOF versions                             :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:configuration
 :END:
@@ -40567,7 +40565,7 @@ exceeds one frame per second significantly.
 In this appendix we will present the TOS configuration file used for data
 taking at CAST and shortly note on versions of TOS and TOF used. 
 
-** TOS configuration file [/]
+** TOS configuration file
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:configuration:tos_config
 :END:
@@ -40706,8 +40704,9 @@ safeLowerTempSeptem             = 0
 
 For the DAQ software TOS unfortunately no discrete git tags exist, due
 to its rocky development. However, based on the git repository [[cite:&TOS_github]]
-and the dates of the start of the data taking campaigns, we can deduce
-the corresponding commits, which were used there.
+and the dates of the start of the data taking campaigns (see
+[[#sec:cast:timeline]]), it is simple to deduce the corresponding commits
+which were used.
 
 The detector firmware versions, TOF, have an even less well defined
 history. No development history exists, strictly speaking. The ~.bit~
@@ -40715,7 +40714,7 @@ files are available, but their names are very 'descriptive' in nature,
 but do not contain any version numbers either. If memory serves
 correctly, the version used in /Run-3/ at CAST contained something
 like ~szint1_fixed~ in its filename, indicating that the scintillator
-trigger logic was fixed.
+trigger logic was fixed (which was the major bug in Run-2).
 
 *** More notes on the TOF versions                               :extended:
 
@@ -40740,8 +40739,7 @@ version exactly was used.
 
 This appendix explains the different calibrations that need to be
 performed for the Timepix to bring it into its operating window,
-sec. [[#sec:appendix:calibration:timepix]], and present the results mostly
-focused on the center chip. Then in
+sec. [[#sec:appendix:calibration:timepix]]. Then in
 sec. [[#sec:appendix:septemboard_calibrations]] we present additional
 calibrations for all chips.
 
@@ -40757,19 +40755,17 @@ which are performed before any data taking here.
 First, the =THS= optimization and threshold equalization
 (sec. [[#sec:operation_calibration:ths_opt_equalization]]). These two are
 calibrations that are used to set different DACs on the Timepix to
-good working points. 
-
-The very important ToT calibration was already introduced in the main
-body, section [[#sec:operation_calibration:tot_calibration]]. Its purpose
-is to interpret the ToT values in amount of charge of recorded
-electrons.
-
-In principle there are many other calibrations one could perform, as
-the Timepix has 13 different DACs. Most are used with
-default values that are seen in tab. [[tab:daq:common_dac_values]].
-
-For an introduction to S-Curve scans see the extended
-version of the thesis.
+good working points. The very important ToT calibration was already
+introduced in the main body, section
+[[#sec:operation_calibration:tot_calibration]]. Its purpose is to
+interpret the ToT values in amount of charge of recorded electrons. In
+principle there are many other calibrations one could perform, as the
+Timepix has 13 different DACs. Most are used with default values that
+are seen in tab. [[tab:daq:common_dac_values]]. S-Curve scans are
+introduced in sec. [[#sec:operation_calibration:scurve_scan]], which can
+be used to map ~THL~ threshold DAC values to charges and determine the
+activation threshold. Similarly, the Pólya distribution can also act
+as a means to determine the activation threshold, see sec. [[#sec:appendix:calibration:polya_distribution_threshold]].
 
 Important references for the Timepix in general and for the
 calibration procedures explained below are
@@ -41155,7 +41151,7 @@ hit counter used.
 Of course, in the =THS= optimization the input is purely noise and not
 a fixed set of test pulses.
 
-*** Final =THL= (threshold) DAC value selection [0/0]
+*** Final =THL= (threshold) DAC value selection
 
 Once the detector is =THS= optimized and threshold equalized, the
 final threshold value of the =THL= DAC can be determined for the data
@@ -41173,8 +41169,8 @@ For a correctly equalized chip a sharp drop off of noisy pixels should
 be visible at a certain threshold. In principle the =THL= value at
 which no more pixels are noisy is the ideal =THL= value.
 
-TOS first performs a quick scan in a range ~THL~ range given by the
-user using short shutter lengths. The determined drop values that
+TOS first performs a quick scan in a ~THL~ range given by the
+user, using short shutter lengths. The determined drop values that
 still see some noise to a noise-free range is used as a basis for a
 long shutter length scan using a shutter length given by the user. For
 safe noise free operation one should choose a ~THL~ value 2 or 3 above
@@ -41217,7 +41213,7 @@ take no noise + 2
 - [X] *REWRITE FULL SECTION WITH A CLEAR HEAD*  
 
 
-*** S-Curve scan [0/0]                                           
+*** S-Curve scan
 :PROPERTIES:
 :CUSTOM_ID: sec:operation_calibration:scurve_scan
 :END:
@@ -41247,10 +41243,11 @@ Septemboard using the calibration from July 2018. The center peak in
 the middle is the noise peak of the detector at the shutter length
 used for the S-Curve scan. The symmetrical shape is due to specific
 implementation details of how the pixels function, the upper side is
-the one of interest. The falling edge of each curve can be fit by the
-cumulative distribution function of a normal distribution. The center
-point (half way between both plateaus) corresponds to the effective
-threshold of the detector at that injected charge.
+the one of interest. The center point (half way between both plateaus)
+corresponds to the effective threshold of the detector at that
+injected charge. The falling edge of each curve can be fit by the
+cumulative distribution function of a normal distribution,
+eq. [[eq:daq:s_curve_fit_function]].
 
 #+NAME: eq:daq:s_curve_fit_function  
 \begin{equation}
@@ -41264,7 +41261,7 @@ and $\text{erfc}$ is the complementary error function $\text{erfc}(x)
 integral over a normal distribution up to the evaluation point $x$:
 
 \[
-\text{erf}(x) = \frac{2}{\sqrt{π}} ∫_0^{x} e^{-t²} dt
+\text{erf}(x) = \frac{2}{\sqrt{π}} ∫_0^{x} e^{-t²} \dd t.
 \]
 
 Given that the number of injected electrons is known for each test
@@ -41605,7 +41602,7 @@ An example of such a Pólya distribution with a very obvious cutoff at
 low charges is seen in fig. [[fig:daq:polya_example_chip0]]. We see
 chip 0 using the same calibration from July 2018 as in the
 figures in the previous section
-[[#sec:operation_calibration:scurve_scan]]. The data is a $\SI{30}{min}$
+[[#sec:operation_calibration:scurve_scan]]. The data is a $\SI{90}{min}$
 interval of background data at CAST. The pink line represents the fit of
 the Pólya distribution to the data. The dashed part of the line was
 not used for the fit and is only an extension using the final fit
@@ -41667,10 +41664,16 @@ WRITE_PLOT_CSV=true reconstruction -i ~/CastData/data/DataRuns2018_Reco.h5 \
                --overwrite
 #+end_src
 
-** Septemboard calibration [/]
+** Septemboard calibration
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:septemboard_calibrations
 :END:
+
+In the extended thesis this section contains all ~THS~ optimization,
+S-Curves and ~ToT~ calibrations for both run periods and all chips of
+the Septemboard. As this leads to /a lot/ of pages of figures, here we
+only show a histogram of all optimized THL distributions for each run
+period in sec. [[#sec:appendix:operation_calibration:all_thl_calib]].
 
 *** TODOs for this section [/]                                   :noexport:
 
@@ -41962,6 +41965,9 @@ All tables:
 
 
 *** THL calibration
+:PROPERTIES:
+:CUSTOM_ID: sec:appendix:operation_calibration:all_thl_calib
+:END:
 
 Figure [[fig:daq:thl_optimized_distributinons]] shows the optimized =THL=
 distributions of all chips after threshold equalization for run 2
@@ -41977,7 +41983,7 @@ distributions of all chips after threshold equalization for run 2
 
 The plot is generated as part of sec. [[#sec:calib:generate_fsr_table]].
 
-** Calibration measurements of the veto scintillator paddle
+** Calibration measurements of the veto scintillator paddle       :extended:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:scintillator_calibration_notes
 :END:
@@ -42132,15 +42138,17 @@ A threshold of $\SI{-110}{\milli\volt}$ was selected, after analysis.
 
 This appendix provides some guidance about typical operations necessary
 during maintenance or installation of the detector, vacuum system and
-water cooling at CAST.
+water cooling at CAST. The majority of this appendix was written as an
+overview of the Septemboard operation at CAST, as required by CERN at
+the time.
 
 We first quickly look at the terminology to describe different areas
 in the CAST hall in sec. [[#sec:appendix:cast_operations:terminology]].
-Then we go over the different systems. Detector high voltage,
-sec. [[#sec:cast:high_voltage]], vacuum system
-sec. [[#sec:cast:vacuum_system]], water cooling and gas supply
-sec. [[#sec:cast:watercooling_gas]] and the safety interlock systems
-sec. [[#sec:cast:interlock_systems]]. 
+Then we go over the different systems. Detector high voltage
+(sec. [[#sec:cast:high_voltage]]), vacuum system
+(sec. [[#sec:cast:vacuum_system]]), water cooling and gas supply
+(sec. [[#sec:cast:watercooling_gas]]) and the safety interlock systems
+(sec. [[#sec:cast:interlock_systems]]).
 
 We finally end with the CAST log files in
 sec. [[#sec:appendix:cast_log_files]]. These are the most important aspect
@@ -42154,7 +42162,7 @@ in terms of performing data analysis with the data taken at CAST
 
 In the CAST collaboration there is a common terminology in use to
 describe different parts of the hall / different bores and detector
-installations. Essentially the two magnet bores and areas 'behind'
+installations. Essentially, the two magnet bores and areas 'behind'
 them (seen from the center of the magnet if you will) are named by
 their being closest to either the Geneva airport and by the Jura
 mountains on the other side.
@@ -42185,7 +42193,7 @@ fig. [[fig:appendix:cast_operations:terminology]] for a schematic.
   make a Gaussian splatting 3D scene of CAST. Or whatever fancy tech
   you have in your timeline!
 
-** High voltage supply [/]
+** High voltage supply
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:high_voltage
 :END:
@@ -42199,7 +42207,8 @@ positive HV, instead of a negative one.
 The detector uses $\num{7}$ different high voltages. $\num{5}$ of
 these are for the detector itself, $\num{1}$ for the SiPM and the last
 for the veto scintillator on top. Their voltages are shown in
-tab. [[tab:cast:high_voltage]]. 
+tab. [[tab:cast:high_voltage]]. The voltages actually used are defined in
+[[file:~/TOS/config/HFM_settings.ini][TOS/config/HFM_settings.ini]].
 
 #+CAPTION: Table of high voltages in use for the Septemboard detector.
 #+CAPTION: Note that the veto scintillator is not controlled via
@@ -42217,8 +42226,6 @@ tab. [[tab:cast:high_voltage]].
 | veto scinti |       5 |       +1200 |                2 |
 | SiPM        |       6 |       -65.6 |             0.05 |
 |-------------+---------+-------------+------------------|
-
-The voltages actually used are defined in [[file:~/TOS/config/HFM_settings.ini][~/TOS/config/HFM_settings.ini]].
 
 The HV cables in use are red cables with LEMO HV connectors. They run
 from the detector to an iseg HV module sitting in a VME crate on the
@@ -42282,7 +42289,7 @@ which is only partially usable in case of the manual HV control.
       #+BEGIN_SRC sh
       > InitHV
       #+END_SRC
-      which will write the HV settings from HFM_settings.ini to the HV
+      which will write the HV settings from ~HFM_settings.ini~ to the HV
       module. At the end it will ask the user, whether the HV should
       be ramped up:
       #+BEGIN_SRC sh
@@ -42297,7 +42304,7 @@ which is only partially usable in case of the manual HV control.
    isegControl software is still open, since only one application can
    access a single USB interface at the same time.
    
-** Vacuum system [/]
+** Vacuum system
 :PROPERTIES:
 :CUSTOM_ID: sec:cast:vacuum_system
 :END:
@@ -42560,7 +42567,7 @@ It follows a short explanation of the different valves:
 - $V_{\text{in, 2}}$ is the manual valve located on the second gas
   supply mounting below the beamline. 
 - $V_{\text{in, N1}}$ is the first needle valve, which is located on
-  the sceond gas supply mounting below the beamline. It is the one
+  the second gas supply mounting below the beamline. It is the one
   part of the flow meter placed there.
 - $V_{\text{P}}$ is the valve inside the pressure controller, which is
   placed roughly below the telescope (on the platform), while
@@ -42737,7 +42744,7 @@ detector. There are 3 interlock systems to speak of.
 :END:
 
 #+begin_quote
-This section describes the high voltage interlock as it was
+Note: This section describes the high voltage interlock as it was
 intended. But as mentioned multiple times previously it was
 deactivated for final data taking due to several bugs causing it do
 trigger under non intended circumstances.
@@ -42905,7 +42912,7 @@ This is to make sure there can be no rapid toggling between the two
 states during pumping or flushing the system. 
   
 
-** CAST log files [/]
+** CAST log files
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:cast_log_files
 :END:
@@ -42951,15 +42958,7 @@ actually open and the magnet under current during the solar tracking.
 
 This is implemented in the ~cast_log_reader~ program part of
 ~TimepixAanlysis~. See sec. [[#sec:appendix:software:cast_log_reader]] for
-more details on the program. The program first parses the log files and
-determines valid solar trackings. Then, given an HDF5 data file
-containing the background data each solar tracking is mapped to a
-background run. One background run may have zero or more solar
-trackings attached to it. In the final step the solar tracking start
-and stop information is added to each run as additional meta
-data. During the later stages of processing this meta data is then
-used to only consider background (non tracking) or solar tracking data
-(starting from the computation of background rates).
+more details on the program. 
 
 [fn:labview] https://www.ni.com/labview
 
@@ -45168,11 +45167,12 @@ reached if the telescope sits open during installation etc.
 In section [[#sec:calib:detector_behavior_over_time]] we covered the
 median charge and energies of clusters in the background and
 calibration data. Here in the appendix we present a few additional
-plots. First in sec. [[#sec:appendix:choice_gas_gain_binning]] are the
+plots. First, in sec. [[#sec:appendix:choice_gas_gain_binning]] are the
 equivalent figures to
-fig. [[fig:calib:median_energy_ridgeline_30_10_2017]] as well as the
-goodness-of-fit tests in a figure for the data shown in
-sec. [[#sec:calib:detector_behavior_over_time]]. In
+fig. [[fig:calib:median_energy_ridgeline_30_10_2017]] for other time
+periods. The goodness-of-fit tests mentioned in
+sec. [[#sec:calib:detector_behavior_over_time]] for the selection of the
+best interval length are shown as well. In
 sec. [[#sec:appendix:correlation_gas_gain_ambient_temp]] we have the
 equivalent figures to
 fig. [[fig:calib:correlation_ambient_temperature_gasgain_and_spectra]] for
@@ -46244,13 +46244,13 @@ for plt in plots.reversed:
 
 The main difference between how the CAST detector lab data is treated
 in cite:krieger2018search and in this thesis is that here we treat
-each data taking run of the CDL data as one unit instead of all data
+each data taking run of the CDL data as one unit, instead of all data
 for one target/filter combination. This is mainly due to the strong
 detector variation in the gas gain during the CDL data taking. As such
 it is not possible to fit the spectra when combining all data from all
 runs for a single target/filter combination. In the extreme cases
 ($\ce{Cu}-\ce{Ni}$ for example) this leads to visibly two main
-peaks in the charge spectrum. As such each run is fit separately. The
+peaks in the charge spectrum. Each run is fit separately. The
 one question about this approach is whether the cluster properties are
 stable under gas gain
 changes. Sec. [[#sec:appendix:fit_by_run:gas_gain_var_cluster_prop]] shows
@@ -46395,7 +46395,7 @@ for plt in plots.reversed:
 | 343 | n     | C      | EPIC   |     0.6 |                               |              | $\num{1.7930(66)e+01}$ | $\num{5.243(51)e+00}$ | $\num{2.924(30)e-01}$ |
 |-----+-------+--------+--------+---------+-------------------------------+--------------+------------------------+-----------------------+-----------------------|
 
-* Morphing of CDL reference spectra [/]                            :Appendix:
+* Morphing of CDL reference spectra                                :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:morphing_cdl_spectra
 :END:
@@ -46432,6 +46432,7 @@ instead of linear interpolation).
 #+NAME: fig:appendix:cdl_morphing_logL_vs_energy
 [[~/phd/Figs/background/logL_of_CDL_vs_energy.pdf]]
 
+\clearpage
 ** TODOs for this section [/]                                     :noexport:
 
 
@@ -46499,7 +46500,7 @@ the form of a cut along the horizontal axis at different energies.
 #+NAME: fig:appendix:morphing_cdl_spectra:cdl_as_tile_ldiv
 [[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/cdl_as_tile_morph_mtNone_lengthDivRmsTrans.pdf]]
 
-
+\clearpage
 ** Interpolation of each likelihood dataset
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:morphing_cdl_spectra:interpolation_raster
@@ -46530,6 +46531,7 @@ transition over the entire energy range.
 #+NAME: fig:appendix:morphing_cdl_spectra:cdl_as_raster_ldiv
 [[~/phd/Figs/CDL/cdlMorphing/fWidth0.9/cdl_as_raster_interpolated_morph_mtNone_lengthDivRmsTrans.pdf]]
 
+\clearpage
 ** Binwise linear interpolations for each likelihood dataset
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:morphing_cdl_spectra:binwise_linear
@@ -47091,7 +47093,7 @@ activity during the CAST Run-2 and Run-3 campaigns. For each a plot of
 the raw pixel activity in the form of counts (how many times was each
 pixel activated) and in the form of summing the Time over Threshold 
 (ToT) values is shown. In both cases the color scale is cut to the
-$95^{\text{th}}$ quantile of the data for better visibility. In each
+$95^{\text{th}}$ percentile of the data for better visibility. In each
 plot small regions that see infrequent sparks show up. Different chips
 have different amounts of activity, due to imperfect calibrations, in
 particular of the 6 outer chips. 
@@ -47099,7 +47101,7 @@ particular of the 6 outer chips.
 ** Run-2
 
 #+CAPTION: Occupancy maps of the Septemboard during the Run-2 data taking campaign
-#+CAPTION: at CAST based on the raw pixel activity counts. Color scale saturates at $95^{\text{th}}$ quantile
+#+CAPTION: at CAST based on the raw pixel activity counts. Color scale saturates at $95^{\text{th}}$ percentile
 #+CAPTION: of all data. Some regions with sparks are
 #+CAPTION: visible. Top right chip on the left edge and bottom right, center right chip
 #+CAPTION: bottom left and bottom right chip in multiple spots. Generally activity is
@@ -47108,7 +47110,7 @@ particular of the 6 outer chips.
 [[~/phd/Figs/occupancyMaps/run2_occupancy_map_by_count_perc95.pdf]]
 
 #+CAPTION: Occupancy maps of the Septemboard during the Run-2 data taking campaign
-#+CAPTION: at CAST based on the sum of raw pixel ToT values. Color scale saturates at $95^{\text{th}}$ quantile
+#+CAPTION: at CAST based on the sum of raw pixel ToT values. Color scale saturates at $95^{\text{th}}$ percentile
 #+CAPTION: of all data. Any pixel activity exceeding $\mathtt{ToT} > 1000$ are filtered out.
 #+NAME: fig:appendix:occupancy_maps:run2_charge
 [[~/phd/Figs/occupancyMaps/run2_occupancy_map_by_charge_perc95_max1000.pdf]]
@@ -47117,16 +47119,16 @@ particular of the 6 outer chips.
 ** Run-3
 
 #+CAPTION: Occupancy maps of the Septemboard during the Run-3 data taking campaign
-#+CAPTION: at CAST based on the raw pixel activity counts. Color scale saturates at $95^{\text{th}}$ quantile
+#+CAPTION: at CAST based on the raw pixel activity counts. Color scale saturates at $95^{\text{th}}$ percentile
 #+CAPTION: of all data. Less spark activity visible than in Run-2. Differing levels of
 #+CAPTION: activity are still visible.
 #+NAME: fig:appendix:occupancy_maps:run3_counts
 [[~/phd/Figs/occupancyMaps/run3_occupancy_map_by_count_perc95.pdf]]
 
 #+CAPTION: Occupancy maps of the Septemboard during the Run-3 data taking campaign
-#+CAPTION: at CAST based on the sum of raw pixel ToT values. Color scale saturates at $95^{\text{th}}$ quantile
+#+CAPTION: at CAST based on the sum of raw pixel ToT values. Color scale saturates at $95^{\text{th}}$ percentile
 #+CAPTION: of all data. Any pixel activity exceeding $\mathtt{ToT} > 1000$ are filtered out.
-#+NAME: fig:appendix:occupancy_maps:run2_charge
+#+NAME: fig:appendix:occupancy_maps:run3_charge
 [[~/phd/Figs/occupancyMaps/run3_occupancy_map_by_charge_perc95_max1000.pdf]]
 
 ** TODOs for this section [/]                                     :noexport:
@@ -47249,12 +47251,15 @@ by the resistor-capacitor behavior of the circuit.
 #+NAME: fig:background:fadc_fall_time_run2_different_settings
 [[~/phd/Figs/FADC/fadc_fallTime_kde_signal_vs_background_different_fadc_amp_settings_run2.pdf]]
 
+\clearpage
 *** Generate plots for signal and background comparison          :extended:
 
 These plots are generated using ~plotFadc~ in
 sec. [[#sec:background:fadc_veto:gen_signal_back_fadc_plots]].
 
-** FADC veto [/]
+
+
+** FADC veto
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:background:fadc
 :END:
@@ -47303,6 +47308,7 @@ in the energy range of the \cefe photopeak.
 #+NAME: fig:appendix:fadc_veto:fadc_sig_back_efficiency
 [[~/phd/Figs/FADC/fadc_rise_time_efficiencies_run3.pdf]]
 
+\clearpage
 ** Generate plot of rise time vs skewness                         :extended:
 
 The code here originates from:
@@ -47381,7 +47387,8 @@ WRITE_PLOT_CSV=true \
     --suffix "run3"
 #+end_src
 
-  
+
+
 ** Expected cluster size
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:fadc_veto_empirical_cluster_length
@@ -47393,7 +47400,8 @@ $\SI{6}{mm}$ in length for \cefe calibration data. This is shown in
 fig. [[fig:appendix:empirical_cluster_lengths]]. 
 
 #+CAPTION: Cluster lengths in millimeter of \cefe calibration data during the Run-2 data taking campaign.
-#+CAPTION: These $\SI{5.9}{keV}$ clusters clearly peak at around $\SI{6}{mm}$ in length.
+#+CAPTION: These $\SI{5.9}{keV}$ clusters peak at around $\SI{5.5}{mm}$ in length with significant drop
+#+CAPTION: in statistics from $\SI{6}{mm}$.
 #+NAME: fig:appendix:empirical_cluster_lengths
 [[~/phd/Figs/expectedClusterSize/length_run83_187_chip3_0.04833333333333333_binSize_binRange-0.0_14.5_region_crSilver_rmsTransverse_0.1_1.1_applyAll_true.pdf]]
 
@@ -47511,7 +47519,7 @@ for the full chip.
 [[~/phd/Figs/background/background_rate_crAll_all_vetoes_lnL_mlp.pdf]]
 
 #+CAPTION: Mean background rates in $\si{keV^{-1}.cm^{-2}.s^{-1}}$ over the entire chip comparing all different \lnL and MLP setups
-#+CAPTION: in an energy range from $\SIrange{0}{8}{keV}$. Due to its efficiency at lower energies, where
+#+CAPTION: in an energy range from $\SIrange{0.2}{8}{keV}$. Due to its efficiency at lower energies, where
 #+CAPTION: the majority of background is, the MLP produces the lowest mean rates.
 #+NAME: tab:appendix:background_rates:mean_background_rates
 #+ATTR_LATEX: :booktabs t
@@ -47933,10 +47941,10 @@ too much however. So we need to add back:
 - the area of the triangle $C$, see the bottom row of
   fig. [[fig:appendix:background_interp_cutoff_explanation]].
 
-The angle $α$ relates to angles $θ_1$ and $θ_2$ via
+The angle $α$ relates to angles $ϑ_1$ and $ϑ_2$ via
 
 \[
-α = \frac{θ_2}{2} - \left(π - \frac{θ_1}{2}\right),
+α = \frac{ϑ_2}{2} - \left(π - \frac{ϑ_1}{2}\right),
 \]
 
 see the center row of fig. [[fig:appendix:background_interp_cutoff_explanation]].
@@ -47959,7 +47967,7 @@ y' &= \cos γ · R - Δy,
 \end{align*}
 
 where $γ$ is the same angle as in the middle row of the schematic and
-$β$ is the equivalent for $θ_2$, $β = \frac{θ_2}{2} - \frac{π}{2}$.
+$β$ is the equivalent for $ϑ_2$, $β = \frac{ϑ_2}{2} - \frac{π}{2}$.
 
 In combination then the area $E$ can then be expressed as:
 
@@ -47967,10 +47975,9 @@ In combination then the area $E$ can then be expressed as:
 E = F - A - B + C + D,
 \]
 
-with $F$ being the total area of the circle.
-
-This finally means to correct the background interpolation at a point
-close to the chip edges, we adjust $I$ by
+with $F$ being the total area of the circle. This finally means to
+correct the background interpolation at a point close to the chip
+edges, we adjust $I$ by
 
 \[
 I'(x,y) = I · \frac{F}{E(x,y)},
@@ -47989,7 +47996,6 @@ where we emphasize that $E(x,y)$ depends on the position, before normalizing wit
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:limit_additional
 :END:
-
 
 ** Conversion probability as a function of mass                   :Appendix:
 :PROPERTIES:
@@ -48150,6 +48156,7 @@ the expected limit for one veto setup.
 | ε_eff |   nmc | Type  | ε_total |      P_5 |    P_16 |     P_25 |     P_75 |     P_84 |     P_95 |       Expected |
 |------+-------+-------+--------+----------+---------+----------+----------+----------+----------+----------------|
 | 0.95 | 10000 | MLP L |    0.8 | 8.24e-11 | 8.5e-11 | 8.66e-11 | 9.56e-11 | 9.83e-11 | 1.04e-10 | 9.0650(75)e-11 |
+\normalsize
 
 \footnotesize
 #+CAPTION: Table of the different percentiles for the single chameleon expected limit.
@@ -48158,6 +48165,8 @@ the expected limit for one veto setup.
 | ε_eff |   nmc | Type  | ε_total |      P_5 |     P_16 |     P_25 |     P_75 |     P_84 |     P_95 |       Expected |
 |------+-------+-------+--------+----------+----------+----------+----------+----------+----------+----------------|
 | 0.95 | 10000 | MLP L |    0.8 | 3.22e+10 | 3.35e+10 | 3.43e+10 | 3.82e+10 | 3.93e+10 | 4.16e+10 | 3.6060(39)e+10 |
+\normalsize
+
 
 *** Generate the expected limit table with percentiles           :extended:
 
@@ -48601,7 +48610,8 @@ and storing it in a compressed HDF5 [[cite:&hdf5]] data file.
 The program is fed a directory containing a TOS run via the ~-p /
 --path~ argument. Either a directory containing a single run (i.e. a
 data taking period ranging typically from minutes to days in length),
-or a directory that itself contains multiple TOS run directories.
+or a directory that itself contains multiple TOS run directories. Runs
+compressed as gzipped TAR balls, ~.tar.gz~ are also supported.
 
 All data files contained in a run directory will then be parsed in a
 multithreaded way. The files are memory mapped and parsed in parallel
@@ -48638,11 +48648,11 @@ sparingly and not at all in the ~raw_data_manipulation~ output, as
 reading individual columns from these is inefficient.
 
 #+CAPTION: An abstract overview of the general layout of the generated HDF5 files.
-#+CAPTION: Each entry shown that does not have any children is an HDF5 group. Every
+#+CAPTION: Each entry shown that has any children is an HDF5 group. Every
 #+CAPTION: leaf node is an HDF5 dataset. The data is ordered by availability. Each
 #+CAPTION: run is a separate group. Within all chips have their own groups with data
 #+CAPTION: associated to that chip. The common datasets are those that contain data
-#+CAPTION: from the TOS event header. FADC data is that, which is contained in the
+#+CAPTION: from the TOS event header. FADC data stored as the raw memory dumps from the
 #+CAPTION: FADC files (for which fewer than regular TOS data files exist).
 #+NAME: code:reco:abstract_hdf5_layout
 #+begin_src toml
@@ -49009,11 +49019,10 @@ https://github.com/Vindaar/TimepixAnalysis/tree/master/resources/ChipCalibration
 for the Run-2 period of the Septemboard. The ~runPeriod.toml~ file
 describes the applicability of the data, see listing
 [[list:ingrid_database:run_period_config]] for the file in this case. For
-each chip there is simply a directly with the calibration files as
+each chip, there is simply a directory with the calibration files as
 produced by TOS and an additional ~chipInfo.txt~ file, see listing
-[[list:ingrid_database:chip_info]]. Note that the ~runPeriod~ name needs to
-match the name of one of the run periods listed in the TOML
-file. 
+[[list:ingrid_database:chip_info]]. Note that the ~runPeriod~ name needs
+to match the name of one of the run periods listed in the TOML file.
 
 The ~databaseTool~ also allows to perform fits to the calibration
 data, if needed (for example to analyze SCurves or the raw ToT
@@ -49084,6 +49093,16 @@ Septemboard detector it provides the option to parse the tracking
 log files and add the tracking information to the background HDF5
 files.
 
+The program first parses the log files and determines valid solar
+trackings. Then, given an HDF5 data file containing the background
+data each solar tracking is mapped to a background run. One background
+run may have zero or more solar trackings attached to it. In the final
+step the solar tracking start and stop information is added to each
+run as additional meta data. During the later stages of processing in
+other ~TimepixAnalysis~ programs, notably ~likelihood~, this meta data
+is then used to only consider background (non tracking) or solar
+tracking data.
+
 The CAST log files relevant for the Septemboard detector can be found
 together with the Septemboard CAST data.
 
@@ -49113,10 +49132,7 @@ Markov Chain Monte Carlo (MCMC) as explained in detail in chapter
 
 Multitude of tools for various things that were analyzed over the
 years. Includes things like computing the gas properties of the
-Septemboard gas mixture and detection efficiency. For 'historical'
-reasons it also still contains the code to train the MLP used as a
-classifier (inside the ~NN_playground~ directory). The latter will be
-moved over to the main ~ingrid~ directory in the future.
+Septemboard gas mixture and detection efficiency. 
 
 *** ~resources~ directory
 
@@ -49156,7 +49172,7 @@ with it.
 
 [[https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/karaPlot/plotData.nim][~plotData~]] is a very versatile tool to produce a variety of different
 plots. It can produce histograms of the different geometric
-properties, occupancy maps, event displays and more. If desired it can
+properties, occupancy maps, event displays and more. If desired, it can
 produce a large number of plots for an input data file in one go. It
 is very powerful, because it can receive an arbitrary number of cuts
 on any dataset present in the input. This allows to produce
@@ -49168,9 +49184,8 @@ understand certain subsets of data that appear 'interesting'.
 In sec. [[#sec:appendix:background:fadc]] we mention non noisy FADC events
 in a region of the rise time / skewness space of
 fig. [[fig:appendix:fadc_veto:rise_skewness_run2]]. These are easily
-filtered to and investigated using ~plotData~.
-
-Fig. [[fig:appendix:empirical_cluster_lengths]] and
+filtered to and investigated using ~plotData~. Also
+fig. [[fig:appendix:empirical_cluster_lengths]] and
 fig. [[fig:reco:fadc_reco_example]] are produced with it, among
 others. Generally, it favors information (density) over aesthetically
 pleasing visualizations though.
@@ -49203,13 +49218,14 @@ mentioning, due to their importance. They were written alongside TimepixAnalysis
 [fn:dplyr] https://dplyr.tidyverse.org/
 [fn:h5py] https://www.h5py.org/
 
-* Full data reconstruction [/]                                     :Appendix:
+* Full data reconstruction                                         :Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:full_data_reconstruction
 :END:
 
 We will now go over how to fully reconstruct all CAST data from the
-Run-2 and Run-3 data taking campaigns. This assumes the following:
+Run-2 and Run-3 data taking campaigns all the way up to the
+computation of the observed limit. This assumes the following:
 
 - all CAST data files are located in a directory accessible by a
   ~DATA~ environment variable. Inside should be the directory
@@ -49434,7 +49450,7 @@ efficiencies and store the HDF5 output files in
 one call. Also each ~fk~ entry can be prefixed with a ~+~ to indicate
 that this veto should not be run on its own. This allows
 flexibility. As indicated by ~--multiprocessing~ and ~--jobs 6~ this
-would run 8 processes in parallel. Note that each process can peak at
+would run 6 processes in parallel. Note that each process can peak at
 up to 10 GB of RAM (depending on the used classifier and vetoes).
 
 ** Computing limits
@@ -49494,6 +49510,11 @@ where the ~<path_to_*_run>~ refers to the output HDF5 file of the
 sec. [[#sec:limit:expected_limits]]. ~--σ_p~ refers to the position
 uncertainty to use. The signal and background uncertainties have the
 real value placed as the default.
+
+With this done, you have successfully reproduced the entire final
+results of the thesis! As mentioned in chapter [[#sec:about_thesis]], see
+the extended thesis for commands, code snippets and more information
+about how each figure and table is produced exactly.
 
 *** Produce the axion model, axion image and detection efficiency file :extended:
 
@@ -49608,7 +49629,7 @@ course (at least if done the way I did it there). See the document.
 
 ** Calculate conversion point numerically
 
-In order to calculate the conversion point, we we need:
+In order to calculate the conversion point, we need:
 - random sampling logic
 - sampling from exponential distribution depending on energy
 - the axion flux, telescope effective area and window absorption
@@ -49785,10 +49806,10 @@ clearly shows the sampling works as intended.
 The final piece now is to use the same sampling logic to generate
 energies according to $I(E)$, which correspond to X-rays of said
 energy entering the detector. For each of these energies then sample
-from the Beer-Lambert law
+from the Beer-Lambert law (see sec. [[#sec:theory:xray_matter_gas]])
 
 \[
-I(z) = I_0 \exp\left[ - \frac{z}{l_{\text{abs}} } \right]
+I(z) = I_0 \exp\left[ - \frac{z}{l_{\text{abs}} } \right],
 \]
 where $I_0$ is some initial intensity and $l_\text{abs}$ the
 absorption length. The absorption length is computed from the gas
@@ -49818,7 +49839,7 @@ with $r_e$ the classical electron radius, $λ$ the wavelength of the
 X-ray and $f₂$ the second scattering factor. Scattering factors are
 tabulated for different elements, for example by [[https://www.nist.gov/pml/x-ray-form-factor-attenuation-and-scattering-tables][NIST]] and
 [[https://henke.lbl.gov/optical_constants][Henke]]. For a further discussion of this see the README and
-implementation of [[https://github.com/SciNim/xrayAttenuation][~xrayAttenuation~]].
+implementation of [[https://github.com/SciNim/xrayAttenuation][~xrayAttenuation~]] [[cite:&Schmidt_xrayAttenuation_2022]].
 
 We will now go ahead and define the CAST gas mixture:
 #+begin_src nim :tangle code/sample_axion_xrays_conversion_points.nim
@@ -49839,11 +49860,11 @@ also define a helper that returns a sampler for the target energy
 using the definition of a normalized exponential distribution
 
 \[
-f_e(x, λ) = \frac{1}{λ} \exp \left[ -\frac{x}{λ} \right]
+f_e(x, λ) = \frac{1}{λ} \exp \left[ -\frac{x}{λ} \right].
 \]
 
 #+begin_quote
-The sampling of the conversion point is the crucial aspect of
+Note: The sampling of the conversion point is the crucial aspect of
 this. Naively we might want to sample between the detector volume from
 0 to $\SI{3}{cm}$. However, this skews our result. Our calculation
 depends on the energy distribution of the incoming X-rays. If the
@@ -49875,7 +49896,7 @@ which we only sample a single point, namely the conversion point of that
 X-ray. If one intended to perform a more complex calculation or wanted
 to sample orders of magnitude more X-rays, one should either
 restructure the code (i.e. sample from known energies and then reorder
-based on the weight defined by $I(E)$ or cache the samplers and
+based on the weight defined by $I(E)$) or cache the samplers and
 pre-bin the energies.
 
 For reference let's compute the absorption length as a function of
@@ -49946,10 +49967,11 @@ Median conversion position = 0.292802 cm
 Variance of conversion position = 0.424726 cm
 #+end_src
 
-As we can see (unfortunately) our initial assumption of a mean
-distance of $\SI{1.22}{cm}$ are quite of the mark. The more realistic
-number is only $\SI{0.56}{cm}$. And if we were to use the median it's
-only $\SI{0.29}{cm}$.
+We see the mean conversion position is at about $\SI{0.56}{cm}$. If we
+consider the median it's only $\SI{0.29}{cm}$ (the number we use in
+[[#sec:appendix:raytracing:axion_image]]). This number provides the target
+for the raytracing of the axion image as an offset from the focal
+length in sec. [[#sec:appendix:raytracing:axion_image]].
 
 Let's plot the conversion points of all sampled (and recorded!) X-rays
 as well as what their distribution against energy looks like.
@@ -50054,7 +50076,7 @@ $⇒$ the case we most care about and of which the numbers are mentioned
 in the text above. 
 
 
-* Raytracing - where does this belong? [0/1]                       :Software:Appendix:
+* Raytracing                                              :Software:Appendix:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:raytracing
 :END:
@@ -50068,15 +50090,15 @@ raytracer to PANTER measurements, sec. [[#sec:appendix:raytracing:panter]]
 and finally compute the axion image expected for CAST behind the LLNL
 telescope, sec. [[#sec:appendix:raytracing:axion_image]].
 
-Raytracing is a technique for the rendering of computationally
-generated images [fn:history]. The classical raytracing algorithm goes back to a
+Raytracing is a technique for the rendering of computer-generated
+images [fn:history]. The classical raytracing algorithm goes back to a
 paper by Turner Whitted in 1979 [[cite:&whitted79]]. It is essentially a
 recursive algorithm, which shoots rays ("photons") from a camera into
 a scene of 3D objects. Interactions with the objects follows
 geometrical optics. The ray equation
 
 \[
-\vec{r}(t) = \vec{o} + t \vec{d}
+\vec{r}(t) = \vec{o} + t \vec{d},
 \]
 
 describes the ray vector $\vec{r}$, how it propagates from its origin
@@ -50172,7 +50194,7 @@ how path tracing is implemented in video games on modern GPUs, see the
 cite:raytracingGemsHaines2019,raytracingGemsIIMarrs2021.
 
 [fn:history] The history of raytracing goes back much further than its
-application to computer graphics.
+application to computer graphics, though.
 
 [fn:monster_house] The first feature length movie entirely rendered using
 path tracing was /Monster House/ (2006).
@@ -50328,12 +50350,16 @@ one. First, a 'normal' visible light raytracer, which the camera
 uses. Secondly, an X-ray raytracer. Both use the same raytracing
 logic, but they differ in sampling. For visible light we emit rays
 from the camera into the scene, while for X-rays we emit from an X-ray
-source. Both of these run in parallel. Scenes are defined by placing
-geometric primitives with different materials into the scene.
+source (an object placed in the scene, for example the Sun). Both of
+these run in parallel. Scenes are defined by placing geometric
+primitives with different materials (glass, metal etc.) into the
+scene.
 
-The X-ray raytracer is used by choosing X-ray emitting
-materials. There is further a specific X-ray material kind, which
-behaves as expected when hit by an X-ray, calculated using
+The X-ray raytracer is used by choosing X-ray emitting materials and
+adding another object as an X-ray target (another material), which the
+X-ray sampling will be biased towards. There is further a specific
+X-ray material an object can be made of, which behaves as expected
+when hit by an X-ray, calculated using
 [[cite:&Schmidt_xrayAttenuation_2022]]. Behavior is described by the
 reflectivity computed via the Fresnel equations as discussed in
 sec. [[#sec:theory:xray_reflectivity]]. To simulate reflectivity of the
@@ -50344,10 +50370,10 @@ would be easy based on mass attenuation coefficients and the Fresnel
 equations for transmission.
 
 In order to detect and read out results from the X-ray raytracing, we
-place "image sensors" into the scene. They use a special material
-kind, which accumulates X-rays hitting them, split into spatial
-pixels. For visible light they simply emit the current values stored
-in each pixel of the image sensor, mapped to the Viridis color scale.
+place "image sensors" into the scene. They use a special material,
+which accumulates X-rays hitting them, split into spatial pixels. For
+visible light they simply emit the current values stored in each pixel
+of the image sensor, mapped to the Viridis color scale.
 
 These things are visible in the example screenshot showing the "CAST"
 scene in fig. [[sref:fig:appendix:raytracing:cast_setup_example]]. The view is
@@ -50373,7 +50399,9 @@ calculated manually. Thus, the raytracer is not generic.
 can literally be implemented in a single weekend!
 
 [fn:not_criticism] Some people may just be better at judging which
-efforts are worth it, than I am.
+efforts are worth it, than I am, haha! On a serious note, given her
+other obligations and this not being an urgent problem, we did not
+pursue it at the time.
 
 [fn:my_belief] At least that is my understanding. There are two public
 X-ray raytracing packages I am aware of, ~McXtrace~ cite:mc_xtrace and
@@ -50556,7 +50584,7 @@ are known. [fn:alternative]
 
 Alternatively, this can also be used to /construct/ an optimal conical
 telescope from a starting radius $R_{1,0}$ (typically called the
-"Mandrel"), if the iterative condition $R_{3,i+1} = R_{1,i} +
+"mandrel"), if the iterative condition $R_{3,i+1} = R_{1,i} +
 d_{\text{glass}}$ is employed (in this case some target parameters are
 needed of course, like focal length, $x_{\text{sep}}$ and a few more).
 
@@ -50729,8 +50757,9 @@ equation. The paper contains schematics with factually wrong
 annotations and more wrong (or outdated?) numbers.
 
 [fn:clarify] Let me be very clear: by no means I am trying to demean
-Anders work! These things happen. It is just a shame to then also have
-a paper with more wrong information, for which no errata is ever published.
+Anders work! These things happen. It is just a shame to not have any
+public, accurate information about the telescope. In particular the
+paper [[cite:&llnl_telescope_first_cast_results]] should have received an errata.
 
 *** TODOs for this section                                       :noexport:
 
@@ -51035,8 +51064,8 @@ find the smallest, most symmetric spot around the
 $\SIrange{1519}{1520}{mm}$ mark as well. [fn:precise]
 
 In this setup three different X-ray fluorescence lines were
-measured. $\ce{Al} Kα$ ($\SI{1.49}{keV}$), $\ce{Ti} Kα$
-($\SI{4.51}{keV}$) and $\ce{Fe} Kα$ ($\SI{6.41}{keV}$). We can compare
+measured. $\ce{Al}$ Kα ($\SI{1.49}{keV}$), $\ce{Ti}$ Kα
+($\SI{4.51}{keV}$) and $\ce{Fe}$ Kα ($\SI{6.41}{keV}$). We can compare
 the images between measurements and simulations as well as compute the
 'half power diameter' (HPD). The HPD is the radius around the image
 center (based on the weighted mean center) in which $\SI{50}{\%}$ of
@@ -51071,7 +51100,7 @@ good. The "bow tie" shape can be seen in all three figures.
           the CCM in Jan 2017, slide 11. "
          (subref "fig:appendix:raytracing:traxer_sim_alK")
          ": Simulation performed with TrAXer. All three plots show the inner " ($ "\\num{3}·\\SI{3}{mm²}")
-         " of the image. If anything the TrAXer simulation is slightly too wide.")
+         " of the image.")
         (label "fig:appendix:raytracing:comparison_alKalpha"))
 #+end_src
 
@@ -51110,10 +51139,7 @@ determined.
 #+CAPTION: PANTER data.
 #+CAPTION: Our raytracing results are the TrAXer rows.
 #+CAPTION: TrAXer generally overestimates the HPD by about $\SI{20}{\arcsecond}$
-#+CAPTION: compared to the perfectc mirror LLNL raytracing results. However,
-#+CAPTION: our handling of the figure error does not achieve the desired effect
-#+CAPTION: in the HPD, despite resulting in a large difference in the total
-#+CAPTION: image size.
+#+CAPTION: compared to the perfectc mirror LLNL raytracing results. 
 #+NAME: tab:appendix:llnl_panter_eef_hpd_measurements
 #+ATTR_LATEX: :booktabs t
 |--------------------------------+------------+------------+------------|
@@ -51255,7 +51281,7 @@ wide normal distribution. In total there are $\num{5}$ input
 parameters, which define the final figure error model.
 
 In order to find the best matching parameters, we perform non-linear
-optimization using a global derivative-free algorithm [fn:nlopt]. This
+optimization using a global derivative-free algorithm [fn:nlopt_algo]. This
 optimization calls the raytracer with a set of parameters in batch
 mode [fn:batch_mode] up to a fixed set of rays, computes the HPD and radii containing
 $\SI{80}{\%}$ and $\SI{90}{\%}$ of the flux and finally computes the
@@ -51295,11 +51321,11 @@ is massive in the sharpness of the data.
 #+end_src
 
 
-[fn:nlopt] To be precise the ~NLOPT_GN_DIRECT_L~ algorithm of the
+[fn:nlopt_algo] To be precise the ~NLOPT_GN_DIRECT_L~ algorithm of the
 NLopt cite:NLopt library, an implementation of the locally biased
 'DIviding RECTangles' algorithm
 cite:jones93_direct,gablonsky01_direct_L. The algorithm performs a
-hyperrectangle search of the bounded parameters pace. Note that many
+hyperrectangle search of the bounded parameter space. Note that many
 other algorithms would work fine too, but we want a global search
 algorithm, as there are possibly different local minima in how the
 parameters are chosen. Derivative-free is an advantage, as each
@@ -51875,7 +51901,9 @@ we do not wish to reuse the raytracing prediction for the solar axion
 image computed by Michael Pivovaroff at LLNL, as used in the CAST
 Nature 2017 paper [[cite:&cast_nature]] paper. [fn:have_access] This is
 because of the different radial emission profile (compare
-fig. [[sref:fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz]]).
+fig. [[sref:fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz]]). And
+for the chameleon, due to its production in the solar tachocline, this
+is of course absolutely mandatory.
 
 To simulate the solar axion image, we use the scene already shown in
 fig. sref:fig:appendix:raytracing:cast_setup_example. The Sun is
@@ -51886,29 +51914,30 @@ fig. sref:fig:theory:solar_axion_flux:flux_vs_energy_and_radius
 calculated using the opacity calculation code [[cite:&JvO_axionElectron]]
 also developed by Johanna von Oy during her master thesis
 [[cite:&vonOy_MSc]]. The calculations are based on the AGSS09 solar model
-cite:agss09_chemical,agss09_new_solar. The
-telescope is rotated under the angle it was installed at CAST, as
-deduced from the X-ray finger taken at CAST,
-fig. sref:fig:cast:xray_finger_centers (about $\SI{14}{°}$). The image
-sensor is placed slightly in front of the focal
-point. $\SI{1492.93}{mm}$ away from the center of the telescope
+cite:agss09_chemical,agss09_new_solar. The telescope is rotated under
+the angle it was installed at CAST, as deduced from the X-ray finger
+taken at CAST, fig. sref:fig:cast:xray_finger_centers (about
+$\SI{14}{°}$). The image sensor is placed slightly in front of the
+focal point. $\SI{1492.93}{mm}$ away from the center of the telescope
 (to the virtual reflection point) instead of $\SI{1500}{mm}$ to
-account for the median conversion point of the X-rays of the expected axion
-electron X-ray flux (as mentioned in sec. [[#sec:limit:median_absorption_depth]]).
+account for the median conversion point of the X-rays of the expected
+axion electron X-ray flux (as mentioned in
+sec. [[#sec:limit:median_absorption_depth]] and calculated in
+[[#sec:appendix:average_depth_xrays_argon]]).
 
 With all these in place, the axion image comes out as seen in
-fig. sref:fig:appendix:raytracing:traxer_solar_axion_image. In comparison
-fig. sref:fig:appendix:raytracing:llnl_solar_axion_image shows the axion
-image as computed by the LLNL raytracing code (albeit only for the
-axion-photon coupling and related emission). The similarity between
-the two images is implying our raytracing simulation is
-sensible. Small differences are expected, not only because of a
-different solar emission. The different rotation angle is only due to
-the different viewing direction (front or back). Our raytracing image
-shows a larger bulge in the center at very low intensity. The absolute
-size of the major flux region is very comparable. The slight asymmetry
-in our image is due to it being effectively $\SI{8}{mm}$ in front of
-the focal point.
+fig. sref:fig:appendix:raytracing:traxer_solar_axion_image. In
+comparison fig. sref:fig:appendix:raytracing:llnl_solar_axion_image
+shows the axion image as computed by the LLNL raytracing code (albeit
+only for the axion-photon coupling and related emission). The
+similarity between the two images is implying our raytracing
+simulation is sensible. Small differences are expected, not only
+because of a different solar emission. The different rotation angle is
+due to a different assumed rotation of the telescope. Our raytracing
+image shows a larger bulge in the center at very low intensity. The
+absolute size of the major flux region is very comparable. The slight
+asymmetry in our image is due to it being effectively $\SI{8}{mm}$ in
+front of the focal point.
 
 #+begin_src subfigure
 (figure ()
@@ -51923,9 +51952,7 @@ the focal point.
          ": TrAXer simulation of the solar axion image using the correct Sun-Earth distance with the
           image sensor placed " ($ (SI 1492.93 "mm")) " away from the telescope center. "
          (subref "fig:appendix:raytracing:llnl_solar_axion_image")
-         ": Corresponding raytracing simulation done at LLNL, however for axion-photon production only. 
-         The difference in rotation between the two images is only due to direction from which they are
-         seen.")
+         ": Corresponding raytracing simulation done at LLNL, however for axion-photon production only.")
         (label "fig:appendix:raytracing:comparison_traxer_llnl_axion_image"))
 #+end_src
 
@@ -52527,7 +52554,7 @@ it is now in the above, see
 [[file:~/org/Doc/StatusAndProgress.org::#sec:raytracing:interactive:fixing_figure_error]].
 
 
-* List of figures and tables
+* List of figures and tables                                       :noexport:
 :PROPERTIES:
 :CUSTOM_ID: sec:appendix:list_figures_tables
 :END:
@@ -52585,7 +52612,6 @@ helpful outside of work! Marios (Maroudas) and Justin (Baier) thank
 you two as well. And Cristian (Cogollos) and Sergio (Arguedas) I loved
 our time together sharing "the corridor". You know who you are!
 
-- [ ] WHAT TO CALL ZGZ GROUP
 While I am not part of the group of Igor (García Irastorza) in
 Zaragoza, I spent a lot of time in the last few years in
 Zaragoza. Everyone of you treated me as if I /was/ part of your group
@@ -52628,6 +52654,9 @@ es euch gibt! And thank you Cristina (Margalejo) for being my partner
 and being at my side! 
 
 ** TODOs for this section :noexport:
+
+- [X] WHAT TO CALL ZGZ GROUP
+  -> I think this is fine.
 
 - [X] Thanks to Klaus & group.
 - [X] Thanks to Julia and Jaime for LLNL help  
