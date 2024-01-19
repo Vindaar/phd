@@ -1113,18 +1113,234 @@ Which is 1.5$ for 300 GB and 3$ to download it. Certainly cheap enough
 to try!
 
 Data to store
-*** All 2017/18 data runs
+
+*** All 2017/18 data runs (raw & reconstructed)
 **** Run 2
 **** Run 3
+*** X-ray finger runs
+  
 *** Development runs
 **** Septem with sparking
-**** FADC testing runs of different settings
+**** FADC testing runs of different settings (50 & 100 ns)
+*** Outer chip 55Fe runs
+I don't have these on my computers at home. They are still only at
+uni, I guess... But of course I don't have access anymore <3.
 *** Detector calibration files for Run 2, Run 3
 *** FADC pedestal run
-*** X-ray finger runs
 *** All our notes + thesis
 *** CAST log files
 *** Nim code?                                                     :pending:
+*** Trained MLP snapshots
+
+*** Zenodo archives
+
+Let's list all the archives we upload to Zenodo here, including the
+README / repository description (and obv. link).
+
+The annoying thing in Zenodo is that directories are not supported. So
+we'll create a TAR ball for the directories we want to upload.
+
+This only has one downside: we cannot create the archive directly from
+the existing directories on our hard drive, because they contain all
+sorts of other files.
+
+So, copy over the files with directories to a temporary directory,
+tar it, upload. Then we can delete it.
+
+**** Uploading
+
+
+To upload the data, we'll use the bash script from:
+https://github.com/jhpoelen/zenodo-upload
+It's simple enough. Uploading via the browser failed on the first try
+(what a surprise).
+
+We need to set our Zenodo token to the ~ZENODO_TOKEN~ environment
+variable, before running ~zenodo_upload.sh~,
+[[file:~/src/zenodo-upload/zenodo_upload.sh]].
+
+
+***** Raw data upload
+
+It can be found in our password database (make sure to set it before!):
+#+begin_src sh
+./zenodo_upload.sh 10521887 ~/CastData/data/Zenodo/RawDataArchive/raw_data_gridpix_CAST_2017_18.tar --verbose
+#+end_src
+In progress <2024-01-17 Wed 12:28>.
+
+
+**** Raw data archive
+
+- Zenodo ID: https://zenodo.org/uploads/10521887
+
+
+This archive will contain:
+- 2017/18 calibration & background runs
+- CDL 2019 data
+- 2017 development files, specifically run 241 and 268 (old run
+  numbers!) from 2017 where we debugged the Septemboard sparking
+  issues.
+- FADC 50ns / 100ns development files?
+  - [X] *FIND THEM*
+    -> Were on my laptop.
+- [ ] Outer 55 Fe data. But these are still only on lab computer at
+  uni and I don't have access anymore. So we might upload them
+  later. We never really used them anyway.    
+
+We will use the directory [[file:~/CastData/data/Zenodo/RawDataArchive/]]
+as our temporary data archive. We'll copy ever ~.tar.gz~ run file to
+the correct folder structure and then tar everything at the end.
+
+Copy over the 2017 files (all ~.tar.gz~) using rsync:
+#+begin_src
+cd ~/CastData/data/Zenodo/RawDataArchive/
+rsync --dry-run -hvrPt -m --include="*/" --include="*.tar.gz" --exclude="*" ~/CastData/data/2017 .
+#+end_src
+where we use (-h human readable, -v verbose, -r recursive, -P partial
+progress, -t preserve times of files), -m prune empty directories. Our
+include / exclude logic is needed to only copy those files that are
+~.tar.gz~. Adapted from [[https://stackoverflow.com/questions/11111562/rsync-copy-over-only-certain-types-of-files-using-include-option][this]] stack overflow answer.
+
+Remove the ~--dry-run~ in practice of course.
+
+And for 2018, 2018_2 and CDL_Runs:
+#+begin_src sh
+cd ~/CastData/data/Zenodo/RawDataArchive/
+for dir in 2018 2018_2 CDL_2019; do
+    rsync --dry-run -hvrPt -m --include="*/" --include="*.tar.gz" --exclude="*" "~/CastData/data/$dir" .
+done
+#+end_src
+
+These files together as a gzipped tarball are ~34 GB in size. So 16GB
+to spare for the Zenodo limit, in principle.
+
+Maybe that's fine for this archive.
+
+
+Create the archive:
+#+begin_src sh
+cd ~/CastData/data/Zenodo/RawDataArchive/
+tar cf raw_data_gridpix_CAST_2017_18.tar *
+#+end_src
+No need to compress it again!
+
+Time to upload...
+
+The README for the archive (will be uploaded as an Org file).
+
+***** Raw data archive for 7-GridPix 'Septemboard' CAST detector
+
+This data archive contains all raw data taken with the 'Septemboard'
+detector. Raw data means it is the data produced by the
+[[https://github.com/Vindaar/TOS][Timepix Operating Software (TOS)]].
+
+This archive assumes familiarity with the operation of the Septemboard
+detector at CAST and the PhD thesis it was used in. Once the thesis is
+published, I will update the Zenodo meta data to include a link to the
+thesis. Otherwise look at
+
+https://phd.vindaar.de
+
+The archive is a single TAR ball, which contains multiple
+directories. They are split by the date in which they were taken and
+their purpose.
+
+The directory structure is as follows:
+#+begin_src
+├── 2017
+│   ├── CalibrationRuns
+│   ├── DataRuns
+│   ├── XrayFingerRuns
+│   └── development
+├── 2018
+│   ├── CalibrationRuns
+│   ├── DataRuns
+│   ├── FADC_100ns_50ns_comparisons
+│   │   ├── 100ns
+│   │   └── 50ns
+│   └── XrayFingerRuns
+├── 2018_2
+│   ├── BadRuns
+│   ├── CalibrationRuns
+│   └── DataRuns
+└── CDL_2019
+#+end_src
+
+- 2017 :: Contains 'Run-2' data taken in 2017.
+  - CalibrationRuns: 55Fe runs from CAST
+  - DataRuns: Background runs from CAST (contains solar tracking data)
+  - XrayFingerRuns: Single X-ray finger run from before data taking,
+    not directly useful.
+  - development: Contains runs from development in 2017, in particular
+    the two runs showing excessive sparking from before the water
+    cooling was installed.
+- 2018 :: Contains 'Run-2' data taken in 2018 (up to Apr 2018).
+  - CalibrationRuns: 55Fe runs from CAST
+  - DataRuns: Background runs from CAST (contains solar tracking data)
+  - XrayFingerRuns: Single X-ray finger run, taken after Run-2 data taking.
+    Useful.
+  - FADC: Contains laboratory runs with the detector mounted
+    pointing towards the zenith. Multiple runs with an FADC
+    integration time of 50ns and multiple with 100ns.
+- 2018_2 :: Contains all 'Run-3' data taken in 2018.
+  - CalibrationRuns: 55Fe runs from CAST
+  - DataRuns: Background runs from CAST (contains solar tracking data)
+  - BadRuns: A single run to be ignored. Faulty.
+- CDL_2019 :: Data taken in the CAST detector lab (CDL) behind an
+  X-ray tube.
+
+**** Reconstructed data archive
+
+- [X] Data/CalibrationRuns_Raw/Reco.h5
+- [X] CDL_2019_Raw/Reco.h5
+- [X] calibration-cdl-2018.h5
+- [X] FakeData <- the MLP training data [[file:~/CastData/data/FakeData/]]  
+- output HDF5 files?
+  -> At least for likelihood combinations, and limits?
+  ~likelihood~ output files:
+  - ~/org/resources/lhood_lnL_17_11_23_septem_fixed/
+  - ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/
+  - ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/
+  Limit output files:
+  - ~/org/resources/lhood_limits_21_11_23/
+
+All the reconstructed files (including CDL):
+#+begin_src sh
+cd ~/CastData/data/Zenodo/RecoDataArchive/
+for typ in Raw Reco; do
+    for year in 2017 2018; do
+        cp -v "~/CastData/data/CalibrationRuns${year}_${typ}.h5" .
+        cp -v "~/CastData/data/CDL_2019/CDL_2019_${typ}.h5" CDL_2019/
+    done
+done
+cp ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 CDL_2019/
+cp ~/CastData/data/FakeData/*.h5 FakeData/
+#+end_src
+
+The ~likelihood~ output files:
+#+begin_src sh
+cp -r ~/org/resources/lhood_lnL_17_11_23_septem_fixed ~/CastData/data/Zenodo/RecoDataArchive/lhoodOutput/
+cp -r ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k ~/CastData/data/Zenodo/RecoDataArchive/lhoodOutput/
+cp -r ~/org/resources/lhood_lnL_17_11_23_septem_fixed ~/CastData/data/Zenodo/RecoDataArchive/lhoodOutput/
+#+end_src
+
+**** Miscellaneous files
+
+- calibration
+- trained MLP snapshots?
+
+- ?
+
+
+**** Log files
+
+CAST log files, allowed?
+
+**** Notes
+
+All personal notes?
+
+
 
 ** TODO use some package for abbreviations
 
