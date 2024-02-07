@@ -1320,13 +1320,13 @@ The directory structure is as follows:
 - [X] CDL_2019_Raw/Reco.h5
 - [X] calibration-cdl-2018.h5
 - [X] FakeData <- the MLP training data [[file:~/CastData/data/FakeData/]]  
-- output HDF5 files?
+- [X] output HDF5 files?
   -> At least for likelihood combinations, and limits?
   ~likelihood~ output files:
   - ~/org/resources/lhood_lnL_17_11_23_septem_fixed/
   - ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/
-  - ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/
-  Limit output files:
+  - ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/ 
+- [X] Limit output files:
   - ~/org/resources/lhood_limits_21_11_23/
 
 All the reconstructed files (including CDL):
@@ -1334,19 +1334,32 @@ All the reconstructed files (including CDL):
 cd ~/CastData/data/Zenodo/RecoDataArchive/
 for typ in Raw Reco; do
     for year in 2017 2018; do
-        cp -v "~/CastData/data/CalibrationRuns${year}_${typ}.h5" .
-        cp -v "~/CastData/data/CDL_2019/CDL_2019_${typ}.h5" CDL_2019/
+        cp -v "${HOME}/CastData/data/CalibrationRuns${year}_${typ}.h5" .
+        cp -v "${HOME}/CastData/data/CDL_2019/CDL_2019_${typ}.h5" CDL_2019/
     done
 done
-cp ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 CDL_2019/
-cp ~/CastData/data/FakeData/*.h5 FakeData/
+cp -v ~/CastData/data/CDL_2019/calibration-cdl-2018.h5 CDL_2019/
+cp -v ~/CastData/data/FakeData/*.h5 FakeData/
 #+end_src
 
 The ~likelihood~ output files:
 #+begin_src sh
-cp -r ~/org/resources/lhood_lnL_17_11_23_septem_fixed ~/CastData/data/Zenodo/RecoDataArchive/lhoodOutput/
-cp -r ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k ~/CastData/data/Zenodo/RecoDataArchive/lhoodOutput/
-cp -r ~/org/resources/lhood_lnL_17_11_23_septem_fixed ~/CastData/data/Zenodo/RecoDataArchive/lhoodOutput/
+cp -v -r ~/org/resources/lhood_lnL_17_11_23_septem_fixed ~/CastData/data/Zenodo/RecoDataArchive/lhoodOutput/
+cp -v -r ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k ~/CastData/data/Zenodo/RecoDataArchive/lhoodOutput/
+cp -v -r ~/org/resources/lhood_lnL_17_11_23_septem_fixed ~/CastData/data/Zenodo/RecoDataArchive/lhoodOutput/
+#+end_src
+
+The limit outputs (axion-electron):
+#+begin_src sh
+cp -v -r ~/org/resources/lhood_limits_21_11_23/ ~/CastData/data/Zenodo/RecoDataArchive/limitOutput/
+cp -v -r ~/org/resources/lhood_limits_axion_photon_11_01_24/ ~/CastData/data/Zenodo/RecoDataArchive/limitOutput/
+cp -v -r ~/org/resources/lhood_limits_chameleon_12_01_24/ ~/CastData/data/Zenodo/RecoDataArchive/limitOutput/
+#+end_src
+
+Create the archive:
+#+begin_src sh
+cd ~/CastData/data/Zenodo/RecoDataArchive/
+tar cf reco_data_gridpix_CAST_2017_18.tar *
 #+end_src
 
 **** Miscellaneous files
