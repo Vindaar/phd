@@ -1253,6 +1253,11 @@ Time to upload...
 
 The README for the archive (will be uploaded as an Org file).
 
+Upload to Hetzner:
+#+begin_src sh
+
+#+end_src
+
 ***** Raw data archive for 7-GridPix 'Septemboard' CAST detector
 
 This data archive contains all raw data taken with the 'Septemboard'
@@ -1335,6 +1340,7 @@ cd ~/CastData/data/Zenodo/RecoDataArchive/
 for typ in Raw Reco; do
     for year in 2017 2018; do
         cp -v "${HOME}/CastData/data/CalibrationRuns${year}_${typ}.h5" .
+        cp -v "${HOME}/CastData/data/DataRuns${year}_${typ}.h5" .
         cp -v "${HOME}/CastData/data/CDL_2019/CDL_2019_${typ}.h5" CDL_2019/
     done
 done
@@ -1362,22 +1368,188 @@ cd ~/CastData/data/Zenodo/RecoDataArchive/
 tar cf reco_data_gridpix_CAST_2017_18.tar *
 #+end_src
 
+***** Reconstructed data archive for 7-GridPix 'Septemboard' CAST detector
+
+This data archive contains all reconstructed data of the dataset taken with the 'Septemboard'
+detector at CAST in 2017/18. That means it is the data produced from dataset:
+
+https://https://doi.org/10.5281/zenodo.10521887
+
+The reconstruction of the data is done via the tools part of
+[[https://github.com/Vindaar/TimepixAnalysis][TimepixAnalysis]]. 
+
+This archive assumes familiarity with the operation of the Septemboard
+detector at CAST and the PhD thesis it was used in. Once the thesis is
+published, I will update the Zenodo meta data to include a link to the
+thesis. Otherwise look at
+
+https://phd.vindaar.de
+
+The archive is a single TAR ball, which contains multiple
+directories. They are split by the type of data mainly. The main data
+files are those named ~Calibration/DataRuns_2017/8_Raw/Reco.h5~ as
+well as the similarly named ~CDL~ files. The naming follows the naming
+of the aforementioned Zenodo archive. See below the directory
+structure for more details.
+
+The directory structure is as follows:
+#+begin_src
+.
+├── CDL_2019
+│   ├── CDL_2019_Raw.h5
+│   ├── CDL_2019_Reco.h5
+│   └── calibration-cdl-2018.h5
+├── CalibrationRuns2017_Raw.h5
+├── CalibrationRuns2017_Reco.h5
+├── CalibrationRuns2018_Raw.h5
+├── CalibrationRuns2018_Reco.h5
+├── DataRuns2017_Raw.h5
+├── DataRuns2017_Reco.h5
+├── DataRuns2018_Raw.h5
+├── DataRuns2018_Reco.h5
+├── FakeData
+│   ├── fakeData_500k_0_to_3keV_decrease.h5
+│   └── fakeData_500k_uniform_energy_0_10_keV.h5
+├── lhoodOutput
+│   ├── lhood_lnL_17_11_23_septem_fixed
+│   │   ├── lhood_c18_R2_crAll_sEff_0.7_lnL.h5
+│   │   ├── lhood_c18_R2_crAll_sEff_0.7_lnL.log
+│   │   ├── .... similar other files
+│   └── lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k
+│       ├── lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5
+│       ├── lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.log
+│       ├── .... similar other files
+├── limitOutput
+│   ├── lhood_limits_21_11_23
+│   │   ├── lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.csv
+│   │   │   ├── .... similar other files
+│   │   ├── lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.csv
+│   │   │   ├── .... similar other files
+│   │   ├── lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── .... more files
+│   │   ├── lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── .... more files
+│   │   ├── lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── .... more files
+│   │   ├── lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_septem_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── .... more files
+│   │   ├── lhood_c18_R2_crAll_sEff_0.98_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── .... more files
+│   │   ├── lhood_c18_R2_crAll_sEff_0.98_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── .... more files
+│   │   ├── sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662
+│   │   │   ├── .... more files
+│   │   ├── sEff_0.95_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662
+│   │   │   ├── .... more files
+│   │   ├── sEff_0.98_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662
+│   │   │   ├── .... more files
+│   │   └── sEff_0.9_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662
+│   │   │   ├── .... more files
+│   ├── lhood_limits_axion_photon_11_01_24
+│   │   │   ├── .... more files
+│   └── lhood_limits_chameleon_12_01_24
+│   │   │   ├── .... more files
+28 directories, 249 files
+#+end_src
+
+- Root of the archive ::
+  - ~CalibrationRuns2017/18_Raw~: Raw data files of the 55Fe calibration
+    runs taken during the CAST data taking.
+  - ~CalibrationRuns2017/18_Reco~: Fully reconstructed data of the
+    same.
+  - ~Data*~: Same schema for the actual CAST data, containing both
+    background and solar tracking data.
+- ~FakeData~ :: A directory of two HDF5 files containing synthetic X-ray
+  data used for the training of MLPs as classifiers.
+- ~lhoodOutput~ :: A directory containing a large number of files
+  containing the output files of the ~likelihood~ program part of
+  ~TimepixAnalysis~. That is, files containing clusters passing cuts
+  of different setups of classifiers and vetoes. These are the files
+  needed as inputs for background rate and limit calculations.
+- ~limitOutput~ :: A directory of output results from limit
+  calculations. 
+
 **** Miscellaneous files
 
 - calibration
+  -> What calibration files?
+- Solar flux files? (differential and emission?)
+  -> Not strictly speaking needed, how to compute them is explained.
 - trained MLP snapshots?
-
+  -> Yes.
+  -> ~/org/resources/nn_devel_mixing
+  The entire directory contains all tests. Needs ~journal.org~ of course
 - ?
 
+
+Trained MLPs:
+#+begin_src sh
+cp -v -r ~/org/resources/nn_devel_mix/* ~/CastData/data/Zenodo/MiscArchive/MLP_snapshots/
+#+end_src
+  
+And the entire ~resources~ directory. Note that this needs to be
+cleaned to not contain data we shouldn't publish.
+#+begin_src sh
+cp -v -r ~/org/resources ~/CastData/data/Zenodo/MiscArchive/
+#+end_src
+-> Well, if we want to do that, it won't fit into the 50 GB limit!
+- [X] Removed all personal or unrelated stuff
+
+Now the ~phd/resources~ directory:
+#+begin_src sh
+cp -v -r ~/phd/resources ~/CastData/data/Zenodo/MiscArchive/phdResources
+#+end_src
+
+***** Miscellaneous files for the 7-GridPix 'Septemboard' CAST detector
+
+This data archive contains a large amount of miscellaneous data
+related to the 2017/18 data taking campaign of the 7-GridPix
+'Septemboard' detector at CAST. That is, data related to the analysis
+of the following raw dataset:
+
+https://https://doi.org/10.5281/zenodo.10521887
+
+This archive assumes familiarity with the operation of the Septemboard
+detector at CAST and the PhD thesis it was used in. Once the thesis is
+published, I will update the Zenodo meta data to include a link to the
+thesis. Otherwise look at
+
+https://phd.vindaar.de
+
+In particular though, to understand the context of these files it is
+mandatory to read the extended version of the PhD thesis as well as
+the additional notes (~StatusAndProgress~ as well as the ~journal~
+linked under the URL above). Note that the vast majority of these
+files is likely not of significant interest, unless someone wishes to
+understand certain studies that were done. If however, someone reads
+one of these files and wishes to look into any of the referenced data
+files, I prefer to make them available.
+
+One particular set of interesting data is contained in the
+~MLP_snapshots~ directory. It contains all snapshots of every MLP I
+ever trained during the work on my thesis. This includes the best
+performing MLP I eventually used for the results in my thesis.
+
+The other two directories contained are ~phdResources~ and
+~orgResources~. They are named such as they represent a ~resources~
+directory part of my ~phd~ git repository and my ~org~ git repository
+(the latter is a repository for miscellaneous notes and things). 
+
+See the ~list_of_files.txt~ file for everything contained in this
+archive. 
 
 **** Log files
 
 CAST log files, allowed?
+-> <2024-02-07 Wed 11:45> Still no answer from Theodoros
 
 **** Notes
 
 All personal notes?
 
+-> These don't need to be on Zenodo? Or should they?
 
 
 ** TODO use some package for abbreviations
