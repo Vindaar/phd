@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- 2024-02-08 Thu 20:12 -->
+<!-- 2024-02-09 Fri 11:30 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -106,21 +106,22 @@ document.addEventListener('DOMContentLoaded', function() {
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orga7fc688">1. Search for solar axions using a 7-GridPix IAXO prototype detector at CAST</a>
+<li><a href="#org73ffac2">1. Search for solar axions using a 7-GridPix IAXO prototype detector at CAST</a>
 <ul>
-<li><a href="#orgec5e03b">1.1. Abstract</a></li>
-<li><a href="#org18f4bdb">1.2. Data</a></li>
-<li><a href="#orgd592367">1.3. Software</a></li>
-<li><a href="#org26555b8">1.4. Additional notes and information</a></li>
-<li><a href="#org165061f">1.5. Note about TLS</a></li>
+<li><a href="#orgd4b5ee2">1.1. Errata (print version)</a></li>
+<li><a href="#org13074d3">1.2. Abstract</a></li>
+<li><a href="#org47a7f32">1.3. Data</a></li>
+<li><a href="#orgad802fa">1.4. Software</a></li>
+<li><a href="#orgbb64b79">1.5. Additional notes and information</a></li>
+<li><a href="#orgdd8c76d">1.6. Note about TLS</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </nav>
 
-<div id="outline-container-orga7fc688" class="outline-2">
-<h2 id="orga7fc688"><span class="section-number-2">1.</span> Search for solar axions using a 7-GridPix IAXO prototype detector at CAST</h2>
+<div id="outline-container-org73ffac2" class="outline-2">
+<h2 id="org73ffac2"><span class="section-number-2">1.</span> Search for solar axions using a 7-GridPix IAXO prototype detector at CAST</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 This is the companion website to my PhD thesis of the above title. At
@@ -132,13 +133,44 @@ into trouble).
 
 <p>
 If you want access to the extended version of the thesis beforehand,
-please just get in touch by mail via phd@vindaar.de. 
+please just get in touch by mail via phd@vindaar.de.
 </p>
 </div>
 
-<div id="outline-container-orgec5e03b" class="outline-3">
-<h3 id="orgec5e03b"><span class="section-number-3">1.1.</span> Abstract</h3>
+<div id="outline-container-orgd4b5ee2" class="outline-3">
+<h3 id="orgd4b5ee2"><span class="section-number-3">1.1.</span> Errata (print version)</h3>
 <div class="outline-text-3" id="text-1-1">
+<p>
+This is a list of known issues in the printed version that I handed
+in. The box indicates whether these have been fixed.
+</p>
+
+<ul class="org-ul">
+<li class="off"><code>[&#xa0;]</code> <span class="timestamp-wrapper"><span class="timestamp">&lt;2024-02-01 Thu 18:26&gt; </span></span> The background rate plots, over the
+entire chip, which use <code>filterNoisyPixels</code> use the list of pixels
+from the Timepix3 detector and not the small noise region for the
+Septemboard. That implies the background rates might be a small bit
+higher in the full chip background rate plots than in reality.</li>
+<li class="off"><code>[&#xa0;]</code> The appendix about the software and how to reconstruct the
+entire results, still lists the data reference as XXX instead of the
+correct link.</li>
+<li class="on"><code>[X]</code> The text below the figure explaining the FADC as a means to
+close the Timepix shutter mentions a time difference of 50μs. I
+think that should be 50 clock cycles. Need to cross check.
+-&gt; Update <span class="timestamp-wrapper"><span class="timestamp">&lt;2024-02-07 Wed 11:34&gt;</span></span>. Indeed, the time should have been
+5 μs and 200 clock cycles. See <a href="./../../org/journal.html">./../../org/journal.html</a>
+and this definition here:
+<a href="./../../CastData/ExternCode/TOS/include/fpga.hpp">./../../CastData/ExternCode/TOS/include/fpga.hpp</a>
+<a href="https://github.com/Vindaar/TOS/blob/master/include/fpga.hpp#L49-L51">https://github.com/Vindaar/TOS/blob/master/include/fpga.hpp#L49-L51</a>
+(which is used in the <code>fpga</code> constructor and set in
+<code>EnableFADCShutter</code> without being changed).</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org13074d3" class="outline-3">
+<h3 id="org13074d3"><span class="section-number-3">1.2.</span> Abstract</h3>
+<div class="outline-text-3" id="text-1-2">
 <p>
 The Standard Model of particle physics (SM) is extremely successful at
 describing three out of the four known fundamental forces of
@@ -218,9 +250,9 @@ for data analysis for a GridPix3 based future detector.
 </div>
 </div>
 
-<div id="outline-container-org18f4bdb" class="outline-3">
-<h3 id="org18f4bdb"><span class="section-number-3">1.2.</span> Data</h3>
-<div class="outline-text-3" id="text-1-2">
+<div id="outline-container-org47a7f32" class="outline-3">
+<h3 id="org47a7f32"><span class="section-number-3">1.3.</span> Data</h3>
+<div class="outline-text-3" id="text-1-3">
 <p>
 One of the most important parts for my thesis has always been being
 able to replicate results. Part of that is providing access to my
@@ -248,9 +280,9 @@ the entire raw dataset under this Google Drive link:
 </div>
 </div>
 
-<div id="outline-container-orgd592367" class="outline-3">
-<h3 id="orgd592367"><span class="section-number-3">1.3.</span> Software</h3>
-<div class="outline-text-3" id="text-1-3">
+<div id="outline-container-orgad802fa" class="outline-3">
+<h3 id="orgad802fa"><span class="section-number-3">1.4.</span> Software</h3>
+<div class="outline-text-3" id="text-1-4">
 <p>
 The main repository used in my thesis is <a href="https://github.com/Vindaar/TimepixAnalysis">TimepixAnalysis</a>. See the
 appendix about the software and how to reconstruct all data in the
@@ -268,9 +300,9 @@ writing). Once the final thesis is published I'll create a <code>phd</code> tag
 </div>
 </div>
 
-<div id="outline-container-org26555b8" class="outline-3">
-<h3 id="org26555b8"><span class="section-number-3">1.4.</span> Additional notes and information</h3>
-<div class="outline-text-3" id="text-1-4">
+<div id="outline-container-orgbb64b79" class="outline-3">
+<h3 id="orgbb64b79"><span class="section-number-3">1.5.</span> Additional notes and information</h3>
+<div class="outline-text-3" id="text-1-5">
 <p>
 There are 2 major files potentially of interest to the kind of reader
 who may stumble on this website.
@@ -319,7 +351,7 @@ or
 <a href="http://files.vindaar.de/phd/docs/bufferGasIAXO/v1/index.html">http://files.vindaar.de/phd/docs/bufferGasIAXO/v1/index.html</a></li>
 <li>The original document of the notes containing the calculation of the
 median and mean conversion point of axions from the Sun in our detector:
-<a href="http://files.vindaar.de/phd/docs/bufferGasIAXO/v1/index.html">http://files.vindaar.de/phd/docs/bufferGasIAXO/v1/index.html</a>  
+<a href="http://files.vindaar.de/phd/docs/SolarAxionConversionPoint/axion_conversion_point.html">http://files.vindaar.de/phd/docs/SolarAxionConversionPoint/axion_conversion_point.html</a>  
 These are almost identical to the appendix about the same in the thesis.</li>
 </ul>
 
@@ -331,13 +363,15 @@ already contained in some form or another in the above though.
 </div>
 </div>
 
-<div id="outline-container-org165061f" class="outline-3">
-<h3 id="org165061f"><span class="section-number-3">1.5.</span> Note about TLS</h3>
-<div class="outline-text-3" id="text-1-5">
+<div id="outline-container-orgdd8c76d" class="outline-3">
+<h3 id="orgdd8c76d"><span class="section-number-3">1.6.</span> Note about TLS</h3>
+<div class="outline-text-3" id="text-1-6">
 <p>
-The website is currently just files publicly linked on Backblaze
-B2. I might migrate them elsewhere (maybe just github pages for the
-time being?) to somewhere where TLS is easy to setup.
+This main page is hosted on Github using Github Pages. But all the
+linked pages mentioned in the section above are just files publicly
+linked on Backblaze B2. I might migrate them elsewhere at some point
+to support TLS there too, but as all the plots alone sum up to almost
+1GB of data, I'm not sure where at the moment.
 </p>
 
 <p>
@@ -349,7 +383,7 @@ But then again, who cares for this kind of stuff?
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Sebastian Schmidt</p>
-<p class="date">Created: 2024-02-08 Thu 20:12</p>
+<p class="date">Created: 2024-02-09 Fri 11:30</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
