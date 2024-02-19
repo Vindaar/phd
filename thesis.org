@@ -1181,6 +1181,17 @@ sorts of other files.
 So, copy over the files with directories to a temporary directory,
 tar it, upload. Then we can delete it.
 
+*UPDATE*: <2024-02-19 Mon 17:51>
+In the end the reconstructed and misc archives each were larger than
+50GB. I asked whether the two archives could be increased in size, but
+as it turned out Zenodo only allows /a single/ archive of one user to
+exceed 50GB and they raise the size to 200GB. So in the end I asked
+them to add everything to the raw data archive.
+Funnily, enough their data limits are in real GigaBytes and not
+GibiBytes, as commonly reported by things like ~ls~ or ~du~. So in the
+end the Zenodo support person actually increased my limit to 210 GB,
+whoopsie!
+
 **** Uploading
 
 
@@ -1193,8 +1204,7 @@ We need to set our Zenodo token to the ~ZENODO_TOKEN~ environment
 variable, before running ~zenodo_upload.sh~,
 [[file:~/src/zenodo-upload/zenodo_upload.sh]].
 
-
-***** Raw data upload
+***** Raw data upload                                            :FAILED:
 
 It can be found in our password database (make sure to set it before!):
 #+begin_src sh
@@ -1202,6 +1212,8 @@ It can be found in our password database (make sure to set it before!):
 #+end_src
 In progress <2024-01-17 Wed 12:28>.
 
+-> This did not work. Ended up uploading by uploading the data to
+Hetzner and making it available via a sub account.
 
 **** Raw data archive
 
@@ -1559,6 +1571,195 @@ CAST log files, allowed?
 All personal notes?
 
 -> These don't need to be on Zenodo? Or should they?
+
+**** Combined README of data archive
+
+***** Data archive for 7-GridPix 'Septemboard' CAST detector
+
+This data archive contains datasets related to the 7-GridPix
+'Septemboard' detector used at the CERN Axion Solar Telescope (CAST)
+experiment in 2017/18.
+
+This archive assumes familiarity with the operation of the Septemboard
+detector at CAST and the PhD thesis it was used in. Once the thesis is
+published, I will update the Zenodo meta data to include a link to the
+thesis. For the time being see
+
+https://phd.vindaar.de
+
+The archive is split into three different files. For each file an
+explanation follows below.
+
+- raw_data_gridpix_CAST_2017_18.tar :: A single TAR ball of the entire raw
+  data recorded at CAST (and related).
+- reco_data_gridpix_CAST_2017_18.tar :: A single TAR ball of the
+  entire reconstructed data computed from the raw data.
+- miscResourcesArchive.tar.gz :: A single gzipped TAR ball of a large
+  number of miscellaneous files. 
+
+As the latter two archives contain a large number of files, a
+~*_list_of_files.txt~ file is provided, which contains a ~tree~ view
+of the entire TAR ball.
+
+****** raw_data_gridpix_CAST_2017_18.tar - Raw data archive
+
+This file contains all raw data recorded with the aforementioned
+detector. Raw data means it is the data produced by the [[https://github.com/Vindaar/TOS][Timepix
+Operating Software (TOS)]].
+
+The archive is a single TAR ball, which contains multiple
+directories. They are split by the date in which they were taken and
+their purpose.
+
+The directory structure is as follows:
+#+begin_src
+├── 2017
+│   ├── CalibrationRuns
+│   ├── DataRuns
+│   ├── XrayFingerRuns
+│   └── development
+├── 2018
+│   ├── CalibrationRuns
+│   ├── DataRuns
+│   ├── FADC_100ns_50ns_comparisons
+│   │   ├── 100ns
+│   │   └── 50ns
+│   └── XrayFingerRuns
+├── 2018_2
+│   ├── BadRuns
+│   ├── CalibrationRuns
+│   └── DataRuns
+└── CDL_2019
+#+end_src
+
+- 2017 :: Contains 'Run-2' data taken in 2017.
+  - CalibrationRuns: 55Fe runs from CAST
+  - DataRuns: Background runs from CAST (contains solar tracking data)
+  - XrayFingerRuns: Single X-ray finger run from before data taking,
+    not directly useful.
+  - development: Contains runs from development in 2017, in particular
+    the two runs showing excessive sparking from before the water
+    cooling was installed.
+- 2018 :: Contains 'Run-2' data taken in 2018 (up to Apr 2018).
+  - CalibrationRuns: 55Fe runs from CAST
+  - DataRuns: Background runs from CAST (contains solar tracking data)
+  - XrayFingerRuns: Single X-ray finger run, taken after Run-2 data taking.
+    Useful.
+  - FADC: Contains laboratory runs with the detector mounted
+    pointing towards the zenith. Multiple runs with an FADC
+    integration time of 50ns and multiple with 100ns.
+- 2018_2 :: Contains all 'Run-3' data taken in 2018.
+  - CalibrationRuns: 55Fe runs from CAST
+  - DataRuns: Background runs from CAST (contains solar tracking data)
+  - BadRuns: A single run to be ignored. Faulty.
+- CDL_2019 :: Data taken in the CAST detector lab (CDL) behind an
+  X-ray tube.
+
+****** reco_data_gridpix_CAST_2017_18.tar - Reconstructed  data archive
+
+This data archive contains all reconstructed data of the dataset taken
+with the 'Septemboard' detector at CAST in 2017/18. The
+reconstruction of the data is done via the tools part of
+[[https://github.com/Vindaar/TimepixAnalysis][TimepixAnalysis]].
+
+It is a single TAR ball, which contains multiple directories. They are
+split by the type of data mainly. The main data files are those named
+~Calibration/DataRuns_2017/8_Raw/Reco.h5~ as well as the similarly
+named ~CDL~ files. The naming follows that of the raw data
+archive. See below the directory structure for more details.
+
+The directory structure is as follows:
+#+begin_src
+.
+├── CDL_2019
+│   ├── CDL_2019_Raw.h5
+│   ├── CDL_2019_Reco.h5
+│   └── calibration-cdl-2018.h5
+├── CalibrationRuns2017_Raw.h5
+├── CalibrationRuns2017_Reco.h5
+├── CalibrationRuns2018_Raw.h5
+├── CalibrationRuns2018_Reco.h5
+├── DataRuns2017_Raw.h5
+├── DataRuns2017_Reco.h5
+├── DataRuns2018_Raw.h5
+├── DataRuns2018_Reco.h5
+├── FakeData
+│   ├── fakeData_500k_0_to_3keV_decrease.h5
+│   └── fakeData_500k_uniform_energy_0_10_keV.h5
+├── lhoodOutput
+│   ├── lhood_lnL_17_11_23_septem_fixed
+│   │   ├── lhood_c18_R2_crAll_sEff_0.7_lnL.h5
+│   │   ├── lhood_c18_R2_crAll_sEff_0.7_lnL.log
+│   │   ├── .... similar other files
+│   └── lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k
+│       ├── lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.h5
+│       ├── lhood_c18_R2_crAll_sEff_0.85_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662.log
+│       ├── .... similar other files
+├── limitOutput
+│   ├── lhood_limits_21_11_23
+│   │   ├── lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── mc_limit_lkMCMC_skInterpBackground_nmc_15000_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.csv
+│   │   │   ├── .... similar other files
+│   │   ├── lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── mc_limit_lkMCMC_skInterpBackground_nmc_2500_uncertainty_ukUncertain_σs_0.0281_σb_0.0028_posUncertain_puUncertain_σp_0.0500.csv
+│   │   │   ├── .... similar other files
+│   │   ├── lhood_c18_R2_crAll_sEff_0.85_scinti_fadc_septem_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99
+│   │   │   ├── .... more files
+│   │   ├── Similar directories
+│   ├── lhood_limits_axion_photon_11_01_24
+│   │   │   ├── .... more files
+│   └── lhood_limits_chameleon_12_01_24
+│   │   │   ├── .... more files
+28 directories, 249 files
+#+end_src
+
+- Root of the archive ::
+  - ~CalibrationRuns2017/18_Raw~: Raw data files of the 55Fe calibration
+    runs taken during the CAST data taking.
+  - ~CalibrationRuns2017/18_Reco~: Fully reconstructed data of the
+    same.
+  - ~Data*~: Same schema for the actual CAST data, containing both
+    background and solar tracking data.
+- ~FakeData~ :: A directory of two HDF5 files containing synthetic X-ray
+  data used for the training of MLPs as classifiers.
+- ~lhoodOutput~ :: A directory containing a large number of files
+  containing the output files of the ~likelihood~ program part of
+  ~TimepixAnalysis~. That is, files containing clusters passing cuts
+  of different setups of classifiers and vetoes. These are the files
+  needed as inputs for background rate and limit calculations.
+- ~limitOutput~ :: A directory of output results from limit
+  calculations.
+
+See the file ~reco_data_gridpix_CAST_2017_18_list_of_files.txt~ for a
+list of all files contained.
+
+****** miscResourcesArchive.tar.gz - Miscellaneous files
+
+This data archive contains a large amount of miscellaneous data
+related to the 2017/18 data taking campaign of the 7-GridPix
+'Septemboard' detector at CAST.
+
+In particular, to understand the context of the files stored in this
+TAR ball, it is mandatory to read the extended version of the PhD
+thesis as well as the additional notes (~StatusAndProgress~ as well as
+the ~journal~ linked under the URL linked at the top). Note that the
+vast majority of these files is likely not of significant interest,
+unless someone wishes to understand certain studies that were done. If
+however, someone reads one of these files and wishes to look into any
+of the referenced data files, I prefer to make them available.
+
+One particular set of interesting data is contained in the
+~MLP_snapshots~ directory. It contains all snapshots of every MLP I
+ever trained during the work on my thesis. This includes the best
+performing MLP I eventually used for the results in my thesis.
+
+The other two directories contained are ~phdResources~ and
+~orgResources~. They are named such as they represent a ~resources~
+directory part of my ~phd~ git repository and my ~org~ git repository
+(the latter is a repository for miscellaneous notes and things). 
+
+See the file ~miscDataArchive_list_of_files.txt~ for a
+list of all files contained.
 
 
 ** TODO use some package for abbreviations
