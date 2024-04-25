@@ -218,7 +218,7 @@ like this tomorrow, I'll be happy. :)
 
 ** Thoughts about the actual presentation
 
-* Physics, math and philosophy?
+* Solar axions 
 ** Physics, math and philosophy?                                  :noexport:
 
 Mathematics has long served as a guiding tool in theoretical
@@ -299,8 +299,6 @@ get a sense of the 'entirety' of the thesis.
 13. Systematics + MCMC
 14. 
     
-
-* Axion detection
 ** The Sun
 
 #+ATTR_LATEX: :height 0.9\textheight
@@ -369,6 +367,8 @@ https://science.nasa.gov/image-detail/amf-gsfc_20171208_archive_e001435/
   - [ ] Need to fix the height and placement of the CAST image
   - [ ] Set it with TikZ?
 
+* Detector and data taking at CAST
+    
 ** Gaseous detectors - Working principle
 
 #+BEGIN_EXPORT latex
@@ -400,7 +400,6 @@ Primary electrons drift apart!
   \node[anchor=north west,xshift = 1cm, yshift = -1cm] at (current page.north west) {\includegraphics[width=0.4\textwidth]{~/phd/Figs/ingrid_principle.pdf}};
 \end{tikzpicture}
 
-* Detector and data taking at CAST
 ** Septemboard detector
 *** 
 :PROPERTIES:
@@ -432,9 +431,7 @@ Primary electrons drift apart!
 [[~/org/Figs/detector-mk4c-assembly2_with_axion_image.png]]
 #+end_center
 
-* CAST Data taking overview
-    
-** Data taking
+** CAST Data taking overview
 
 - Run-1: 2014/15 data taking with single GridPix detector (not part of
   this talk)
@@ -453,7 +450,6 @@ Primary electrons drift apart!
 | Run-3 |            74.2981 |       67.0066 |        1124.93 |       1012.68 |      90.02 |
 | Total |           180.3041 |      160.3755 |        3516.09 |       3157.35 |      89.52 |
 
-* Expected data
 ** Example events
 - X-ray & background events geometrically different
 - compute properties to classify them by
@@ -472,6 +468,8 @@ Primary electrons drift apart!
 };
 \end{tikzpicture}
 
+
+* Data classification
 ** Data expectations and classifiers
 
 *** Expectations
@@ -496,8 +494,6 @@ Primary electrons drift apart!
 
 - how do we choose input data? What do we even do with our GridPix
   data? *Data reconstruction*
-
-* Data reconstruction
 
 ** Data reconstruction                                            :noexport:
 
@@ -554,9 +550,6 @@ Primary electrons drift apart!
 #+ATTR_LATEX: :width 0.75\textwidth
 [[~/org/Figs/InGridPropExplanation/length_div_rms_trans.pdf]]
 #+end_center
-
-
-* MLP continued
 
 ** MLP layout
 
@@ -637,7 +630,6 @@ data and X-ray tube data!
 [fn:not_really] Strictly speaking only 1 energy: Escape peak events are still
 5.9 keV photons!  
 
-* Much data
 ** Data instability & lack of statistics for different energies: what to do?
 
 *** Simulate X-rays!
@@ -666,13 +658,12 @@ Simulate X-rays of variety of gas gains, gas diffusions and uniform energies.
 - [X] backup slide of algorithm!
 - [X] *PLOT OF* agreement between simulated and real events
 
-* Simulated vs real data
 ** Simulated and real data comparison
 
 #+ATTR_LATEX: :height 0.9\textheight
 [[~/phd/Figs/fakeEventSimulation/runComparisons/ingrid_properties_run_241_ridgeline_kde_by_run.pdf]]
 
-* Background rejection
+* Applying classifiers
 
 ** X-ray reference data                                           :noexport:
 *** 
@@ -707,6 +698,17 @@ Simulate X-rays of variety of gas gains, gas diffusions and uniform energies.
 #+END_CENTER
 
 ** Background rate without vetoes
+
+\begin{tikzpicture}[remember picture, overlay]
+\node[anchor=north west, xshift = 0.2cm, yshift = -0.75cm] at (current page.north west) {
+  \begin{minipage}{5cm}
+    \footnotesize\orange{Hint:} This means the network is both \emph{trained} and '\emph{applied}' based entirely on synthetic X-ray data!
+  \end{minipage}
+};
+\end{tikzpicture}
+# have to insert some negative space, because adding the above
+# annotation for some reason breaks the layout of the slide a bit. 
+\vspace{-0.3cm}
 
 *** 
 :PROPERTIES:
@@ -1063,7 +1065,7 @@ Conversion probability of axions to photons in CAST magnet:
 \[
 P_{a↦γ, \text{vacuum}} = ε_0 \hbar c^3 \left( \frac{g_{aγ} B L}{2} \right)^2.
 \]
-$⇒ P_{aγ}(g_{aγ} = \SI{1e-12}{GeV⁻¹}) = \num{1.78e-21}$
+$⇒ P_{aγ}(g_{aγ} = \SI{1e-12}{GeV^{-1}}) = \num{1.78e-21}$
 
 #+begin_src nim :exports none
 import unchained, math
@@ -1341,9 +1343,9 @@ compared to previous best limit (CAST 2013):
 
 *** Axion-photon coupling
   \[
-  g_{aγ, \text{observed}} \lesssim \SI{9.0e-11}{GeV⁻¹} \text{ at } \SI{95}{\%} \text{ CL}.
+  g_{aγ, \text{observed}} \lesssim \SI{9.0e-11}{GeV^{-1}} \text{ at } \SI{95}{\%} \text{ CL}.
   \]
-  (current best: $g_{aγ, \text{Nature, 2017}} < \SI{6.6e-11}{GeV⁻¹}$)
+  (current best: $g_{aγ, \text{Nature, 2017}} < \SI{6.6e-11}{GeV^{-1}}$)
   
   *but*: our data will be used for a combined axion-photon limit with
   current Micromegas data!
@@ -1380,7 +1382,7 @@ compared to previous best limit (CAST 2013):
 *** Summary
 - Axion an interesting candidate to 'clean up' physics!
 - Septemboard detector successfully deployed at CAST
-- MLP trained as classifier based on synthetic data  
+- MLP as classifier trained and applied based on synthetic X-ray data
 - (Unbinned) Bayesian statistics based limit calculation method,
   including systematics via nuisance parameters
 - position dependent signal (raytracing) and background
@@ -1399,13 +1401,6 @@ compared to previous best limit (CAST 2013):
 
 ** Summary & conlusion
 
-*** More information?
-
-https://phd.vindaar.de
-
-Will soon include 'extended thesis' with code / commands for every
-plot & table + extra information.
-
 *** Conclusion
 - detector competitive in background rate compared to similar
   detectors
@@ -1414,6 +1409,15 @@ plot & table + extra information.
 - MLPs (and likely more advanced ML models) extremely useful for
   classification
 - significant advances in limit calculation method: 'all encompassing'
+
+*** More information?
+
+https://phd.vindaar.de
+
+Will soon include 'extended thesis' with code / commands for every
+plot & table + extra information.
+
+  
 
 ** Outlook
 
@@ -1778,7 +1782,7 @@ $↦$ efficiency: $\SI{78.41}{\%}$
 
 - magnet bore area: $A = π · (\SI{2.15}{cm})² = \SI{14.52}{cm²}$
 - tracking time: $t = \SI{161}{h}$ (dead time taken into account)
-- $P_{aγ}(g_{aγ} = \SI{1e-12}{GeV⁻¹}) = \num{1.78e-21}$
+- $P_{aγ}(g_{aγ} = \SI{1e-12}{GeV^{-1}}) = \num{1.78e-21}$
 
 #+begin_src nim :exports none
 import unchained, math
@@ -2113,10 +2117,12 @@ table on the slide above only 1k samples.
 
 ** Real candidates signal over background
 
+#+ATTR_LATEX: :width 0.8\textwidth
 [[~/phd/Figs/trackingCandidates/real_candidates_signal_over_background.pdf]]
 
 ** Real candidates rate vs background rate
 
+#+ATTR_LATEX: :width 0.8\textwidth
 [[~/phd/Figs/trackingCandidates/rate_real_candidates_vs_background_rate_crAll_mlp_0.95_scinti_fadc_line.pdf]]
 
 
@@ -2279,3 +2285,8 @@ large $s/b$"!
 #+ATTR_LATEX: :width 1\textwidth
 [[~/org/Figs/statusAndProgress/limitSanityChecks/likelihood_sigma_0.25_manyθx_θy.pdf]]
 
+
+** Chameleon image
+
+#+ATTR_LATEX: :width 0.7\textwidth
+[[~/phd/Figs/raytracing/solar_chameleon_image_0.989AU_1500mm.pdf]]
