@@ -39620,6 +39620,54 @@ be very easy.
 - [ ] Try to extract the limit calculation from statusAndProgress and
   see if there's something wrong in our current code?
 
+
+** Observed limit for different axion masses                      :extended:
+
+*** Generate limits for different axion masses
+:PROPERTIES:
+:CUSTOM_ID: sec:limit:limit_different_axion_mass:gen_data_plots
+:END:
+
+In order to compute the observed limit for the axion photon limit, we
+reuse the command from
+sec. [[#sec:limit:axion_photon:compute_axion_photon_observed]], but add
+the ~--massLow/High/Steps~ commands and adjust the output path:
+
+#+begin_src sh
+mcmc_limit_calculation \
+    limit \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    -f /home/basti/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --tracking ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R2_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --tracking ~/org/resources/lhood_mlp_17_11_23_adam_tanh30_sigmoid_mse_82k_tracking/lhood_c18_R3_crAll_sEff_0.95_scinti_fadc_line_mlp_mlp_tanh_sigmoid_MSE_Adam_30_2checkpoint_epoch_82000_loss_0.0249_acc_0.9662_vQ_0.99.h5 \
+    --axionModel ~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_fluxKind_fkAxionPhoton_0.989AU.csv \
+    --axionImage ~/phd/resources/axionImages/solar_axion_image_fkAxionPhoton_0.989AU_1492.93mm.csv \
+    --combinedEfficiencyFile ~/org/resources/combined_detector_efficiencies.csv \
+    --couplingKind ck_g_aγ⁴ \
+    --switchAxes \
+    --path "" \
+    --years 2017 --years 2018 \
+    --σ_p 0.05 \
+    --energyMin 0.2 --energyMax 12.0 \
+    --limitKind lkMCMC \
+    --massLow 1e-4 --massHigh 2e-1 --massSteps 500 \
+    --outpath ~/phd/Figs/trackingCandidates/axionPhotonMassScan/ \
+    --suffix ""
+#+end_src
+
+Convert the output to a CSV file for external users:
+#+begin_src sh
+cd ~/CastData/ExternCode/TimepixAnalysis/Tools/exportLimitLikelihood/
+./exportLimitLikelihood \
+    massScan \
+    -f ~/phd/resources/trackingCandidates/axionPhotonMassScan/mc_limit_lkMCMC_skInterpBackground_nmc_500_uncertainty_ukUncertain_σs_0.0276_σb_0.0028_posUncertain_puUncertain_σp_0.0500mass_scan.h5 \
+    -o ~/phd/resources/trackingCandidates/axionPhotonMassScan/gridpix_axion_photon_likelihood_vs_mass.csv
+#+end_src
+
+With the fixes to the adjustment of the MCMC sampling range based on
+the ~integralBase~ instead of the ~conversionProbability~ at a fixed
+energy, the limits now <2024-06-10 Mon 17:37> look good at all masses!
+
 * Outlook                                                             
 :PROPERTIES:
 :CUSTOM_ID: sec:outlook
