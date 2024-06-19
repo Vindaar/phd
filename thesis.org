@@ -141,29 +141,64 @@
 :CUSTOM_ID: sec:compile_thesis
 :END:
 
-We need to generate the TeX file from Org =C-c C-e l l= to generate
-the TeX file.
+Before you can compile the TeX file or produce the HTML version of
+this thesis, you will need my Emacs configuration:
 
-Then in terminal:
+https://github.com/Vindaar/emacs.d
+
+It defines a variety of Org related settings, in particular related to
+LaTeX and HTML exports.
+
+** LaTeX
+
+For LaTeX, aside from my Emacs config, you need to evaluate the elisp
+snippet below, [[src:latex:setup]]. For the print version also [[src:latex:setup_printed]].
+
+Produce the TeX file using ~C-c C-e r l~ (~M-x org-export-dispatch~)
+and choose ~org-ref~ ~to LaTeX~.
+
+Let =latexmk= take care of the actual compilation of the produced TeX file.
+#+begin_src
+latexmk -pvc -pdf -view=none -shell-escape -output-directory=texout -pdflatex=lualatex thesis.tex
+#+end_src
+it watches the file and automatically recompiles if the file changed
+on disc.
+
+Alternatively, manually do:
 #+begin_src sh
 lualatex --shell-escape thesis.tex
 biber thesis
 lualatex --shell-escape thesis.tex
 #+end_src
 
-Or better yet, let =latexmk= take care of it:
-#+begin_src
-latexmk -pvc -pdf -view=none -shell-escape -output-directory=texout -pdflatex=lualatex thesis.tex
-#+end_src
 
-it watches the file and automatically recompiles if the file changed
-on disc.
+** HTML
+
+For the HTML version, aside from my Emacs config, you don't need
+anything particular to do the first export.
+
+Produce the single HTML file using ~C-c C-e r h~ (~M-x org-export-dispatch~)
+and choose ~org-ref~ ~to html~. This produces one ginormous HTML
+file. Note: it _also_ automatically converts all PDFs it finds to SVGs
+or PNGs (depending on size of the PDF) and copies them to a ~./figs~
+directory reusing the internal paths of the location of the original
+figures, i.e. a ~/home/user/foo/bar/plot.pdf~ will become
+~./figs/home/user/foo/bar/plot.svg~.
+
+With the single HTML file present, we can produce the multiple HTML
+pages:
+#+begin_src sh
+cd ~/phd # or wherever you have the PhD thesis located
+nim r code/split_thesis_html.nim
+#+end_src
+which will produce all HTMLs in [[file:html/]].
 
 * Emacs and Org settings                                           :noexport:
 :PROPERTIES:
 :CUSTOM_ID: sec:latex_book_class
 :END:
 
+#+NAME: src:latex:setup
 #+begin_src emacs-lisp
 (add-to-list 'org-latex-classes
              '("book-noparts"
@@ -198,6 +233,7 @@ on disc.
 
 For the printed version, the color scheme for code should be using a
 bright background (we remove our background setting):
+#+NAME: src:latex:setup_printed
 #+begin_src emacs-lisp
 (setq org-latex-minted-options
    '(("frame" "lines") ("linenos=true") ("fontsize=\\footnotesize")))
