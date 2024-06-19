@@ -1,0 +1,2298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--  2024-06-18 Tue 23:44  -->
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1" name="viewport" />
+<title>‎</title>
+<meta content="Vindaar" name="author" />
+<meta content="Org Mode" name="generator" />
+
+<link type="text/css" rel="stylesheet" href="org_html_export.css" />
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set the initial width for subfigures and their images
+    document.querySelectorAll('figure.subfigure[data-width]').forEach(function(subfigure) {
+        subfigure.style.width = subfigure.getAttribute('data-width');
+    });
+
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.style.width = img.getAttribute('data-width');
+    });
+
+    // Event listener for images within subfigures
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.addEventListener('click', function() {
+            // Determine the .figure-wrapper that contains the clicked image
+            let wrapper = this.closest('.figure-wrapper');
+
+            // If found, adjust the sizes of its subfigures
+            if (wrapper) {
+                let subfigures = wrapper.querySelectorAll('figure.subfigure');
+                subfigures.forEach(subfigure => {
+                    let width = parseFloat(subfigure.getAttribute('data-width'));
+                    if (width < 50) { // Double size if less than 50%
+                        subfigure.setAttribute('data-width', (width * 2) + '%');
+                        subfigure.style.width = (width * 2) + '%';
+                    } else { // Halve size otherwise
+                        subfigure.setAttribute('data-width', (width / 2) + '%');
+                        subfigure.style.width = (width / 2) + '%';
+                    }
+                });
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var headers = document.querySelectorAll('h1 .extended, h2 .extended, h3 .extended, h4 .extended, h5 .extended, h6 .extended');
+
+    headers.forEach(function (header) {
+        var foldableHeader = header.closest('h1, h2, h3, h4, h5, h6');
+        if (foldableHeader) {
+            foldableHeader.classList.add('foldable-header');
+            var nextElement = foldableHeader.nextElementSibling;
+            var contentToFold = [];
+            while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                contentToFold.push(nextElement);
+                nextElement = nextElement.nextElementSibling;
+            }
+            contentToFold.forEach(function (element) {
+                element.classList.add('folded-content');
+            });
+
+            foldableHeader.addEventListener('click', function () {
+                contentToFold.forEach(function (element) {
+                    if (element.style.display === 'none' || element.style.display == '') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+<!-- /* --><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js", "[Contrib]/siunitx/siunitx.js", "[Contrib]/mhchem/mhchem.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"], ['$', '$'], ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 1.0,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        },
+        TeX: {
+              equationNumbers: { autoNumber: 'AMS' },
+              Macros: {
+                  ccsini: '{\\mathrm{Si}₃\\mathrm{N}₄}',
+                  cefe: '{\\ce{^{55}Fe}}',
+                  vektor: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  mtrix: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  cp: '{\\mathrm{CP}}',
+                  cpt: '{\\mathrm{CPT}}',
+                  dd: '{\\mathop{}\\!{\\mathrm{d}}}',
+                  sinc: '{\\mathrm{sinc}}'
+              }
+        }
+    });
+/*]]>*///--&gt;
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<nav role="doc-toc" id="table-of-contents">
+<h2>Table of Contents</h2>
+<div role="doc-toc" id="text-table-of-contents">
+<ul>
+<li>  <a href="./errata.html#sec:errata">1. Errata   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
+<li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
+<ul>
+<li>  <a href="./about_thesis.html#orgc36e3ba">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org976c329">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orga7aaacb">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory.html#sec:theory:useful_reading_material">4.1. Useful reading material   <span class="tag">    <span class="optional">optional</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:illustration_cpt">4.2. Illustration of the \cpt symmetry <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:invisible_axion_models">4.3. Invisible axion models and axion couplings</a></li>
+<li>  <a href="./theory.html#sec:theory:axion_interactions">4.4. Implications for axion interactions - conversion probability</a></li>
+<li>  <a href="./theory.html#sec:theory:solar_axion_flux">4.5. Solar axion flux</a></li>
+<li>  <a href="./theory.html#sec:theory:chameleon">4.6. Chameleons</a></li>
+<li>  <a href="./theory.html#sec:theory:current_bounds">4.7. Current bounds on coupling constants</a></li>
+</ul>
+</li>
+<li><a href="./helioscopes.html#sec:helioscopes">5. Axion helioscopes   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./helioscopes.html#sec:helioscopes:cast">5.1. CERN Axion Solar Telescope (CAST)</a></li>
+<li>  <a href="./helioscopes.html#sec:helioscopes:iaxo">5.2. International AXion Observatory (IAXO)</a></li>
+</ul>
+</li>
+<li><a href="./theory_detector.html#sec:theory_detector">6. X-rays, cosmic muons and gaseous detectors   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory_detector.html#sec:theory:particle_int">6.1. Particle interactions with matter</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:cosmic_radiation">6.2. Cosmic rays</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:gas_fundamentals">6.3. Gaseous detector fundamentals</a></li>
+</ul>
+</li>
+<li><a href="./septemboard.html#sec:septemboard">7. Septemboard detector   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./septemboard.html#sec:detector:micromegas">7.1. Micromegas working principle</a></li>
+<li>  <a href="./septemboard.html#sec:detector:timepix">7.2. Timepix ASIC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
+<li>  <a href="./septemboard.html#orgc654d28">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
+<li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
+<li>  <a href="./septemboard.html#sec:detector:septemboard">7.10. Septemboard - 6 GridPixes around a center one</a></li>
+<li>  <a href="./septemboard.html#sec:detector:water_cooling">7.11. Water cooling and temperature readout for the septemboard</a></li>
+<li>  <a href="./septemboard.html#sec:septem:efficiency">7.12. Detector efficiency</a></li>
+<li>  <a href="./septemboard.html#sec:detector:daq">7.13. Data acquisition and detector monitoring</a></li>
+</ul>
+</li>
+<li><a href="./operation_calibration.html#sec:operation_calibration">8. Detector calibration for operation   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:timepix">8.1. Timepix calibrations</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:fadc">8.2. FADC calibration</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:scintillators">8.3. Scintillator calibration</a></li>
+</ul>
+</li>
+<li><a href="./reconstruction.html#sec:reconstruction">9. Data reconstruction   <span class="tag">  <span class="Reconstruction">Reconstruction</span></span></a>
+<ul>
+<li>  <a href="./reconstruction.html#sec:reco:tpa">9.1. <code>TimepixAnalysis</code> and Nim</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:tos_data_parsing">9.2. TOS data parsing</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:event_shape">9.3. Expectation of event shapes</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:data_reconstruction">9.4. Data reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:fadc_data">9.5. FADC reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:scintillator_data">9.6. Scintillator data</a></li>
+</ul>
+</li>
+<li><a href="./cast.html#sec:cast">10. Detector installation &amp; data taking at CAST   <span class="tag">  <span class="CAST">CAST</span></span></a>
+<ul>
+<li>  <a href="./cast.html#sec:cast:timeline">10.1. Timeline</a></li>
+<li>  <a href="./cast.html#sec:cast:alignment">10.2. Alignment</a></li>
+<li>  <a href="./cast.html#sec:cast:detector_setup">10.3. Detector setup at CAST</a></li>
+<li>  <a href="./cast.html#sec:cast:window_accident">10.4. Window accident</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_woes">10.5. Data taking woes</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_campaigns">10.6. Summary of CAST data taking</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:calibration">11. Data calibration   <span class="tag">  <span class="Calibration">Calibration</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:calibration:energy">11.1. Energy calibration - in principle</a></li>
+<li>  <a href="./calibration.html#sec:calib:detector_behavior_over_time">11.2. Detector behavior over time</a></li>
+<li>  <a href="./calibration.html#sec:calib:final_energy_calibration">11.3. Energy calibration dependence on the gas gain</a></li>
+<li>  <a href="./calibration.html#sec:calib:fadc">11.4. FADC</a></li>
+</ul>
+</li>
+<li><a href="./background.html#sec:background">12. Finding signal and defining background | Background rate computation   <span class="tag">  <span class="Analysis">Analysis</span></span></a>
+<ul>
+<li>  <a href="./background.html#sec:background:likelihood_method">12.1. Likelihood method</a></li>
+<li>  <a href="./background.html#sec:cdl">12.2. CAST Detector Lab</a></li>
+<li>  <a href="./background.html#sec:background:likelihood_cut">12.3. Application of likelihood cut for background rate</a></li>
+<li>  <a href="./background.html#sec:background:mlp">12.4. Artificial neural networks as cluster classifiers</a></li>
+<li>  <a href="./background.html#sec:background:additional_vetoes">12.5. Additional detector features as vetoes</a></li>
+<li>  <a href="./background.html#sec:background:all_vetoes_combined">12.6. Background rates of combined vetoes and efficiencies</a></li>
+</ul>
+</li>
+<li><a href="./limit.html#sec:limit">13. Limit calculation   <span class="tag">  <span class="Limit">Limit</span></span></a>
+<ul>
+<li>  <a href="./limit.html#sec:limit:method_introduction">13.1. Limit method - introduction</a></li>
+<li>  <a href="./limit.html#sec:limit:method_likelihood">13.2. Limit method - likelihood function \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_L">13.3. Limit method - computing \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_a_limit">13.4. Limit method - computing a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
+<li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
+<li>  <a href="./limit.html#org5e81b6c">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orge06cfa1">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
+<li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:expected_limits">13.13. Expected limits of different setups</a></li>
+<li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
+<li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
+<li>  <a href="./limit.html#orgc627f43">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgda19ced">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
+<li>  <a href="./summary.html#sec:summary">15. Summary &amp; conclusion</a></li>
+<li>  <a href="./bibliography.html#sec:bibliography">16. Bibliography   <span class="tag">    <span class="html">html</span>  </span></a></li>
+<li><a href="./daq.html#sec:daq">17. Data acquisition and detector monitoring   <span class="tag"><span class="Appendix">Appendix</span> <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./daq.html#sec:daq:tof">17.1. Timepix Operating Firmware - TOF</a></li>
+<li>  <a href="./daq.html#sec:daq:tos">17.2. Timepix Operating Software - TOS</a></li>
+<li>  <a href="./daq.html#sec:daq:septemboard_event_display">17.3. Septemboard event display</a></li>
+</ul>
+</li>
+<li><a href="./configuration.html#sec:appendix:configuration">18. Configuration and TOS / TOF versions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_config">18.1. TOS configuration file</a></li>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_tof_versions">18.2. TOS and TOF versions used at CAST</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:appendix:calibration">19. Calibrations   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:appendix:calibration:timepix">19.1. Timepix calibrations</a></li>
+<li>  <a href="./calibration.html#sec:appendix:septemboard_calibrations">19.2. Septemboard calibration</a></li>
+<li>  <a href="./calibration.html#sec:appendix:scintillator_calibration_notes">19.3. Calibration measurements of the veto scintillator paddle   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_operations.html#sec:appendix:cast_operations">20. CAST operation procedures   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_operations:terminology">20.1. CAST terminology</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:high_voltage">20.2. High voltage supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:vacuum_system">20.3. Vacuum system</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:watercooling_gas">20.4. Watercooling system &amp; gas supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:interlock_systems">20.5. Interlock systems</a></li>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_log_files">20.6. CAST log files</a></li>
+</ul>
+</li>
+<li><a href="./cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_run_list.html#orgd304089">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cast_data_taking_notes.html#orge4011be">22.1. Run table</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgeba5174">22.2. Data runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgd62eab2">22.3. Calibration runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org0271f47">22.4. Automatically generated run list</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgb34c028">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org338e161">22.6. InGrid temperature from shift forms</a></li>
+</ul>
+</li>
+<li><a href="./cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cabling_and_softwar_setup.html#org7cb11ec">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org3244c1a">23.2. Detector cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org7c3b445">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#orgda4f123">23.4. Setting up the chips in TOS</a></li>
+</ul>
+</li>
+<li><a href="./vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./vacuum_contamination.html#org35e49a4">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./vacuum_contamination.html#orgdf125cb">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./vacuum_contamination.html#orgf5a7285">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./vacuum_contamination.html#orgeeae0bd">24.4. Calculation of possible contamination</a></li>
+</ul>
+</li>
+<li><a href="./detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:choice_gas_gain_binning">25.1. Choice of gas gain binning time interval</a></li>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:correlation_gas_gain_ambient_temp">25.2. Correlation of gas gain and ambient CAST temperature</a></li>
+</ul>
+</li>
+<li><a href="./cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_detector_lab.html#orgfed071e">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
+</ul>
+</li>
+<li><a href="./fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
+</ul>
+</li>
+<li><a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./morphing_cdl_spectra.html#orgabd5f0e">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#orga5d9c5b">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#org218c56a">28.6. Notes on CDL morphing development   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./occupancy.html#orgdce408e">29.1. Run-2</a></li>
+<li>  <a href="./occupancy.html#orge5d3863">29.2. Run-3</a></li>
+<li>  <a href="./occupancy.html#org971382a">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
+<li>  <a href="./fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
+<li>  <a href="./fadc.html#org517ef50">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
+</ul>
+</li>
+<li><a href="./background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
+<li>  <a href="./background_rates.html#org01e8b4b">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#org2774ce8">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#orgd0f5dfb">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li><a href="./limit_additional.html#sec:appendix:limit_additional">33. Additional limit information   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./limit_additional.html#sec:appendix:conversion_probability">33.1. Conversion probability as a function of mass   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:exp_limit_percentiles">33.2. Expected limit table with percentiles</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:axion_photon">33.3. Observed limit - axion photon \(g_{aγ}\)</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:chameleon">33.4. Observed limit - chameleon \(β_γ\)</a></li>
+</ul>
+</li>
+<li><a href="./software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./software.html#orgbae2c69">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#org13d471b">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
+<li>  <a href="./software.html#orgb88ee40">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+</ul>
+</li>
+<li><a href="./full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./full_data_reconstruction.html#org39ad6bd">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./full_data_reconstruction.html#org1eac87c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./full_data_reconstruction.html#org09b2461">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./full_data_reconstruction.html#org3344338">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./full_data_reconstruction.html#org18a2de7">35.5. Applying a classifier</a></li>
+<li>  <a href="./full_data_reconstruction.html#org17bde80">35.6. Computing limits</a></li>
+</ul>
+</li>
+<li><a href="./average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./average_depth_xrays_argon.html#org2d84fd5">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org11eec4e">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org28b81a5">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:traxer">37.1. TrAXer - An interactive axion raytracer</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
+<li>  <a href="./raytracing.html#org7d687b6">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./raytracing.html#orgc4745d9">37.6. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Part5">Part5</span>  </span></a></li>
+</ul>
+</div>
+</nav>
+<div class="outline-2" id="outline-container-sec:operation_calibration">
+<h2 id="sec:operation_calibration"><span class="section-number-2">8.</span> Detector calibration for operation   <span class="tag">  <span class="Detector">Detector</span></span></h2>
+<div class="outline-text-2" id="text-sec:operation_calibration">
+<p>
+This chapter introduces the calibrations required to get the
+Septemboard detector into a usable state for data taking at an
+experiment, in particular to interpret the data taken with it,
+sec. <a href="./operation_calibration.html#sec:operation_calibration:timepix">8.1</a>. Those calibrations purely
+related to the Timepix ASIC itself – to work noise free at the lowest
+possible thresholds – can be found in appendix
+<a href="./calibration.html#sec:appendix:calibration:timepix">19.1</a>. Also the correct working parameters
+for the FADC are discussed in
+sec. <a href="./operation_calibration.html#sec:operation_calibration:fadc">8.2</a>. The scintillators need to be set
+to their correct discriminator thresholds, see
+sec. <a href="./operation_calibration.html#sec:operation_calibration:scintillators">8.3</a>.
+</p>
+</div>
+
+<div class="outline-3" id="outline-container-sec:operation_calibration:timepix">
+<h3 id="sec:operation_calibration:timepix"><span class="section-number-3">8.1.</span> Timepix calibrations</h3>
+<div class="outline-text-3" id="text-sec:operation_calibration:timepix">
+<p>
+As alluded to above, here we will focus on interpreting data taken
+with a Timepix ASIC. This means introducing the Time over Threshold
+(ToT) calibration method used to interpret ToT values as recorded
+charges, sec. <a href="./operation_calibration.html#sec:operation_calibration:tot_calibration">8.1.1</a>. Further,
+based on recorded charge the gas gain can be determined. This is
+discussed in sec. <a href="./operation_calibration.html#sec:daq:polya_distribution">8.1.2</a>.
+</p>
+
+<p>
+Important references for the Timepix in general and for the
+calibration procedures explained below and in the appendix are
+(<a href="./bibliography.html#citeproc_bib_item_149">Llopart et al. 2007</a>; <a href="./bibliography.html#citeproc_bib_item_146">Llopart Cudie 2007</a>; <a href="./bibliography.html#citeproc_bib_item_147">Llopart and Poikela 2006</a>; <a href="./bibliography.html#citeproc_bib_item_151">Lupberger 2016</a>).
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-sec:operation_calibration:tot_calibration">
+<h4 id="sec:operation_calibration:tot_calibration"><span class="section-number-4">8.1.1.</span> ToT calibration</h4>
+<div class="outline-text-4" id="text-sec:operation_calibration:tot_calibration">
+<p>
+The purpose of the <code>ToT</code> (\textbf{T}ime \textbf{o}ver
+\textbf{T}hreshold) calibration is not to perform a calibration for
+stable operation of a Timepix based detector, but rather to interpret
+the data received. It is needed to interpret the <code>ToT</code> values recorded
+by each pixel as a charge, i.e. a number of recorded electrons.
+</p>
+
+<p>
+This is done by injecting charges onto the individual pixels – &apos;test
+pulses&apos;. Capacitors are present to inject very precise voltage bursts
+onto the pixels. In case of the Timepix 1, each pixel uses a
+capacitance of \(\SI{8}{fF}\) (<a href="./bibliography.html#citeproc_bib_item_147">Llopart and Poikela 2006</a>). Knowing the
+capacitance and the voltage induced on them, the number of injected
+electrons can be easily calculated from
+</p>
+
+<p>
+\[
+Q = C U.
+\]
+</p>
+
+<p>
+By varying the injected charge and recording the resulting ToT values
+of the pixels, a relation between electrons and ToT values is
+determined:
+</p>
+
+<p>
+\[
+f(p) = a p + b - \frac{c}{p - t}
+\]
+where \(a, b, c\) and \(t\) are parameters to be determined via a
+numerical fit and \(p\) is the test pulse height in \(\si{mV}\).
+</p>
+
+<p>
+As such, inverting the relation this can be used to compute a charge
+for a given <code>ToT</code> value: 
+</p>
+
+<p>
+\[
+  f(\mathtt{ToT}) = \frac{α}{2 a} \left( \mathtt{ToT} - (b - a t) +
+    \sqrt{ \left( \mathtt{ToT} - (b - a t) \right)^2 + 4 (a b t + a c -
+    a t \mathtt{ToT} ) } \right)
+\]
+where \(\mathtt{ToT}\) is the time over threshold value recorded for a
+pixel, the constants \(a, b, c, t\) the fit parameters determined above
+and \(α\) the conversion factor relating the number of electrons from a
+pulse height of \(\SI{1}{mV}\). 
+</p>
+
+<p>
+An example of a ToT calibration of one chip is shown in
+fig. <a href="#fig:septem:tot_calibration_example">1</a>.
+</p>
+
+
+<figure id="fig:septem:tot_calibration_example">
+<img src="./figs/home/basti/phd/Figs/detector/calibration/tot_calib_Run2_chip_3.svg" class="org-svg" alt="tot_calib_Run2_chip_3.svg" />
+
+<figcaption>Figure 1: <span class="figure-number">Figure 28: </span>Example of a ToT calibration measurement for the chip H10 W69, the center chip of the Septemboard, as it was done for the CAST data taking period 2.</figcaption>
+</figure>
+</div>
+
+<div class="outline-5" id="outline-container-sec:operation_calibration:gen_tot_calib_plot">
+<h5 id="sec:operation_calibration:gen_tot_calib_plot"><span class="section-number-5">8.1.1.1.</span> Generate plots for the ToT calibration   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-sec:operation_calibration:gen_tot_calib_plot">
+<p>
+The plots for all calibrations (of this sort) are produced using the
+<code>plotCalibration</code> tool,
+<a href="./../CastData/ExternCode/TimepixAnalysis/Plotting/plotCalibration/plotCalibration.nim">./../CastData/ExternCode/TimepixAnalysis/Plotting/plotCalibration/plotCalibration.nim</a>.
+For a single plot we can produce the plot (used for the thesis above)
+like this:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #75715E;"># </span><span style="color: #75715E;">To generate fig:septem:tot_calibration_example</span>
+plotCalibration --tot --runPeriod=Run2 --useTeX <span style="color: #E6DB74; font-weight: bold;">\</span>
+                --file ~/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/Run2/chip3/TOTCalib3.txt <span style="color: #E6DB74; font-weight: bold;">\</span>
+                --outpath ~/phd/Figs/detector/calibration/
+</pre>
+</div>
+
+<p>
+Note that we hand the calibration data file and do not use the InGrid
+database. We could do either (if you pass a chip number and a run
+period instead of the ToT calib text file it would read from the
+database instead).
+</p>
+
+<p>
+See appendix section <a href="./calibration.html#sec:appendix:calibration:gen_tot_calibration">19.2.1</a> for
+all ToT calibrations for all Septemboard chips.
+</p>
+
+<p>
+The following is the doc string of the function for the ToT
+calibration function used in <code>TimepixAnalysis</code>. 
+</p>
+<div class="org-src-container">
+<pre class="src src-nim">  <span style="color: #E6DB74;">## calculates the charge in electrons from the TOT value, based on the TOT calibration</span>
+  <span style="color: #E6DB74;">## from MarlinTPC:</span>
+  <span style="color: #E6DB74;">## measured and fitted is ToT[clock cycles] in dependency of TestPuseHeight [mV]</span>
+  <span style="color: #E6DB74;">## fit function is:</span>
+  <span style="color: #E6DB74;">##   ToT[clock cycles] = a*TestPuseHeight [mV]  + b - ( c / (TestPuseHeight [mV] -t) )</span>
+  <span style="color: #E6DB74;">## isolating TestPuseHeight gives:</span>
+  <span style="color: #E6DB74;">##   TestPuseHeight [mV] = 1/(2*a) * (ToT[clock cycles] - (b - a*t) +</span>
+  <span style="color: #E6DB74;">##                         SQRT( (ToT[clock cycles] - (b - a*t))^2 +</span>
+  <span style="color: #E6DB74;">##                               4*(a*b*t + a*c - a*t*ToT[clock cycles]) ) )</span>
+  <span style="color: #E6DB74;">## conversion from charge to electrons:</span>
+  <span style="color: #E6DB74;">##   electrons = 50 * testpulse[mV]</span>
+  <span style="color: #E6DB74;">## so we have:</span>
+  <span style="color: #E6DB74;">## Charge[electrons] = 50 / (2*a) * (ToT[clock cycles] - (b - a*t) +</span>
+  <span style="color: #E6DB74;">##                     SQRT( (ToT[clock cycles] - (b - a*t))^2 +</span>
+  <span style="color: #E6DB74;">##                           4*(a*b*t + a*c - a*t*ToT[clock cycles]) ) )</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:daq:polya_distribution">
+<h4 id="sec:daq:polya_distribution"><span class="section-number-4">8.1.2.</span> Pólya distribution &amp; gas gain</h4>
+<div class="outline-text-4" id="text-sec:daq:polya_distribution">
+<p>
+In sec. <a href="./theory_detector.html#sec:theory:gas_gain_polya">6.3.6</a> we introduced the Pólya
+distribution to describe the statistical distribution of the gas
+amplification stage. In the practical context of the Septemboard
+detector and the ToT calibration then, this is the histogram of all
+charge values recorded by the detector (and related of all ToT
+values). As the ToT calibration function is non-linear though, the
+histogram of the Pólya distribution has equal bin widths in ToT space,
+but increasing bin widths in charge space. 
+</p>
+
+<p>
+Such a histogram can be seen in fig. <a href="#fig:daq:polya_example_chip3">2</a>, for
+a \(\SI{90}{min}\) slice of background data of the center chip of the
+Septemboard. The reasoning behind looking at a fixed time interval for
+the Pólya will be explained in section
+<a href="./calibration.html#sec:calib:gas_gain_time_binning">11.2.2</a>. The pink line represents the fit of
+the Pólya distribution following eq. \eqref{eq:theory:polya_distribution} to
+the data. The dashed part of the line was not used for the fit and is
+only an extension using the final fit parameters. At the lower end of
+charge values, a cutoff due to the chip&apos;s activation threshold is
+clearly visible. Note also how the bin widths increase from low to
+high charge values. The fit determines a gas gain of 
+\(\num{3604.3}\), compared to the mean of the data yielding
+\(\num{3171.0}\). Following (<a href="./bibliography.html#citeproc_bib_item_137">Krieger 2018</a>) any number for the gas
+gain used in the remainder of the thesis refers to the <i>mean of the
+data</i> and not the fit parameter. We use the fit mainly as a
+verification of the general behavior.
+</p>
+
+
+<figure id="fig:daq:polya_example_chip3">
+<img src="./figs/home/basti/phd/Figs/gas_gain_run_267_chip_3_2_90_min_1541650002.svg" class="org-svg" alt="gas_gain_run_267_chip_3_2_90_min_1541650002.svg" />
+
+<figcaption>Figure 2: <span class="figure-number">Figure 29: </span>An example of a Pólya distribution of chip 3 using the calibration of July 2018 based on \SI{90}{min} of background data. A cutoff at low charges is visible. The pink line represents the fit of the Pólya distribution to the data. In the dashed region the line was extended using the final fit parameters.</figcaption>
+</figure>
+
+<p>
+A secondary use case for the Pólya distribution is the determination
+of the activation threshold via the seen cutoff. More on this in
+appendix <a href="./calibration.html#sec:appendix:calibration:polya_distribution_threshold">19.1.4</a>.
+</p>
+</div>
+
+<div class="outline-5" id="outline-container-org5db90de">
+<h5 id="org5db90de"><span class="section-number-5">8.1.2.1.</span> Generate Polya plot for chip 3, run period 3 <code>[0/1]</code>   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-8-1-2-1">
+<p>
+We will produce a Pólya plot by performing the reconstruction of a
+single run. In principle during the entire reconstruction all gas gain
+plots are produced anyway, but that means we&apos;d just copy over a single
+file. Better to showcase how they are produced in a standalone
+fashion.
+</p>
+
+<p>
+Say we use run 267 and it is in some directory:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">cp ~/CastData/data/2018_2/Run_267_181108-02-05_rtBackground.tar.gz /tmp/Run_267_181108-02-05.tar.gz
+<span style="color: #F92672;">cd</span> /tmp
+raw_data_manipulation -p Run_267_181108-02-05.tar.gz --runType background --out raw_267.h5
+reconstruction -i raw_267.h5 --out reco_267.h5
+reconstruction -i reco_267.h5 --only_charge
+reconstruction -i reco_267.h5 --only_gas_gain --useTeX
+</pre>
+</div>
+
+<p>
+where we first copy the raw data to <code>/tmp</code>, parse it, reconstruct it,
+perform charge calibration and finally fit the gas gain data. That
+produces plots in <a href="./../../../tmp/out/raw_267_2023-11-30_15-01-39/">./../../../tmp/out/raw_267_2023-11-30_15-01-39/</a>.
+For the thesis we use:
+<code>gas_gain_run_267_chip_3_2_90_min_1541650002.pdf</code>
+</p>
+
+<p>
+The gas gain of the fit and from the data are both in the title of the
+plot.
+</p>
+
+<p>
+Fit: 3604.3
+Data: 3171.0
+</p>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:operation_calibration:final_septemboard_calibration">
+<h4 id="sec:operation_calibration:final_septemboard_calibration"><span class="section-number-4">8.1.3.</span> Final Septemboard calibrations</h4>
+<div class="outline-text-4" id="text-sec:operation_calibration:final_septemboard_calibration">
+<p>
+The detector was calibrated according to the descriptions of the
+previous sections and appendix <a href="./calibration.html#sec:appendix:calibration">19</a> prior to both
+major data taking campaigns at CAST (see
+sec. <a href="./cast.html#sec:cast:data_taking_campaigns">10.6</a> for a detailed overview of both
+campaigns), once in October 2017 and then again in July 2018.
+</p>
+
+<p>
+For an overview of all calibration parameters of interest, see the
+appendix <a href="./calibration.html#sec:appendix:septemboard_calibrations">19.2</a>. Tables
+<a href="#tab:daq:thl_ths_calibration_run2">4</a> and <a href="#tab:daq:thl_ths_calibration_run3">5</a>
+show the <code>THL</code> and <code>THS</code> DAC <sup>  <a role="doc-backlink" class="footref" id="fnr.1" href="#fn.1">1</a></sup> values used for the Septemboard
+detector at CAST during the data taking campaign from October 2017 to
+March 2018 (Run-2) and October 2018 to December 2018 (Run-3),
+respectively. The other DACs were all set to the same values for all
+chips in both data taking campaigns with the detector, shown in
+tab. <a href="#tab:daq:common_dac_values">6</a>.
+</p>
+
+<table id="tab:daq:thl_ths_calibration_run2">
+<caption class="t-above"><span class="table-number">Table 4:</span> The <code>THL</code> and <code>THS</code> DAC values for each of the chips of the Septemboard (board H) detector used at CAST for the data taking campaign from October 2017 to March 2018 (Run-2).</caption>
+
+<colgroup>
+<col class="org-left" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-left" scope="col">DAC</th>
+<th class="org-right" scope="col">E6 W69</th>
+<th class="org-right" scope="col">K6 W69</th>
+<th class="org-right" scope="col">H9 W69</th>
+<th class="org-right" scope="col">H10 W69</th>
+<th class="org-right" scope="col">G10 W69</th>
+<th class="org-right" scope="col">D9 W69</th>
+<th class="org-right" scope="col">L8 W69</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">THL</td>
+<td class="org-right">435</td>
+<td class="org-right">435</td>
+<td class="org-right">405</td>
+<td class="org-right">450</td>
+<td class="org-right">450</td>
+<td class="org-right">400</td>
+<td class="org-right">470</td>
+</tr>
+
+<tr>
+<td class="org-left">THS</td>
+<td class="org-right">66</td>
+<td class="org-right">69</td>
+<td class="org-right">66</td>
+<td class="org-right">64</td>
+<td class="org-right">66</td>
+<td class="org-right">65</td>
+<td class="org-right">66</td>
+</tr>
+</tbody>
+</table>
+
+
+<table id="tab:daq:thl_ths_calibration_run3">
+<caption class="t-above"><span class="table-number">Table 5:</span> The <code>THL</code> and <code>THS</code> DAC values for each of the chips of the Septemboard (board H) detector used at CAST for the data taking campaign from October 2018 to December 2018 (Run-3).</caption>
+
+<colgroup>
+<col class="org-left" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-left" scope="col">DAC</th>
+<th class="org-right" scope="col">E6 W69</th>
+<th class="org-right" scope="col">K6 W69</th>
+<th class="org-right" scope="col">H9 W69</th>
+<th class="org-right" scope="col">H10 W69</th>
+<th class="org-right" scope="col">G10 W69</th>
+<th class="org-right" scope="col">D9 W69</th>
+<th class="org-right" scope="col">L8 W69</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">THL</td>
+<td class="org-right">419</td>
+<td class="org-right">386</td>
+<td class="org-right">369</td>
+<td class="org-right">434</td>
+<td class="org-right">439</td>
+<td class="org-right">402</td>
+<td class="org-right">462</td>
+</tr>
+
+<tr>
+<td class="org-left">THS</td>
+<td class="org-right">68</td>
+<td class="org-right">66</td>
+<td class="org-right">66</td>
+<td class="org-right">65</td>
+<td class="org-right">69</td>
+<td class="org-right">65</td>
+<td class="org-right">64</td>
+</tr>
+</tbody>
+</table>
+
+<table id="tab:daq:common_dac_values">
+<caption class="t-above"><span class="table-number">Table 6:</span> DAC values and settings that are common between data taking periods and all chips of the Septemboard for CAST, from the <code>fsr</code> configuration file.</caption>
+
+<colgroup>
+<col class="org-left" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-left" scope="col">DAC</th>
+<th class="org-right" scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">IKrum</td>
+<td class="org-right">20</td>
+</tr>
+
+<tr>
+<td class="org-left">Hist</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">GND</td>
+<td class="org-right">80</td>
+</tr>
+
+<tr>
+<td class="org-left">Coarse</td>
+<td class="org-right">7</td>
+</tr>
+
+<tr>
+<td class="org-left">CTPR</td>
+<td class="org-right">4294967295</td>
+</tr>
+
+<tr>
+<td class="org-left">BiasLVDS</td>
+<td class="org-right">128</td>
+</tr>
+
+<tr>
+<td class="org-left">SenseDAC</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">DACCode</td>
+<td class="org-right">6</td>
+</tr>
+
+<tr>
+<td class="org-left">RefLVDS</td>
+<td class="org-right">128</td>
+</tr>
+
+<tr>
+<td class="org-left">Vcas</td>
+<td class="org-right">130</td>
+</tr>
+
+<tr>
+<td class="org-left">ExtDAC</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">Disc</td>
+<td class="org-right">127</td>
+</tr>
+
+<tr>
+<td class="org-left">Preamp</td>
+<td class="org-right">255</td>
+</tr>
+
+<tr>
+<td class="org-left">FBK</td>
+<td class="org-right">128</td>
+</tr>
+
+<tr>
+<td class="org-left">BuffAnalogA</td>
+<td class="org-right">127</td>
+</tr>
+
+<tr>
+<td class="org-left">BuffAnalogB</td>
+<td class="org-right">127</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="outline-5" id="outline-container-sec:calib:generate_fsr_table">
+<h5 id="sec:calib:generate_fsr_table"><span class="section-number-5">8.1.3.1.</span> Generate the FSR tables for all chips and each run period   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-sec:calib:generate_fsr_table">
+<p>
+Let&apos;s generate the tables containing the table for the FSR DAC values
+for all chips for each of the different run periods.
+</p>
+
+<p>
+We will use the <code>ChipCalibrations</code> directory that is part of the
+<code>TimepixAnalysis</code> repository in the <code>resources</code> directory.
+</p>
+
+<p>
+Further, we will create a plot of all pixels showing the noise peak in
+THL values based on the optimized equalization.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> std / <span style="color: #AE81FF;">[</span>sequtils, strutils, os, tables, algorithm<span style="color: #AE81FF;">]</span>
+
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">path </span>= <span style="color: #E6DB74;">&quot;/home/basti/CastData/ExternCode/TimepixAnalysis/resources/ChipCalibrations/&quot;</span>
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">periods </span>= <span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Run2&quot;</span>, <span style="color: #E6DB74;">&quot;Run3&quot;</span><span style="color: #AE81FF;">]</span>
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">chipInfo </span>= <span style="color: #E6DB74;">&quot;chipInfo.txt&quot;</span>
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">thrMean </span>= <span style="color: #E6DB74;">&quot;thresholdMeans</span><span style="color: #F92672;">$#</span><span style="color: #E6DB74;">.txt&quot;</span>
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">chips </span>= toSeq<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span> .. <span style="font-style: italic;">6</span><span style="color: #AE81FF;">)</span>
+
+<span style="color: #F92672;">import</span> ggplotnim
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">readThresholdMeans</span><span style="color: #AE81FF;">(</span>path: <span style="color: #66D9EF;">string</span>, chip: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
+  <span style="color: #F92672;">echo</span> path / thrMean
+  <span style="color: #FD971F;">result</span> = readCsv<span style="color: #AE81FF;">(</span>path / <span style="color: #66D9EF;">(</span>thrMean % $chip<span style="color: #66D9EF;">)</span>, sep = <span style="color: #E6DB74;">&apos;\t&apos;</span>, colNames = @<span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;y&quot;</span>, <span style="color: #E6DB74;">&quot;min&quot;</span>, <span style="color: #E6DB74;">&quot;max&quot;</span>, <span style="color: #E6DB74;">&quot;bit&quot;</span>, <span style="color: #E6DB74;">&quot;opt&quot;</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
+    .select<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;opt&quot;</span><span style="color: #AE81FF;">)</span>
+    .rename<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;THL&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;opt&quot;</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+    .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;chip&quot;</span> &lt;- chip<span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+
+<span style="color: #75715E;"># </span><span style="color: #75715E;">parse the names of the chips from the run info file</span>
+<span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= newDataFrame<span style="color: #AE81FF;">()</span>    
+<span style="color: #F92672;">for</span> period <span style="color: #F92672;">in</span> periods:
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">header </span>= @<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;DAC&quot;</span><span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">tab </span>= initTable<span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">int</span>, <span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #A6E22E;">(</span><span style="color: #66D9EF;">string</span>, <span style="color: #66D9EF;">int</span><span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">]()</span>
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">dfPeriod </span>= newDataFrame<span style="color: #AE81FF;">()</span>
+  <span style="color: #F92672;">for</span> chip <span style="color: #F92672;">in</span> chips:
+    <span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">toTuple</span><span style="color: #AE81FF;">(</span>s: <span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">seq</span><span style="color: #A6E22E;">[</span><span style="color: #66D9EF;">string</span><span style="color: #A6E22E;">]</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">seq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">string</span>, <span style="color: #66D9EF;">int</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">]</span> =
+      <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> s:
+        <span style="color: #F92672;">doAssert</span> x.<span style="color: #F92672;">len</span> == <span style="font-style: italic;">2</span>
+        <span style="color: #FD971F;">result</span>.<span style="color: #F92672;">add</span> <span style="color: #AE81FF;">(</span>x<span style="color: #66D9EF;">[</span><span style="font-style: italic;">0</span><span style="color: #66D9EF;">]</span>, x<span style="color: #66D9EF;">[</span><span style="font-style: italic;">1</span><span style="color: #66D9EF;">]</span>.parseInt<span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">chipPath </span>= path / period / <span style="color: #E6DB74;">&quot;chip&quot;</span> &amp; $chip
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">data </span>= <span style="color: #F92672;">readFile</span><span style="color: #AE81FF;">(</span>chipPath / <span style="color: #E6DB74;">&quot;fsr&quot;</span> &amp; $chip &amp; <span style="color: #E6DB74;">&quot;.txt&quot;</span><span style="color: #AE81FF;">)</span>
+      .splitLines
+      .filterIt<span style="color: #AE81FF;">(</span>it.<span style="color: #F92672;">len</span> &gt; <span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span>
+      .mapIt<span style="color: #AE81FF;">(</span>it.split<span style="color: #AE81FF;">)</span>
+      .toTuple<span style="color: #AE81FF;">()</span>
+
+    tab<span style="color: #AE81FF;">[</span>chip<span style="color: #AE81FF;">]</span> = data
+
+    <span style="color: #75715E;"># </span><span style="color: #75715E;">read chip name and add to header</span>
+    <span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">readChipName</span><span style="color: #AE81FF;">(</span>chip: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">string</span> =
+      <span style="color: #FD971F;">result</span> = <span style="color: #F92672;">readFile</span><span style="color: #AE81FF;">(</span>chipPath / chipInfo<span style="color: #AE81FF;">)</span>
+        .splitLines<span style="color: #AE81FF;">()[</span><span style="font-style: italic;">0</span><span style="color: #AE81FF;">]</span> 
+      <span style="color: #FD971F;">result</span>.removePrefix<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;chipName: &quot;</span><span style="color: #AE81FF;">)</span>
+    header.<span style="color: #F92672;">add</span> readChipName<span style="color: #AE81FF;">(</span>chip<span style="color: #AE81FF;">)</span>
+
+    dfPeriod.<span style="color: #F92672;">add</span> readThresholdMeans<span style="color: #AE81FF;">(</span>chipPath, chip<span style="color: #AE81FF;">)</span>
+  dfPeriod<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Run&quot;</span><span style="color: #AE81FF;">]</span> = period
+  df.<span style="color: #F92672;">add</span> dfPeriod
+  
+  <span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">invertTable</span><span style="color: #AE81FF;">(</span>tab: <span style="color: #66D9EF;">Table</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">int</span>, <span style="color: #66D9EF;">seq</span><span style="color: #A6E22E;">[</span><span style="color: #E6DB74;">(</span><span style="color: #66D9EF;">string</span>, <span style="color: #66D9EF;">int</span><span style="color: #E6DB74;">)</span><span style="color: #A6E22E;">]</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">Table</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">string</span>, <span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #A6E22E;">(</span><span style="color: #66D9EF;">int</span>, <span style="color: #66D9EF;">int</span><span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">]</span> =
+    <span style="color: #FD971F;">result</span> = initTable<span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">string</span>, <span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #A6E22E;">(</span><span style="color: #66D9EF;">int</span>, <span style="color: #66D9EF;">int</span><span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">]()</span>
+    <span style="color: #F92672;">for</span> chip, data <span style="color: #F92672;">in</span> <span style="color: #F92672;">pairs</span><span style="color: #AE81FF;">(</span>tab<span style="color: #AE81FF;">)</span>:
+      <span style="color: #F92672;">for</span> <span style="color: #AE81FF;">(</span>dac, value<span style="color: #AE81FF;">)</span> <span style="color: #F92672;">in</span> data:
+        <span style="color: #F92672;">if</span> dac <span style="color: #F92672;">notin</span> <span style="color: #FD971F;">result</span>:
+          <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span>dac<span style="color: #AE81FF;">]</span> = <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">int</span>, <span style="color: #66D9EF;">int</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">]()</span>
+        <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span>dac<span style="color: #AE81FF;">]</span>.<span style="color: #F92672;">add</span> <span style="color: #AE81FF;">(</span>chip, value<span style="color: #AE81FF;">)</span>
+
+  <span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">wrap</span><span style="color: #AE81FF;">(</span>s: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">string</span> = <span style="color: #E6DB74;">&quot;|&quot;</span> &amp; s &amp; <span style="color: #E6DB74;">&quot;|\n&quot;</span>
+  <span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">toOrgTable</span><span style="color: #AE81FF;">(</span>s: <span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">seq</span><span style="color: #A6E22E;">[</span><span style="color: #66D9EF;">string</span><span style="color: #A6E22E;">]</span><span style="color: #66D9EF;">]</span>, header: <span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">string</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">string</span> =
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">tabLine </span>= wrap toSeq<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span> ..&lt; header.<span style="color: #F92672;">len</span><span style="color: #AE81FF;">)</span>.mapIt<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;------&quot;</span><span style="color: #AE81FF;">)</span>.join<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;|&quot;</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #FD971F;">result</span> = tabLine
+    <span style="color: #FD971F;">result</span>.<span style="color: #F92672;">add</span> wrap<span style="color: #AE81FF;">(</span>header.join<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;|&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #FD971F;">result</span>.<span style="color: #F92672;">add</span> tabLine
+    <span style="color: #F92672;">for</span> x <span style="color: #F92672;">in</span> s:
+      <span style="color: #F92672;">doAssert</span> x.<span style="color: #F92672;">len</span> == header.<span style="color: #F92672;">len</span>
+      <span style="color: #FD971F;">result</span>.<span style="color: #F92672;">add</span> wrap<span style="color: #AE81FF;">(</span>x.join<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;|&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #FD971F;">result</span>.<span style="color: #F92672;">add</span> tabLine
+
+  <span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">toOrgTable</span><span style="color: #AE81FF;">(</span>tab: <span style="color: #66D9EF;">Table</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">string</span>, <span style="color: #66D9EF;">seq</span><span style="color: #A6E22E;">[</span><span style="color: #E6DB74;">(</span><span style="color: #66D9EF;">int</span>, <span style="color: #66D9EF;">int</span><span style="color: #E6DB74;">)</span><span style="color: #A6E22E;">]</span><span style="color: #66D9EF;">]</span>,
+                  header: <span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">string</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">string</span> =
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">commonDacs </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">string</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">]()</span>
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">diffDacs </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">string</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">]()</span>
+    <span style="color: #F92672;">for</span> <span style="color: #AE81FF;">(</span>dac, row<span style="color: #AE81FF;">)</span> <span style="color: #F92672;">in</span> <span style="color: #F92672;">pairs</span><span style="color: #AE81FF;">(</span>tab<span style="color: #AE81FF;">)</span>:
+      <span style="color: #F92672;">var</span> <span style="color: #FD971F;">fullRow </span>= @<span style="color: #AE81FF;">[</span>dac<span style="color: #AE81FF;">]</span>
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">toAdd </span>= row.sortedByIt<span style="color: #AE81FF;">(</span>it<span style="color: #66D9EF;">[</span><span style="font-style: italic;">0</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>.mapIt<span style="color: #AE81FF;">(</span>$it<span style="color: #66D9EF;">[</span><span style="font-style: italic;">1</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
+      <span style="color: #F92672;">if</span> toAdd.deduplicate.<span style="color: #F92672;">len</span> &gt; <span style="font-style: italic;">1</span>:
+        fullRow.<span style="color: #F92672;">add</span> toAdd
+        diffDacs.<span style="color: #F92672;">add</span> fullRow 
+      <span style="color: #F92672;">else</span>:
+        commonDacs.<span style="color: #F92672;">add</span> @<span style="color: #AE81FF;">[</span>dac, toAdd.deduplicate<span style="color: #66D9EF;">[</span><span style="font-style: italic;">0</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">]</span>
+    <span style="color: #FD971F;">result</span>.<span style="color: #F92672;">add</span> toOrgTable<span style="color: #AE81FF;">(</span>diffDacs, header<span style="color: #AE81FF;">)</span>
+    <span style="color: #FD971F;">result</span>.<span style="color: #F92672;">add</span> <span style="color: #E6DB74;">&quot;\n\n&quot;</span>
+    <span style="color: #FD971F;">result</span>.<span style="color: #F92672;">add</span> toOrgTable<span style="color: #AE81FF;">(</span>commonDacs, @<span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;DAC&quot;</span>, <span style="color: #E6DB74;">&quot;Value&quot;</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #75715E;"># </span><span style="color: #75715E;">now add common dacs table</span>
+  <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Run: &quot;</span>, period
+  <span style="color: #F92672;">echo</span> tab.invertTable.toOrgTable<span style="color: #AE81FF;">(</span>header<span style="color: #AE81FF;">)</span>
+
+<span style="color: #F92672;">echo</span> df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;THL&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">]</span>.<span style="color: #F92672;">min</span>  
+ggplot<span style="color: #AE81FF;">(</span>df.filter<span style="color: #66D9EF;">(</span>f<span style="color: #A6E22E;">{</span>`<span style="color: #66D9EF;">THL</span>` &gt; <span style="font-style: italic;">100</span><span style="color: #A6E22E;">}</span><span style="color: #66D9EF;">)</span>, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;THL&quot;</span>, fill = factor<span style="color: #A6E22E;">(</span><span style="color: #E6DB74;">&quot;chip&quot;</span><span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+  facet_wrap<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Run&quot;</span><span style="color: #AE81FF;">)</span> + 
+  geom_histogram<span style="color: #AE81FF;">(</span>binWidth = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span>, position = <span style="color: #E6DB74;">&quot;identity&quot;</span>, alpha = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">7</span>, hdKind = hdOutline<span style="color: #AE81FF;">)</span> +
+  ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Optimized THL distribution of the noise peak for each chip&quot;</span><span style="color: #AE81FF;">)</span> +
+  ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;\# pixels&quot;</span>, margin = <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
+  facetHeaderText<span style="color: #AE81FF;">(</span>font = font<span style="color: #66D9EF;">(</span><span style="font-style: italic;">12</span>.<span style="font-style: italic;">0</span>, alignKind = taCenter<span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+  themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">9</span>, width = <span style="font-style: italic;">600</span>, baseTheme = singlePlot<span style="color: #AE81FF;">)</span> +
+  scale_x_continuous<span style="color: #AE81FF;">(</span>breaks = <span style="font-style: italic;">8</span><span style="color: #AE81FF;">)</span> + 
+  margin<span style="color: #AE81FF;">(</span>left = <span style="font-style: italic;">3</span>.<span style="font-style: italic;">0</span>, right = <span style="font-style: italic;">3</span>.<span style="font-style: italic;">5</span><span style="color: #AE81FF;">)</span> + 
+  ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/detector/calibration/septemboard_all_thl_optimized.pdf&quot;</span>,
+         useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span>,
+         width = <span style="font-style: italic;">1000</span>, height = <span style="font-style: italic;">600</span><span style="color: #AE81FF;">)</span>
+</pre>
+</div>
+<p>
+Run: Run2
+</p>
+<table>
+
+
+<colgroup>
+<col class="org-left" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-left" scope="col">DAC</th>
+<th class="org-right" scope="col">E6 W69</th>
+<th class="org-right" scope="col">K6 W69</th>
+<th class="org-right" scope="col">H9 W69</th>
+<th class="org-right" scope="col">H10 W69</th>
+<th class="org-right" scope="col">G10 W69</th>
+<th class="org-right" scope="col">D9 W69</th>
+<th class="org-right" scope="col">L8 W69</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">THL</td>
+<td class="org-right">435</td>
+<td class="org-right">435</td>
+<td class="org-right">405</td>
+<td class="org-right">450</td>
+<td class="org-right">450</td>
+<td class="org-right">400</td>
+<td class="org-right">470</td>
+</tr>
+
+<tr>
+<td class="org-left">THS</td>
+<td class="org-right">66</td>
+<td class="org-right">69</td>
+<td class="org-right">66</td>
+<td class="org-right">64</td>
+<td class="org-right">66</td>
+<td class="org-right">65</td>
+<td class="org-right">66</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+
+
+<colgroup>
+<col class="org-left" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-left" scope="col">DAC</th>
+<th class="org-right" scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">IKrum</td>
+<td class="org-right">20</td>
+</tr>
+
+<tr>
+<td class="org-left">Hist</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">GND</td>
+<td class="org-right">80</td>
+</tr>
+
+<tr>
+<td class="org-left">Coarse</td>
+<td class="org-right">7</td>
+</tr>
+
+<tr>
+<td class="org-left">CTPR</td>
+<td class="org-right">4294967295</td>
+</tr>
+
+<tr>
+<td class="org-left">BiasLVDS</td>
+<td class="org-right">128</td>
+</tr>
+
+<tr>
+<td class="org-left">SenseDAC</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">DACCode</td>
+<td class="org-right">6</td>
+</tr>
+
+<tr>
+<td class="org-left">RefLVDS</td>
+<td class="org-right">128</td>
+</tr>
+
+<tr>
+<td class="org-left">Vcas</td>
+<td class="org-right">130</td>
+</tr>
+
+<tr>
+<td class="org-left">ExtDAC</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">Disc</td>
+<td class="org-right">127</td>
+</tr>
+
+<tr>
+<td class="org-left">Preamp</td>
+<td class="org-right">255</td>
+</tr>
+
+<tr>
+<td class="org-left">FBK</td>
+<td class="org-right">128</td>
+</tr>
+
+<tr>
+<td class="org-left">BuffAnalogA</td>
+<td class="org-right">127</td>
+</tr>
+
+<tr>
+<td class="org-left">BuffAnalogB</td>
+<td class="org-right">127</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+Run: Run3
+</p>
+<table>
+
+
+<colgroup>
+<col class="org-left" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-left" scope="col">DAC</th>
+<th class="org-right" scope="col">E6 W69</th>
+<th class="org-right" scope="col">K6 W69</th>
+<th class="org-right" scope="col">H9 W69</th>
+<th class="org-right" scope="col">H10 W69</th>
+<th class="org-right" scope="col">G10 W69</th>
+<th class="org-right" scope="col">D9 W69</th>
+<th class="org-right" scope="col">L8 W69</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">THL</td>
+<td class="org-right">419</td>
+<td class="org-right">386</td>
+<td class="org-right">369</td>
+<td class="org-right">434</td>
+<td class="org-right">439</td>
+<td class="org-right">402</td>
+<td class="org-right">462</td>
+</tr>
+
+<tr>
+<td class="org-left">THS</td>
+<td class="org-right">68</td>
+<td class="org-right">66</td>
+<td class="org-right">66</td>
+<td class="org-right">65</td>
+<td class="org-right">69</td>
+<td class="org-right">65</td>
+<td class="org-right">64</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+
+
+<colgroup>
+<col class="org-left" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-left" scope="col">DAC</th>
+<th class="org-right" scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">IKrum</td>
+<td class="org-right">20</td>
+</tr>
+
+<tr>
+<td class="org-left">Hist</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">GND</td>
+<td class="org-right">80</td>
+</tr>
+
+<tr>
+<td class="org-left">Coarse</td>
+<td class="org-right">7</td>
+</tr>
+
+<tr>
+<td class="org-left">CTPR</td>
+<td class="org-right">4294967295</td>
+</tr>
+
+<tr>
+<td class="org-left">BiasLVDS</td>
+<td class="org-right">128</td>
+</tr>
+
+<tr>
+<td class="org-left">SenseDAC</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">DACCode</td>
+<td class="org-right">6</td>
+</tr>
+
+<tr>
+<td class="org-left">RefLVDS</td>
+<td class="org-right">128</td>
+</tr>
+
+<tr>
+<td class="org-left">Vcas</td>
+<td class="org-right">130</td>
+</tr>
+
+<tr>
+<td class="org-left">ExtDAC</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">Disc</td>
+<td class="org-right">127</td>
+</tr>
+
+<tr>
+<td class="org-left">Preamp</td>
+<td class="org-right">255</td>
+</tr>
+
+<tr>
+<td class="org-left">FBK</td>
+<td class="org-right">128</td>
+</tr>
+
+<tr>
+<td class="org-left">BuffAnalogA</td>
+<td class="org-right">127</td>
+</tr>
+
+<tr>
+<td class="org-left">BuffAnalogB</td>
+<td class="org-right">127</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:operation_calibration:high_voltage">
+<h4 id="sec:operation_calibration:high_voltage"><span class="section-number-4">8.1.4.</span> High voltage</h4>
+<div class="outline-text-4" id="text-sec:operation_calibration:high_voltage">
+<p>
+The high voltage (HV) settings used for the Septemboard detector are shown
+in tab. <a href="#tab:operation_calibration:hv_settings">7</a>. The target is a drift
+field on the order of \(\SI{500}{V.cm⁻¹}\) and an amplification field of
+about \(\SI{60}{kV.cm⁻¹}\). The main voltages to choose are the grid
+voltage (to determine the amplification field) and the cathode voltage (to
+determine the drift field). The other voltages are computed based on a
+constant field gradient. Entries ring 1 and ring 29 are the voltages
+applied to the field shaping ring running around the detector volume
+to achieve a more homogeneous field. The HV for the Septemboard is
+controlled via an iseg <sup>  <a role="doc-backlink" class="footref" id="fnr.2" href="#fn.2">2</a></sup> HV module, while the veto
+scintillator (requiring positive high voltage) is controlled via a
+CAEN N470 <sup>  <a role="doc-backlink" class="footref" id="fnr.3" href="#fn.3">3</a></sup>.
+</p>
+
+<table id="tab:operation_calibration:hv_settings">
+<caption class="t-above"><span class="table-number">Table 7:</span> Table of high voltages in use for the InGrid Mk. IV. Note that the veto scintillator is not controlled via the iseg module, but by a CAEN N470.</caption>
+
+<colgroup>
+<col class="org-left" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-left" scope="col">Description</th>
+<th class="org-right" scope="col">Channel</th>
+<th class="org-right" scope="col">Voltage / V</th>
+<th class="org-right" scope="col">TripCurrent / mA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">grid</td>
+<td class="org-right">0</td>
+<td class="org-right">-300</td>
+<td class="org-right">0.050</td>
+</tr>
+
+<tr>
+<td class="org-left">anode</td>
+<td class="org-right">1</td>
+<td class="org-right">-375</td>
+<td class="org-right">0.050</td>
+</tr>
+
+<tr>
+<td class="org-left">cathode</td>
+<td class="org-right">2</td>
+<td class="org-right">-1875</td>
+<td class="org-right">0.050</td>
+</tr>
+
+<tr>
+<td class="org-left">ring 1</td>
+<td class="org-right">3</td>
+<td class="org-right">-415</td>
+<td class="org-right">0.100</td>
+</tr>
+
+<tr>
+<td class="org-left">ring 29</td>
+<td class="org-right">4</td>
+<td class="org-right">-1830</td>
+<td class="org-right">0.100</td>
+</tr>
+
+<tr>
+<td class="org-left">veto scinti</td>
+<td class="org-right">5</td>
+<td class="org-right">+1200</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">SiPM</td>
+<td class="org-right">6</td>
+<td class="org-right">-65.6</td>
+<td class="org-right">0.05</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:operation_calibration:fadc">
+<h3 id="sec:operation_calibration:fadc"><span class="section-number-3">8.2.</span> FADC calibration</h3>
+<div class="outline-text-3" id="text-sec:operation_calibration:fadc">
+<p>
+The FADC requires care about multiple aspects. First, the settings need
+to be chosen that configure both the operating characteristics, data
+readout and trigger threshold. Next, the Ortec 474 shaping amplifier
+has multiple different settings. Finally, in order to interpret the
+signals received from the FADC, a so-called &quot;pedestal run&quot; should be
+recorded.
+</p>
+
+<dl class="org-dl">
+<dt>FADC settings</dt><dd>The FADC settings – more details in the
+configuration file explanation of appendix section
+<a href="./daq.html#sec:daq:tos_config_file">17.2.2</a> – configure the FADC to run at a frequency
+of \(\SI{1}{GHz}\) as to cover a running time interval of
+\(\SI{2.56}{μs}\) in each channel. While it could run at up to
+\(\SI{2}{GHz}\), \(\SI{1}{ns}\) per time bin is accurate enough given
+the time scales associated with the amplifier (see below) and a
+longer interval is more useful. Further, an external trigger is sent
+out to TOS if the threshold is exceeded. The threshold itself is set
+to \(\SI{-40}{mV}\) <sup>  <a role="doc-backlink" class="footref" id="fnr.4" href="#fn.4">4</a></sup>. The value was chosen based
+on trial and error to avoid no triggers based on baseline
+noise. Given the range of up to \(\SI{-1}{V}\), the relative threshold
+is pretty low. Finally, the operation mode and data readout is set,
+the input channel is chosen and the pedestal run parameters are
+configured (see below).</dd>
+<dt>Amplifier settings</dt><dd>The 474 Ortec shaping amplifier has 3 settings
+of note. The absolute gain as a multiplier and a signal integration as
+well as differentiation time. The initial settings were set to an
+amplification of <code>6x</code>, an integration time of \(\SI{50}{ns}\) and a
+differentiation time of \(\SI{50}{ns}\). However, these were changed
+during the data taking campaign, see more on this in section
+<a href="./calibration.html#sec:calibration:fadc_noise">11.4.1</a>.</dd>
+<dt>Pedestals</dt><dd>The \(4 · \num{2560}\) registers of the FADC are part of
+4 separate cyclic registers. Due to hardware implementation details,
+the absolute recorded values of each register is arbitrary. In a
+pedestal run multiple measurements, \(\mathcal{O}(10)\) of a certain
+length (\(\SI{100}{ms}\) in our case), are performed and the pedestal
+values averaged. The resulting values represent a mean value for the
+typical value in each register, hence the name &apos;pedestal&apos;. To
+interpret a real measured signal, these pedestals are subtracted
+from the recorded signal. Each of the 4 FADC channels may have very
+different pedestal values, but within a single channel they are
+usually within \(\lesssim\num{50}\) ADC
+values. Fig. <a href="#fig:daq:fadc_pedestal_run">3</a> shows the pedestals of all 4
+FADC channels as they were recorded before CAST data taking
+started. The pedestals drift over time, but the associated time
+scales are long. Alternatively, the pedestals can be computed from
+real data by computing a truncated mean in each register, which
+we&apos;ll discuss later in sec. <a href="./reconstruction.html#sec:reco:fadc_pedestal_calc">9.5.1</a>.</dd>
+</dl>
+
+<p>
+More details to each of these will be given later where it is of
+importance.
+</p>
+
+
+<figure id="fig:daq:fadc_pedestal_run">
+<img src="./figs/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.svg" class="org-svg" alt="fadc_pedestal_split_by_channel.svg" />
+
+<figcaption>Figure 3: <span class="figure-number">Figure 30: </span>The FADC pedestal run used for CAST data initially, split by each of the 4 FADC channels. Each channel&apos;s pedestals vary by about \(\mathcal{O}(30)\) ADC values. The first few registers in each channel are not shown, as they are outlying by \(\sim\num{100}\).</figcaption>
+</figure>
+</div>
+
+<div class="outline-4" id="outline-container-org609a2b8">
+<h4 id="org609a2b8"><span class="section-number-4">8.2.1.</span> Generate plot of pedestals   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-8-2-1">
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> std / <span style="color: #AE81FF;">[</span>strutils, os, sequtils, algorithm<span style="color: #AE81FF;">]</span>
+<span style="color: #F92672;">import</span> ggplotnim
+
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">path </span>= <span style="color: #E6DB74;">&quot;/home/basti/CastData/ExternCode/TimepixAnalysis/resources/pedestalRuns/&quot;</span>
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">file </span>= <span style="color: #E6DB74;">&quot;pedestalRun000042_1_182143774.txt-fadc&quot;</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">read the FADC files using our CSV parser. Everything `</span><span style="color: #AE81FF;">#</span><span style="color: #75715E;">` is header</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">aside from the last 3 lines. Skip those using `</span><span style="color: #AE81FF;">maxLines</span><span style="color: #75715E;">`</span>
+<span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= readCsv<span style="color: #AE81FF;">(</span>path / file, header = <span style="color: #E6DB74;">&quot;#&quot;</span>, maxLines = <span style="font-style: italic;">10240</span><span style="color: #AE81FF;">)</span>
+  .rename<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;val&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;nb of channels: 0&quot;</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">generate indices 0, 0, 0, 0, 1, 1, 1, 1, ..., 2559, 2559, 2559, 2559 </span>
+df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Register&quot;</span><span style="color: #AE81FF;">]</span> = toSeq<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span> ..&lt; <span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span>.repeat<span style="color: #AE81FF;">(</span><span style="font-style: italic;">4</span><span style="color: #AE81FF;">)</span>.concat.sorted
+df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Channel&quot;</span><span style="color: #AE81FF;">]</span> = @<span style="color: #AE81FF;">[</span><span style="font-style: italic;">1</span>, <span style="font-style: italic;">2</span>, <span style="font-style: italic;">3</span>, <span style="font-style: italic;">4</span><span style="color: #AE81FF;">]</span>.repeat<span style="color: #AE81FF;">(</span><span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span>.concat
+<span style="color: #F92672;">when</span> <span style="color: #AE81FF;">false</span>:
+  df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Channel&quot;</span><span style="color: #AE81FF;">]</span> = @<span style="color: #AE81FF;">[</span><span style="font-style: italic;">1</span>, <span style="font-style: italic;">2</span>, <span style="font-style: italic;">3</span>, <span style="font-style: italic;">4</span><span style="color: #AE81FF;">]</span>.repeat<span style="color: #AE81FF;">(</span><span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span>
+  df = df.mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #66D9EF;">int</span> -&gt; <span style="color: #66D9EF;">bool</span>: <span style="color: #E6DB74;">&quot;even?&quot;</span> ~ `<span style="color: #66D9EF;">Channel</span>` <span style="color: #F92672;">mod</span> <span style="font-style: italic;">2</span> == <span style="font-style: italic;">0</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">echo</span> df
+  <span style="color: #F92672;">echo</span> df.tail<span style="color: #AE81FF;">(</span><span style="font-style: italic;">20</span><span style="color: #AE81FF;">)</span>
+  ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Channel&quot;</span>, <span style="color: #E6DB74;">&quot;val&quot;</span>, color = <span style="color: #E6DB74;">&quot;even?&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+    geom_point<span style="color: #AE81FF;">(</span>size = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
+    ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;FADC channel values of pedestal run&quot;</span><span style="color: #AE81FF;">)</span> +  
+    ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/detector/calibration/fadc_pedestal_run.pdf&quot;</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #75715E;">#         </span><span style="color: #75715E;">useTeX = true, standalone = true)</span>
+  ggplot<span style="color: #AE81FF;">(</span>df.group_by<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;even?&quot;</span><span style="color: #66D9EF;">)</span>.filter<span style="color: #66D9EF;">(</span>f<span style="color: #A6E22E;">{</span><span style="color: #66D9EF;">float</span> -&gt; <span style="color: #66D9EF;">bool</span>: `val` &lt; percentile<span style="color: #E6DB74;">(</span>col<span style="color: #FD971F;">(</span><span style="color: #E6DB74;">&quot;val&quot;</span><span style="color: #FD971F;">)</span>, <span style="font-style: italic;">95</span><span style="color: #E6DB74;">)</span><span style="color: #A6E22E;">}</span><span style="color: #66D9EF;">)</span>,
+         aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Channel&quot;</span>, <span style="color: #E6DB74;">&quot;val&quot;</span>, color = <span style="color: #E6DB74;">&quot;even?&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+    facet_wrap<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;even?&quot;</span>, scales = <span style="color: #E6DB74;">&quot;free&quot;</span><span style="color: #AE81FF;">)</span> +
+    facetMargin<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span><span style="color: #AE81FF;">)</span> +
+    margin<span style="color: #AE81FF;">(</span>bottom = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span>, right = <span style="font-style: italic;">3</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
+    geom_point<span style="color: #AE81FF;">(</span>size = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
+    legendPosition<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">91</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
+    ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;FADC channel values of pedestal run, split by even and odd channel numbers&quot;</span><span style="color: #AE81FF;">)</span> +
+    ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_even_odd.pdf&quot;</span>, width = <span style="font-style: italic;">1200</span>, height = <span style="font-style: italic;">600</span><span style="color: #AE81FF;">)</span><span style="color: #75715E;">#</span>
+  <span style="color: #75715E;">#         </span><span style="color: #75715E;">useTeX = true, standalone = true)</span>
+<span style="color: #F92672;">else</span>:
+  ggplot<span style="color: #AE81FF;">(</span>df.group_by<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Channel&quot;</span><span style="color: #66D9EF;">)</span>.filter<span style="color: #66D9EF;">(</span>f<span style="color: #A6E22E;">{</span><span style="color: #66D9EF;">float</span> -&gt; <span style="color: #66D9EF;">bool</span>: `val` &lt; percentile<span style="color: #E6DB74;">(</span>col<span style="color: #FD971F;">(</span><span style="color: #E6DB74;">&quot;val&quot;</span><span style="color: #FD971F;">)</span>, <span style="font-style: italic;">99</span><span style="color: #E6DB74;">)</span><span style="color: #A6E22E;">}</span><span style="color: #66D9EF;">)</span>,
+         aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Register&quot;</span>, <span style="color: #E6DB74;">&quot;val&quot;</span>, color = <span style="color: #E6DB74;">&quot;Channel&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+    facet_wrap<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Channel&quot;</span>, scales = <span style="color: #E6DB74;">&quot;free&quot;</span><span style="color: #AE81FF;">)</span> +
+    geom_point<span style="color: #AE81FF;">(</span>size = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
+    facetMargin<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">7</span><span style="color: #AE81FF;">)</span> +
+    margin<span style="color: #AE81FF;">(</span>bottom = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span>, right = <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
+    scale_y_continuous<span style="color: #AE81FF;">(</span>breaks = <span style="font-style: italic;">5</span><span style="color: #AE81FF;">)</span> + 
+    legendPosition<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">87</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> + 
+    ylab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Register&quot;</span><span style="color: #AE81FF;">)</span> + 
+    ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;FADC register pedestal values, split by channels&quot;</span><span style="color: #AE81FF;">)</span> +    
+    xlab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Channel&quot;</span>, margin = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
+    themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span>, width = <span style="font-style: italic;">600</span>, baseTheme = singlePlot<span style="color: #AE81FF;">)</span> + 
+    ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/detector/calibration/fadc_pedestal_split_by_channel.pdf&quot;</span>,
+          useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span><span style="color: #AE81FF;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orgd83cc87">
+<h4 id="orgd83cc87"><span class="section-number-4">8.2.2.</span> Calculate pedestals from real FADC data <code>[/]</code>   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-8-2-2">
+<p>
+We will now see what happens if we compute the FADC pedestals from the
+raw data by computing a truncated mean of all FADC files in a single
+run and comparing to the real pedestal run we normally use as a
+reference.
+</p>
+
+<p>
+<b>UPDATE</b>: <span class="timestamp-wrapper">  <span class="timestamp">&lt;2022-12-26 Mon 00:48&gt; </span></span> This was a big success. We will use
+this in our real data from now on, move this to <code>statusAndProgress</code>
+and rewrite the section above with that in mind, i.e. explain how to
+calc pedestals.
+</p>
+<ul class="org-ul">
+<li class="off"><code>[ ]</code> <b>REWRITE MAIN TEXT</b></li>
+
+<li class="off"><code>[ ]</code> <b>TEST PEDESTAL CALC FOR BACKGROUND DATA</b></li>
+
+<li class="off"><code>[ ]</code> look at c-blake&apos;s ideas using `MovingStat`, a logarithmic histogram etc. to avoid
+the multiple passes over the data as we do using `sort`! See my journal.org notes about
+this!</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> std / <span style="color: #AE81FF;">[</span>strutils, os, sequtils, sugar, algorithm<span style="color: #AE81FF;">]</span>
+<span style="color: #F92672;">import</span> ggplotnim
+
+<span style="color: #75715E;"># </span><span style="color: #75715E;">to read from H5 input</span>
+<span style="color: #F92672;">import</span> nimhdf5
+<span style="color: #F92672;">import</span> ingrid / tos_helpers
+<span style="color: #F92672;">import</span> ingrid / ingrid_types
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">readFadc</span><span style="color: #AE81FF;">(</span>f: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
+  <span style="color: #75715E;"># </span><span style="color: #75715E;">read the FADC files using our CSV parser. Everything `</span><span style="color: #AE81FF;">#</span><span style="color: #75715E;">` is header</span>
+  <span style="color: #75715E;"># </span><span style="color: #75715E;">aside from the last 3 lines. Skip those using `</span><span style="color: #AE81FF;">maxLines</span><span style="color: #75715E;">`</span>
+  <span style="color: #FD971F;">result</span> = readCsv<span style="color: #AE81FF;">(</span>f, header = <span style="color: #E6DB74;">&quot;#&quot;</span>, maxLines = <span style="font-style: italic;">10240</span><span style="color: #AE81FF;">)</span>
+    .rename<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;val&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;nb of channels: 0&quot;</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #75715E;">#</span><span style="color: #75715E;">result[&quot;Channel&quot;] = toSeq(0 ..&lt; result.len)</span>
+  <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Register&quot;</span><span style="color: #AE81FF;">]</span> = toSeq<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span> ..&lt; <span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span>.repeat<span style="color: #AE81FF;">(</span><span style="font-style: italic;">4</span><span style="color: #AE81FF;">)</span>.concat.sorted
+  <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Channel&quot;</span><span style="color: #AE81FF;">]</span> = @<span style="color: #AE81FF;">[</span><span style="font-style: italic;">1</span>, <span style="font-style: italic;">2</span>, <span style="font-style: italic;">3</span>, <span style="font-style: italic;">4</span><span style="color: #AE81FF;">]</span>.repeat<span style="color: #AE81FF;">(</span><span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span>.concat
+
+<span style="color: #F92672;">const</span> <span style="color: #66D9EF;">Size</span> = <span style="font-style: italic;">5000</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">getFadcDset</span><span style="color: #AE81FF;">(</span>h5f: <span style="color: #66D9EF;">H5File</span>, runNumber: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">H5DataSet</span> =
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fadcGroup </span>= fadcRawPath<span style="color: #AE81FF;">(</span>runNumber<span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">doAssert</span> fadcGroup <span style="color: #F92672;">in</span> h5f
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">group </span>= h5f<span style="color: #AE81FF;">[</span>fadcGroup.grp_str<span style="color: #AE81FF;">]</span>
+  <span style="color: #FD971F;">result</span> = h5f<span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">(</span>group.name / <span style="color: #E6DB74;">&quot;raw_fadc&quot;</span><span style="color: #66D9EF;">)</span>.dset_str<span style="color: #AE81FF;">]</span>
+  
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">readChannel</span><span style="color: #AE81FF;">(</span>h5f: <span style="color: #66D9EF;">H5File</span>, dset: <span style="color: #66D9EF;">H5DataSet</span>, start: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">seq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">uint16</span><span style="color: #AE81FF;">]</span> =
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">toRead </span>= <span style="color: #F92672;">min</span><span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Size</span>, dset.shape<span style="color: #66D9EF;">[</span><span style="font-style: italic;">0</span><span style="color: #66D9EF;">]</span> - start<span style="color: #AE81FF;">)</span>
+  <span style="color: #FD971F;">result</span> = read_hyperslab<span style="color: #AE81FF;">(</span>dset, <span style="color: #66D9EF;">uint16</span>,
+                          offset = @<span style="color: #66D9EF;">[</span>start, <span style="font-style: italic;">0</span><span style="color: #66D9EF;">]</span>,
+                          count = @<span style="color: #66D9EF;">[</span>toRead, dset.shape<span style="color: #A6E22E;">[</span><span style="font-style: italic;">1</span><span style="color: #A6E22E;">]</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
+  
+<span style="color: #F92672;">import</span> weave
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">percIdx</span><span style="color: #AE81FF;">(</span>q: <span style="color: #66D9EF;">float</span>, <span style="color: #F92672;">len</span>: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">int</span> = <span style="color: #AE81FF;">(</span><span style="color: #F92672;">len</span>.<span style="color: #66D9EF;">float</span> * q<span style="color: #AE81FF;">)</span>.round.<span style="color: #66D9EF;">int</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E; font-weight: bold; font-style: italic;">biasedTruncMean*</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">T</span><span style="color: #AE81FF;">](</span>x: <span style="color: #66D9EF;">Tensor</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">T</span><span style="color: #66D9EF;">]</span>, axis: <span style="color: #66D9EF;">int</span>, qLow, qHigh: <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">Tensor</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">]</span> =
+  <span style="color: #E6DB74;">## Computes the *biased* truncated mean of `</span><span style="color: #AE81FF;">x</span><span style="color: #E6DB74;">` by removing the quantiles `</span><span style="color: #AE81FF;">qLow</span><span style="color: #E6DB74;">` on the</span>
+  <span style="color: #E6DB74;">## bottom end and `</span><span style="color: #AE81FF;">qHigh</span><span style="color: #E6DB74;">` on the upper end.</span>
+  <span style="color: #E6DB74;">## ends of the data. `</span><span style="color: #AE81FF;">q</span><span style="color: #E6DB74;">` should be given as a fraction of events to remove on both ends.</span>
+  <span style="color: #E6DB74;">## E.g. `</span><span style="color: #AE81FF;">qLow = 0.05, qHigh = 0.99</span><span style="color: #E6DB74;">` removes anything below the 5-th percentile and above the 99-th.</span>
+  <span style="color: #E6DB74;">##</span>
+  <span style="color: #E6DB74;">## Note: uses `</span><span style="color: #AE81FF;">weave</span><span style="color: #E6DB74;">` internally to multithread along the desired axis!</span>
+  <span style="color: #F92672;">doAssert</span> x.rank == <span style="font-style: italic;">2</span>
+  <span style="color: #FD971F;">result</span> = newTensorUninit<span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">](</span>x.shape<span style="color: #66D9EF;">[</span>axis<span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
+  init<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Weave</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xBuf </span>= x.toUnsafeView<span style="color: #AE81FF;">()</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">resBuf </span>= <span style="color: #FD971F;">result</span>.toUnsafeView<span style="color: #AE81FF;">()</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">notAxis </span>= <span style="color: #F92672;">if</span> axis == <span style="font-style: italic;">0</span>: <span style="font-style: italic;">1</span> <span style="color: #F92672;">else</span>: <span style="font-style: italic;">0</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">numH </span>= x.shape<span style="color: #AE81FF;">[</span>notAxis<span style="color: #AE81FF;">]</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">assuming row column major, 0 is # rows, 1 is # cols</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">numW </span>= x.shape<span style="color: #AE81FF;">[</span>axis<span style="color: #AE81FF;">]</span>
+  parallelFor i <span style="color: #F92672;">in</span> <span style="font-style: italic;">0</span> ..&lt; numW:
+    captures: <span style="color: #AE81FF;">{</span>xBuf, resBuf, numH, numW, axis, qLow, qHigh<span style="color: #AE81FF;">}</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xT </span>= xBuf.fromBuffer<span style="color: #AE81FF;">(</span>numH, numW<span style="color: #AE81FF;">)</span>
+    <span style="color: #75715E;"># </span><span style="color: #75715E;">get a sorted slice for index `</span><span style="color: #AE81FF;">i</span><span style="color: #75715E;">`</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">subSorted </span>= xT.atAxisIndex<span style="color: #AE81FF;">(</span>axis, i<span style="color: #AE81FF;">)</span>.squeeze.sorted
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">plow </span>= percIdx<span style="color: #AE81FF;">(</span>qLow, numH<span style="color: #AE81FF;">)</span> 
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">phih </span>= percIdx<span style="color: #AE81FF;">(</span>qHigh, numH<span style="color: #AE81FF;">)</span>
+
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">resT </span>= resBuf.fromBuffer<span style="color: #AE81FF;">(</span>numW<span style="color: #AE81FF;">)</span>
+    <span style="color: #E6DB74;">## compute the biased truncated mean by slicing sorted data to lower and upper</span>
+    <span style="color: #E6DB74;">## percentile index</span>
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">red </span>= <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span> 
+    <span style="color: #F92672;">for</span> j <span style="color: #F92672;">in</span> <span style="color: #F92672;">max</span><span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, plow<span style="color: #AE81FF;">)</span> ..&lt; <span style="color: #F92672;">min</span><span style="color: #AE81FF;">(</span>numH, phih<span style="color: #AE81FF;">)</span>: <span style="color: #75715E;"># </span><span style="color: #75715E;">loop manually as data is `</span><span style="color: #AE81FF;">uint16</span><span style="color: #75715E;">` to convert</span>
+      red += subSorted<span style="color: #AE81FF;">[</span>j<span style="color: #AE81FF;">]</span>.<span style="color: #66D9EF;">float</span>
+    resT<span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span> = red / <span style="color: #AE81FF;">(</span>phih - plow<span style="color: #AE81FF;">)</span>.<span style="color: #66D9EF;">float</span>
+  syncRoot<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Weave</span><span style="color: #AE81FF;">)</span>
+  exit<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Weave</span><span style="color: #AE81FF;">)</span>
+
+defColumn<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">uint16</span>, <span style="color: #66D9EF;">uint8</span><span style="color: #AE81FF;">)</span>  
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">readFadcH5</span><span style="color: #AE81FF;">(</span>f: <span style="color: #66D9EF;">string</span>, runNumber: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> = <span style="color: #75715E;">#</span><span style="color: #75715E;">seq[DataTable[colType(uint16, uint8)]] =</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">h5f </span>= <span style="color: #66D9EF;">H5open</span><span style="color: #AE81FF;">(</span>f, <span style="color: #E6DB74;">&quot;r&quot;</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">registers </span>= toSeq<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span> ..&lt; <span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span>.repeat<span style="color: #AE81FF;">(</span><span style="font-style: italic;">4</span><span style="color: #AE81FF;">)</span>.concat.sorted
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">channels </span>= @<span style="color: #AE81FF;">[</span><span style="font-style: italic;">1</span>, <span style="font-style: italic;">2</span>, <span style="font-style: italic;">3</span>, <span style="font-style: italic;">4</span><span style="color: #AE81FF;">]</span>.repeat<span style="color: #AE81FF;">(</span><span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span>.concat
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">idxs </span>= arange<span style="color: #AE81FF;">(</span><span style="font-style: italic;">3</span>, <span style="font-style: italic;">2560</span>, <span style="font-style: italic;">4</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #E6DB74;">## XXX: maybe just read the hyperslab that corresponds to a single channel over</span>
+  <span style="color: #E6DB74;">## the whole run? That&apos;s the whole point of those after all.</span>
+  <span style="color: #E6DB74;">##  -&gt; That is way too slow unfortunately</span>
+  <span style="color: #E6DB74;">## XXX: better replace logic by going row wise N elements instead of column wise.</span>
+  <span style="color: #E6DB74;">## Has the advantage that our memory requirements are constant and not dependent</span>
+  <span style="color: #E6DB74;">## on the number of elements in the run. If we then average over the resulting N</span>
+  <span style="color: #E6DB74;">## pedestals, it should be fine.</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dset </span>= getFadcDset<span style="color: #AE81FF;">(</span>h5f, runNumber<span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">val </span>= newTensor<span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">](</span><span style="font-style: italic;">2560</span> * <span style="font-style: italic;">4</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">when</span> <span style="color: #AE81FF;">true</span>:
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">slices </span>= <span style="font-style: italic;">0</span>
+    <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> arange<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, dset.shape<span style="color: #66D9EF;">[</span><span style="font-style: italic;">0</span><span style="color: #66D9EF;">]</span>, <span style="color: #66D9EF;">Size</span><span style="color: #AE81FF;">)</span>:
+      <span style="color: #75715E;"># </span><span style="color: #75715E;">read </span>
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">data </span>= readChannel<span style="color: #AE81FF;">(</span>h5f, dset, i<span style="color: #AE81FF;">)</span>
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">toRead </span>= <span style="color: #F92672;">min</span><span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Size</span>, dset.shape<span style="color: #66D9EF;">[</span><span style="font-style: italic;">0</span><span style="color: #66D9EF;">]</span> - i<span style="color: #AE81FF;">)</span>
+      <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Reading...&quot;</span>
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dT </span>= data.toTensor.reshape<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">[</span>toRead, data.<span style="color: #F92672;">len</span> <span style="color: #F92672;">div</span> toRead<span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
+      <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Read &quot;</span>, i, <span style="color: #E6DB74;">&quot; to read up to : &quot;</span>, toRead, <span style="color: #E6DB74;">&quot; now processing...&quot;</span>
+      <span style="color: #F92672;">inc</span> slices
+      val += biasedTruncMean<span style="color: #AE81FF;">(</span>dT, axis = <span style="font-style: italic;">1</span>, qLow = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">2</span>, qHigh = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">98</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> <span style="font-style: italic;">0</span> ..&lt; <span style="font-style: italic;">2560</span> * <span style="font-style: italic;">4</span>:
+      val<span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span> /= slices.<span style="color: #66D9EF;">float</span>
+  <span style="color: #FD971F;">result</span> = toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;Channel&quot;</span> : channels, val, <span style="color: #E6DB74;">&quot;Register&quot;</span> : registers<span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #75715E;">#</span><span style="color: #75715E;">for fadc in h5f.iterFadcFromH5(runNumber):</span>
+  <span style="color: #75715E;">#  </span><span style="color: #75715E;">let datCh3 = fadc.data[idxs] # .mapIt(it.int)</span>
+  <span style="color: #75715E;">#  </span><span style="color: #75715E;">var df = toDf({&quot;val&quot; : dat, &quot;Register&quot; : registers, &quot;Channel&quot; : channels})</span>
+  <span style="color: #75715E;">#  </span><span style="color: #75715E;">result.add df</span>
+
+<span style="color: #E6DB74;">## Main function to avoid bug of closure capturing old variable  </span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">readFadcData</span><span style="color: #AE81FF;">(</span>path: <span style="color: #66D9EF;">string</span>, runNumber: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= newDataFrame<span style="color: #AE81FF;">()</span>
+  <span style="color: #F92672;">if</span> path.endsWith<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;.h5&quot;</span><span style="color: #AE81FF;">)</span>:
+    <span style="color: #F92672;">doAssert</span> runNumber &gt; <span style="font-style: italic;">0</span>
+    df = readFadcH5<span style="color: #AE81FF;">(</span>path, runNumber<span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">else</span>:
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">dfs </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">DataFrame</span><span style="color: #AE81FF;">]()</span>
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">i </span>= <span style="font-style: italic;">0</span>
+    <span style="color: #F92672;">for</span> f <span style="color: #F92672;">in</span> walkFiles<span style="color: #AE81FF;">(</span>path / <span style="color: #E6DB74;">&quot;*.txt-fadc&quot;</span><span style="color: #AE81FF;">)</span>:
+      <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Parsing &quot;</span>, f
+      dfs.<span style="color: #F92672;">add</span> readFadc<span style="color: #AE81FF;">(</span>f<span style="color: #AE81FF;">)</span>
+      <span style="color: #F92672;">inc</span> i
+      <span style="color: #F92672;">if</span> i &gt; <span style="font-style: italic;">5000</span>: <span style="color: #F92672;">break</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dfP </span>= assignStack<span style="color: #AE81FF;">(</span>dfs<span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">reg </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">]()</span>
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">val </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">]()</span>
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">chs </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">]()</span>
+    <span style="color: #F92672;">for</span> <span style="color: #AE81FF;">(</span>tup, subDf<span style="color: #AE81FF;">)</span> <span style="color: #F92672;">in</span> groups<span style="color: #AE81FF;">(</span>dfP.group_by<span style="color: #66D9EF;">(</span><span style="color: #A6E22E;">[</span><span style="color: #E6DB74;">&quot;Channel&quot;</span>, <span style="color: #E6DB74;">&quot;Register&quot;</span><span style="color: #A6E22E;">]</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>:
+      <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;At &quot;</span>, tup
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">p20 </span>= percentile<span style="color: #AE81FF;">(</span>subDf<span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;val&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span>, <span style="font-style: italic;">20</span><span style="color: #AE81FF;">)</span>
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">p80 </span>= percentile<span style="color: #AE81FF;">(</span>subDf<span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;val&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span>, <span style="font-style: italic;">80</span><span style="color: #AE81FF;">)</span>
+      reg.<span style="color: #F92672;">add</span> tup<span style="color: #AE81FF;">[</span><span style="font-style: italic;">1</span><span style="color: #AE81FF;">][</span><span style="font-style: italic;">1</span><span style="color: #AE81FF;">]</span>.<span style="color: #F92672;">toInt</span>
+      chs.<span style="color: #F92672;">add</span> tup<span style="color: #AE81FF;">[</span><span style="font-style: italic;">0</span><span style="color: #AE81FF;">][</span><span style="font-style: italic;">1</span><span style="color: #AE81FF;">]</span>.<span style="color: #F92672;">toInt</span>
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dfF </span>= <span style="color: #F92672;">if</span> p80 - p20 &gt; <span style="font-style: italic;">0</span>: subDf.filter<span style="color: #AE81FF;">(</span>dfFn<span style="color: #66D9EF;">(</span>subDf, f<span style="color: #A6E22E;">{</span><span style="color: #66D9EF;">float</span>: `val` &gt;= p20 <span style="color: #F92672;">and</span> `val` &lt;= p80<span style="color: #A6E22E;">}</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>
+                <span style="color: #F92672;">else</span>: subDf
+      val.<span style="color: #F92672;">add</span> dfF<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;val&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">]</span>.mean
+    df = toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;Channel&quot;</span> : chs, val, <span style="color: #E6DB74;">&quot;Register&quot;</span> : reg<span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+  df.writeCsv<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/t/pedestal.csv&quot;</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">echo</span> df.pretty<span style="color: #AE81FF;">(</span>-<span style="font-style: italic;">1</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #FD971F;">result</span> = df
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">main</span><span style="color: #AE81FF;">(</span>path: <span style="color: #66D9EF;">string</span>, outfile: <span style="color: #66D9EF;">string</span> = <span style="color: #E6DB74;">&quot;/t/empirical_fadc_pedestal_diff.pdf&quot;</span>,
+          plotVoltage = <span style="color: #AE81FF;">false</span>,
+          runNumber = -<span style="font-style: italic;">1</span>,
+          onlyCsv = <span style="color: #AE81FF;">false</span>
+         <span style="color: #AE81FF;">)</span> =
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">pData </span>= readFadcData<span style="color: #AE81FF;">(</span>path, runNumber<span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">if</span> onlyCsv: <span style="color: #F92672;">return</span>
+  <span style="color: #F92672;">const</span> <span style="color: #FD971F;">path </span>= <span style="color: #E6DB74;">&quot;/home/basti/CastData/ExternCode/TimepixAnalysis/resources/pedestalRuns/&quot;</span>
+  <span style="color: #F92672;">const</span> <span style="color: #FD971F;">file </span>= <span style="color: #E6DB74;">&quot;pedestalRun000042_1_182143774.txt-fadc&quot;</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">pReal </span>= readFadc<span style="color: #AE81FF;">(</span>path / file<span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;DATA= &quot;</span>, pData
+  <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;REAL= &quot;</span>, pReal
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= bind_rows<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">[</span><span style="color: #A6E22E;">(</span><span style="color: #E6DB74;">&quot;Data&quot;</span>, pData<span style="color: #A6E22E;">)</span>, <span style="color: #A6E22E;">(</span><span style="color: #E6DB74;">&quot;Real&quot;</span>, pReal<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">]</span>, <span style="color: #E6DB74;">&quot;ID&quot;</span><span style="color: #AE81FF;">)</span>
+    .spread<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;ID&quot;</span>, <span style="color: #E6DB74;">&quot;val&quot;</span><span style="color: #AE81FF;">)</span>
+    .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;Diff&quot;</span> ~ <span style="color: #F92672;">abs</span><span style="color: #A6E22E;">(</span>`<span style="color: #66D9EF;">Data</span>` - `<span style="color: #66D9EF;">Real</span>`<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #75715E;"># </span><span style="color: #75715E;">alternatively compute the voltage corresponding to the FADC register values,</span>
+    <span style="color: #75715E;"># </span><span style="color: #75715E;">assuming 12 bit working mode (sampling_mode == 0)</span>
+    .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;DiffVolt&quot;</span> ~ `<span style="color: #66D9EF;">Diff</span>` / <span style="font-style: italic;">2048</span>.<span style="font-style: italic;">0</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">plt</span>: <span style="color: #66D9EF;">GgPlot</span>
+  <span style="color: #F92672;">if</span> plotVoltage:
+    plt = ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Register&quot;</span>, <span style="color: #E6DB74;">&quot;DiffVolt&quot;</span>, color = <span style="color: #E6DB74;">&quot;Channel&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+      ylim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">100</span>.<span style="font-style: italic;">0</span> / <span style="font-style: italic;">2048</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span>    
+  <span style="color: #F92672;">else</span>:
+    plt = ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Register&quot;</span>, <span style="color: #E6DB74;">&quot;Diff&quot;</span>, color = <span style="color: #E6DB74;">&quot;Channel&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+      ylim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">100</span><span style="color: #AE81FF;">)</span>
+  plt +
+    geom_point<span style="color: #AE81FF;">(</span>size = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">5</span>, alpha = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">75</span><span style="color: #AE81FF;">)</span> +
+    ylab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Difference between mean and actual pedestal [ADC]&quot;</span><span style="color: #AE81FF;">)</span> + 
+    ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Attempt at computing pedestal values based on truncated mean of data&quot;</span><span style="color: #AE81FF;">)</span> +
+    margin<span style="color: #AE81FF;">(</span>top = <span style="font-style: italic;">2</span><span style="color: #AE81FF;">)</span> +
+    xlim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span> + 
+    ggsave<span style="color: #AE81FF;">(</span>outfile<span style="color: #AE81FF;">)</span>
+  
+<span style="color: #F92672;">when</span> <span style="color: #AE81FF;">isMainModule</span>:
+  <span style="color: #F92672;">import</span> cligen
+  dispatch main
+</pre>
+</div>
+
+<p>
+We can call it on different runs with FADC data:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">code/attempt_fadc_pedestals_from_data <span style="color: #E6DB74; font-weight: bold;">\</span>
+<span style="color: #75715E;">#    </span><span style="color: #75715E;">-p /mnt/1TB/CAST/2017/DataRuns/Run_77_171102-05-24 \</span>
+    -p ~/CastData/data/2017/Run_96_171123-10-42 <span style="color: #E6DB74; font-weight: bold;">\</span>
+<span style="color: #75715E;">#    </span><span style="color: #75715E;">--outfile ~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run77.pdf</span>
+    --outfile ~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run96.pdf    
+</pre>
+</div>
+
+<p>
+for an early 2017 run
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">code/attempt_fadc_pedestals_from_data <span style="color: #E6DB74; font-weight: bold;">\</span>
+    -p /mnt/1TB/CAST/2018_2/DataRuns/Run_303_181217-16-52 <span style="color: #E6DB74; font-weight: bold;">\</span>
+    --outfile ~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run303.pdf
+</pre>
+</div>
+
+<p>
+for a late 2018 run.
+</p>
+
+<p>
+These yield fig. <a href="#fig:daq:fadc_pedestals_from_data_compare_real">4</a>
+</p>
+
+
+<figure class="figure-wrapper" id="fig:daq:fadc_pedestals_from_data_compare_real">
+<figure class="subfigure" id="fig:daq:fadc_pedestals_from_data_compare_real_run77" data-width="49%">  <img src="./figs/~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run77.svg" data-width="99%" />  <figcaption>Figure 4(a): Run 77</figcaption></figure> <figure class="subfigure" id="fig:reco:fadc_pedestals_from_data_compare_real_run303" data-width="49%">  <img src="./figs/~/phd/Figs/detector/calibration/pedestal_from_data_compare_real_run303.svg" data-width="99%" />  <figcaption>Figure 4(b): Run 303</figcaption></figure>
+<figcaption>Figure 4: Calculation of the FADC pedestals from data by averaging all channels
+    over all FADC data files of a single run using a truncated mean from the 20-th
+    to 80-th percentile of the distribution. Both data runs show a comparatively small
+    variance. Arguably it may make sense to \textit{always} compute it based on each
+    run instead of relying on a pedestal run though.</figcaption>
+</figure>
+
+
+<p>
+Surprisingly, the deviation for the end 2018 run is lower than for the
+2017 run, despite the 2017 run being closer in time to the real
+pedestal run.
+</p>
+
+<p>
+Keep in mind that in our data taking we used the 12 bit readout
+mode. This means the register values divided by \num{2048} correspond
+to the voltages recorded by the register. As such the absolute values
+of the deviations are quite a bit smaller than \(\lesssim \SI{48}{mV}\)
+(which is small given the absolute range of \(±\SI{1}{V}\) of the FADC.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> nimhdf5, ggplotnim
+<span style="color: #F92672;">import</span> std / <span style="color: #AE81FF;">[</span>strutils, os, sequtils<span style="color: #AE81FF;">]</span>
+<span style="color: #F92672;">import</span> ingrid / <span style="color: #AE81FF;">[</span>tos_helpers, fadc_helpers, ingrid_types, fadc_analysis<span style="color: #AE81FF;">]</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">stripPrefix</span><span style="color: #AE81FF;">(</span>s, p: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">string</span> =
+  <span style="color: #FD971F;">result</span> = s
+  <span style="color: #FD971F;">result</span>.removePrefix<span style="color: #AE81FF;">(</span>p<span style="color: #AE81FF;">)</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">plotIdx</span><span style="color: #AE81FF;">(</span>df: <span style="color: #66D9EF;">DataFrame</span>, fadcData: <span style="color: #66D9EF;">Tensor</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span>, idx: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span> =
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xmin </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;argMinval&quot;</span>, <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xminY </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;minvals&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xminlineX </span>= @<span style="color: #AE81FF;">[</span>xmin, xmin<span style="color: #AE81FF;">]</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">one point for x of min, max</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fData </span>= fadcData<span style="color: #AE81FF;">[</span>idx, _<span style="color: #AE81FF;">]</span>.squeeze
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xminlineY </span>= linspace<span style="color: #AE81FF;">(</span>fData.<span style="color: #F92672;">min</span>, fData.<span style="color: #F92672;">max</span>, <span style="font-style: italic;">2</span><span style="color: #AE81FF;">)</span>
+
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">riseStart </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;riseStart&quot;</span>, <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fallStop </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;fallStop&quot;</span>, <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">riseStartX </span>= @<span style="color: #AE81FF;">[</span>riseStart, riseStart<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fallStopX </span>= @<span style="color: #AE81FF;">[</span>fallStop, fallStop<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">baseline </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;baseline&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>  
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">baselineY </span>= @<span style="color: #AE81FF;">[</span>baseline, baseline<span style="color: #AE81FF;">]</span>
+  
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span> <span style="color: #E6DB74;">&quot;x&quot;</span>         : toSeq<span style="color: #A6E22E;">(</span><span style="font-style: italic;">0</span> ..&lt; <span style="font-style: italic;">2560</span><span style="color: #A6E22E;">)</span>,
+                  <span style="color: #E6DB74;">&quot;baseline&quot;</span>  : baseline,
+                  <span style="color: #E6DB74;">&quot;data&quot;</span>      : fData,
+                  <span style="color: #E6DB74;">&quot;xminX&quot;</span>     : xminlineX, 
+                  <span style="color: #E6DB74;">&quot;xminY&quot;</span>     : xminlineY,
+                  <span style="color: #E6DB74;">&quot;riseStart&quot;</span> : riseStartX,
+                  <span style="color: #E6DB74;">&quot;fallStop&quot;</span>  : fallStopX <span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+                  <span style="color: #75715E;"># </span><span style="color: #75715E;">Comparison has to be done by hand unfortunately</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">path </span>= <span style="color: #E6DB74;">&quot;/t/fadc_spectrum_baseline.pdf&quot;</span>
+  ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;data&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">()</span> +
+    geom_point<span style="color: #AE81FF;">(</span>color = color<span style="color: #66D9EF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">(</span>data = df.head<span style="color: #66D9EF;">(</span><span style="font-style: italic;">2</span><span style="color: #66D9EF;">)</span>, aes = aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;baseline&quot;</span><span style="color: #66D9EF;">)</span>,
+                     color = <span style="color: #E6DB74;">&quot;blue&quot;</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">(</span>data = df.head<span style="color: #66D9EF;">(</span><span style="font-style: italic;">2</span><span style="color: #66D9EF;">)</span>, aes = aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;xminX&quot;</span>, <span style="color: #E6DB74;">&quot;xminY&quot;</span><span style="color: #66D9EF;">)</span>,
+                     color = <span style="color: #E6DB74;">&quot;red&quot;</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">(</span>data = df.head<span style="color: #66D9EF;">(</span><span style="font-style: italic;">2</span><span style="color: #66D9EF;">)</span>, aes = aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;riseStart&quot;</span>, <span style="color: #E6DB74;">&quot;xminY&quot;</span><span style="color: #66D9EF;">)</span>,
+                     color = <span style="color: #E6DB74;">&quot;green&quot;</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">(</span>data = df.head<span style="color: #66D9EF;">(</span><span style="font-style: italic;">2</span><span style="color: #66D9EF;">)</span>, aes = aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;fallStop&quot;</span>, <span style="color: #E6DB74;">&quot;xminY&quot;</span><span style="color: #66D9EF;">)</span>,
+                     color = <span style="color: #E6DB74;">&quot;pink&quot;</span><span style="color: #AE81FF;">)</span> +
+    ggsave<span style="color: #AE81FF;">(</span>path<span style="color: #AE81FF;">)</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">plotCompare</span><span style="color: #AE81FF;">(</span>data, real: <span style="color: #66D9EF;">Tensor</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span> =
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">path </span>= <span style="color: #E6DB74;">&quot;/t/fadc_spectrum_compare.pdf&quot;</span>
+  <span style="color: #F92672;">for</span> idx <span style="color: #F92672;">in</span> <span style="font-style: italic;">0</span> ..&lt; data.shape<span style="color: #AE81FF;">[</span><span style="font-style: italic;">0</span><span style="color: #AE81FF;">]</span>:
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span> <span style="color: #E6DB74;">&quot;x&quot;</span> : toSeq<span style="color: #A6E22E;">(</span><span style="font-style: italic;">0</span> ..&lt; <span style="font-style: italic;">2560</span><span style="color: #A6E22E;">)</span>,
+                    <span style="color: #E6DB74;">&quot;data&quot;</span> : data<span style="color: #A6E22E;">[</span>idx, _<span style="color: #A6E22E;">]</span>.squeeze,
+                    <span style="color: #E6DB74;">&quot;real&quot;</span> : real<span style="color: #A6E22E;">[</span>idx, _<span style="color: #A6E22E;">]</span>.squeeze <span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+      .gather<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;data&quot;</span>, <span style="color: #E6DB74;">&quot;real&quot;</span><span style="color: #66D9EF;">]</span>, <span style="color: #E6DB74;">&quot;type&quot;</span>, <span style="color: #E6DB74;">&quot;vals&quot;</span><span style="color: #AE81FF;">)</span>
+    ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;vals&quot;</span>, color = <span style="color: #E6DB74;">&quot;type&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+      geom_line<span style="color: #AE81FF;">()</span> +
+      <span style="color: #75715E;">#</span><span style="color: #75715E;">geom_point(color = color(0.1, 0.1, 0.1, 0.1)) +</span>
+      ggsave<span style="color: #AE81FF;">(</span>path<span style="color: #AE81FF;">)</span>
+    sleep<span style="color: #AE81FF;">(</span><span style="font-style: italic;">1000</span><span style="color: #AE81FF;">)</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">getFadcData</span><span style="color: #AE81FF;">(</span>fadcRun: <span style="color: #66D9EF;">ProcessedFadcRun</span>, pedestal: <span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">uint16</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">Tensor</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">]</span> =
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">ch0 </span>= getCh0Indices<span style="color: #AE81FF;">()</span>
+  <span style="color: #F92672;">let</span>
+    fadc_ch0_indices = getCh0Indices<span style="color: #AE81FF;">()</span>
+    <span style="color: #75715E;"># </span><span style="color: #75715E;">we demand at least 4 dips, before we can consider an event as noisy</span>
+    n_dips = <span style="font-style: italic;">4</span>
+    <span style="color: #75715E;"># </span><span style="color: #75715E;">the percentile considered for the calculation of the minimum</span>
+    min_percentile = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">95</span>
+    numFiles = fadcRun.eventNumber.<span style="color: #F92672;">len</span>
+  
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">fData </span>= <span style="color: #66D9EF;">ReconstructedFadcRun</span><span style="color: #AE81FF;">(</span>
+    fadc_data: newTensorUninit<span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">](</span><span style="color: #A6E22E;">[</span>numFiles, <span style="font-style: italic;">2560</span><span style="color: #A6E22E;">]</span><span style="color: #66D9EF;">)</span>,
+    eventNumber: fadcRun.eventNumber,
+    noisy: <span style="color: #F92672;">newSeq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">int</span><span style="color: #66D9EF;">](</span>numFiles<span style="color: #66D9EF;">)</span>,
+    minVals: <span style="color: #F92672;">newSeq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">](</span>numFiles<span style="color: #66D9EF;">)</span>
+  <span style="color: #AE81FF;">)</span>
+
+  <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> <span style="font-style: italic;">0</span> ..&lt; fadcRun.eventNumber.<span style="color: #F92672;">len</span>:
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">slice </span>= fadcRun.rawFadcData<span style="color: #AE81FF;">[</span>i, _<span style="color: #AE81FF;">]</span>.squeeze
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">data </span>= slice.fadcFileToFadcData<span style="color: #AE81FF;">(</span>
+      pedestal,
+      fadcRun.trigRecs<span style="color: #66D9EF;">[</span>i<span style="color: #66D9EF;">]</span>, fadcRun.settings.postTrig, fadcRun.settings.bitMode14,
+      fadc_ch0_indices<span style="color: #AE81FF;">)</span>.data
+    fData.fadc_data<span style="color: #AE81FF;">[</span>i, _<span style="color: #AE81FF;">]</span> = data.unsqueeze<span style="color: #AE81FF;">(</span>axis = <span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span>
+    fData.noisy<span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>        = data.isFadcFileNoisy<span style="color: #AE81FF;">(</span>n_dips<span style="color: #AE81FF;">)</span>
+    fData.minVals<span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>      = data.calcMinOfPulse<span style="color: #AE81FF;">(</span>min_percentile<span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">when</span> <span style="color: #AE81FF;">false</span>:
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">data </span>= fData.fadcData.toSeq2D
+    <span style="color: #F92672;">let</span> <span style="color: #AE81FF;">(</span>baseline, xMin, riseStart, fallStop, riseTime, fallTime<span style="color: #AE81FF;">)</span> = calcRiseAndFallTime<span style="color: #AE81FF;">(</span>
+      data, 
+      <span style="color: #AE81FF;">false</span>
+    <span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span> <span style="color: #E6DB74;">&quot;argMinval&quot;</span> : xMin.mapIt<span style="color: #A6E22E;">(</span>it.<span style="color: #66D9EF;">float</span><span style="color: #A6E22E;">)</span>,
+                    <span style="color: #E6DB74;">&quot;baseline&quot;</span> : baseline.mapIt<span style="color: #A6E22E;">(</span>it.<span style="color: #66D9EF;">float</span><span style="color: #A6E22E;">)</span>,
+                    <span style="color: #E6DB74;">&quot;riseStart&quot;</span> : riseStart.mapIt<span style="color: #A6E22E;">(</span>it.<span style="color: #66D9EF;">float</span><span style="color: #A6E22E;">)</span>,
+                    <span style="color: #E6DB74;">&quot;fallStop&quot;</span> : fallStop.mapIt<span style="color: #A6E22E;">(</span>it.<span style="color: #66D9EF;">float</span><span style="color: #A6E22E;">)</span>,
+                    <span style="color: #E6DB74;">&quot;riseTime&quot;</span> : riseTime.mapIt<span style="color: #A6E22E;">(</span>it.<span style="color: #66D9EF;">float</span><span style="color: #A6E22E;">)</span>,
+                    <span style="color: #E6DB74;">&quot;fallTime&quot;</span> : fallTime.mapIt<span style="color: #A6E22E;">(</span>it.<span style="color: #66D9EF;">float</span><span style="color: #A6E22E;">)</span>,
+                    <span style="color: #E6DB74;">&quot;minvals&quot;</span> : fData.minvals <span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">for</span> idx <span style="color: #F92672;">in</span> <span style="font-style: italic;">0</span> ..&lt; df.<span style="color: #F92672;">len</span>:
+      plotIdx<span style="color: #AE81FF;">(</span>df, fData.fadc_data, idx<span style="color: #AE81FF;">)</span>
+      sleep<span style="color: #AE81FF;">(</span><span style="font-style: italic;">1000</span><span style="color: #AE81FF;">)</span>
+
+  <span style="color: #FD971F;">result</span> = fData.fadcData
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">readFadc</span><span style="color: #AE81FF;">(</span>f: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
+  <span style="color: #75715E;"># </span><span style="color: #75715E;">read the FADC files using our CSV parser. Everything `</span><span style="color: #AE81FF;">#</span><span style="color: #75715E;">` is header</span>
+  <span style="color: #75715E;"># </span><span style="color: #75715E;">aside from the last 3 lines. Skip those using `</span><span style="color: #AE81FF;">maxLines</span><span style="color: #75715E;">`</span>
+  <span style="color: #FD971F;">result</span> = readCsv<span style="color: #AE81FF;">(</span>f, header = <span style="color: #E6DB74;">&quot;#&quot;</span>, maxLines = <span style="font-style: italic;">10240</span><span style="color: #AE81FF;">)</span>
+    .rename<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;val&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;nb of channels: 0&quot;</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #75715E;">#</span><span style="color: #75715E;">result[&quot;Channel&quot;] = toSeq(0 ..&lt; result.len)</span>
+  <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Register&quot;</span><span style="color: #AE81FF;">]</span> = toSeq<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span> ..&lt; <span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span>.repeat<span style="color: #AE81FF;">(</span><span style="font-style: italic;">4</span><span style="color: #AE81FF;">)</span>.concat.sorted
+  <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Channel&quot;</span><span style="color: #AE81FF;">]</span> = @<span style="color: #AE81FF;">[</span><span style="font-style: italic;">1</span>, <span style="font-style: italic;">2</span>, <span style="font-style: italic;">3</span>, <span style="font-style: italic;">4</span><span style="color: #AE81FF;">]</span>.repeat<span style="color: #AE81FF;">(</span><span style="font-style: italic;">2560</span><span style="color: #AE81FF;">)</span>.concat
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">main</span><span style="color: #AE81FF;">(</span>fname: <span style="color: #66D9EF;">string</span>, runNumber: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span> =
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">h5f </span>= <span style="color: #66D9EF;">H5open</span><span style="color: #AE81FF;">(</span>fname, <span style="color: #E6DB74;">&quot;r&quot;</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">pedestal </span>= readCsv<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/t/pedestal.csv&quot;</span><span style="color: #AE81FF;">)</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">created from above</span>
+    .arrange<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;Register&quot;</span>, <span style="color: #E6DB74;">&quot;Channel&quot;</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">echo</span> pedestal
+  <span style="color: #F92672;">const</span> <span style="color: #FD971F;">path </span>= <span style="color: #E6DB74;">&quot;/home/basti/CastData/ExternCode/TimepixAnalysis/resources/pedestalRuns/&quot;</span>
+  <span style="color: #F92672;">const</span> <span style="color: #FD971F;">file </span>= <span style="color: #E6DB74;">&quot;pedestalRun000042_1_182143774.txt-fadc&quot;</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">pReal </span>= readFadc<span style="color: #AE81FF;">(</span>path / file<span style="color: #AE81FF;">)</span>
+  
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fileInfo </span>= h5f.getFileInfo<span style="color: #AE81FF;">()</span>
+  <span style="color: #F92672;">for</span> run <span style="color: #F92672;">in</span> fileInfo.runs:
+    <span style="color: #F92672;">if</span> run == runNumber:
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fadcRun </span>= h5f.readFadcFromH5<span style="color: #AE81FF;">(</span>run<span style="color: #AE81FF;">)</span>
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fromData </span>= fadcRun.getFadcData<span style="color: #AE81FF;">(</span>pedestal<span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;val&quot;</span>, <span style="color: #66D9EF;">uint16</span><span style="color: #66D9EF;">]</span>.toSeq1D<span style="color: #AE81FF;">)</span>
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fromReal </span>= fadcRun.getFadcData<span style="color: #AE81FF;">(</span>pReal<span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;val&quot;</span>, <span style="color: #66D9EF;">uint16</span><span style="color: #66D9EF;">]</span>.toSeq1D<span style="color: #AE81FF;">)</span>
+
+      plotCompare<span style="color: #AE81FF;">(</span>fromData, fromReal<span style="color: #AE81FF;">)</span>
+      
+<span style="color: #F92672;">when</span> <span style="color: #AE81FF;">isMainModule</span>:
+  <span style="color: #F92672;">import</span> cligen
+  dispatch main
+</pre>
+</div>
+
+<ul class="org-ul">
+<li class="off"><code>[ ]</code> <b>SHOW PLOT OF THE ABOVE (<code>plotCompare</code>) AS EXAMPLE OF BAD
+PEDESTALS VS GOOD PEDESTALS?</b>
+-&gt; Would be nice for extended thesis!</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:operation_calibration:scintillators">
+<h3 id="sec:operation_calibration:scintillators"><span class="section-number-3">8.3.</span> Scintillator calibration</h3>
+<div class="outline-text-3" id="text-sec:operation_calibration:scintillators">
+<p>
+The final piece of the detector requiring calibration, are the two
+scintillators. As both of them are only used as digital triggers and
+no analogue signal information is recorded, a suitable discriminator
+threshold voltage has to be set.
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-org3444a3c">
+<h4 id="org3444a3c"><span class="section-number-4">8.3.1.</span> Large scintillator paddle</h4>
+<div class="outline-text-4" id="text-8-3-1">
+<p>
+The large veto scintillator paddle was calibrated at the RD51
+laboratory at CERN prior to the data taking campaign in
+March 2017. Using two smaller, calibrated scintillators to create a
+coincidence setup of the three scintillators, measurements were taken
+at different thresholds. Each measurement was \(\SI{10}{\minute}\) long.
+An amplifier was installed after the PMT to increase the signal.
+</p>
+
+<p>
+The Canberra 2007 base and Bicron Corp. 31.49x15.74M2BC408/2-X PMT
+require a positive high voltage. It was supplied with
+\(\SI{1200}{V}\). Table <a href="#tab-daq-scintillator_coincidence_measurements">8</a>
+shows the recorded measurements. Based on these a threshold of
+\(\SI{-110}{mV}\) was chosen for the CAST data
+taking. Fig. <a href="#fig:daq:veto_scintillator_coincidence">5</a> also shows the data
+from table. While the coincidence counts at \(\SI{-110}{mV}\) are lower
+than the visible plateau starting at \(\SI{-100}{mV}\), this threshold
+was chosen, because the raw counts were still considered too high
+compared to expectation based on cosmic muon rate and the size of the
+scintillator. <sup>  <a role="doc-backlink" class="footref" id="fnr.5" href="#fn.5">5</a></sup>
+</p>
+
+<table id="tab-daq-scintillator_coincidence_measurements">
+<caption class="t-above"><span class="table-number">Table 8:</span> Measurements for the calibration of the large veto scintillator taken at RD51 at CERN with two smaller, calibrated scintillators in a coincidence. Each measurement was \SI{10}{min}. The thresholds set on the discriminator for the veto scintillator were originally measured with a 10x scaling and have been rescaled here to their correct values.</caption>
+
+<colgroup>
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-right" scope="col">Threshold / mV</th>
+<th class="org-right" scope="col">Counts Szinti</th>
+<th class="org-right" scope="col">Counts Coincidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">-59.8</td>
+<td class="org-right">31221</td>
+<td class="org-right">634</td>
+</tr>
+
+<tr>
+<td class="org-right">-70.0</td>
+<td class="org-right">30132</td>
+<td class="org-right">674</td>
+</tr>
+
+<tr>
+<td class="org-right">-80.4</td>
+<td class="org-right">28893</td>
+<td class="org-right">635</td>
+</tr>
+
+<tr>
+<td class="org-right">-90.3</td>
+<td class="org-right">28076</td>
+<td class="org-right">644</td>
+</tr>
+
+<tr>
+<td class="org-right">-100.5</td>
+<td class="org-right">27012</td>
+<td class="org-right">684</td>
+</tr>
+
+<tr>
+<td class="org-right">-110.3</td>
+<td class="org-right">25259</td>
+<td class="org-right">566</td>
+</tr>
+
+<tr>
+<td class="org-right">-120.0</td>
+<td class="org-right">22483</td>
+<td class="org-right">495</td>
+</tr>
+
+<tr>
+<td class="org-right">-130.3</td>
+<td class="org-right">19314</td>
+<td class="org-right">437</td>
+</tr>
+
+<tr>
+<td class="org-right">-140.3</td>
+<td class="org-right">16392</td>
+<td class="org-right">356</td>
+</tr>
+
+<tr>
+<td class="org-right">-150.5</td>
+<td class="org-right">13677</td>
+<td class="org-right">312</td>
+</tr>
+
+<tr>
+<td class="org-right">-160.0</td>
+<td class="org-right">11866</td>
+<td class="org-right">267</td>
+</tr>
+
+<tr>
+<td class="org-right">-170.1</td>
+<td class="org-right">10008</td>
+<td class="org-right">243</td>
+</tr>
+</tbody>
+</table>
+
+
+<figure id="fig:daq:veto_scintillator_coincidence">
+<img src="./figs/home/basti/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.svg" class="org-svg" alt="veto_scintillator_calibration_coinc_rd51.svg" />
+
+<figcaption>Figure 5: <span class="figure-number">Figure 31: </span>Calibration measurements for the veto scintillator printed in table <a href="#tab-daq-scintillator_coincidence_measurements">8</a>. The line is an interconnection of all data points. The errors represent Poisson-like \(\sqrt{N}\) uncertainties.</figcaption>
+</figure>
+</div>
+
+<div class="outline-5" id="outline-container-org93b12a4">
+<h5 id="org93b12a4"><span class="section-number-5">8.3.1.1.</span> Generate the plots of the scintillator calibration data   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-8-3-1-1">
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> ggplotnim, sequtils
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span> <span style="color: #E6DB74;">&quot;Thr&quot;</span> : tbl<span style="color: #A6E22E;">[</span><span style="color: #E6DB74;">&quot;Threshold / mV&quot;</span><span style="color: #A6E22E;">]</span>,
+                <span style="color: #E6DB74;">&quot;Szinti&quot;</span> : tbl<span style="color: #A6E22E;">[</span><span style="color: #E6DB74;">&quot;Counts Szinti&quot;</span><span style="color: #A6E22E;">]</span>,
+                <span style="color: #E6DB74;">&quot;Coinc&quot;</span> : tbl<span style="color: #A6E22E;">[</span><span style="color: #E6DB74;">&quot;Counts Coincidence&quot;</span><span style="color: #A6E22E;">]</span> <span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;SzintiErr&quot;</span> ~ sqrt<span style="color: #A6E22E;">(</span>`<span style="color: #66D9EF;">Szinti</span>`<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span>,
+          f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;CoincErr&quot;</span> ~ sqrt<span style="color: #A6E22E;">(</span>`<span style="color: #66D9EF;">Coinc</span>`<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+<span style="color: #E6DB74;">## XXX: `</span><span style="color: #AE81FF;">ebLinesT</span><span style="color: #E6DB74;">` is broken?!  </span>
+ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Thr&quot;</span>, <span style="color: #E6DB74;">&quot;Szinti&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+  geom_point<span style="color: #AE81FF;">()</span> + geom_line<span style="color: #AE81FF;">()</span> +
+  geom_errorbar<span style="color: #AE81FF;">(</span>aes = aes<span style="color: #66D9EF;">(</span>yMin = f<span style="color: #A6E22E;">{</span>`<span style="color: #66D9EF;">Szinti</span>` - `<span style="color: #66D9EF;">SzintiErr</span>`<span style="color: #A6E22E;">}</span>,
+                          yMax = f<span style="color: #A6E22E;">{</span>`<span style="color: #66D9EF;">Szinti</span>` + `<span style="color: #66D9EF;">SzintiErr</span>`<span style="color: #A6E22E;">}</span><span style="color: #66D9EF;">)</span>,
+                errorBarKind = ebLines,
+                color = parseHex<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;FF00FF&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> + 
+  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Threshold [\si{mV}]&quot;</span><span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Counts [\#]&quot;</span><span style="color: #AE81FF;">)</span> +
+  ggtitle<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Calibration measurements of \SI{10}{min} each&quot;</span><span style="color: #AE81FF;">)</span> + 
+  ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/detector/calibration/veto_scintillator_calibration_rd51.pdf&quot;</span>,
+         useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span><span style="color: #AE81FF;">)</span>
+
+ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Thr&quot;</span>, <span style="color: #E6DB74;">&quot;Coinc&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+  geom_point<span style="color: #AE81FF;">()</span> + geom_line<span style="color: #AE81FF;">()</span> +
+  geom_errorbar<span style="color: #AE81FF;">(</span>aes = aes<span style="color: #66D9EF;">(</span>yMin = f<span style="color: #A6E22E;">{</span>`<span style="color: #66D9EF;">Coinc</span>` - `<span style="color: #66D9EF;">CoincErr</span>`<span style="color: #A6E22E;">}</span>,
+                          yMax = f<span style="color: #A6E22E;">{</span>`<span style="color: #66D9EF;">Coinc</span>` + `<span style="color: #66D9EF;">CoincErr</span>`<span style="color: #A6E22E;">}</span><span style="color: #66D9EF;">)</span>,
+                errorBarKind = ebLines<span style="color: #AE81FF;">)</span> +   
+  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Threshold [\si{mV}]&quot;</span><span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Counts [\#]&quot;</span><span style="color: #AE81FF;">)</span> +
+  ggtitle<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Calibration measurements of \SI{10}{min} each in 3-way coincidence&quot;</span><span style="color: #AE81FF;">)</span> +
+  themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">9</span>, width = <span style="font-style: italic;">600</span>, baseTheme = singlePlot<span style="color: #AE81FF;">)</span> + 
+  ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/detector/calibration/veto_scintillator_calibration_coinc_rd51.pdf&quot;</span>,
+         useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span><span style="color: #AE81FF;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+
+<div class="outline-5" id="outline-container-org9c55733">
+<h5 id="org9c55733"><span class="section-number-5">8.3.1.2.</span> Notes taken of calibration before CAST data taking   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-8-3-1-2">
+<p>
+See the appendix <a href="./calibration.html#sec:appendix:scintillator_calibration_notes">19.3</a> for a
+reproduction of the notes taken during the calibration of the veto
+paddle scintillator.
+</p>
+</div>
+</div>
+
+<div class="outline-5" id="outline-container-orgb49e652">
+<h5 id="orgb49e652"><span class="section-number-5">8.3.1.3.</span> Raw scintillator data   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-8-3-1-3">
+
+<figure id="fig:daq:veto_scintillator_raw_counts">
+<img src="./figs/home/basti/phd/Figs/detector/calibration/veto_scintillator_calibration_rd51.svg" class="org-svg" alt="veto_scintillator_calibration_rd51.svg" />
+
+<figcaption>Figure 6: <span class="figure-number">Figure 32: </span>Calibration measurements for the veto scintillator printed in table <a href="#tab-daq-scintillator_coincidence_measurements">8</a>. In this case the raw data is shown instead of the coincidence. The line is simply an interconnection of all data points. The errors are colored to be seen at all.</figcaption>
+</figure>
+
+<p>
+In particular looking at the raw counts, in hindsight I would now
+probably choose a threshold closer to \SI{-90}{mV} or
+\SI{-95}{mV}. But well.
+</p>
+</div>
+</div>
+
+<div class="outline-5" id="outline-container-org78ab3e3">
+<h5 id="org78ab3e3"><span class="section-number-5">8.3.1.4.</span> Calculate expected rate   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-8-3-1-4">
+<p>
+Let&apos;s compute the expected rate based on a mean cosmic muon rate at
+the surface and the area of the scintillator.
+</p>
+
+<ul class="org-ul">
+<li class="on"><code>[X]</code> <p>
+<b>NOTE: <span class="timestamp-wrapper">  <span class="timestamp">&lt;2023-03-14 Tue 11:49&gt;</span></span></b> The talk about the veto system of
+the SDD detector at the IAXO collaboration meeting March 2023 had
+the following number for the sea level muon rate:
+0.017 Hz•cm⁻²
+-&gt; Ah, this is close to ~1 cm⁻²•min⁻¹!
+</p>
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">rate </span>= <span style="font-style: italic;">0</span>.<span style="font-style: italic;">017</span>.<span style="color: #66D9EF;">Hz</span>•cm⁻²
+<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Rate in &quot;</span>, rate.toDef<span style="color: #AE81FF;">(</span>min⁻¹•cm⁻²<span style="color: #AE81FF;">)</span>
+</pre>
+</div></li>
+</ul>
+
+<p>
+The scintillator has a size of 31.49x15.74 inches and we roughly have
+a mean cosmic muon rate of 1 per cm⁻² min⁻¹. Measurement time was 600 s.
+</p>
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">rate </span>= <span style="font-style: italic;">1</span>.cm⁻²•min⁻¹
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">area </span>= <span style="font-style: italic;">31</span>.<span style="font-style: italic;">49</span>.inch * <span style="font-style: italic;">15</span>.<span style="font-style: italic;">74</span>.inch
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">time </span>= <span style="font-style: italic;">600</span>.s
+<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Expected rate: &quot;</span>, time * rate * area
+</pre>
+</div>
+
+<p>
+So about 32,000 counts in the 10 min time frame. It&apos;s a bit
+frustrating that for some reason during that calibration we assumed a
+muon rate of 100 Hz m⁻² sr⁻¹, so that we only got an expected number
+of counts of about 20,000.
+</p>
+
+<p>
+If we assume the 100 Hz m⁻² sr⁻¹ number and integrate only over \(θ\)
+(not \(φ\) as we should also!) using the \(\cos² θ\) dependence we get a
+more comparable number:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">integral </span>= <span style="font-style: italic;">1</span>.<span style="font-style: italic;">5708</span>.sr <span style="color: #75715E;"># </span><span style="color: #75715E;">∫_{-π/2}^{π/2} cos²(θ) dθ = 1.5708</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">rate </span>= <span style="font-style: italic;">100</span>.<span style="color: #66D9EF;">Hz</span>•m⁻²•sr⁻¹
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">angleInt </span>= <span style="font-style: italic;">2</span>*π
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">time </span>= <span style="font-style: italic;">600</span>.s
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">area </span>= <span style="font-style: italic;">31</span>.<span style="font-style: italic;">49</span>.inch * <span style="font-style: italic;">15</span>.<span style="font-style: italic;">74</span>.inch
+<span style="color: #F92672;">echo</span> rate * time * area * integral
+</pre>
+</div>
+
+<p>
+In any case, it seems like our assumption of 20000 as seen in appendix
+<a href="./calibration.html#sec:appendix:scintillator_calibration_notes">19.3</a> is clearly flawed and
+lead to a possibly too large threshold for the discriminator.
+</p>
+
+<p>
+In addition: why the hell did I not take note of the size of the
+scintillators that Theodoros gave us? That would be a much better
+cross check for the expected rate. It is certainly possible that our
+choice of \(\SI{-110}{mV}\) was actually due to an expected coincidence
+rate matching at that threshold given the sizes of the calibrated
+scintillators, but I can&apos;t verify that anymore.
+</p>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orgd9bf400">
+<h4 id="orgd9bf400"><span class="section-number-4">8.3.2.</span> SiPM</h4>
+<div class="outline-text-4" id="text-8-3-2">
+<p>
+The SiPM was calibrated during the bachelor thesis of Jannes Schmitz
+in 2016 (<a href="./bibliography.html#citeproc_bib_item_204">Schmitz 2017</a>) based on a coincidence measurement with
+calibrated scintillators.
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="footnotes"><h2 class="footnotes">Footnotes: </h2><div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.1" href="#fnr.1">1</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The <code>THL</code> DAC is the global threshold DAC of all pixels. The
+<code>THS</code> DAC is responsible for the range in which each pixel can be
+adjusted around the global value. See appendix
+<a href="#sec:appendix:calibration:timepix">19.1</a> for more information.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.2" href="#fnr.2">2</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://iseg-hv.com/">https://iseg-hv.com/</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.3" href="#fnr.3">3</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://caen.it/">https://caen.it/</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.4" href="#fnr.4">4</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The trigger threshold DAC is a 12-bit DAC. Its
+values correspond to \(\SI{-1}{V}\) at <code>000</code> and \(\SI{1}{V}\) at
+<code>FFF</code>. Hence \(\num{1966}\) (seen in the configuration file) is roughly
+\(\SI{-40}{mV}\).
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.5" href="#fnr.5">5</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+While it is unclear to me now given it&apos;s been
+over 5 years, I believe at the time of the calibration we wrongly
+assumed a muon rate of \(\SI{100}{Hz.m⁻².sr⁻¹}\) instead of about
+\(\SI{1}{cm⁻².min⁻¹}\). The former number only works out if one
+integrates it over the \(\cos^2(θ)\) dependence, <span class="underline">but only along \(θ\)</span>
+and not \(φ\)!  Either way, the number seems problematic. However, it
+did misguide us in likely choosing a too low threshold, as using the
+former number yields an expected number of counts of \(\sim\num{32000}\)
+compared to only \(\sim\num{20000}\) in our naive approach.
+</p></div></div>
+
+</div>
+<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
+</div>
+</body>
+</html>

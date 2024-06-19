@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--  2024-06-18 Tue 23:44  -->
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1" name="viewport" />
+<title>‎</title>
+<meta content="Vindaar" name="author" />
+<meta content="Org Mode" name="generator" />
+
+<link type="text/css" rel="stylesheet" href="org_html_export.css" />
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set the initial width for subfigures and their images
+    document.querySelectorAll('figure.subfigure[data-width]').forEach(function(subfigure) {
+        subfigure.style.width = subfigure.getAttribute('data-width');
+    });
+
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.style.width = img.getAttribute('data-width');
+    });
+
+    // Event listener for images within subfigures
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.addEventListener('click', function() {
+            // Determine the .figure-wrapper that contains the clicked image
+            let wrapper = this.closest('.figure-wrapper');
+
+            // If found, adjust the sizes of its subfigures
+            if (wrapper) {
+                let subfigures = wrapper.querySelectorAll('figure.subfigure');
+                subfigures.forEach(subfigure => {
+                    let width = parseFloat(subfigure.getAttribute('data-width'));
+                    if (width < 50) { // Double size if less than 50%
+                        subfigure.setAttribute('data-width', (width * 2) + '%');
+                        subfigure.style.width = (width * 2) + '%';
+                    } else { // Halve size otherwise
+                        subfigure.setAttribute('data-width', (width / 2) + '%');
+                        subfigure.style.width = (width / 2) + '%';
+                    }
+                });
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var headers = document.querySelectorAll('h1 .extended, h2 .extended, h3 .extended, h4 .extended, h5 .extended, h6 .extended');
+
+    headers.forEach(function (header) {
+        var foldableHeader = header.closest('h1, h2, h3, h4, h5, h6');
+        if (foldableHeader) {
+            foldableHeader.classList.add('foldable-header');
+            var nextElement = foldableHeader.nextElementSibling;
+            var contentToFold = [];
+            while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                contentToFold.push(nextElement);
+                nextElement = nextElement.nextElementSibling;
+            }
+            contentToFold.forEach(function (element) {
+                element.classList.add('folded-content');
+            });
+
+            foldableHeader.addEventListener('click', function () {
+                contentToFold.forEach(function (element) {
+                    if (element.style.display === 'none' || element.style.display == '') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+<!-- /* --><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js", "[Contrib]/siunitx/siunitx.js", "[Contrib]/mhchem/mhchem.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"], ['$', '$'], ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 1.0,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        },
+        TeX: {
+              equationNumbers: { autoNumber: 'AMS' },
+              Macros: {
+                  ccsini: '{\\mathrm{Si}₃\\mathrm{N}₄}',
+                  cefe: '{\\ce{^{55}Fe}}',
+                  vektor: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  mtrix: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  cp: '{\\mathrm{CP}}',
+                  cpt: '{\\mathrm{CPT}}',
+                  dd: '{\\mathop{}\\!{\\mathrm{d}}}',
+                  sinc: '{\\mathrm{sinc}}'
+              }
+        }
+    });
+/*]]>*///--&gt;
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<nav role="doc-toc" id="table-of-contents">
+<h2>Table of Contents</h2>
+<div role="doc-toc" id="text-table-of-contents">
+<ul>
+<li>  <a href="./errata.html#sec:errata">1. Errata   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
+<li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
+<ul>
+<li>  <a href="./about_thesis.html#orgc36e3ba">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org976c329">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orga7aaacb">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory.html#sec:theory:useful_reading_material">4.1. Useful reading material   <span class="tag">    <span class="optional">optional</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:illustration_cpt">4.2. Illustration of the \cpt symmetry <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:invisible_axion_models">4.3. Invisible axion models and axion couplings</a></li>
+<li>  <a href="./theory.html#sec:theory:axion_interactions">4.4. Implications for axion interactions - conversion probability</a></li>
+<li>  <a href="./theory.html#sec:theory:solar_axion_flux">4.5. Solar axion flux</a></li>
+<li>  <a href="./theory.html#sec:theory:chameleon">4.6. Chameleons</a></li>
+<li>  <a href="./theory.html#sec:theory:current_bounds">4.7. Current bounds on coupling constants</a></li>
+</ul>
+</li>
+<li><a href="./helioscopes.html#sec:helioscopes">5. Axion helioscopes   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./helioscopes.html#sec:helioscopes:cast">5.1. CERN Axion Solar Telescope (CAST)</a></li>
+<li>  <a href="./helioscopes.html#sec:helioscopes:iaxo">5.2. International AXion Observatory (IAXO)</a></li>
+</ul>
+</li>
+<li><a href="./theory_detector.html#sec:theory_detector">6. X-rays, cosmic muons and gaseous detectors   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory_detector.html#sec:theory:particle_int">6.1. Particle interactions with matter</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:cosmic_radiation">6.2. Cosmic rays</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:gas_fundamentals">6.3. Gaseous detector fundamentals</a></li>
+</ul>
+</li>
+<li><a href="./septemboard.html#sec:septemboard">7. Septemboard detector   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./septemboard.html#sec:detector:micromegas">7.1. Micromegas working principle</a></li>
+<li>  <a href="./septemboard.html#sec:detector:timepix">7.2. Timepix ASIC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
+<li>  <a href="./septemboard.html#orgc654d28">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
+<li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
+<li>  <a href="./septemboard.html#sec:detector:septemboard">7.10. Septemboard - 6 GridPixes around a center one</a></li>
+<li>  <a href="./septemboard.html#sec:detector:water_cooling">7.11. Water cooling and temperature readout for the septemboard</a></li>
+<li>  <a href="./septemboard.html#sec:septem:efficiency">7.12. Detector efficiency</a></li>
+<li>  <a href="./septemboard.html#sec:detector:daq">7.13. Data acquisition and detector monitoring</a></li>
+</ul>
+</li>
+<li><a href="./operation_calibration.html#sec:operation_calibration">8. Detector calibration for operation   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:timepix">8.1. Timepix calibrations</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:fadc">8.2. FADC calibration</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:scintillators">8.3. Scintillator calibration</a></li>
+</ul>
+</li>
+<li><a href="./reconstruction.html#sec:reconstruction">9. Data reconstruction   <span class="tag">  <span class="Reconstruction">Reconstruction</span></span></a>
+<ul>
+<li>  <a href="./reconstruction.html#sec:reco:tpa">9.1. <code>TimepixAnalysis</code> and Nim</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:tos_data_parsing">9.2. TOS data parsing</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:event_shape">9.3. Expectation of event shapes</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:data_reconstruction">9.4. Data reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:fadc_data">9.5. FADC reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:scintillator_data">9.6. Scintillator data</a></li>
+</ul>
+</li>
+<li><a href="./cast.html#sec:cast">10. Detector installation &amp; data taking at CAST   <span class="tag">  <span class="CAST">CAST</span></span></a>
+<ul>
+<li>  <a href="./cast.html#sec:cast:timeline">10.1. Timeline</a></li>
+<li>  <a href="./cast.html#sec:cast:alignment">10.2. Alignment</a></li>
+<li>  <a href="./cast.html#sec:cast:detector_setup">10.3. Detector setup at CAST</a></li>
+<li>  <a href="./cast.html#sec:cast:window_accident">10.4. Window accident</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_woes">10.5. Data taking woes</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_campaigns">10.6. Summary of CAST data taking</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:calibration">11. Data calibration   <span class="tag">  <span class="Calibration">Calibration</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:calibration:energy">11.1. Energy calibration - in principle</a></li>
+<li>  <a href="./calibration.html#sec:calib:detector_behavior_over_time">11.2. Detector behavior over time</a></li>
+<li>  <a href="./calibration.html#sec:calib:final_energy_calibration">11.3. Energy calibration dependence on the gas gain</a></li>
+<li>  <a href="./calibration.html#sec:calib:fadc">11.4. FADC</a></li>
+</ul>
+</li>
+<li><a href="./background.html#sec:background">12. Finding signal and defining background | Background rate computation   <span class="tag">  <span class="Analysis">Analysis</span></span></a>
+<ul>
+<li>  <a href="./background.html#sec:background:likelihood_method">12.1. Likelihood method</a></li>
+<li>  <a href="./background.html#sec:cdl">12.2. CAST Detector Lab</a></li>
+<li>  <a href="./background.html#sec:background:likelihood_cut">12.3. Application of likelihood cut for background rate</a></li>
+<li>  <a href="./background.html#sec:background:mlp">12.4. Artificial neural networks as cluster classifiers</a></li>
+<li>  <a href="./background.html#sec:background:additional_vetoes">12.5. Additional detector features as vetoes</a></li>
+<li>  <a href="./background.html#sec:background:all_vetoes_combined">12.6. Background rates of combined vetoes and efficiencies</a></li>
+</ul>
+</li>
+<li><a href="./limit.html#sec:limit">13. Limit calculation   <span class="tag">  <span class="Limit">Limit</span></span></a>
+<ul>
+<li>  <a href="./limit.html#sec:limit:method_introduction">13.1. Limit method - introduction</a></li>
+<li>  <a href="./limit.html#sec:limit:method_likelihood">13.2. Limit method - likelihood function \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_L">13.3. Limit method - computing \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_a_limit">13.4. Limit method - computing a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
+<li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
+<li>  <a href="./limit.html#org5e81b6c">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orge06cfa1">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
+<li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:expected_limits">13.13. Expected limits of different setups</a></li>
+<li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
+<li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
+<li>  <a href="./limit.html#orgc627f43">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgda19ced">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
+<li>  <a href="./summary.html#sec:summary">15. Summary &amp; conclusion</a></li>
+<li>  <a href="./bibliography.html#sec:bibliography">16. Bibliography   <span class="tag">    <span class="html">html</span>  </span></a></li>
+<li><a href="./daq.html#sec:daq">17. Data acquisition and detector monitoring   <span class="tag"><span class="Appendix">Appendix</span> <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./daq.html#sec:daq:tof">17.1. Timepix Operating Firmware - TOF</a></li>
+<li>  <a href="./daq.html#sec:daq:tos">17.2. Timepix Operating Software - TOS</a></li>
+<li>  <a href="./daq.html#sec:daq:septemboard_event_display">17.3. Septemboard event display</a></li>
+</ul>
+</li>
+<li><a href="./configuration.html#sec:appendix:configuration">18. Configuration and TOS / TOF versions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_config">18.1. TOS configuration file</a></li>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_tof_versions">18.2. TOS and TOF versions used at CAST</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:appendix:calibration">19. Calibrations   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:appendix:calibration:timepix">19.1. Timepix calibrations</a></li>
+<li>  <a href="./calibration.html#sec:appendix:septemboard_calibrations">19.2. Septemboard calibration</a></li>
+<li>  <a href="./calibration.html#sec:appendix:scintillator_calibration_notes">19.3. Calibration measurements of the veto scintillator paddle   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_operations.html#sec:appendix:cast_operations">20. CAST operation procedures   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_operations:terminology">20.1. CAST terminology</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:high_voltage">20.2. High voltage supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:vacuum_system">20.3. Vacuum system</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:watercooling_gas">20.4. Watercooling system &amp; gas supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:interlock_systems">20.5. Interlock systems</a></li>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_log_files">20.6. CAST log files</a></li>
+</ul>
+</li>
+<li><a href="./cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_run_list.html#orgd304089">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cast_data_taking_notes.html#orge4011be">22.1. Run table</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgeba5174">22.2. Data runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgd62eab2">22.3. Calibration runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org0271f47">22.4. Automatically generated run list</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgb34c028">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org338e161">22.6. InGrid temperature from shift forms</a></li>
+</ul>
+</li>
+<li><a href="./cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cabling_and_softwar_setup.html#org7cb11ec">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org3244c1a">23.2. Detector cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org7c3b445">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#orgda4f123">23.4. Setting up the chips in TOS</a></li>
+</ul>
+</li>
+<li><a href="./vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./vacuum_contamination.html#org35e49a4">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./vacuum_contamination.html#orgdf125cb">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./vacuum_contamination.html#orgf5a7285">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./vacuum_contamination.html#orgeeae0bd">24.4. Calculation of possible contamination</a></li>
+</ul>
+</li>
+<li><a href="./detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:choice_gas_gain_binning">25.1. Choice of gas gain binning time interval</a></li>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:correlation_gas_gain_ambient_temp">25.2. Correlation of gas gain and ambient CAST temperature</a></li>
+</ul>
+</li>
+<li><a href="./cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_detector_lab.html#orgfed071e">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
+</ul>
+</li>
+<li><a href="./fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
+</ul>
+</li>
+<li><a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./morphing_cdl_spectra.html#orgabd5f0e">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#orga5d9c5b">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#org218c56a">28.6. Notes on CDL morphing development   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./occupancy.html#orgdce408e">29.1. Run-2</a></li>
+<li>  <a href="./occupancy.html#orge5d3863">29.2. Run-3</a></li>
+<li>  <a href="./occupancy.html#org971382a">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
+<li>  <a href="./fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
+<li>  <a href="./fadc.html#org517ef50">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
+</ul>
+</li>
+<li><a href="./background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
+<li>  <a href="./background_rates.html#org01e8b4b">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#org2774ce8">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#orgd0f5dfb">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li><a href="./limit_additional.html#sec:appendix:limit_additional">33. Additional limit information   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./limit_additional.html#sec:appendix:conversion_probability">33.1. Conversion probability as a function of mass   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:exp_limit_percentiles">33.2. Expected limit table with percentiles</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:axion_photon">33.3. Observed limit - axion photon \(g_{aγ}\)</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:chameleon">33.4. Observed limit - chameleon \(β_γ\)</a></li>
+</ul>
+</li>
+<li><a href="./software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./software.html#orgbae2c69">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#org13d471b">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
+<li>  <a href="./software.html#orgb88ee40">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+</ul>
+</li>
+<li><a href="./full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./full_data_reconstruction.html#org39ad6bd">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./full_data_reconstruction.html#org1eac87c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./full_data_reconstruction.html#org09b2461">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./full_data_reconstruction.html#org3344338">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./full_data_reconstruction.html#org18a2de7">35.5. Applying a classifier</a></li>
+<li>  <a href="./full_data_reconstruction.html#org17bde80">35.6. Computing limits</a></li>
+</ul>
+</li>
+<li><a href="./average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./average_depth_xrays_argon.html#org2d84fd5">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org11eec4e">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org28b81a5">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:traxer">37.1. TrAXer - An interactive axion raytracer</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
+<li>  <a href="./raytracing.html#org7d687b6">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./raytracing.html#orgc4745d9">37.6. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Part5">Part5</span>  </span></a></li>
+</ul>
+</div>
+</nav>
+<div class="outline-2" id="outline-container-sec:appendix:cast_operations">
+<h2 id="sec:appendix:cast_operations"><span class="section-number-2">20.</span> CAST operation procedures   <span class="tag">  <span class="Appendix">Appendix</span></span></h2>
+<div class="outline-text-2" id="text-sec:appendix:cast_operations">
+<p>
+This appendix provides some guidance about typical operations necessary
+during maintenance or installation of the detector, vacuum system and
+water cooling at CAST. The majority of this appendix was written as an
+overview of the Septemboard operation at CAST, as required by CERN at
+the time.
+</p>
+
+<p>
+We first quickly look at the terminology to describe different areas
+in the CAST hall in sec. <a href="./cast_operations.html#sec:appendix:cast_operations:terminology">20.1</a>.
+Then we go over the different systems. Detector high voltage
+(sec. <a href="./cast_operations.html#sec:cast:high_voltage">20.2</a>), vacuum system
+(sec. <a href="./cast_operations.html#sec:cast:vacuum_system">20.3</a>), water cooling and gas supply
+(sec. <a href="./cast_operations.html#sec:cast:watercooling_gas">20.4</a>) and the safety interlock systems
+(sec. <a href="./cast_operations.html#sec:cast:interlock_systems">20.5</a>).
+</p>
+
+<p>
+We finally end with the CAST log files in
+sec. <a href="./cast_operations.html#sec:appendix:cast_log_files">20.6</a>. These are the most important aspect
+in terms of performing data analysis with the data taken at CAST
+(magnetic field, solar tracking and more).
+</p>
+</div>
+
+<div class="outline-3" id="outline-container-sec:appendix:cast_operations:terminology">
+<h3 id="sec:appendix:cast_operations:terminology"><span class="section-number-3">20.1.</span> CAST terminology</h3>
+<div class="outline-text-3" id="text-sec:appendix:cast_operations:terminology">
+<p>
+In the CAST collaboration there is a common terminology in use to
+describe different parts of the hall / different bores and detector
+installations. Essentially, the two magnet bores and areas &apos;behind&apos;
+them (seen from the center of the magnet if you will) are named by
+their being closest to either the Geneva airport and by the Jura
+mountains on the other side.
+</p>
+
+<p>
+The magnet ends are named by whether a detector installed on that side
+observes the sunrise or the sunset. See
+fig. <a href="#fig:appendix:cast_operations:terminology">1</a> for a schematic.
+</p>
+
+
+<figure id="fig:appendix:cast_operations:terminology">
+<img src="./figs/home/basti/phd/Figs/CAST_terminology/cast_terminology.svg" class="org-svg" alt="cast_terminology.svg" />
+
+<figcaption>Figure 1: <span class="figure-number">Figure 119: </span>Schematic of the CAST hall with the magnet and the parts that give the names to different areas. The bores (and as an extension sides of the magnet) are named by the airport / Jura mountains and the magnet ends by whether a detector observes sunrise or sunset.</figcaption>
+</figure>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:cast:high_voltage">
+<h3 id="sec:cast:high_voltage"><span class="section-number-3">20.2.</span> High voltage supply</h3>
+<div class="outline-text-3" id="text-sec:cast:high_voltage">
+<p>
+The high voltage supply is an iseg HV module, which is located in the
+VME crate on the airport side of the magnet. The HV is controlled via
+a USB connection to the VME crate, which it shares with the FADC. The
+veto scintillator however has its own HV supply, since it needs a
+positive HV, instead of a negative one.
+</p>
+
+<p>
+The detector uses \(\num{7}\) different high voltages. \(\num{5}\) of
+these are for the detector itself, \(\num{1}\) for the SiPM and the last
+for the veto scintillator on top. Their voltages are shown in
+tab. <a href="#tab:cast:high_voltage">28</a>. The voltages actually used are defined in
+<a href="./../TOS/config/HFM_settings.ini">./../TOS/config/HFM_settings.ini</a>.
+</p>
+
+<table id="tab:cast:high_voltage">
+<caption class="t-above"><span class="table-number">Table 28:</span> Table of high voltages in use for the Septemboard detector. Note that the veto scintillator is not controlled via the iseg module, but by a CAEN N470.</caption>
+
+<colgroup>
+<col class="org-left" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-left" scope="col">Description</th>
+<th class="org-right" scope="col">Channel</th>
+<th class="org-right" scope="col">Voltage / V</th>
+<th class="org-right" scope="col">TripCurrent / mA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">grid</td>
+<td class="org-right">0</td>
+<td class="org-right">-300</td>
+<td class="org-right">0.050</td>
+</tr>
+
+<tr>
+<td class="org-left">anode</td>
+<td class="org-right">1</td>
+<td class="org-right">-375</td>
+<td class="org-right">0.050</td>
+</tr>
+
+<tr>
+<td class="org-left">cathode</td>
+<td class="org-right">2</td>
+<td class="org-right">-1875</td>
+<td class="org-right">0.050</td>
+</tr>
+
+<tr>
+<td class="org-left">ring 1</td>
+<td class="org-right">3</td>
+<td class="org-right">-415</td>
+<td class="org-right">0.100</td>
+</tr>
+
+<tr>
+<td class="org-left">ring 29</td>
+<td class="org-right">4</td>
+<td class="org-right">-1830</td>
+<td class="org-right">0.100</td>
+</tr>
+
+<tr>
+<td class="org-left">veto scinti</td>
+<td class="org-right">5</td>
+<td class="org-right">+1200</td>
+<td class="org-right">2</td>
+</tr>
+
+<tr>
+<td class="org-left">SiPM</td>
+<td class="org-right">6</td>
+<td class="org-right">-65.6</td>
+<td class="org-right">0.05</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+The HV cables in use are red cables with LEMO HV connectors. They run
+from the detector to an iseg HV module sitting in a VME crate on the
+airport side of the magnet. The cables are marked with zip ties and
+the same names as in tab. <a href="#tab:cast:high_voltage">28</a>. 
+</p>
+
+<p>
+The interlock system for the high voltage supply is detailed in
+section <a href="./cast_operations.html#sec:cast:hv_interlock">20.5.1</a>, together with the other interlock
+systems in place.
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-sec:cast:ramping_high_voltage">
+<h4 id="sec:cast:ramping_high_voltage"><span class="section-number-4">20.2.1.</span> Ramping the HV</h4>
+<div class="outline-text-4" id="text-sec:cast:ramping_high_voltage">
+<p>
+The high voltage supply can be controlled in two different
+ways. Besides differing in usability terms (one is manual, the other
+automatic), the main difference between the two is the HV interlock,
+which is only partially usable in case of the manual HV control.
+</p>
+<ol class="org-ol">
+<li>in the manual way using the Linux software supplied by iseg. On the
+InGrid-DAQ computer it is located in
+<a href="./../../ingrid/src/isegControl/isegControl">./../../ingrid/src/isegControl/isegControl</a>. Depending on the setup of the
+machine, the software may need superuser rights to access the USB
+connection. With the software the given channel as shown in
+tab. <a href="#tab:cast:high_voltage">28</a> can be set up and the HV can be ramped up. Note: one
+needs to activate SetKillEnable such that the HV is shut down in
+case of a current trip (exceeding of specified current). One should
+then set &apos;groups&apos; of different channels, so that grid, anode and
+ring 1 are shut down at the same time, in case of a current trip,
+as well as ring 29 and the cathode! In addition the trip current
+needs to be manually set about a factor 5 higher during ramping,
+because of capacitors, which need to be charged first. Otherwise
+the channels trip immediately. In this case the HV interlock is
+restricted to basic current restrictions. Anything detector related
+is not included!</li>
+<li><p>
+in the automatic way via the TOS. The TOS takes care of everything
+mentioned above. To use the TOS for the HV control (and thus also
+use the complete HV interlock, as it exists at the moment), perform
+the following steps:
+</p>
+<ol class="org-ol">
+<li>check <a href="./../TOS/config/HFM_settings.ini">./../TOS/config/HFM_settings.ini</a> and compare
+with tab. <a href="#tab:cast:high_voltage">28</a> whether settings seem reasonable</li>
+<li><p>
+after starting TOS and setting up the chips, call
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">      &gt; ActivateHFM
+</pre>
+</div>
+<p>
+which will set up TOS to use the combined HV and FADC (due to
+both inside the same VME crate, they are intertwined). This
+configures the FADC and reads the desired HV settings, but does
+not set the HV settings on the module yet.
+</p></li>
+<li><p>
+to write the HV to the HV module, call
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">      &gt; InitHV
+</pre>
+</div>
+<p>
+which will write the HV settings from <code>HFM_settings.ini</code> to the HV
+module. At the end it will ask the user, whether the HV should
+be ramped up:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">      Do you wish to ramp up the channels now? (Y / n)
+</pre>
+</div>
+<p>
+If yes, the ramping progress will be shown via calls to the
+CheckModuleIsRamping() function (which can also be called
+manually in TOS). 
+</p></li>
+</ol>
+<p>
+This should properly ramp up all channels. It is possible that TOS
+fails to connect to the VME crate and hence is not able to ramp up
+the channels. The most likely reason for this is that the
+isegControl software is still open, since only one application can
+access a single USB interface at the same time.
+</p></li>
+</ol>
+</div>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:cast:vacuum_system">
+<h3 id="sec:cast:vacuum_system"><span class="section-number-3">20.3.</span> Vacuum system</h3>
+<div class="outline-text-3" id="text-sec:cast:vacuum_system">
+<p>
+This section covers the vacuum system of the detector. It is pumped
+via a single primary membrane pump and two turbo pumps. One turbo pump
+is used to pump the main vacuum vessel of the beam pipe, while the
+second small turbo pump is used to pump the interstage part of our
+X-ray source manipulator to reduce leakage during movement of the
+source.
+</p>
+
+<p>
+Fig. <a href="#fig:cast:vacuum-schematic">2</a> shows a schematic of the whole vacuum
+system including all interlock systems and the pressure sensors. The
+pressures of the sensors P3 and P-MM are used as an interlock for VT3
+and the gas supply, respectively.
+</p>
+
+
+<figure id="fig:cast:vacuum-schematic">
+<img src="./figs/home/basti/phd/Figs/detector/vacuum_system2017.png" alt="vacuum_system2017.png" />
+
+<figcaption>Figure 2: <span class="figure-number">Figure 120: </span>Schematic of the vacuum system behind the LLNL telescope including interlocks and pressure sensors.</figcaption>
+</figure>
+</div>
+
+<div class="outline-4" id="outline-container-org2f1f669">
+<h4 id="org2f1f669"><span class="section-number-4">20.3.1.</span> Vacuum operations</h4>
+<div class="outline-text-4" id="text-20-3-1">
+<p>
+The vacuum system as described in sec. <a href="./cast_operations.html#sec:cast:vacuum_system">20.3</a> usually does not
+require manual intervention during normal operation.
+</p>
+
+<p>
+For maintenance the following two sections describe how to pump the
+system safely as well as how to flush it with nitrogen. Both processes
+are rather delicate due to the sensitive \(\ce{Si_x N_y}\)
+window. Pumping needs to be done slowly, \(O(\SI{1}{\milli\bar \per
+\second})\). To be able to do this, the needle valve
+\(V_{\text{Needle}}\) (cf. fig. <a href="#fig:cast:vacuum-schematic">2</a>) is installed. One
+may separate the vacuum volume into two separate vacua. A bad vacuum
+before the primary pump and after the turbo pumps T1 and T2 and a good
+vacuum before the turbo pump T2. There are three connections from the
+good vacuum to the bad one. 
+</p>
+<ol class="org-ol">
+<li>through T2, closable via \(V_{\text{T2}}\), \(\SI{40}{\mm}\) tubing</li>
+<li>through the needle valve \(V_{\text{needle}}\), \(\SI{16}{\mm}\) tubing</li>
+<li>through T1 via the manipulator interstage, normally closed (see the
+note below), \(\SI{25}{\mm}\) tubing</li>
+</ol>
+<p>
+3 is mainly irrelevant for pumping purposes, since there is no valve
+to open or close; it is always closed by a 2-O-ring seal to the good
+vacuum. While 1 is the main path for pumping during operation, it is 2
+which is used during a pumping down or flushing of the system, since
+it can be controlled very granularly. 
+</p>
+
+<p>
+For both explanations below, it is very important to always think
+about each step (are the correct valves open / closed? etc.). A small
+mistake can lead to severe damage of the hardware (turbo pumps can
+break, the window can rupture).
+</p>
+
+<p>
+<span class="underline">Note</span>: There is a third very small vacuum volume before T1, which is
+the volume up to the manipulator interstage. This volume is separate
+from the main good vacuum chamber, due to a 2-O-ring seal on both ends
+of the manipulator. Compare with fig. <a href="#fig:cast:vacuum-schematic">2</a> at the
+location of the two clamped flanges &apos;above&apos; the manipulator. One
+2-O-ring seal is at the upper flange and one at the lower. This is
+because the manipulator part furthest from the beampipe is under
+air. In order to seal the air and the vacuum especially during
+movement of the source, these seals are in place. However, while the
+2-O-ring seals provide decent sealing, it is not perfect. This is why
+the small turbo pump T1 is in place at all, to reduce the amount of
+air, which might enter the system during source manipulation. Another
+aspect to keep in mind is potential air, which can get trapped in
+between the two O-rings. This air will be released during movement of
+the seals. Especially after the system was open to air, it is expected
+that a small pressure increase on \(P_{\text{MM}}\) can be seen during
+operation, despite T1 being in place. After several movement cycles,
+\(O(10)\), these peaks should be negligible.
+</p>
+</div>
+
+<div class="outline-5" id="outline-container-orge7922b3">
+<h5 id="orge7922b3"><span class="section-number-5">20.3.1.1.</span> Pumping the vacuum</h5>
+<div class="outline-text-5" id="text-20-3-1-1">
+<p>
+Before pumping it is a good idea to connect two linear gauges to the
+two \(P_{\text{Linear}}\) pressure sensors.
+To pump the system safely, perform the following steps:
+</p>
+<ol class="org-ol">
+<li>Make sure every pump is turned off.</li>
+<li>Make sure every valve in the system is closed:
+<ol class="org-ol">
+<li>\(V_{\text{Primary}}\)</li>
+<li>\(V_{\text{Leak}}\)</li>
+<li>\(V_{\text{T2}}\)</li>
+<li>\(V_{\text{Needle}}\)</li>
+</ol></li>
+<li>Connect a linear gauge to \(P_{\text{P, Linear}}\) on the primary pump line.</li>
+<li>Start the primary pump. Tubing up to \(V_{\text{Primary}}\) will be
+pumped, visible on linear gauge connected to
+\(P_{\text{P, Linear}}\). Check that the second linear gauge remains
+unchanged, if not \(V_{\text{Primary}}\) and \(V_{\text{Needle}}\) is
+open!</li>
+<li>Once \(P_{\text{P, Linear}}\) shows \(\leq \SI{10}{\milli bar}\),
+slowly open \(V_{\text{Primary}}\), again checking \(P_{\text{N,
+   Linear}}\) remains unchanged. This will increase the pressure on
+\(P_{\text{P, Linear}}\) again until the volume is pumped.</li>
+<li>This step is the most crucial. With \(V_{\text{T2}}\) still closed,
+very carefully open \(V_{\text{Needle}}\), while keeping an eye on
+\(P_{\text{N, Linear}}\). Note that \(V_{\text{Needle}}\) has two
+locking mechanisms. The knob at the end with the analog indicator
+and a general lock in front of that. While the analog indicator
+shows <code>000</code>, open the general lock. Then slowly start turning the
+knob. At around <code>300</code> the pressure on \(P_{\text{N, Linear}}\) should
+slowly start to decrease. Keep turning the knob until you reach a
+pump rate of \(O(\SI{1}{\milli \bar \per \second})\). You will have
+to keep opening the needle valve further, the lower the pressure is
+to keep the pump rate constant.</li>
+<li>Once both linear gauges have equalized (up to different offsets),
+close the needle valve again.</li>
+<li>Open \(V_{\text{T2}}\).</li>
+<li>Start T2 by turning on the power and pressing the right most
+button. Use the arrow buttons to select the &apos;actual RPM&apos; setting to
+see that the turbo is spinning up. Final speed should be set to
+\(\SI{1500}{\Hz}\).</li>
+<li>While T2 is spinning up, start T1 by turning on the power at the
+back. There is no additional button to be pressed.</li>
+</ol>
+
+<p>
+The system should now be in the following state:
+</p>
+<ul class="org-ul">
+<li>\(V_{\text{Leak}}\) closed</li>
+<li>\(V_{\text{Needle}}\) closed</li>
+<li>\(V_{\text{T2}}\) open</li>
+<li>\(V_{\text{Primary}}\) open</li>
+<li>T2 &amp; T1 running</li>
+<li>Primary pump running</li>
+</ul>
+<p>
+If so, the system is now pumping. Note that it may take several days
+to reach a vacuum good enough to satisfy the interlock.
+</p>
+</div>
+</div>
+
+<div class="outline-5" id="outline-container-org53c29a8">
+<h5 id="org53c29a8"><span class="section-number-5">20.3.1.2.</span> Flushing the system</h5>
+<div class="outline-text-5" id="text-20-3-1-2">
+<p>
+Flushing the system is somewhat of a reverse of pumping the
+system. Follow these steps to safely flush the system with
+nitrogen. See section <a href="./cast_operations.html#org0acab55">20.4.4</a> for an explanation of which
+valves need to be operated to open the nitrogen line.
+Before flushing the system connect two linear gauges to both
+\(P_{\text{Linear}}\) sensors.
+</p>
+<ol class="org-ol">
+<li>Make sure the turbo pumps are turned off, if not yet turn both off
+and wait for them to have come to a halt.</li>
+<li>Turn off the primary pump.</li>
+<li>Close \(V_{\text{T2}}\). \(V_{\text{Leak}}\) and \(V_{\text{Needle}}\)
+should already be closed, while \(V_{\text{T2}}\) and
+\(V_{\text{Primary}}\) should still be open.</li>
+<li>Connect the nitrogen line to the blind flange before
+\(V_{\text{Leak}}\).</li>
+<li>Slowly open \(V_{\text{Leak}}\), while checking both linear
+gauges. Make sure only the pressure on \(P_{\text{P, Linear}}\)
+increases, while \(P_{\text{N, Linear}}\) remains under vacuum. If
+not, another valve is still open. Close \(V_{\text{Leak}}\)
+immediately again!</li>
+<li>Keep flushing nitrogen, until \(P_{\text{P, Linear}}\) gets close to
+\(\SI{1000}{\milli\bar}\) (the sensors will never actually reach
+that value).</li>
+<li>Close \(V_{\text{Leak}}\) again to make sure you do not put the
+system over one atmosphere of pressure.</li>
+<li>This step is the most crucial. With \(V_{\text{T2}}\) still closed,
+very carefully open \(V_{\text{Needle}}\), while keeping an eye on
+\(P_{\text{N, Linear}}\). Note that \(V_{\text{Needle}}\) has two
+locking mechanisms. The knob at the end with the analog indicator
+and a general lock in front of that. While the analog indicator
+shows <code>000</code>, open the general lock. Then slowly start turning the
+knob. At around <code>300</code> the pressure on \(P_{\text{N, Linear}}\) should
+slowly start to increase. Keep turning the knob until you reach a
+pump rate of \(O(\SI{1}{\milli \bar \per \second})\).</li>
+<li>You will notice that the pressure on \(P_{\text{P, Linear}}\) will
+start to decrease, since the air will distribute in a larger
+volume. Open \(V_{\text{Leak}}\) again slightly to keep \(P_{\text{P,
+   Linear}}\) roughly constant.</li>
+<li>Keep flushing with \(\SI{1}{\milli\bar\per\second}\) until both
+sensors read \(O(\SI{1000}{\milli\bar})\).</li>
+<li>Close all valves in the system again.</li>
+</ol>
+
+<p>
+This way the system is safely flushed with nitrogen. This helps to
+pump faster after a short maintenance, because less humidity can enter
+the system.
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:cast:watercooling_gas">
+<h3 id="sec:cast:watercooling_gas"><span class="section-number-3">20.4.</span> Watercooling system &amp; gas supply</h3>
+<div class="outline-text-3" id="text-sec:cast:watercooling_gas">
+<p>
+In this section the watercooling system as well as the gas supply is
+discussed. In section <a href="./cast_operations.html#sec:cast:water_gas_schematic">20.4.3</a> a combined
+schematic of both systems is shown.
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-org2b93213">
+<h4 id="org2b93213"><span class="section-number-4">20.4.1.</span> Watercooling</h4>
+<div class="outline-text-4" id="text-20-4-1">
+<p>
+In order to keep the detector cool enough to avoid noise and damage to
+the septemboard, a watercooling system is used. This section describes
+the relevant information for the system as used at CAST.
+</p>
+
+<p>
+To readout the temperature two PT1000 temperature sensors are
+installed on the detector. One is located on the bottomside of the
+intermediate board (outside of the detector volume), while the other
+is located on the bottom side of the Septemboard. This temperature
+\(T_{\text{Septem}}\) is also included in the schematic
+<a href="#fig:detector-schematic">6</a> below, because it was intended to be part of
+the HV interlock, as described in <a href="./cast_operations.html#sec:cast:hv_interlock">20.5.1</a>. In the end
+it was not due to lack of time for proper testing. <sup>  <a role="doc-backlink" class="footref" id="fnr.1" href="#fn.1">1</a></sup>
+</p>
+
+<p>
+Fig. <a href="#fig:cast:water_cooling_system">3(b)</a> shows the main part of the system including the
+pump, reservoir and radiator. The tubing is specifically chosen in
+<b>blue</b> to clear up potential confusion with other tubes used in the
+detector system. <sup>  <a role="doc-backlink" class="footref" id="fnr.2" href="#fn.2">2</a></sup> These tubes use special Festo quick couplings, which
+cannot be connected to the connectors of the gas supply, to avoid
+potential accidents. The tubes have zipties installed on them, which
+label the tubes as well, with the naming convention as it is used in
+fig. <a href="#fig:detector-schematic">6</a>.
+</p>
+
+<dl class="org-dl">
+<dt>Maintenance</dt><dd>At the end of every shift it should be checked,
+whether the water level in the reservoir is still above the red line
+seen in Fig. <a href="#fig:cast:water_cooling_reservoir">3(a)</a>. If not, water
+should be added by the shift coordinator (or trusted shifters).</dd>
+</dl>
+
+
+<figure class="figure-wrapper" id="fig:cast:water_cooling_overview">
+<figure class="subfigure" id="fig:cast:water_cooling_reservoir" data-width="35%">  <img src="./figs/~/phd/Figs/CAST_water_cooling_reservoir.jpg" data-width="94%" />  <figcaption>Figure 3(a): Reservior</figcaption></figure> <figure class="subfigure" id="fig:cast:water_cooling_system" data-width="63%">  <img src="./figs/~/phd/Figs/CAST_water_cooling_system.jpg" data-width="94%" />  <figcaption>Figure 3(b): Water cooling system</figcaption></figure>
+<figcaption>Figure 3: <a href="#fig:cast:water_cooling_reservoir">3(a)</a>shows a closeup of the water cooling reservoir with indicated markings to
+           be checked for safe water levels.<a href="#fig:cast:water_cooling_system">3(b)</a>is a look from the ground floor at the water cooling system including radiator, pump
+           and reservoir.</figcaption>
+</figure>
+</div>
+</div>
+
+
+<div class="outline-4" id="outline-container-org6dc1d6e">
+<h4 id="org6dc1d6e"><span class="section-number-4">20.4.2.</span> Gas supply</h4>
+<div class="outline-text-4" id="text-20-4-2">
+<p>
+The gas supply uses red tubing (in parts where flexible tubing is
+used) to differentiate itself from the watercooling
+system. Additionally, the tubes have zipties showing which tube is
+which. These are located on both ends of the tubes. The naming
+convention is the same as in <a href="#fig:detector-schematic">6</a>. The connectors of
+the gas line are standard Swagelok connectors.
+</p>
+
+<p>
+As can be seen in the schematic, the gas supply has 4 valves on the
+inlet side and 2 on the outlet side. In addition a buffer gas volume
+is installed before the detector for better flow control. 
+</p>
+
+<p>
+It follows a short explanation of the different valves:
+</p>
+
+<ul class="org-ul">
+<li>\(V_{\text{in, 1}}\) is the main electrovalve installed right after the gas
+bottle outside the CAST hall.</li>
+<li>\(V_{\text{interlock}}\) is installed is the electrovalve installed
+below the platform where the beamline is located. This valve is part
+of the gas supply interlock, as described in section <a href="./cast_operations.html#sec:cast:gas_supply_interlock">20.5.2</a>.</li>
+<li>\(V_{\text{in, 2}}\) is the manual valve located on the second gas
+supply mounting below the beamline.</li>
+<li>\(V_{\text{in, N1}}\) is the first needle valve, which is located on
+the second gas supply mounting below the beamline. It is the one
+part of the flow meter placed there.</li>
+<li>\(V_{\text{P}}\) is the valve inside the pressure controller, which is
+placed roughly below the telescope (on the platform), while
+\(P_{\text{Detector}}\) is the pressure gauge inside this controller.</li>
+</ul>
+</div>
+
+<div class="outline-5" id="outline-container-org345116e">
+<h5 id="org345116e"><span class="section-number-5">20.4.2.1.</span> Gas system operations</h5>
+<div class="outline-text-5" id="text-20-4-2-1">
+<p>
+If the requirements of the gas supply interlock are satisfied
+(cf. sec. <a href="./cast_operations.html#sec:cast:gas_supply_interlock">20.5.2</a>), it is possible to flush the detector
+with gas. For that, follow these steps:
+</p>
+<ol class="org-ol">
+<li>Make sure the pressure controller is connected and running. Check
+InGrid-PLC computer in control room and see if pressure control
+software is running. If gas supply is currently closed, reported
+pressure inside the detector is usually reported to
+\(\SIrange{960}{980}{\milli\bar}\).</li>
+<li>Outside the building, open the main valve of the currently active
+gas bottle (check the arrow on the bottle selector mechanism). See
+fig. <a href="#fig:gas-bottle-outside">4(a)</a>.</li>
+<li>Open the second valve near the bottle.</li>
+<li>Pressure values should be:
+<ul class="org-ul">
+<li>gas bottle: \(\sim\SIrange{30}{100}{\bar}\)</li>
+<li>pre-line pressure: \(\sim\SI{7}{\bar}\)</li>
+<li>line pressure: \(\sim\SI{0.45}{\bar}\)</li>
+</ul></li>
+<li>Activate the gas supply at the interlock box by turning the key to
+<code>Security on</code> and pressing the large button. See
+fig. <a href="#fig:interlock-box">4(b)</a>.</li>
+<li>Go to the airport side of the magnet. Open the valve on the InGrid
+gas panel below the telescope platform. See
+fig. <a href="#fig:ingrid-gas-panel">5</a>.</li>
+<li>Slowly open the needle valve on the flow meter on the previous
+panel. Increase gas flow up to \(\sim\SI{2}{\liter\per\hour}\).</li>
+<li>Open the needle valve on the gas supply line on the side of the
+platform.</li>
+<li>After \(\SIrange{5}{10}{\minute}\) the pressure controller on the
+InGrid-PLC computer should report \(\SI{1050}{\milli\bar}\).</li>
+</ol>
+
+
+<p>
+Now the detector should be flushed with \(\ce{Ar} /
+\ce{iC_4H_{10}}\). Before turning on the HV, make sure to flush for at
+least \(\SI{12}{\hour}\) to be on the safe side.
+</p>
+
+
+<figure class="figure-wrapper" id="fig:cast:bottle_valve_outside">
+<figure class="subfigure" id="fig:gas-bottle-outside" data-width="49%">  <img src="./figs/~/org/Doc/Detector/figs/gas_bottles_outside.jpg" data-width="94%" />  <figcaption>Figure 4(a): Gas bottle</figcaption></figure> <figure class="subfigure" id="fig:interlock-box" data-width="49%">  <img src="./figs/~/org/Doc/Detector/figs/gas_interlock_box.jpg" data-width="94%" />  <figcaption>Figure 4(b): Interlock box</figcaption></figure>
+<figcaption>Figure 4: <a href="#fig:gas-bottle-outside">4(a)</a>: Location of the argon-isobutane bottle and the main valves outside the building.<a href="#fig:cast:electrovalve-outside">9(a)</a>: Location of the gas interlock box</figcaption>
+</figure>
+
+
+
+<figure id="fig:ingrid-gas-panel">
+<img src="./figs/home/basti/org/Doc/Detector/figs/gas_panel.jpg" alt="gas_panel.jpg" />
+
+<figcaption>Figure 5: <span class="figure-number">Figure 121: </span>Location of the InGrid gas panel below the telescope platform on the airport side.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
+<div class="outline-4" id="outline-container-sec:cast:water_gas_schematic">
+<h4 id="sec:cast:water_gas_schematic"><span class="section-number-4">20.4.3.</span> Combined schematic (water &amp; gas)</h4>
+<div class="outline-text-4" id="text-sec:cast:water_gas_schematic">
+<p>
+Fig. <a href="#fig:detector-schematic">6</a> shows a combined schematic of both the
+watercooling system and the gas supply. Additionally, the relevant
+interlock systems and their corresponding members are shown.
+</p>
+
+
+<figure id="fig:detector-schematic">
+<img src="./figs/home/basti/org/Doc/Detector/figs/detector_system2017.png" alt="detector_system2017.png" />
+
+<figcaption>Figure 6: <span class="figure-number">Figure 122: </span>Combined schematic of the detector system, consisting of the water cooling system and the gas supply. The interlock systems are shown with dashed lines. See section <a href="./cast_operations.html#sec:cast:interlock_systems">20.5</a> regarding explanations of when the interlock is activated.</figcaption>
+</figure>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org0acab55">
+<h4 id="org0acab55"><span class="section-number-4">20.4.4.</span> Nitrogen supply</h4>
+<div class="outline-text-4" id="text-20-4-4">
+<p>
+Nitrogen is supplied by a nitrogen bottle outside the building. To
+open the nitrogen line, 5 valves need to be opened. The line ends in a
+copper pipe on the airport side, which is usually there rolled up (the
+copper is somewhat flexible).
+</p>
+<ol class="org-ol">
+<li>Open the lever on the nitrogen bottle outside the building (see
+fig. <a href="#fig:nitrogen-bottle-outside">7(a)</a>).</li>
+<li>Open the valve next to the bottle.</li>
+<li>Go to the gas lines next to the control room. The right most line
+(see fig. <a href="#fig:valves-control-room">7(b)</a> and
+fig. <a href="#fig:nitrogen-valve-control-room">8(a)</a>) is the nitrogen line. Open
+the valve.</li>
+<li>Open the needle valve on the flow meter to the right of the
+previous valve.</li>
+<li>Open the needle valve on the airport side of the magnet.</li>
+</ol>
+<p>
+This should be all to open the nitrogen line. The flow through the
+pipe is not too large, but it should be large enough to feel it on the
+back of the hand.
+</p>
+
+
+<figure class="figure-wrapper" id="fig:nitrogen_bottle_valve">
+<figure class="subfigure" id="fig:nitrogen-bottle-outside" data-width="49%">  <img src="./figs/~/org/Doc/Detector/figs/nitrogen_bottle.jpg" data-width="94%" />  <figcaption>Figure 7(a): Nitrogen bottle</figcaption></figure> <figure class="subfigure" id="fig:valves-control-room" data-width="49%">  <img src="./figs/~/org/Doc/Detector/figs/nitrogen_valve_location.jpg" data-width="94%" />  <figcaption>Figure 7(b): Control room</figcaption></figure>
+<figcaption>Figure 7: <a href="#fig:nitrogen-bottle-outside">7(a)</a>: Location of the Nitrogen bottle and the main valves outside the building.<a href="#fig:valves-control-room">7(b)</a>: Location of the valves next to the control room</figcaption>
+</figure>
+
+
+
+<figure class="figure-wrapper" id="fig:cast:nitrogen_flow_meter_valve">
+<figure class="subfigure" id="fig:nitrogen-valve-control-room" data-width="49%">  <img src="./figs/~/org/Doc/Detector/figs/nitrogen_valve.jpg" data-width="94%" />  <figcaption>Figure 8(a): Nitrogen valve</figcaption></figure> <figure class="subfigure" id="fig:nitrogen-flow-meter-control-room" data-width="49%">  <img src="./figs/~/org/Doc/Detector/figs/nitrogen_flow_meter.jpg" data-width="94%" />  <figcaption>Figure 8(b): </figcaption></figure>
+<figcaption>Figure 8: <a href="#fig:nitrogen-valve-control-room">8(a)</a>: The actual nitrogen valve on the set of valves near the control room.<a href="#fig:nitrogen-flow-meter-control-room">8(b)</a>: Location of the flow meter near the valve next to the control room</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
+<div class="outline-3" id="outline-container-sec:cast:interlock_systems">
+<h3 id="sec:cast:interlock_systems"><span class="section-number-3">20.5.</span> Interlock systems</h3>
+<div class="outline-text-3" id="text-sec:cast:interlock_systems">
+<p>
+This section describes the interlock systems, which are related to the
+detector. There are 3 interlock systems to speak of. 
+</p>
+<ul class="org-ul">
+<li>The CAST magnet interlock, which prohibits the gate valve VT3 to be
+opened, if the pressure in the vacuum system is not good enough.</li>
+<li>A gas supply interlock, which makes sure the detector is only
+flushed with gas, if all other parameters are considered nominal
+(mainly a good vacuum in the system).</li>
+<li>A HV interlock, which makes sure the detector is only under HV, if
+the temperature of the detector is still good (otherwise a lot of
+sparks are produced) and the currents on the HV lines are nominal.</li>
+</ul>
+</div>
+
+<div class="outline-4" id="outline-container-sec:cast:hv_interlock">
+<h4 id="sec:cast:hv_interlock"><span class="section-number-4">20.5.1.</span> HV interlock</h4>
+<div class="outline-text-4" id="text-sec:cast:hv_interlock">
+<blockquote>
+<p>
+Note: This section describes the high voltage interlock as it was
+intended. But as mentioned multiple times previously it was
+deactivated for final data taking due to several bugs causing it do
+trigger under non intended circumstances.
+</p>
+</blockquote>
+
+<p>
+The HV system is part of an interlock, which tracks the following
+properties:
+</p>
+<ul class="org-ul">
+<li>detector temperature</li>
+<li>currents on HV lines</li>
+<li>TO BE IMPLEMENTED: gas pressure inside the detector <sup>  <a role="doc-backlink" class="footref" id="fnr.3" href="#fn.3">3</a></sup></li>
+</ul>
+
+<p>
+The detector temperature is measured at two points by PT1000
+sensors. One of these is located on the bottom side of the
+intermediate board (and thus is more a measure the the temperature
+surrounding the detector), while the second is located on the bottom
+side of the septemboard. The second is the best possible measure for
+the temperature of the InGrids. However, there is still a PCB
+separating the sensor from the actual InGrids. This means there is
+probably a temperature difference of a minimum of \(\SI{10}{\celsius}\)
+between the measured value and the actual temperature of the InGrids. 
+</p>
+
+<p>
+Whenever the TOS is configured to use the FADC readout and control the
+HV (note: the two are intertwined, since both sit in the same VME
+crate, which is controlled via a single USB connection), a background
+process which monitors the temperature is started. If the temperature
+exceeds the following boundaries
+</p>
+
+<p>
+\[
+\SI{0}{\celsius} \leq T \leq \SI{60}{\celsius}
+\]
+</p>
+
+<p>
+on the lower side of the septemboard, the HV is shut down
+immediately. The lower bound is of less practical value in a physical
+sense, but in case of sensor problems negative temperature values may
+be reported. As the upper bound a value is taken at which sparks and
+general noise seen on the pixels becomes noticeable. 
+</p>
+
+<p>
+The interlock currents at which the HV trips are already shown in
+tab. <a href="#tab:cast:high_voltage">28</a>. During ramp up of the HV, these trip
+currents are set higher to avoid trips, while capacitors are being
+charged.
+</p>
+
+<p>
+The gas pressure within the detector was intended to be included into
+the interlock system to shut down the HV if the pressure inside the
+detector leaves a certain safe boundary, since this could indicate a
+leak in the detector or an empty gas bottle.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:cast:gas_supply_interlock">
+<h4 id="sec:cast:gas_supply_interlock"><span class="section-number-4">20.5.2.</span> Gas supply interlock</h4>
+<div class="outline-text-4" id="text-sec:cast:gas_supply_interlock">
+<p>
+The gas supply is also part of an interlock system. In case of a
+window rupture the potential amount of gas that might enter the vacuum
+system should be limited by electrovalves. Ideally the pressure inside
+the detector had been included into the gas supply interlock. This
+could have made sure the gas inlet and outlet are closed in case the pressure
+inside the detector drops (which might indicate a leak somewhere or an
+empty gas bottle) or in case of rising pressure.
+</p>
+
+<p>
+The latter is not as important though, because a pressure controller is
+already installed behind the detector, which controls the flow such
+that the pressure stays at \(\SI{1050}{\milli \bar}\). While a failure
+of the controller is thinkable, potentially leading to a pressure
+increase inside the detector, it is questionable whether this could be
+dealt with using this interlock system. That is because the pressure
+sensor used is part of the pressure controller.
+</p>
+
+<p>
+Three electrovalves are placed on the gas line of the detector. One,
+\(V_{\text{in}}\), is outside of the building next to the gas bottles
+(see fig. <a href="#fig:cast:electrovalve-outside">9(a)</a>). The second valve
+\(V_{\text{interlock}}\) is located right before the buffer volume, next
+to the watercooling system, below the shielding platform,
+fig. <a href="#fig:cast:electrovalve-V-interlock">9(b)</a>. The final electrovalve
+\(V_{\text{out}}\) is located after the pressure controller on a blue
+beam, which supports the optical table below the telescope (see
+fig. <a href="#fig:cast:electrovalve-V-out">9(c)</a>). These valves are normally closed,
+i.e. in case of power loss they automatically close. They are open if
+a voltage is applied to them.
+</p>
+
+<p>
+The valves are connected to the pressure sensor \(P_{\text{MM}}\) (see
+fig. <a href="#fig:cast:vacuum-schematic">2</a>). The pressures to activate the interlock
+system is defined by upper and lower thresholds asymmetrically. They
+are as follows:
+</p>
+
+\begin{align*}
+P_{\text{MM, Gas enable}} \leq \SI{9.9e-3}{\milli \bar}
+\end{align*}
+
+<p>
+and 
+</p>
+
+\begin{align*}
+P_{\text{MM, Gas disable}} \leq \SI{2e-2}{\milli \bar}
+\end{align*}
+
+
+<figure class="figure-wrapper" id="fig:cast:interlock_electrovalves">
+<figure class="subfigure" id="fig:cast:electrovalve-outside" data-width="32%">  <img src="./figs/~/org/Doc/Detector/figs/electrovalve_outside.jpg" data-width="94%" />  <figcaption>Figure 9(a): Outside $V_{\text{in}}$</figcaption></figure> <figure class="subfigure" id="fig:cast:electrovalve-V-interlock" data-width="32%">  <img src="./figs/~/org/Doc/Detector/figs/electrovalve_V_interlock.jpg" data-width="94%" />  <figcaption>Figure 9(b): Below $V_{\text{interlock}}$</figcaption></figure> <figure class="subfigure" id="fig:cast:electrovalve-V-out" data-width="32%">  <img src="./figs/~/org/Doc/Detector/figs/electrovalve_V_out.jpg" data-width="94%" />  <figcaption>Figure 9(c): Output $V_{\text{out}}$</figcaption></figure>
+<figcaption>Figure 9: <a href="#fig:cast:electrovalve-outside">9(a)</a>: Location of the electrovalve $V_{\text{in}}$ located outside the building.<a href="#fig:cast:electrovalve-outside">9(a)</a>: Location of the electrovalve $V_{\text{interlock}}$ next to the 
+           watercooling system below the shielding table.<a href="#fig:cast:electrovalve-outside">9(a)</a>: Location of the electrovalve $V_{\text{out}}$ connected to the beam
+           supporting the optical table, on which the telescope is mounted.</figcaption>
+</figure>
+</div>
+
+
+
+
+<div class="outline-5" id="outline-container-org6f0075d">
+<h5 id="org6f0075d"><span class="section-number-5">20.5.2.1.</span> Note on pressures of interlock   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-20-5-2-1">
+<p>
+It&apos;s possible the exact numbers are slightly wrong. At this point I&apos;m
+not certain anymore, but I had a note to cross check them in the
+document the above was initially in (a document about the detector &amp;
+operation for CERN).
+</p>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:cast:cast_magnet_interlock">
+<h4 id="sec:cast:cast_magnet_interlock"><span class="section-number-4">20.5.3.</span> CAST magnet interlock</h4>
+<div class="outline-text-4" id="text-sec:cast:cast_magnet_interlock">
+<p>
+The main CAST magnet interlock, as it is relevant to our detector, is
+as follows. The gate valve VT3 separating the magnet volume from the
+telescope volume is interlocked. Only if the vacuum in the telescope
+volume is good enough, VT3 can be opened while the interlock is
+activated. 
+</p>
+
+<p>
+For this the pressure of \(P_{\text{3}}\) is considered relevant
+(cmp. fig. <a href="#fig:cast:vacuum-schematic">2</a>). The upper and lower thresholds which
+activate and deactivate the interlock are asymmetric and as follows:
+</p>
+
+\begin{align*}
+P_{\text{3, VT3 enable}} &amp;\leq \SI{1e-5}{\milli\bar}
+\end{align*}
+
+<p>
+while
+</p>
+
+\begin{align*}
+P_{\text{3, VT3 disable}} &amp;\leq \SI{8e-5}{\milli\bar}.
+\end{align*}
+
+<p>
+This is to make sure there can be no rapid toggling between the two
+states during pumping or flushing the system. 
+</p>
+</div>
+</div>
+</div>
+
+
+<div class="outline-3" id="outline-container-sec:appendix:cast_log_files">
+<h3 id="sec:appendix:cast_log_files"><span class="section-number-3">20.6.</span> CAST log files</h3>
+<div class="outline-text-3" id="text-sec:appendix:cast_log_files">
+<p>
+The CAST experiment is controlled by a central computer running a slow
+control system written in LabVIEW <sup>  <a role="doc-backlink" class="footref" id="fnr.4" href="#fn.4">4</a></sup>. It receives data from
+all sensors installed at CAST (vacuum pressures, temperatures, magnet
+current, magnet position and so on). A separate LabVIEW program is
+responsible for controlling the magnet position, either by moving the
+magnet to a specific coordinate or by following the Sun, if it is in
+reach of the magnet.
+</p>
+
+<p>
+The slow control software records all sensor data and presents it in a
+multitude of graphs. All data is also written to log files. There are
+two different kinds of log files of interest in the context of the
+septemboard detector at CAST.
+</p>
+
+<ol class="org-ol">
+<li>The general slow control log file is a versioned space separated
+values file (similar to a comma separated value (CSV) or tab
+separated value (TSV) file, except using spaces as delimiters). The
+filename contains the version number, which decides the columns
+contained in the file and their order. A <code>Version.idx</code> file maps
+version numbers to file columns for easy access. These slow control
+log files normally contain one entry every minute. For the
+Septemboard detector of interest in this file are mainly the magnet
+current, relevant vacuum pressure sensors and the state of the gate
+valve <code>VT3</code>.</li>
+<li>The second kind of log files are the tracking log files. These are
+also space separated value files with fields describing the
+pointing location of the magnet as well as whether the magnet is
+currently tracking the Sun.</li>
+</ol>
+
+<p>
+Both of these log files need to be read by the analysis software to
+decide whether one or multiple trackings took place in a given
+background run and if so extract the exact start and end time for a
+precise data splitting and calculation of background / solar tracking
+time.
+</p>
+
+<p>
+Generally the latter log files are all that is needed to determine the
+existence of a solar tracking. However, the slow control log file can
+be used as a further sanity check to make sure the gate valve was
+actually open and the magnet under current during the solar tracking.
+</p>
+
+<p>
+This is implemented in the <code>cast_log_reader</code> program part of
+<code>TimepixAanlysis</code>. See sec. <a href="./software.html#sec:appendix:software:cast_log_reader">34.3.11</a> for
+more details on the program. 
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-sec:cast:log_files:add_tracking_info">
+<h4 id="sec:cast:log_files:add_tracking_info"><span class="section-number-4">20.6.1.</span> Add tracking log information to background files   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-sec:cast:log_files:add_tracking_info">
+<p>
+The code dealing with the log files is <a href="./../CastData/ExternCode/TimepixAnalysis/LogReader/cast_log_reader.nim">./../CastData/ExternCode/TimepixAnalysis/LogReader/cast_log_reader.nim</a>
+</p>
+
+<p>
+In case previous log information is available we first have to remove
+that information. This is done by just calling the program just with
+the H5 file as an input:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">cast_log_reader h5file -f ~/CastData/data/DataRuns2017_Reco.h5
+cast_log_reader h5file -f ~/CastData/data/DataRuns2018_Reco.h5
+</pre>
+</div>
+
+<p>
+With an &apos;empty&apos; (in terms of tracking information) HDF5 file we can
+then go ahead and add all tracking information to them. This of course
+requires the tracking log files:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2017_Reco.h5
+./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --h5out ~/CastData/data/DataRuns2018_Reco.h5
+</pre>
+</div>
+
+<p>
+One can also run it without any output H5 file <code>--h5out</code> to simply get
+information about the runs. In particular all runs
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs --startTime 2017/09/01 --endTime 2018/12/30
+</pre>
+</div>
+<p>
+FILTERING TO DATE: 2017-09-01T02:00:00+02:00 and 2018-12-30T01:00:00+01:00
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-10-31 Tue 06:37&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-10-31 Tue 08:10&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-02 Thu 06:39&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-02 Thu 08:14&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-03 Fri 06:41&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-03 Fri 08:15&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-04 Sat 06:42&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-04 Sat 08:17&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-05 Sun 06:43&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-05 Sun 08:18&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-07 Tue 06:47&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-07 Tue 08:23&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-06 Mon 06:45&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-06 Mon 08:20&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-08 Wed 06:48&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-08 Wed 08:24&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-09 Thu 06:49&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-09 Thu 08:26&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-10 Fri 06:51&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-10 Fri 08:28&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-11 Sat 06:52&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-11 Sat 08:30&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-12 Sun 06:54&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-12 Sun 08:31&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-14 Tue 06:56&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-14 Tue 08:34&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-13 Mon 06:55&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-13 Mon 08:33&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-15 Wed 06:57&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-15 Wed 08:36&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-17 Fri 07:00&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-17 Fri 08:39&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-18 Sat 07:01&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-18 Sat 08:41&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-19 Sun 07:02&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-19 Sun 08:43&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-25 Sat 07:10&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-25 Sat 08:53&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-26 Sun 07:11&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-26 Sun 08:54&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-27 Mon 07:12&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-27 Mon 08:56&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-28 Tue 07:14&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-28 Tue 08:57&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-29 Wed 07:15&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-29 Wed 08:59&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-30 Thu 07:16&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-30 Thu 09:00&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-01 Fri 07:17&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-01 Fri 09:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-02 Sat 07:18&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-02 Sat 08:59&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-03 Sun 07:19&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-03 Sun 08:58&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-04 Mon 07:20&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-04 Mon 09:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-05 Tue 07:21&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-05 Tue 08:59&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-07 Thu 07:22&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-07 Thu 09:02&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-09 Sat 07:25&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-09 Sat 09:05&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-10 Sun 07:26&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-10 Sun 09:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-11 Mon 07:27&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-11 Mon 09:00&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-12 Tue 07:28&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-12 Tue 09:02&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-13 Wed 07:28&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-13 Wed 09:00&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-14 Thu 07:29&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-14 Thu 08:59&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-15 Fri 07:29&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-15 Fri 09:00&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-16 Sat 07:30&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-16 Sat 09:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-17 Sun 07:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-17 Sun 09:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-18 Mon 07:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-18 Mon 09:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-19 Tue 07:32&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-19 Tue 09:02&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-20 Wed 07:33&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-20 Wed 09:02&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-15 Thu 07:01&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-15 Thu 08:33&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-16 Fri 07:00&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-16 Fri 08:31&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-18 Sun 06:57&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-18 Sun 08:28&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-19 Mon 06:56&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-19 Mon 08:26&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-20 Tue 06:53&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-20 Tue 08:24&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-21 Wed 06:52&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-21 Wed 08:22&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-22 Thu 06:50&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-22 Thu 08:20&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-23 Fri 06:48&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-23 Fri 08:18&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-24 Sat 06:47&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-24 Sat 08:16&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-28 Wed 06:40&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-28 Wed 08:09&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-02 Fri 06:36&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-02 Fri 08:05&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-03 Sat 06:35&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-03 Sat 08:03&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-04 Sun 06:33&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-04 Sun 08:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-05 Mon 06:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-05 Mon 07:59&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-06 Tue 06:29&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-06 Tue 07:57&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-07 Wed 06:27&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-07 Wed 07:55&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-14 Wed 06:14&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-14 Wed 07:41&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-15 Thu 06:12&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-15 Thu 07:39&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-16 Fri 06:10&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-16 Fri 07:37&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-17 Sat 06:08&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-17 Sat 07:35&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-18 Sun 06:07&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-18 Sun 07:33&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-19 Mon 06:05&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-19 Mon 07:31&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-20 Tue 06:03&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-20 Tue 07:29&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-21 Wed 06:01&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-21 Wed 07:27&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-22 Thu 05:59&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-22 Thu 07:25&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-24 Sat 05:55&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-24 Sat 07:21&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-25 Sun 06:53&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-25 Sun 08:20&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-26 Mon 05:51&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-26 Mon 07:18&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-19 Fri 06:21&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-19 Fri 07:51&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-22 Mon 06:24&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-22 Mon 07:55&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-23 Tue 06:26&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-23 Tue 07:57&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-24 Wed 06:27&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-24 Wed 07:58&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-25 Thu 06:28&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-25 Thu 08:00&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-26 Fri 06:30&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-26 Fri 08:02&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-27 Sat 06:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-27 Sat 08:03&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-28 Sun 05:32&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-28 Sun 07:05&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-29 Mon 06:34&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-29 Mon 08:06&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-30 Tue 06:35&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-30 Tue 08:08&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-01 Thu 06:38&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-01 Thu 08:11&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-02 Fri 06:39&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-02 Fri 08:13&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-03 Sat 06:40&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-03 Sat 08:16&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-04 Sun 06:43&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-04 Sun 08:17&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-05 Mon 06:44&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-05 Mon 08:19&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-06 Tue 06:45&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-06 Tue 08:21&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-09 Fri 06:49&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-09 Fri 08:26&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-10 Sat 06:51&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-10 Sat 08:27&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-11 Sun 06:52&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-11 Sun 08:29&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-12 Mon 06:53&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-12 Mon 08:31&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-13 Tue 06:54&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-13 Tue 08:32&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-14 Wed 06:56&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-14 Wed 08:34&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-15 Thu 06:57&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-15 Thu 08:36&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-16 Fri 06:58&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-16 Fri 08:37&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-17 Sat 07:00&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-17 Sat 08:39&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-18 Sun 07:01&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-18 Sun 08:41&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-19 Mon 07:02&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-19 Mon 08:42&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-24 Sat 07:08&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-24 Sat 07:30&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-25 Sun 07:09&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-25 Sun 08:52&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-26 Mon 07:10&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-26 Mon 08:53&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-27 Tue 07:11&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-27 Tue 08:55&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-29 Thu 07:14&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-29 Thu 08:58&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-30 Fri 07:15&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-30 Fri 08:59&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-01 Sat 07:16&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-01 Sat 09:00&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-02 Sun 07:17&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-02 Sun 09:02&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-03 Mon 07:18&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-03 Mon 09:03&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-05 Wed 08:55&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-05 Wed 09:04&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-06 Thu 07:22&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-06 Thu 09:04&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-07 Fri 07:23&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-07 Fri 09:03&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-08 Sat 07:24&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-08 Sat 09:04&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-10 Mon 07:25&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-10 Mon 09:03&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-11 Tue 07:26&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-11 Tue 09:02&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-12 Wed 07:27&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-12 Wed 09:03&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-13 Thu 07:28&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-13 Thu 09:03&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-14 Fri 07:29&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-14 Fri 09:06&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-16 Sun 07:30&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-16 Sun 09:00&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-15 Sat 07:30&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-15 Sat 09:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-17 Mon 07:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-17 Mon 09:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-18 Tue 07:32&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-18 Tue 09:01&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-20 Thu 07:33&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-20 Thu 09:03&gt;</span></span>
+There are 120 solar trackings found in the log file directory
+The total time of all trackings: 186 h (exact: 1 week, 18 hours, 46 minutes, and 19 seconds)
+Total time the magnet was on (&gt; 1 T): 0 h h
+</p>
+
+<p>
+This lists 5 runs that were <b>not</b> part of our data taking, meaning we
+lost them.
+</p>
+
+
+<p>
+And finally (and most useful for information purposes) we can run the
+log reader over the files and do a fake insert (aka dry run) of
+inserting the files, which only outputs the run information including
+which runs were missed:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs <span style="color: #E6DB74; font-weight: bold;">\</span>
+                  --startTime 2017/09/01 --endTime 2018/05/01 <span style="color: #E6DB74; font-weight: bold;">\</span>
+                  --h5out ~/CastData/data/DataRuns2017_Reco.h5 --dryRun
+</pre>
+</div>
+<p>
+There are 70 solar trackings found in the log file directory
+The total time of all trackings: 109 h (exact: 4 days, 13 hours, 3 minutes, and 22 seconds)
+Total time the magnet was on (&gt; 1 T): 0 h h
+Filtering tracking logs to date: 2017-09-01T02:00:00+02:00 and 2018-05-01T02:00:00+02:00
+<code>========</code> Logs mapped to trackings in the output file: <code>========</code>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-10-31 Tue 06:37&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-10-31 Tue 08:10&gt;  </span></span>  for run: 76
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-02 Thu 06:39&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-02 Thu 08:14&gt;  </span></span>  for run: 77
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-03 Fri 06:41&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-03 Fri 08:15&gt;  </span></span>  for run: 78
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-04 Sat 06:42&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-04 Sat 08:17&gt;  </span></span>  for run: 79
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-05 Sun 06:43&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-05 Sun 08:18&gt;  </span></span>  for run: 80
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-06 Mon 06:45&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-06 Mon 08:20&gt;  </span></span>  for run: 81
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-07 Tue 06:47&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-07 Tue 08:23&gt;  </span></span>  for run: 82
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-08 Wed 06:48&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-08 Wed 08:24&gt;  </span></span>  for run: 82
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-09 Thu 06:49&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-09 Thu 08:26&gt;  </span></span>  for run: 84
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-10 Fri 06:51&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-10 Fri 08:28&gt;  </span></span>  for run: 86
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-11 Sat 06:52&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-11 Sat 08:30&gt;  </span></span>  for run: 87
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-12 Sun 06:54&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-12 Sun 08:31&gt;  </span></span>  for run: 87
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-13 Mon 06:55&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-13 Mon 08:33&gt;  </span></span>  for run: 89
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-14 Tue 06:56&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-14 Tue 08:34&gt;  </span></span>  for run: 90
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-15 Wed 06:57&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-15 Wed 08:36&gt;  </span></span>  for run: 91
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-17 Fri 07:00&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-17 Fri 08:39&gt;  </span></span>  for run: 92
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-18 Sat 07:01&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-18 Sat 08:41&gt;  </span></span>  for run: 94
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-19 Sun 07:02&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-19 Sun 08:43&gt;  </span></span>  for run: 95
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-25 Sat 07:10&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-25 Sat 08:53&gt;  </span></span>  for run: 97
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-26 Sun 07:11&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-26 Sun 08:54&gt;  </span></span>  for run: 98
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-27 Mon 07:12&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-27 Mon 08:56&gt;  </span></span>  for run: 99
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-28 Tue 07:14&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-28 Tue 08:57&gt;  </span></span>  for run: 100
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-29 Wed 07:15&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-29 Wed 08:59&gt;  </span></span>  for run: 101
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-30 Thu 07:16&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-30 Thu 09:00&gt;  </span></span>  for run: 103
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-01 Fri 07:17&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-01 Fri 09:01&gt;  </span></span>  for run: 104
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-03 Sun 07:19&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-03 Sun 08:58&gt;  </span></span>  for run: 106
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-02 Sat 07:18&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-02 Sat 08:59&gt;  </span></span>  for run: 105
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-04 Mon 07:20&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-04 Mon 09:01&gt;  </span></span>  for run: 107
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-05 Tue 07:21&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-05 Tue 08:59&gt;  </span></span>  for run: 109
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-07 Thu 07:22&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-07 Thu 09:02&gt;  </span></span>  for run: 112
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-09 Sat 07:25&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-09 Sat 09:05&gt;  </span></span>  for run: 112
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-11 Mon 07:27&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-11 Mon 09:00&gt;  </span></span>  for run: 114
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-10 Sun 07:26&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-10 Sun 09:01&gt;  </span></span>  for run: 113
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-12 Tue 07:28&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-12 Tue 09:02&gt;  </span></span>  for run: 115
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-13 Wed 07:28&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-13 Wed 09:00&gt;  </span></span>  for run: 117
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-14 Thu 07:29&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-14 Thu 08:59&gt;  </span></span>  for run: 119
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-15 Fri 07:29&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-15 Fri 09:00&gt;  </span></span>  for run: 121
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-16 Sat 07:30&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-16 Sat 09:01&gt;  </span></span>  for run: 123
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-17 Sun 07:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-17 Sun 09:01&gt;  </span></span>  for run: 124
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-18 Mon 07:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-18 Mon 09:01&gt;  </span></span>  for run: 124
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-19 Tue 07:32&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-19 Tue 09:02&gt;  </span></span>  for run: 125
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-20 Wed 07:33&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-20 Wed 09:02&gt;  </span></span>  for run: 127
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-18 Sun 06:57&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-18 Sun 08:28&gt;  </span></span>  for run: 146
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-20 Tue 06:53&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-20 Tue 08:24&gt;  </span></span>  for run: 150
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-19 Mon 06:56&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-19 Mon 08:26&gt;  </span></span>  for run: 148
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-21 Wed 06:52&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-21 Wed 08:22&gt;  </span></span>  for run: 152
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-22 Thu 06:50&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-22 Thu 08:20&gt;  </span></span>  for run: 154
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-23 Fri 06:48&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-23 Fri 08:18&gt;  </span></span>  for run: 156
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-24 Sat 06:47&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-24 Sat 08:16&gt;  </span></span>  for run: 158
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-28 Wed 06:40&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-28 Wed 08:09&gt;  </span></span>  for run: 160
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-02 Fri 06:36&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-02 Fri 08:05&gt;  </span></span>  for run: 162
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-03 Sat 06:35&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-03 Sat 08:03&gt;  </span></span>  for run: 162
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-04 Sun 06:33&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-04 Sun 08:01&gt;  </span></span>  for run: 162
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-05 Mon 06:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-05 Mon 07:59&gt;  </span></span>  for run: 164
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-06 Tue 06:29&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-06 Tue 07:57&gt;  </span></span>  for run: 164
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-07 Wed 06:27&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-07 Wed 07:55&gt;  </span></span>  for run: 166
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-14 Wed 06:14&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-14 Wed 07:41&gt;  </span></span>  for run: 170
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-15 Thu 06:12&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-15 Thu 07:39&gt;  </span></span>  for run: 172
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-16 Fri 06:10&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-16 Fri 07:37&gt;  </span></span>  for run: 174
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-17 Sat 06:08&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-17 Sat 07:35&gt;  </span></span>  for run: 176
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-18 Sun 06:07&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-18 Sun 07:33&gt;  </span></span>  for run: 178
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-19 Mon 06:05&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-19 Mon 07:31&gt;  </span></span>  for run: 178
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-20 Tue 06:03&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-20 Tue 07:29&gt;  </span></span>  for run: 178
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-21 Wed 06:01&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-21 Wed 07:27&gt;  </span></span>  for run: 178
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-22 Thu 05:59&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-22 Thu 07:25&gt;  </span></span>  for run: 178
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-24 Sat 05:55&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-24 Sat 07:21&gt;  </span></span>  for run: 180
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-25 Sun 06:53&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-25 Sun 08:20&gt;  </span></span>  for run: 182
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-26 Mon 05:51&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-03-26 Mon 07:18&gt;  </span></span>  for run: 182
+<code>================================================================</code>
+</p>
+
+<p>
+<code>========</code> Logs <b>not</b> mapped to a run <code>==========================</code>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-15 Thu 07:01&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-15 Thu 08:33&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-16 Fri 07:00&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-02-16 Fri 08:31&gt;</span></span>
+<code>================================================================</code>
+</p>
+
+<p>
+And for 2018:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">./cast_log_reader tracking -p ../resources/LogFiles/tracking-logs <span style="color: #E6DB74; font-weight: bold;">\</span>
+                  --startTime 2018/05/01 --endTime 2018/12/31 <span style="color: #E6DB74; font-weight: bold;">\</span>
+                  --h5out ~/CastData/data/DataRuns2018_Reco.h5 --dryRun
+</pre>
+</div>
+<p>
+There are 50 solar trackings found in the log file directory
+The total time of all trackings: 77 h (exact: 3 days, 5 hours, 42 minutes, and 57 seconds)
+Total time the magnet was on (&gt; 1 T): 0 h h
+Filtering tracking logs to date: 2018-05-01T02:00:00+02:00 and 2018-12-31T01:00:00+01:00
+<code>========</code> Logs mapped to trackings in the output file: <code>========</code>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-22 Mon 06:24&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-22 Mon 07:55&gt;  </span></span>  for run: 240
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-23 Tue 06:26&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-23 Tue 07:57&gt;  </span></span>  for run: 242
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-24 Wed 06:27&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-24 Wed 07:58&gt;  </span></span>  for run: 244
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-25 Thu 06:28&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-25 Thu 08:00&gt;  </span></span>  for run: 246
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-26 Fri 06:30&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-26 Fri 08:02&gt;  </span></span>  for run: 248
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-27 Sat 06:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-27 Sat 08:03&gt;  </span></span>  for run: 250
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-29 Mon 06:34&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-29 Mon 08:06&gt;  </span></span>  for run: 254
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-30 Tue 06:35&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-30 Tue 08:08&gt;  </span></span>  for run: 256
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-01 Thu 06:38&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-01 Thu 08:11&gt;  </span></span>  for run: 258
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-02 Fri 06:39&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-02 Fri 08:13&gt;  </span></span>  for run: 261
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-03 Sat 06:40&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-03 Sat 08:16&gt;  </span></span>  for run: 261
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-04 Sun 06:43&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-04 Sun 08:17&gt;  </span></span>  for run: 261
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-05 Mon 06:44&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-05 Mon 08:19&gt;  </span></span>  for run: 263
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-06 Tue 06:45&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-06 Tue 08:21&gt;  </span></span>  for run: 265
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-09 Fri 06:49&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-09 Fri 08:26&gt;  </span></span>  for run: 268
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-10 Sat 06:51&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-10 Sat 08:27&gt;  </span></span>  for run: 270
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-11 Sun 06:52&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-11 Sun 08:29&gt;  </span></span>  for run: 270
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-12 Mon 06:53&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-12 Mon 08:31&gt;  </span></span>  for run: 272
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-13 Tue 06:54&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-13 Tue 08:32&gt;  </span></span>  for run: 272
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-14 Wed 06:56&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-14 Wed 08:34&gt;  </span></span>  for run: 272
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-15 Thu 06:57&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-15 Thu 08:36&gt;  </span></span>  for run: 274
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-16 Fri 06:58&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-16 Fri 08:37&gt;  </span></span>  for run: 274
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-17 Sat 07:00&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-17 Sat 08:39&gt;  </span></span>  for run: 274
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-18 Sun 07:01&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-18 Sun 08:41&gt;  </span></span>  for run: 276
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-19 Mon 07:02&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-19 Mon 08:42&gt;  </span></span>  for run: 276
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-25 Sun 07:09&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-25 Sun 08:52&gt;  </span></span>  for run: 279
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-26 Mon 07:10&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-26 Mon 08:53&gt;  </span></span>  for run: 279
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-27 Tue 07:11&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-27 Tue 08:55&gt;  </span></span>  for run: 281
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-29 Thu 07:14&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-29 Thu 08:58&gt;  </span></span>  for run: 283
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-30 Fri 07:15&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-30 Fri 08:59&gt;  </span></span>  for run: 283
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-01 Sat 07:16&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-01 Sat 09:00&gt;  </span></span>  for run: 283
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-02 Sun 07:17&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-02 Sun 09:02&gt;  </span></span>  for run: 285
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-03 Mon 07:18&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-03 Mon 09:03&gt;  </span></span>  for run: 285
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-05 Wed 08:55&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-05 Wed 09:04&gt;  </span></span>  for run: 287
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-06 Thu 07:22&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-06 Thu 09:04&gt;  </span></span>  for run: 289
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-07 Fri 07:23&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-07 Fri 09:03&gt;  </span></span>  for run: 291
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-08 Sat 07:24&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-08 Sat 09:04&gt;  </span></span>  for run: 291
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-10 Mon 07:25&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-10 Mon 09:03&gt;  </span></span>  for run: 293
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-11 Tue 07:26&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-11 Tue 09:02&gt;  </span></span>  for run: 295
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-12 Wed 07:27&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-12 Wed 09:03&gt;  </span></span>  for run: 297
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-13 Thu 07:28&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-13 Thu 09:03&gt;  </span></span>  for run: 297
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-14 Fri 07:29&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-14 Fri 09:06&gt;  </span></span>  for run: 298
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-15 Sat 07:30&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-15 Sat 09:01&gt;  </span></span>  for run: 299
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-16 Sun 07:30&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-16 Sun 09:00&gt;  </span></span>  for run: 301
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-17 Mon 07:31&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-17 Mon 09:01&gt;  </span></span>  for run: 301
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-18 Tue 07:32&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-18 Tue 09:01&gt;  </span></span>  for run: 303
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-20 Thu 07:33&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-20 Thu 09:03&gt;  </span></span>  for run: 306
+<code>================================================================</code>
+</p>
+
+<p>
+<code>========</code> Logs <b>not</b> mapped to a run <code>==========================</code>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-19 Fri 06:21&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-19 Fri 07:51&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-28 Sun 05:32&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-28 Sun 07:05&gt;</span></span>
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-24 Sat 07:08&gt;    </span></span>    <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-11-24 Sat 07:30&gt;</span></span>
+<code>================================================================</code>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="footnotes"><h2 class="footnotes">Footnotes: </h2><div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.1" href="#fnr.1">1</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+As mentioned in a previous footnote, the decision to
+take it out of the HV interlock is the reason for loss of temperature
+logging data.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.2" href="#fnr.2">2</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+This change was made after the &apos;window accident&apos;.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.3" href="#fnr.3">3</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The gas pressure inside the detector was intended to
+be added to the HV interlock as well, but also due to lack of time it
+never was.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.4" href="#fnr.4">4</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://www.ni.com/labview">https://www.ni.com/labview</a>
+</p></div></div>
+
+</div>
+<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
+</div>
+</body>
+</html>

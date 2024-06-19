@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--  2024-06-18 Tue 23:44  -->
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1" name="viewport" />
+<title>‎</title>
+<meta content="Vindaar" name="author" />
+<meta content="Org Mode" name="generator" />
+
+<link type="text/css" rel="stylesheet" href="org_html_export.css" />
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set the initial width for subfigures and their images
+    document.querySelectorAll('figure.subfigure[data-width]').forEach(function(subfigure) {
+        subfigure.style.width = subfigure.getAttribute('data-width');
+    });
+
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.style.width = img.getAttribute('data-width');
+    });
+
+    // Event listener for images within subfigures
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.addEventListener('click', function() {
+            // Determine the .figure-wrapper that contains the clicked image
+            let wrapper = this.closest('.figure-wrapper');
+
+            // If found, adjust the sizes of its subfigures
+            if (wrapper) {
+                let subfigures = wrapper.querySelectorAll('figure.subfigure');
+                subfigures.forEach(subfigure => {
+                    let width = parseFloat(subfigure.getAttribute('data-width'));
+                    if (width < 50) { // Double size if less than 50%
+                        subfigure.setAttribute('data-width', (width * 2) + '%');
+                        subfigure.style.width = (width * 2) + '%';
+                    } else { // Halve size otherwise
+                        subfigure.setAttribute('data-width', (width / 2) + '%');
+                        subfigure.style.width = (width / 2) + '%';
+                    }
+                });
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var headers = document.querySelectorAll('h1 .extended, h2 .extended, h3 .extended, h4 .extended, h5 .extended, h6 .extended');
+
+    headers.forEach(function (header) {
+        var foldableHeader = header.closest('h1, h2, h3, h4, h5, h6');
+        if (foldableHeader) {
+            foldableHeader.classList.add('foldable-header');
+            var nextElement = foldableHeader.nextElementSibling;
+            var contentToFold = [];
+            while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                contentToFold.push(nextElement);
+                nextElement = nextElement.nextElementSibling;
+            }
+            contentToFold.forEach(function (element) {
+                element.classList.add('folded-content');
+            });
+
+            foldableHeader.addEventListener('click', function () {
+                contentToFold.forEach(function (element) {
+                    if (element.style.display === 'none' || element.style.display == '') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+<!-- /* --><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js", "[Contrib]/siunitx/siunitx.js", "[Contrib]/mhchem/mhchem.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"], ['$', '$'], ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 1.0,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        },
+        TeX: {
+              equationNumbers: { autoNumber: 'AMS' },
+              Macros: {
+                  ccsini: '{\\mathrm{Si}₃\\mathrm{N}₄}',
+                  cefe: '{\\ce{^{55}Fe}}',
+                  vektor: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  mtrix: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  cp: '{\\mathrm{CP}}',
+                  cpt: '{\\mathrm{CPT}}',
+                  dd: '{\\mathop{}\\!{\\mathrm{d}}}',
+                  sinc: '{\\mathrm{sinc}}'
+              }
+        }
+    });
+/*]]>*///--&gt;
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<nav role="doc-toc" id="table-of-contents">
+<h2>Table of Contents</h2>
+<div role="doc-toc" id="text-table-of-contents">
+<ul>
+<li>  <a href="./errata.html#sec:errata">1. Errata   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
+<li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
+<ul>
+<li>  <a href="./about_thesis.html#orgc36e3ba">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org976c329">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orga7aaacb">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory.html#sec:theory:useful_reading_material">4.1. Useful reading material   <span class="tag">    <span class="optional">optional</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:illustration_cpt">4.2. Illustration of the \cpt symmetry <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:invisible_axion_models">4.3. Invisible axion models and axion couplings</a></li>
+<li>  <a href="./theory.html#sec:theory:axion_interactions">4.4. Implications for axion interactions - conversion probability</a></li>
+<li>  <a href="./theory.html#sec:theory:solar_axion_flux">4.5. Solar axion flux</a></li>
+<li>  <a href="./theory.html#sec:theory:chameleon">4.6. Chameleons</a></li>
+<li>  <a href="./theory.html#sec:theory:current_bounds">4.7. Current bounds on coupling constants</a></li>
+</ul>
+</li>
+<li><a href="./helioscopes.html#sec:helioscopes">5. Axion helioscopes   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./helioscopes.html#sec:helioscopes:cast">5.1. CERN Axion Solar Telescope (CAST)</a></li>
+<li>  <a href="./helioscopes.html#sec:helioscopes:iaxo">5.2. International AXion Observatory (IAXO)</a></li>
+</ul>
+</li>
+<li><a href="./theory_detector.html#sec:theory_detector">6. X-rays, cosmic muons and gaseous detectors   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory_detector.html#sec:theory:particle_int">6.1. Particle interactions with matter</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:cosmic_radiation">6.2. Cosmic rays</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:gas_fundamentals">6.3. Gaseous detector fundamentals</a></li>
+</ul>
+</li>
+<li><a href="./septemboard.html#sec:septemboard">7. Septemboard detector   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./septemboard.html#sec:detector:micromegas">7.1. Micromegas working principle</a></li>
+<li>  <a href="./septemboard.html#sec:detector:timepix">7.2. Timepix ASIC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
+<li>  <a href="./septemboard.html#orgc654d28">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
+<li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
+<li>  <a href="./septemboard.html#sec:detector:septemboard">7.10. Septemboard - 6 GridPixes around a center one</a></li>
+<li>  <a href="./septemboard.html#sec:detector:water_cooling">7.11. Water cooling and temperature readout for the septemboard</a></li>
+<li>  <a href="./septemboard.html#sec:septem:efficiency">7.12. Detector efficiency</a></li>
+<li>  <a href="./septemboard.html#sec:detector:daq">7.13. Data acquisition and detector monitoring</a></li>
+</ul>
+</li>
+<li><a href="./operation_calibration.html#sec:operation_calibration">8. Detector calibration for operation   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:timepix">8.1. Timepix calibrations</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:fadc">8.2. FADC calibration</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:scintillators">8.3. Scintillator calibration</a></li>
+</ul>
+</li>
+<li><a href="./reconstruction.html#sec:reconstruction">9. Data reconstruction   <span class="tag">  <span class="Reconstruction">Reconstruction</span></span></a>
+<ul>
+<li>  <a href="./reconstruction.html#sec:reco:tpa">9.1. <code>TimepixAnalysis</code> and Nim</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:tos_data_parsing">9.2. TOS data parsing</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:event_shape">9.3. Expectation of event shapes</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:data_reconstruction">9.4. Data reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:fadc_data">9.5. FADC reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:scintillator_data">9.6. Scintillator data</a></li>
+</ul>
+</li>
+<li><a href="./cast.html#sec:cast">10. Detector installation &amp; data taking at CAST   <span class="tag">  <span class="CAST">CAST</span></span></a>
+<ul>
+<li>  <a href="./cast.html#sec:cast:timeline">10.1. Timeline</a></li>
+<li>  <a href="./cast.html#sec:cast:alignment">10.2. Alignment</a></li>
+<li>  <a href="./cast.html#sec:cast:detector_setup">10.3. Detector setup at CAST</a></li>
+<li>  <a href="./cast.html#sec:cast:window_accident">10.4. Window accident</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_woes">10.5. Data taking woes</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_campaigns">10.6. Summary of CAST data taking</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:calibration">11. Data calibration   <span class="tag">  <span class="Calibration">Calibration</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:calibration:energy">11.1. Energy calibration - in principle</a></li>
+<li>  <a href="./calibration.html#sec:calib:detector_behavior_over_time">11.2. Detector behavior over time</a></li>
+<li>  <a href="./calibration.html#sec:calib:final_energy_calibration">11.3. Energy calibration dependence on the gas gain</a></li>
+<li>  <a href="./calibration.html#sec:calib:fadc">11.4. FADC</a></li>
+</ul>
+</li>
+<li><a href="./background.html#sec:background">12. Finding signal and defining background | Background rate computation   <span class="tag">  <span class="Analysis">Analysis</span></span></a>
+<ul>
+<li>  <a href="./background.html#sec:background:likelihood_method">12.1. Likelihood method</a></li>
+<li>  <a href="./background.html#sec:cdl">12.2. CAST Detector Lab</a></li>
+<li>  <a href="./background.html#sec:background:likelihood_cut">12.3. Application of likelihood cut for background rate</a></li>
+<li>  <a href="./background.html#sec:background:mlp">12.4. Artificial neural networks as cluster classifiers</a></li>
+<li>  <a href="./background.html#sec:background:additional_vetoes">12.5. Additional detector features as vetoes</a></li>
+<li>  <a href="./background.html#sec:background:all_vetoes_combined">12.6. Background rates of combined vetoes and efficiencies</a></li>
+</ul>
+</li>
+<li><a href="./limit.html#sec:limit">13. Limit calculation   <span class="tag">  <span class="Limit">Limit</span></span></a>
+<ul>
+<li>  <a href="./limit.html#sec:limit:method_introduction">13.1. Limit method - introduction</a></li>
+<li>  <a href="./limit.html#sec:limit:method_likelihood">13.2. Limit method - likelihood function \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_L">13.3. Limit method - computing \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_a_limit">13.4. Limit method - computing a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
+<li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
+<li>  <a href="./limit.html#org5e81b6c">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orge06cfa1">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
+<li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:expected_limits">13.13. Expected limits of different setups</a></li>
+<li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
+<li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
+<li>  <a href="./limit.html#orgc627f43">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgda19ced">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
+<li>  <a href="./summary.html#sec:summary">15. Summary &amp; conclusion</a></li>
+<li>  <a href="./bibliography.html#sec:bibliography">16. Bibliography   <span class="tag">    <span class="html">html</span>  </span></a></li>
+<li><a href="./daq.html#sec:daq">17. Data acquisition and detector monitoring   <span class="tag"><span class="Appendix">Appendix</span> <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./daq.html#sec:daq:tof">17.1. Timepix Operating Firmware - TOF</a></li>
+<li>  <a href="./daq.html#sec:daq:tos">17.2. Timepix Operating Software - TOS</a></li>
+<li>  <a href="./daq.html#sec:daq:septemboard_event_display">17.3. Septemboard event display</a></li>
+</ul>
+</li>
+<li><a href="./configuration.html#sec:appendix:configuration">18. Configuration and TOS / TOF versions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_config">18.1. TOS configuration file</a></li>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_tof_versions">18.2. TOS and TOF versions used at CAST</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:appendix:calibration">19. Calibrations   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:appendix:calibration:timepix">19.1. Timepix calibrations</a></li>
+<li>  <a href="./calibration.html#sec:appendix:septemboard_calibrations">19.2. Septemboard calibration</a></li>
+<li>  <a href="./calibration.html#sec:appendix:scintillator_calibration_notes">19.3. Calibration measurements of the veto scintillator paddle   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_operations.html#sec:appendix:cast_operations">20. CAST operation procedures   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_operations:terminology">20.1. CAST terminology</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:high_voltage">20.2. High voltage supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:vacuum_system">20.3. Vacuum system</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:watercooling_gas">20.4. Watercooling system &amp; gas supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:interlock_systems">20.5. Interlock systems</a></li>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_log_files">20.6. CAST log files</a></li>
+</ul>
+</li>
+<li><a href="./cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_run_list.html#orgd304089">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cast_data_taking_notes.html#orge4011be">22.1. Run table</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgeba5174">22.2. Data runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgd62eab2">22.3. Calibration runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org0271f47">22.4. Automatically generated run list</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgb34c028">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org338e161">22.6. InGrid temperature from shift forms</a></li>
+</ul>
+</li>
+<li><a href="./cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cabling_and_softwar_setup.html#org7cb11ec">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org3244c1a">23.2. Detector cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org7c3b445">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#orgda4f123">23.4. Setting up the chips in TOS</a></li>
+</ul>
+</li>
+<li><a href="./vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./vacuum_contamination.html#org35e49a4">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./vacuum_contamination.html#orgdf125cb">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./vacuum_contamination.html#orgf5a7285">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./vacuum_contamination.html#orgeeae0bd">24.4. Calculation of possible contamination</a></li>
+</ul>
+</li>
+<li><a href="./detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:choice_gas_gain_binning">25.1. Choice of gas gain binning time interval</a></li>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:correlation_gas_gain_ambient_temp">25.2. Correlation of gas gain and ambient CAST temperature</a></li>
+</ul>
+</li>
+<li><a href="./cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_detector_lab.html#orgfed071e">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
+</ul>
+</li>
+<li><a href="./fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
+</ul>
+</li>
+<li><a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./morphing_cdl_spectra.html#orgabd5f0e">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#orga5d9c5b">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#org218c56a">28.6. Notes on CDL morphing development   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./occupancy.html#orgdce408e">29.1. Run-2</a></li>
+<li>  <a href="./occupancy.html#orge5d3863">29.2. Run-3</a></li>
+<li>  <a href="./occupancy.html#org971382a">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
+<li>  <a href="./fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
+<li>  <a href="./fadc.html#org517ef50">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
+</ul>
+</li>
+<li><a href="./background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
+<li>  <a href="./background_rates.html#org01e8b4b">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#org2774ce8">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#orgd0f5dfb">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li><a href="./limit_additional.html#sec:appendix:limit_additional">33. Additional limit information   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./limit_additional.html#sec:appendix:conversion_probability">33.1. Conversion probability as a function of mass   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:exp_limit_percentiles">33.2. Expected limit table with percentiles</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:axion_photon">33.3. Observed limit - axion photon \(g_{aγ}\)</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:chameleon">33.4. Observed limit - chameleon \(β_γ\)</a></li>
+</ul>
+</li>
+<li><a href="./software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./software.html#orgbae2c69">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#org13d471b">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
+<li>  <a href="./software.html#orgb88ee40">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+</ul>
+</li>
+<li><a href="./full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./full_data_reconstruction.html#org39ad6bd">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./full_data_reconstruction.html#org1eac87c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./full_data_reconstruction.html#org09b2461">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./full_data_reconstruction.html#org3344338">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./full_data_reconstruction.html#org18a2de7">35.5. Applying a classifier</a></li>
+<li>  <a href="./full_data_reconstruction.html#org17bde80">35.6. Computing limits</a></li>
+</ul>
+</li>
+<li><a href="./average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./average_depth_xrays_argon.html#org2d84fd5">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org11eec4e">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org28b81a5">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:traxer">37.1. TrAXer - An interactive axion raytracer</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
+<li>  <a href="./raytracing.html#org7d687b6">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./raytracing.html#orgc4745d9">37.6. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Part5">Part5</span>  </span></a></li>
+</ul>
+</div>
+</nav>
+<div class="outline-2" id="outline-container-sec:appendix:vacuum_contamination">
+<h2 id="sec:appendix:vacuum_contamination"><span class="section-number-2">24.</span> Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></h2>
+<div class="outline-text-2" id="text-sec:appendix:vacuum_contamination">
+<p>
+<b>NOTE</b>: This section is a direct copy of my notes about the calculation of the
+possible contamination of the LLNL telescope.
+</p>
+
+<p>
+This file is a simple readme about the calculation of the potential
+vacuum contamination of the system. The rough ideas are stated here.
+</p>
+</div>
+
+<div class="outline-3" id="outline-container-org35e49a4">
+<h3 id="org35e49a4"><span class="section-number-3">24.1.</span> Calculation of vacuum volume</h3>
+<div class="outline-text-3" id="text-24-1">
+<p>
+In order to calculate the total amount of gas, which entered the
+vacuum volume, we first need to calculate the total volume of the
+vacuum system. 
+</p>
+
+<p>
+The calculation of the volume will be done in the Nim calculation
+<a href="./../CAST/VacuumContamination/vacuum_contamination.nim">./../CAST/VacuumContamination/vacuum_contamination.nim</a>.
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-org7b9095b">
+<h4 id="org7b9095b"><span class="section-number-4">24.1.1.</span> Tubing</h4>
+<div class="outline-text-4" id="text-24-1-1">
+<p>
+The following lists the different pieces of vacuum piping, tubes etc.:
+</p>
+</div>
+<div class="outline-5" id="outline-container-org267e939">
+<h5 id="org267e939"><span class="section-number-5">24.1.1.1.</span> Static tubing:</h5>
+<div class="outline-text-5" id="text-24-1-1-1">
+<p>
+This table lists the static tubes used in the vacuum system:
+</p>
+
+<p>
+Table A:
+</p>
+<table>
+
+
+<colgroup>
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-right" scope="col">Diameter / mm</th>
+<th class="org-right" scope="col">Length / cm</th>
+<th class="org-right" scope="col">Index</th>
+<th class="org-left" scope="col">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">63</td>
+<td class="org-right">10</td>
+<td class="org-right">1</td>
+<td class="org-left">telescope to gate valve</td>
+</tr>
+
+<tr>
+<td class="org-right">63</td>
+<td class="org-right">51</td>
+<td class="org-right">2</td>
+<td class="org-left">telescope to detector, stainless steel</td>
+</tr>
+
+<tr>
+<td class="org-right">63</td>
+<td class="org-right">21.5</td>
+<td class="org-right">3</td>
+<td class="org-left">between st. steel tube &amp; copper tube</td>
+</tr>
+
+<tr>
+<td class="org-right">25</td>
+<td class="org-right">33.7</td>
+<td class="org-right">4</td>
+<td class="org-left">copper tube</td>
+</tr>
+
+<tr>
+<td class="org-right">63</td>
+<td class="org-right">20</td>
+<td class="org-right">5</td>
+<td class="org-left">bellow in front of telescope</td>
+</tr>
+
+<tr>
+<td class="org-right">?</td>
+<td class="org-right">50</td>
+<td class="org-right">6</td>
+<td class="org-left">telescope</td>
+</tr>
+
+<tr>
+<td class="org-right">40</td>
+<td class="org-right">15.5</td>
+<td class="org-right">7</td>
+<td class="org-left">piece needle valve connects to</td>
+</tr>
+
+<tr>
+<td class="org-right">16</td>
+<td class="org-right">13</td>
+<td class="org-right">8</td>
+<td class="org-left">Pirani &lt;-&gt; Mini turbo</td>
+</tr>
+
+<tr>
+<td class="org-right">40</td>
+<td class="org-right">10</td>
+<td class="org-right">10</td>
+<td class="org-left">90 deg next to cross for needle valve</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div class="outline-5" id="outline-container-org1fc8e44">
+<h5 id="org1fc8e44"><span class="section-number-5">24.1.1.2.</span> Flexible tubing:</h5>
+<div class="outline-text-5" id="text-24-1-1-2">
+<p>
+Table B:
+</p>
+<table>
+
+
+<colgroup>
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-right" />
+
+<col class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-right" scope="col">Diameter / mm</th>
+<th class="org-right" scope="col">Length / cm</th>
+<th class="org-right" scope="col">Index</th>
+<th class="org-left" scope="col">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">16</td>
+<td class="org-right">25</td>
+<td class="org-right">1</td>
+<td class="org-left">connection from needle valve to primary 1 / 4</td>
+</tr>
+
+<tr>
+<td class="org-right">16</td>
+<td class="org-right">25</td>
+<td class="org-right">2</td>
+<td class="org-left">2 / 4</td>
+</tr>
+
+<tr>
+<td class="org-right">16</td>
+<td class="org-right">25</td>
+<td class="org-right">3</td>
+<td class="org-left">3 / 4</td>
+</tr>
+
+<tr>
+<td class="org-right">16</td>
+<td class="org-right">25</td>
+<td class="org-right">4</td>
+<td class="org-left">4 / 4</td>
+</tr>
+
+<tr>
+<td class="org-right">16</td>
+<td class="org-right">40</td>
+<td class="org-right">5</td>
+<td class="org-left">to needle valve</td>
+</tr>
+
+<tr>
+<td class="org-right">25</td>
+<td class="org-right">90</td>
+<td class="org-right">6</td>
+<td class="org-left">Pirani &lt;-&gt; Mini turbo</td>
+</tr>
+
+<tr>
+<td class="org-right">25</td>
+<td class="org-right">80</td>
+<td class="org-right">7</td>
+<td class="org-left">Mini turbo &lt;-&gt; T piece towards primary</td>
+</tr>
+
+<tr>
+<td class="org-right">40</td>
+<td class="org-right">50</td>
+<td class="org-right">8</td>
+<td class="org-left">before turbo pump</td>
+</tr>
+
+<tr>
+<td class="org-right">16</td>
+<td class="org-right">150</td>
+<td class="org-right">9</td>
+<td class="org-left">connection to primary</td>
+</tr>
+
+<tr>
+<td class="org-right">40</td>
+<td class="org-right">80</td>
+<td class="org-right">10</td>
+<td class="org-left">needle valve to turbo, before index C3</td>
+</tr>
+
+<tr>
+<td class="org-right">40</td>
+<td class="org-right">80</td>
+<td class="org-right">11</td>
+<td class="org-left">to turbo pump, after index C3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div class="outline-5" id="outline-container-org3722331">
+<h5 id="org3722331"><span class="section-number-5">24.1.1.3.</span> T-pieces:</h5>
+<div class="outline-text-5" id="text-24-1-1-3">
+<p>
+Table C:
+</p>
+<table>
+
+
+<colgroup>
+<col class="org-right" />
+
+<col class="org-left" />
+
+<col class="org-right" />
+
+<col class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-right" scope="col">Diameter / mm</th>
+<th class="org-left" scope="col">Length / cm</th>
+<th class="org-right" scope="col">Index</th>
+<th class="org-left" scope="col">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">40</td>
+<td class="org-left">18 x 21</td>
+<td class="org-right">1</td>
+<td class="org-left">orthogonal to 3A</td>
+</tr>
+
+<tr>
+<td class="org-right">16</td>
+<td class="org-left">7 x 4.5</td>
+<td class="org-right">2</td>
+<td class="org-left">in between mini turbo, needle valve, primary</td>
+</tr>
+
+<tr>
+<td class="org-right">40</td>
+<td class="org-left">10</td>
+<td class="org-right">3</td>
+<td class="org-left">T-piece connection of P-MM</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+<div class="outline-5" id="outline-container-org7a67b5b">
+<h5 id="org7a67b5b"><span class="section-number-5">24.1.1.4.</span> Crosses:</h5>
+<div class="outline-text-5" id="text-24-1-1-4">
+<p>
+Table D:
+</p>
+<table>
+
+
+<colgroup>
+<col class="org-right" />
+
+<col class="org-left" />
+
+<col class="org-right" />
+
+<col class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th class="org-right" scope="col">Diameter / mm</th>
+<th class="org-left" scope="col">Length / cm</th>
+<th class="org-right" scope="col">Index</th>
+<th class="org-left" scope="col">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">16</td>
+<td class="org-left">10 x 10</td>
+<td class="org-right">1</td>
+<td class="org-left">before primary</td>
+</tr>
+
+<tr>
+<td class="org-right">40</td>
+<td class="org-left">14 x 14</td>
+<td class="org-right">2</td>
+<td class="org-left">before turbo, behind gate valve</td>
+</tr>
+
+<tr>
+<td class="org-right">40</td>
+<td class="org-left">14 x 14</td>
+<td class="org-right">3</td>
+<td class="org-left">same as above</td>
+</tr>
+
+<tr>
+<td class="org-right">40</td>
+<td class="org-left">14 x 14</td>
+<td class="org-right">4</td>
+<td class="org-left">cross at needle valve</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+
+
+<div class="outline-4" id="outline-container-org6bfb648">
+<h4 id="org6bfb648"><span class="section-number-4">24.1.2.</span> Implementation of tubing and calculation of volume</h4>
+<div class="outline-text-4" id="text-24-1-2">
+<p>
+Given the tubing data as above, the nim module defines a TubesMap
+datastructure, which is simply an object, with 4 different fields. One
+for each type of vacuum tubing:
+</p>
+<ul class="org-ul">
+<li>static</li>
+<li>flexible</li>
+<li>T-pieces</li>
+<li>crosses</li>
+</ul>
+<p>
+where for each a sequence of tuples is created given (diameter / mm,
+length / cm).
+This is defined in <a href="./../CAST/VacuumContamination/tubing.nim">./../CAST/VacuumContamination/tubing.nim</a>, which also offers a function to get
+such a TubesMap for the data.
+</p>
+
+<p>
+This tubing object is taken in the main() and handed to the
+calcTotalVacuumVolume(), which uses the helper volume functions to
+calculate the total vacuum volume.
+</p>
+
+<p>
+In a functional style using map, we iterate over each of the fields ot
+TubesMap one after another. For each item (a tuple of floats), an
+anonymous function is used to calculate the volume of that specific
+part. 
+</p>
+
+<p>
+Finally, each volume element, which is added to the new sequence, is
+summed after map is completed to give the total volume.
+</p>
+
+<p>
+This amounts to 
+</p>
+<div class="LaTeX" id="orgafa64e8">
+<p>
+\(V_{\text{vacuum}} \approx 10.88 \, \mathrm{l}\).
+</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-orgdf125cb">
+<h3 id="orgdf125cb"><span class="section-number-3">24.2.</span> Calculation of potential influx of gas</h3>
+<div class="outline-text-3" id="text-24-2">
+<p>
+Once we have the total volume of the vacuum system, we still need to
+potential amount of gas, which entered the system. 
+</p>
+
+<p>
+This can be separated into two parts. 
+</p>
+<ol class="org-ol">
+<li>An static initial state given by the detector volume under the pressure at
+which the window burst:</li>
+</ol>
+<div class="LaTeX" id="orgb998245">
+<p>
+\(n_{\text{inital}} = \frac{p_{\text{burst}} V_{\text{det}}}{R T_{\text{amb}}}\).
+</p>
+
+</div>
+<ol class="org-ol">
+<li><p>
+And afterwards a dynamical flow, given by the compressed air tube,
+inserting gas until it was shut off, after
+\(\SIrange{2}{5}{\second}\). For this one needs to consider the
+following. The compressed air tries to supply 6 bar. Assuming the
+last gauge sees \(\SI{6}{\bar}\) the whole time. From there
+\(\SI{2}{\meter}\) of tubing with about \(\SI{3}{\milli \meter}\) inner
+diameter, results in a pressure of
+</p>
+<div class="LaTeX" id="org8594de9">
+<p>
+\(p_{\text{exit}} = p_i - z L \frac{\partial V}{\partial t}\)
+</p>
+
+</div>
+<p>
+(or something like this?). \(p_{\text{exit}}\) is the pressure at the
+end of the tube, i.e. inside the detector. \(p_i\) the initial
+\(\SI{6}{\bar}\), while \(z\) is the specific impedance (per length) of
+the tube for the compressed air. The partial derivative should
+describe the flow of the gas. Analogous to currents, an impedance
+should drop the pressure inside the tube depending on the length
+\(L\) due to the flow of gas inside it. Problematic to estimate
+impedance of the tubes. Look into Demtröder etc.
+</p></li>
+</ol>
+
+<p>
+Given this, one can calculate the flow into the detector for the
+time gas was still flowing. 
+</p>
+<div class="LaTeX" id="org9f79757">
+<p>
+\(n_{\text{total}} = n_{\text{initial}} + \frac{p_{\text{exit}}}{R T_{\text{amb}}}\frac{\mathrm{d}V}{\mathrm{d}t} t\)
+</p>
+
+</div>
+<p>
+Or something similar…   
+</p>
+
+<p>
+Alternative way to estimate total gas is to consider increase of
+pressure inside of the \(\sim \SI{11}{\liter}\) of vacuum volume while
+the turbopumps and primary were still running. However, this is
+probably less accurate, because this should be highly non-linear,
+since the turbos shut off immediately (ramping down slowly,
+i.e. pumping less and less). Primary kept pumping for about
+\(\SI{2}{\minute}\). 
+</p>
+
+<p>
+Note: Upper parts remain for now, change approach of 2. point above.
+We calculate the flow rate of the compressed air inside the tube using
+the Poiseuille equation
+</p>
+<div class="LaTeX" id="org91b0da9">
+<p>
+\(Q = \frac{\pi D^4 \Delta P}{128 \mu \Delta x}\),
+</p>
+
+</div>
+<p>
+where \(Q\) is the flow rate in \(\si{\liter\per\second}\), \(D\) the
+diameter of the tube, \(\Delta P\) the pressure difference between both
+ends of the tube, \(\mu\) the dyanmic viscosity of air and \(\Delta x\)
+the length of the tube. Regarding the dynamic viscosity, we use 
+<a href="https://www.lmnoeng.com/Flow/GasViscosity.php">https://www.lmnoeng.com/Flow/GasViscosity.php</a>
+to calculate the viscosity of the compressed air. As a good
+approximation, the dynamic viscosity is unchanged under pressure
+changes
+(<a href="https://www.quora.com/What-is-the-effect-of-pressure-on-viscosity-of-gases-and-liquids">https://www.quora.com/What-is-the-effect-of-pressure-on-viscosity-of-gases-and-liquids</a>),
+which means we can use the above calculator for air at
+\(\SI{20}{\celsius}\) to get a value of 
+</p>
+<div class="LaTeX" id="orgcbdcd1b">
+<p>
+\(\mu = \SI{1.8369247E-5}{\pascal \second}\).
+</p>
+
+</div>
+<p>
+In principle we need to check, whether the tube still contains laminar
+flow, which we can do following:
+<a href="https://engineering.stackexchange.com/questions/8004/how-to-calculate-flow-rate-of-water-through-a-pipe">https://engineering.stackexchange.com/questions/8004/how-to-calculate-flow-rate-of-water-through-a-pipe</a>.
+This calculation results in a value of
+</p>
+<div class="LaTeX" id="org4e1a6b7">
+<p>
+\(Q_{\text{air, laminar}} = \SI{3.246}{\liter \per \second}\), 
+</p>
+
+</div>
+<p>
+which should be a good upper bound, since the equation is only valid
+for laminar, incompressible fluids with a small pressure
+gradient. Especially the last is definitely not valid, while the first
+two are at least questionable.
+</p>
+
+<p>
+Quick calculation of the Reynold&apos;s factor (to determine laminar or
+turbulent flow), shows that (using velocity of flow \(v\)):
+</p>
+<div class="LaTeX" id="org0a8ffb3">
+<p>
+\[
+v = \frac{Q}{A}
+\]
+\[
+\mathrm{Re} = \frac{\rho d v}{\mu}
+\]
+</p>
+
+</div>
+
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> math
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">v </span>= <span style="font-style: italic;">3</span>.246e-<span style="font-style: italic;">3</span> / <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">PI</span> * pow<span style="color: #66D9EF;">(</span><span style="font-style: italic;">1</span>.5e-<span style="font-style: italic;">3</span>, <span style="font-style: italic;">2</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">echo</span> v
+<span style="color: #F92672;">let</span> <span style="color: #66D9EF;">Re</span> = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">225</span> * <span style="font-style: italic;">1</span>.5e-<span style="font-style: italic;">3</span> * v / <span style="color: #AE81FF;">(</span><span style="font-style: italic;">1</span>.8369e-<span style="font-style: italic;">5</span><span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">echo</span> <span style="color: #66D9EF;">Re</span>
+</pre>
+</div>
+
+<table>
+
+
+<colgroup>
+<col class="org-right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-right">459.2150624678154</td>
+</tr>
+
+<tr>
+<td class="org-right">45936.50592218471</td>
+</tr>
+</tbody>
+</table>
+<p>
+which shows that this calculation is wrong on several levels. The
+speed of the flow is much too high I would assume. Although one thing
+is to be noted: given a flow of compressed air into a vacuum, one
+might expect a speed similar to the speed of sound of the inlet
+pressure?!
+</p>
+
+<p>
+At the same time, if one were to trust this, it suggests the flow to
+be in the turbulent range (cp. laminar is \(Re &lt; \num{2300}\)).
+</p>
+
+<p>
+Maximal bound given by Bernouilli&apos;s principle
+</p>
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> math
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">v </span>= sqrt<span style="color: #AE81FF;">(</span><span style="font-style: italic;">2</span> * 6e5 / <span style="font-style: italic;">1</span>.<span style="font-style: italic;">2</span><span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">let</span> <span style="color: #66D9EF;">Q</span> = <span style="color: #66D9EF;">PI</span> * pow<span style="color: #AE81FF;">(</span><span style="font-style: italic;">1</span>.5e-<span style="font-style: italic;">3</span>, <span style="font-style: italic;">2</span><span style="color: #AE81FF;">)</span> * v
+<span style="color: #F92672;">echo</span> v
+<span style="color: #F92672;">echo</span> <span style="color: #66D9EF;">Q</span> * <span style="font-style: italic;">1000</span>
+</pre>
+</div>
+
+<table>
+
+
+<colgroup>
+<col class="org-right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-right">1000.0</td>
+</tr>
+
+<tr>
+<td class="org-right">7.068583470577035</td>
+</tr>
+</tbody>
+</table>
+<p>
+meaning a speed of \(\SI{1000}{\meter \per \second}\) and a maximal flow
+of \(\SI{7.07}{\liter\per\second}\). 
+</p>
+
+<p>
+On the other hand for a more practical value (ignoring more complex
+calculations including turbulent, incompressible gases), see the
+following plot from
+<a href="http://www.engineeringtoolbox.com/air-flow-compressed-air-pipe-line-d_1280.html">http://www.engineeringtoolbox.com/air-flow-compressed-air-pipe-line-d_1280.html</a>:
+</p>
+
+
+<figure id="fig::comp-air-capacity">
+<img src="./figs/home/basti/org/Figs/compressed-air-pipeline-capacity-liter.png" alt="compressed-air-pipeline-capacity-liter.png" />
+
+<figcaption>Figure 1: <span class="figure-number">Figure 123: </span>Compressed air capacities for different inner sizes. 1/8&quot; roughly 3mm inner tube</figcaption>
+</figure>
+
+<p>
+shows a capacity of the compressed air line of
+\(\sim\SI{2}{\liter\per\second}\).
+</p>
+
+<p>
+Thus, we can safely assume the calculated
+\(\SI{3.25}{\liter\per\second}\) to be a worst case scenario.
+</p>
+
+<p>
+Hence, the total amount of air introduced into the system is:
+</p>
+<div class="LaTeX" id="orgef64dc7">
+<p>
+\(n_{\text{total}} = n_{\text{initial}} + \frac{Q_{\text{comp. air}} \cdot \SI{5}{\second} \cdot p_{\text{atm}}}{R T_{\text{amb}}}\),
+where 
+\(Q_{\text{comp. air}} = \SI{3.246}{\liter\per\second}\)
+</p>
+
+</div>
+<p>
+Ends up to be:
+</p>
+<div class="LaTeX" id="org910b7bf">
+<p>
+\(n_{\text{total}} = n_{\text{initial}} + n_{\text{flow}} = \SI{0.0069}{\mol} + \SI{0.666}{\mol} = \SI{0.673}{\mol}\)
+</p>
+
+</div>
+<p>
+Given in volume at normal conditions, this results in a gas volume of
+</p>
+<div class="LaTeX" id="org23c38de">
+<p>
+\(V_{\text{gas}} = \SI{16.4}{\liter}\)
+</p>
+
+</div>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-orgf5a7285">
+<h3 id="orgf5a7285"><span class="section-number-3">24.3.</span> Consider pumping of pumps</h3>
+<div class="outline-text-3" id="text-24-3">
+<p>
+Since the pumps were still running during this period, they would have
+extracted most of the gas immediately again. See last point in
+previous section.
+</p>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-orgeeae0bd">
+<h3 id="orgeeae0bd"><span class="section-number-3">24.4.</span> Calculation of possible contamination</h3>
+<div class="outline-text-3" id="text-24-4">
+<p>
+Finally, given the total vacuum volume and the amount of gas, which
+entered the system, we can estimate the potential contamination. 
+</p>
+
+<p>
+With the vacuum volume and the gas flowing into the system, the
+maximum possible contamination can be estimated. The upper limit is of
+course all contaminations in the gas forming a monolayer in the whole
+vacuum system. Assuming a certain ppm contamination in the gas, the
+maximum contamination is simply
+</p>
+<div class="LaTeX" id="org2fb3bf0">
+<p>
+\(d_{\text{cont}} = \frac{n_{\text{total}} R T_{\text{amb}} \cdot q_{\text{cont}}}{A_{\text{vacuum}}}\)
+</p>
+
+</div>
+<p>
+where \(q_{\text{cont}}\) is the ppm contaminiation in the total gas
+volume \(nRT\), which enterd, while \(A_{\text{vacuum}}\) is the total
+surface area of all vacuum tubing. 
+</p>
+
+<p>
+However, first we estimate the amount of oil, which entered the system
+from a typical oil contamination in compressed air. The ISO standard
+ISO 8573-1:2010 defines different classes for compressed air in
+different applications. Classes regarding oil contamination range from
+0 to 4, with class 4 being the worst. Class 4 calls for
+\(\text{ppmv}_{\text{oil}} \leq \SI{5}{\milli
+\gram\per\meter\cubed.}\). Thus, even if CERN&apos;s compressed air is a lot
+worse than this, \(\text{ppmv}_{\text{oil}} \approx
+\SI{10}{\milli\gram\per\meter\cubed.}\) should be sufficient as a
+baseline.
+</p>
+
+<p>
+This means the entered air will contain about
+</p>
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> math
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">air_vol </span>= <span style="font-style: italic;">16</span>.<span style="font-style: italic;">4</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">ppmv </span>= 10e-<span style="font-style: italic;">3</span>
+<span style="color: #F92672;">echo</span> ppmv * air_vol
+</pre>
+</div>
+
+<pre class="example">
+0.164
+</pre>
+
+
+<p>
+which is \(\SI{0.164}{\mg}\) of oil. 
+</p>
+
+<p>
+The telescope surface is not known exactly. No time to find out until
+this needs to be done. Can be checked again later with Jaime / find
+slides, paper about LLNL telescope, to get better numbers. Assuming 10
+quarter shells of a radius of \(\SI{5}{\centi\meter}\) (some larger,
+some smaller radius), the telescope has an area of:
+</p>
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> math
+<span style="color: #F92672;">let</span> <span style="color: #66D9EF;">A</span> = <span style="font-style: italic;">10</span>.<span style="font-style: italic;">0</span> * <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span> * <span style="color: #66D9EF;">PI</span> * <span style="font-style: italic;">0</span>.<span style="font-style: italic;">05</span> * <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>
+<span style="color: #F92672;">echo</span> <span style="color: #66D9EF;">A</span>
+</pre>
+</div>
+
+<pre class="example">
+0.3926990816987241
+</pre>
+
+<p>
+, i.e. an area of \(A_{\text{telescope}} =
+\SI{0.393}{\meter\squared}\). If all of the oil was placed on the
+telescope, this would result in
+</p>
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> math
+<span style="color: #F92672;">let</span> <span style="color: #66D9EF;">A</span> = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">393</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">oil_mg </span>= <span style="font-style: italic;">0</span>.<span style="font-style: italic;">164</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">ratio </span>= oil_mg / <span style="color: #66D9EF;">A</span> * 1e-<span style="font-style: italic;">4</span>
+<span style="color: #F92672;">echo</span> ratio
+</pre>
+</div>
+
+<pre class="example">
+4.173027989821883e-05
+</pre>
+
+<p>
+A contamination of \(d_{\text{max, cont}} =
+\SI{41.73}{\nano\gram\per\cm\squared}\) is an upper bound on oil on the
+telescope. Realistically, the telescope only has \(&lt; \frac{1}{10}\) of
+the total vacuum surface area, while probably \(&gt; \SI{90}{\percent}\) of
+the oil will have left the system via the pumps, pushing the
+contamination as low as \(d_{\text{cont}} &lt;
+\SI{0.4173}{\nano\gram\per\cm\squared}\). 
+</p>
+
+<p>
+This may still sounds like quite a bit, but the assumptions made here
+are all extremely conservative:
+</p>
+<ul class="org-ul">
+<li>5 seconds with an open valve. More likely it was about
+\SI{3}{\second} =&gt; factor of \(3/5\).</li>
+<li>flow of compressed air of \(\SI{3.25}{\liter\per\second}\), more
+likely about \(\SI{2}{\liter\per\second}\) =&gt; factor of another
+\(2/3.25\).</li>
+<li>area of telescope vs total area of gas volume (hard to calculate due
+to flexible tubing) probably quite a bit less than 1 / 10 ?</li>
+<li>\(\SI{10}{\percent}\) of oils sticking to surface probably also
+extremely unlikely. Maybe 2 orders of magnitude less?</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">let</span> <span style="color: #FD971F;">factors </span>= <span style="color: #AE81FF;">(</span><span style="font-style: italic;">3</span>.<span style="font-style: italic;">0</span> / <span style="font-style: italic;">5</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> * <span style="color: #AE81FF;">(</span><span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span> / <span style="font-style: italic;">3</span>.<span style="font-style: italic;">25</span><span style="color: #AE81FF;">)</span> * <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span> * 1e-<span style="font-style: italic;">2</span>
+<span style="color: #F92672;">echo</span> factors
+<span style="color: #F92672;">echo</span> factors * <span style="font-style: italic;">0</span>.<span style="font-style: italic;">4173</span>
+</pre>
+</div>
+
+<table>
+
+
+<colgroup>
+<col class="org-right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-right">0.001846153846153846</td>
+</tr>
+
+<tr>
+<td class="org-right">0.0007704000000000001</td>
+</tr>
+</tbody>
+</table>
+<p>
+Meaning values as low as \(d_{\text{cont}} &lt;
+\SI{0.7704}{\pico \gram\per\cm\squared}\) may even be more
+reasonable. It is probably safe to say that this level is easily
+reached if the telescope sits open during installation etc.
+</p>
+</div>
+</div>
+</div>
+
+
+<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
+</div>
+</body>
+</html>

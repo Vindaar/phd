@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--  2024-06-18 Tue 23:44  -->
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1" name="viewport" />
+<title>‎</title>
+<meta content="Vindaar" name="author" />
+<meta content="Org Mode" name="generator" />
+
+<link type="text/css" rel="stylesheet" href="org_html_export.css" />
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set the initial width for subfigures and their images
+    document.querySelectorAll('figure.subfigure[data-width]').forEach(function(subfigure) {
+        subfigure.style.width = subfigure.getAttribute('data-width');
+    });
+
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.style.width = img.getAttribute('data-width');
+    });
+
+    // Event listener for images within subfigures
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.addEventListener('click', function() {
+            // Determine the .figure-wrapper that contains the clicked image
+            let wrapper = this.closest('.figure-wrapper');
+
+            // If found, adjust the sizes of its subfigures
+            if (wrapper) {
+                let subfigures = wrapper.querySelectorAll('figure.subfigure');
+                subfigures.forEach(subfigure => {
+                    let width = parseFloat(subfigure.getAttribute('data-width'));
+                    if (width < 50) { // Double size if less than 50%
+                        subfigure.setAttribute('data-width', (width * 2) + '%');
+                        subfigure.style.width = (width * 2) + '%';
+                    } else { // Halve size otherwise
+                        subfigure.setAttribute('data-width', (width / 2) + '%');
+                        subfigure.style.width = (width / 2) + '%';
+                    }
+                });
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var headers = document.querySelectorAll('h1 .extended, h2 .extended, h3 .extended, h4 .extended, h5 .extended, h6 .extended');
+
+    headers.forEach(function (header) {
+        var foldableHeader = header.closest('h1, h2, h3, h4, h5, h6');
+        if (foldableHeader) {
+            foldableHeader.classList.add('foldable-header');
+            var nextElement = foldableHeader.nextElementSibling;
+            var contentToFold = [];
+            while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                contentToFold.push(nextElement);
+                nextElement = nextElement.nextElementSibling;
+            }
+            contentToFold.forEach(function (element) {
+                element.classList.add('folded-content');
+            });
+
+            foldableHeader.addEventListener('click', function () {
+                contentToFold.forEach(function (element) {
+                    if (element.style.display === 'none' || element.style.display == '') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+<!-- /* --><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js", "[Contrib]/siunitx/siunitx.js", "[Contrib]/mhchem/mhchem.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"], ['$', '$'], ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 1.0,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        },
+        TeX: {
+              equationNumbers: { autoNumber: 'AMS' },
+              Macros: {
+                  ccsini: '{\\mathrm{Si}₃\\mathrm{N}₄}',
+                  cefe: '{\\ce{^{55}Fe}}',
+                  vektor: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  mtrix: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  cp: '{\\mathrm{CP}}',
+                  cpt: '{\\mathrm{CPT}}',
+                  dd: '{\\mathop{}\\!{\\mathrm{d}}}',
+                  sinc: '{\\mathrm{sinc}}'
+              }
+        }
+    });
+/*]]>*///--&gt;
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<nav role="doc-toc" id="table-of-contents">
+<h2>Table of Contents</h2>
+<div role="doc-toc" id="text-table-of-contents">
+<ul>
+<li>  <a href="./errata.html#sec:errata">1. Errata   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
+<li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
+<ul>
+<li>  <a href="./about_thesis.html#orgc36e3ba">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org976c329">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orga7aaacb">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory.html#sec:theory:useful_reading_material">4.1. Useful reading material   <span class="tag">    <span class="optional">optional</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:illustration_cpt">4.2. Illustration of the \cpt symmetry <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:invisible_axion_models">4.3. Invisible axion models and axion couplings</a></li>
+<li>  <a href="./theory.html#sec:theory:axion_interactions">4.4. Implications for axion interactions - conversion probability</a></li>
+<li>  <a href="./theory.html#sec:theory:solar_axion_flux">4.5. Solar axion flux</a></li>
+<li>  <a href="./theory.html#sec:theory:chameleon">4.6. Chameleons</a></li>
+<li>  <a href="./theory.html#sec:theory:current_bounds">4.7. Current bounds on coupling constants</a></li>
+</ul>
+</li>
+<li><a href="./helioscopes.html#sec:helioscopes">5. Axion helioscopes   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./helioscopes.html#sec:helioscopes:cast">5.1. CERN Axion Solar Telescope (CAST)</a></li>
+<li>  <a href="./helioscopes.html#sec:helioscopes:iaxo">5.2. International AXion Observatory (IAXO)</a></li>
+</ul>
+</li>
+<li><a href="./theory_detector.html#sec:theory_detector">6. X-rays, cosmic muons and gaseous detectors   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory_detector.html#sec:theory:particle_int">6.1. Particle interactions with matter</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:cosmic_radiation">6.2. Cosmic rays</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:gas_fundamentals">6.3. Gaseous detector fundamentals</a></li>
+</ul>
+</li>
+<li><a href="./septemboard.html#sec:septemboard">7. Septemboard detector   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./septemboard.html#sec:detector:micromegas">7.1. Micromegas working principle</a></li>
+<li>  <a href="./septemboard.html#sec:detector:timepix">7.2. Timepix ASIC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
+<li>  <a href="./septemboard.html#orgc654d28">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
+<li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
+<li>  <a href="./septemboard.html#sec:detector:septemboard">7.10. Septemboard - 6 GridPixes around a center one</a></li>
+<li>  <a href="./septemboard.html#sec:detector:water_cooling">7.11. Water cooling and temperature readout for the septemboard</a></li>
+<li>  <a href="./septemboard.html#sec:septem:efficiency">7.12. Detector efficiency</a></li>
+<li>  <a href="./septemboard.html#sec:detector:daq">7.13. Data acquisition and detector monitoring</a></li>
+</ul>
+</li>
+<li><a href="./operation_calibration.html#sec:operation_calibration">8. Detector calibration for operation   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:timepix">8.1. Timepix calibrations</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:fadc">8.2. FADC calibration</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:scintillators">8.3. Scintillator calibration</a></li>
+</ul>
+</li>
+<li><a href="./reconstruction.html#sec:reconstruction">9. Data reconstruction   <span class="tag">  <span class="Reconstruction">Reconstruction</span></span></a>
+<ul>
+<li>  <a href="./reconstruction.html#sec:reco:tpa">9.1. <code>TimepixAnalysis</code> and Nim</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:tos_data_parsing">9.2. TOS data parsing</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:event_shape">9.3. Expectation of event shapes</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:data_reconstruction">9.4. Data reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:fadc_data">9.5. FADC reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:scintillator_data">9.6. Scintillator data</a></li>
+</ul>
+</li>
+<li><a href="./cast.html#sec:cast">10. Detector installation &amp; data taking at CAST   <span class="tag">  <span class="CAST">CAST</span></span></a>
+<ul>
+<li>  <a href="./cast.html#sec:cast:timeline">10.1. Timeline</a></li>
+<li>  <a href="./cast.html#sec:cast:alignment">10.2. Alignment</a></li>
+<li>  <a href="./cast.html#sec:cast:detector_setup">10.3. Detector setup at CAST</a></li>
+<li>  <a href="./cast.html#sec:cast:window_accident">10.4. Window accident</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_woes">10.5. Data taking woes</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_campaigns">10.6. Summary of CAST data taking</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:calibration">11. Data calibration   <span class="tag">  <span class="Calibration">Calibration</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:calibration:energy">11.1. Energy calibration - in principle</a></li>
+<li>  <a href="./calibration.html#sec:calib:detector_behavior_over_time">11.2. Detector behavior over time</a></li>
+<li>  <a href="./calibration.html#sec:calib:final_energy_calibration">11.3. Energy calibration dependence on the gas gain</a></li>
+<li>  <a href="./calibration.html#sec:calib:fadc">11.4. FADC</a></li>
+</ul>
+</li>
+<li><a href="./background.html#sec:background">12. Finding signal and defining background | Background rate computation   <span class="tag">  <span class="Analysis">Analysis</span></span></a>
+<ul>
+<li>  <a href="./background.html#sec:background:likelihood_method">12.1. Likelihood method</a></li>
+<li>  <a href="./background.html#sec:cdl">12.2. CAST Detector Lab</a></li>
+<li>  <a href="./background.html#sec:background:likelihood_cut">12.3. Application of likelihood cut for background rate</a></li>
+<li>  <a href="./background.html#sec:background:mlp">12.4. Artificial neural networks as cluster classifiers</a></li>
+<li>  <a href="./background.html#sec:background:additional_vetoes">12.5. Additional detector features as vetoes</a></li>
+<li>  <a href="./background.html#sec:background:all_vetoes_combined">12.6. Background rates of combined vetoes and efficiencies</a></li>
+</ul>
+</li>
+<li><a href="./limit.html#sec:limit">13. Limit calculation   <span class="tag">  <span class="Limit">Limit</span></span></a>
+<ul>
+<li>  <a href="./limit.html#sec:limit:method_introduction">13.1. Limit method - introduction</a></li>
+<li>  <a href="./limit.html#sec:limit:method_likelihood">13.2. Limit method - likelihood function \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_L">13.3. Limit method - computing \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_a_limit">13.4. Limit method - computing a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
+<li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
+<li>  <a href="./limit.html#org5e81b6c">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orge06cfa1">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
+<li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:expected_limits">13.13. Expected limits of different setups</a></li>
+<li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
+<li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
+<li>  <a href="./limit.html#orgc627f43">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgda19ced">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
+<li>  <a href="./summary.html#sec:summary">15. Summary &amp; conclusion</a></li>
+<li>  <a href="./bibliography.html#sec:bibliography">16. Bibliography   <span class="tag">    <span class="html">html</span>  </span></a></li>
+<li><a href="./daq.html#sec:daq">17. Data acquisition and detector monitoring   <span class="tag"><span class="Appendix">Appendix</span> <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./daq.html#sec:daq:tof">17.1. Timepix Operating Firmware - TOF</a></li>
+<li>  <a href="./daq.html#sec:daq:tos">17.2. Timepix Operating Software - TOS</a></li>
+<li>  <a href="./daq.html#sec:daq:septemboard_event_display">17.3. Septemboard event display</a></li>
+</ul>
+</li>
+<li><a href="./configuration.html#sec:appendix:configuration">18. Configuration and TOS / TOF versions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_config">18.1. TOS configuration file</a></li>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_tof_versions">18.2. TOS and TOF versions used at CAST</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:appendix:calibration">19. Calibrations   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:appendix:calibration:timepix">19.1. Timepix calibrations</a></li>
+<li>  <a href="./calibration.html#sec:appendix:septemboard_calibrations">19.2. Septemboard calibration</a></li>
+<li>  <a href="./calibration.html#sec:appendix:scintillator_calibration_notes">19.3. Calibration measurements of the veto scintillator paddle   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_operations.html#sec:appendix:cast_operations">20. CAST operation procedures   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_operations:terminology">20.1. CAST terminology</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:high_voltage">20.2. High voltage supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:vacuum_system">20.3. Vacuum system</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:watercooling_gas">20.4. Watercooling system &amp; gas supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:interlock_systems">20.5. Interlock systems</a></li>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_log_files">20.6. CAST log files</a></li>
+</ul>
+</li>
+<li><a href="./cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_run_list.html#orgd304089">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cast_data_taking_notes.html#orge4011be">22.1. Run table</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgeba5174">22.2. Data runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgd62eab2">22.3. Calibration runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org0271f47">22.4. Automatically generated run list</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgb34c028">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org338e161">22.6. InGrid temperature from shift forms</a></li>
+</ul>
+</li>
+<li><a href="./cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cabling_and_softwar_setup.html#org7cb11ec">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org3244c1a">23.2. Detector cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org7c3b445">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#orgda4f123">23.4. Setting up the chips in TOS</a></li>
+</ul>
+</li>
+<li><a href="./vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./vacuum_contamination.html#org35e49a4">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./vacuum_contamination.html#orgdf125cb">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./vacuum_contamination.html#orgf5a7285">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./vacuum_contamination.html#orgeeae0bd">24.4. Calculation of possible contamination</a></li>
+</ul>
+</li>
+<li><a href="./detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:choice_gas_gain_binning">25.1. Choice of gas gain binning time interval</a></li>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:correlation_gas_gain_ambient_temp">25.2. Correlation of gas gain and ambient CAST temperature</a></li>
+</ul>
+</li>
+<li><a href="./cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_detector_lab.html#orgfed071e">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
+</ul>
+</li>
+<li><a href="./fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
+</ul>
+</li>
+<li><a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./morphing_cdl_spectra.html#orgabd5f0e">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#orga5d9c5b">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#org218c56a">28.6. Notes on CDL morphing development   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./occupancy.html#orgdce408e">29.1. Run-2</a></li>
+<li>  <a href="./occupancy.html#orge5d3863">29.2. Run-3</a></li>
+<li>  <a href="./occupancy.html#org971382a">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
+<li>  <a href="./fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
+<li>  <a href="./fadc.html#org517ef50">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
+</ul>
+</li>
+<li><a href="./background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
+<li>  <a href="./background_rates.html#org01e8b4b">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#org2774ce8">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#orgd0f5dfb">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li><a href="./limit_additional.html#sec:appendix:limit_additional">33. Additional limit information   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./limit_additional.html#sec:appendix:conversion_probability">33.1. Conversion probability as a function of mass   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:exp_limit_percentiles">33.2. Expected limit table with percentiles</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:axion_photon">33.3. Observed limit - axion photon \(g_{aγ}\)</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:chameleon">33.4. Observed limit - chameleon \(β_γ\)</a></li>
+</ul>
+</li>
+<li><a href="./software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./software.html#orgbae2c69">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#org13d471b">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
+<li>  <a href="./software.html#orgb88ee40">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+</ul>
+</li>
+<li><a href="./full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./full_data_reconstruction.html#org39ad6bd">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./full_data_reconstruction.html#org1eac87c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./full_data_reconstruction.html#org09b2461">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./full_data_reconstruction.html#org3344338">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./full_data_reconstruction.html#org18a2de7">35.5. Applying a classifier</a></li>
+<li>  <a href="./full_data_reconstruction.html#org17bde80">35.6. Computing limits</a></li>
+</ul>
+</li>
+<li><a href="./average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./average_depth_xrays_argon.html#org2d84fd5">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org11eec4e">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org28b81a5">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:traxer">37.1. TrAXer - An interactive axion raytracer</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
+<li>  <a href="./raytracing.html#org7d687b6">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./raytracing.html#orgc4745d9">37.6. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Part5">Part5</span>  </span></a></li>
+</ul>
+</div>
+</nav>
+<div class="outline-2" id="outline-container-sec:reconstruction">
+<h2 id="sec:reconstruction"><span class="section-number-2">9.</span> Data reconstruction   <span class="tag">  <span class="Reconstruction">Reconstruction</span></span></h2>
+<div class="outline-text-2" id="text-sec:reconstruction">
+<p>
+We will now go through the general data reconstruction for data taken
+with the Septemboard detector. Starting with a short introduction to
+the data analysis framework <code>TimepixAnalysis</code> developed for this
+thesis, sec. <a href="./reconstruction.html#sec:reco:tpa">9.1</a>. Then we cover the data parsing of the
+ASCII based data format produced by TOS (see appendix
+<a href="./daq.html#sec:daq:tos_output_format">17.2.1</a> for a description of the data format) in
+sec. <a href="./reconstruction.html#sec:reco:tos_data_parsing">9.2</a>. At this point we shortly discuss our
+expectation of the data properties recorded with the detector,
+sec. <a href="./reconstruction.html#sec:reco:event_shape">9.3</a>, as it motivates the kind of reconstruction
+that is performed. From here the explanation of the data
+reconstruction starts, sec. <a href="./reconstruction.html#sec:reco:data_reconstruction">9.4</a>, including
+cluster finding (sec. <a href="./reconstruction.html#sec:reco:cluster_finding">9.4.1</a>) and calculation of
+geometric properties, sec. <a href="./reconstruction.html#sec:reco:cluster_geometry">9.4.2</a>.
+</p>
+
+<p>
+The FADC data reconstruction follows in section
+<a href="./reconstruction.html#sec:reco:fadc_data">9.5</a>. Finally, the scintillators are mentioned in
+section <a href="./reconstruction.html#sec:reco:scintillator_data">9.6</a>.
+</p>
+
+<p>
+There is an additional long section in the appendix
+<a href="./software.html#sec:appendix:software">34</a> that goes through the software used for the
+data reconstruction intended for people using these tools in the
+future. And appendix <a href="./full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35</a> shows how
+the full data reconstruction for all CAST data presented in this
+thesis is performed.
+</p>
+</div>
+
+<div class="outline-3" id="outline-container-sec:reco:tpa">
+<h3 id="sec:reco:tpa"><span class="section-number-3">9.1.</span> <code>TimepixAnalysis</code> and Nim</h3>
+<div class="outline-text-3" id="text-sec:reco:tpa">
+<p>
+The data reconstruction software handling the processes mentioned in
+the remainder of this chapter is the <code>TimepixAnalysis</code> (<a href="./bibliography.html#citeproc_bib_item_201">Schmidt 2022c</a>) <sup>  <a role="doc-backlink" class="footref" id="fnr.1" href="#fn.1">1</a></sup>
+framework. It is only a &quot;framework&quot; in a loose sense, as it is a set
+of programs to parse data from different Timepix (usually GridPix) DAQ
+software packages, process and analyze it. In addition, it contains
+a large number of tools to visualize that data as well as analyze
+auxiliary data like lists of data taking runs, CAST log files and
+more.
+</p>
+
+<p>
+The entire code base is written in the Nim programming language
+(<a href="./bibliography.html#citeproc_bib_item_190">Rump 2022</a>) <sup>  <a role="doc-backlink" class="footref" id="fnr.2" href="#fn.2">2</a></sup>. Nim is a statically typed, compiled language
+with a Python-like whitespace sensitive syntax, taking inspirations
+from Pascal, Modula and in particular ideas regarding type safety from
+Ada. Further, it has a strong metaprogramming focus with full access
+to its abstract syntax tree (AST) at compile time, offering Lisp-like
+macro functionality. This allows to construct powerful and concise
+domain specific languages (DSLs). Nim compiles its code by default
+first to C code, which can then utilize the decades of compiler
+optimization techniques available via GCC (<a href="./bibliography.html#citeproc_bib_item_95">GNU Project 2022</a>) or Clang
+(<a href="./bibliography.html#citeproc_bib_item_142">Lattner and Adve 2004</a>), while allowing to target every single platform
+supported by C (which effectively means almost all). As such it also
+achieves performance on par with C, while providing high-level
+features normally associated with languages like Python.
+</p>
+
+<p>
+Nim was selected as the language of choice for <code>TimepixAnalysis</code>, due
+to its combination of concise and clean syntax, high-level features
+for productivity, high performance due to native code generation, easy
+interfacing with existing C and C++ code bases and its strong
+metaprogramming features, which allow to reduce boilerplate code to a
+minimum.
+</p>
+
+<p>
+Appendix <a href="./software.html#sec:appendix:timepix_analysis">34.3</a> contains a detailed overview of the
+important tools part of <code>TimepixAnalysis</code> and how they are used for
+the context of the data analysis presented in this thesis. Read it if
+you wish to understand how to recreate the results presented in this thesis.
+</p>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:reco:tos_data_parsing">
+<h3 id="sec:reco:tos_data_parsing"><span class="section-number-3">9.2.</span> TOS data parsing</h3>
+<div class="outline-text-3" id="text-sec:reco:tos_data_parsing">
+<p>
+The first part of the GridPix data reconstruction is the parsing of
+the raw ASCII data files, presented in
+<a href="./daq.html#sec:daq:tos_output_format">17.2.1</a>. This is implemented in the
+<code>raw_data_manipulation</code> program <sup>  <a role="doc-backlink" class="footref" id="fnr.3" href="#fn.3">3</a></sup>, part of
+<code>TimepixAnalysis</code> (<a href="./bibliography.html#citeproc_bib_item_201">Schmidt 2022c</a>). Its main purpose is the
+conversion of the inefficient ASCII data format to the more
+appropriate and easier to work with HDF5 <sup>  <a role="doc-backlink" class="footref" id="fnr.4" href="#fn.4">4</a></sup> (<a href="./bibliography.html#citeproc_bib_item_221">The HDF Group 1997</a>) format,
+a binary file format intended for scientific datasets. While this data
+conversion is the main purpose, pixels with <code>ToT</code> or <code>ToA</code> values
+outside a user defined range can be filtered out at this
+stage <sup>  <a role="doc-backlink" class="footref" id="fnr.5" href="#fn.5">5</a></sup>. Each data taking run is processed
+separately and will be represented by one group (similar to a
+directory on a file system) in the output HDF5 file. See appendix
+section <a href="./software.html#sec:appendix:tos:raw_data_layout">34.3.4.1</a> for an explanation of the
+produced data layout.
+</p>
+
+<p>
+As the data is being processed anyway, at this time we already compute
+an occupancy map for each chip in the run. This allows for a quick
+glance at the (otherwise unprocessed) data.
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-org7d66890">
+<h4 id="org7d66890"><span class="section-number-4">9.2.1.</span> Example of running <code>raw_data_manipulation</code> <code>[0/1]</code>   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-9-2-1">
+<ul class="org-ul">
+<li class="off"><code>[ ]</code> GIVE EXAMPLE
+-&gt; Need an actual run to work with. Use <code>TPAResources</code>?</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-sh">raw_data_manipulation -p &lt;path&gt; --runType rtBackground --h5out /tmp/run_foo.h5
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="outline-3" id="outline-container-sec:reco:event_shape">
+<h3 id="sec:reco:event_shape"><span class="section-number-3">9.3.</span> Expectation of event shapes</h3>
+<div class="outline-text-3" id="text-sec:reco:event_shape">
+<p>
+Based on the theoretical aspects of a gaseous detector as explained in
+chapter <a href="./theory_detector.html#sec:theory_detector">6</a> and the expected kinds of signal sources
+at an experiment like CAST (see chapter <a href="./cast.html#sec:cast">10</a>), we can have a good
+expectation of the kinds of signals that a GridPix detector records
+for different types of events.
+</p>
+
+<p>
+The signal source we are interested in for an axion helioscope are
+soft energy X-rays, below \(\SI{10}{keV}\). The main goal in later
+determining a background rate and computing a physics result from data
+is to filter out these X-rays from the rest of the data the detector
+records. The dominant source of background in any gaseous detector at
+surface level is due to cosmic muons.
+</p>
+
+<p>
+Fortunately, muons and X-rays behave very different in the
+detector. X-rays generally produce a single photoelectron, which
+creates further primary electrons in a local region. These drift under
+transverse diffusion to the readout plane, which effectively gives
+them a roughly circular shape. Muons on the other hand produce
+electrons (which each produce further local primaries) on a track
+along their entire path through the gas volume. Under most angles this
+implies their shape is very eccentric, i.e. &apos;track-like&apos;.
+</p>
+
+<p>
+Two example events, one of a \(\sim\SI{5.9}{keV}\) \cefe X-ray
+and the other of a typical muon is shown in
+fig. <a href="#fig:reco:example_signal_background_event">1</a>.
+</p>
+
+
+<figure id="fig:reco:example_signal_background_event">
+<img src="./figs/home/basti/phd/Figs/reco/gridpix_example_events.svg" class="org-svg" alt="gridpix_example_events.svg" />
+
+<figcaption>Figure 1: <span class="figure-number">Figure 33: </span>Two example events one might see in the detector, left a common background event of a (likely) muon track, which enters the readout plane (hence the slightly triangular shape) and right a classical \(\SI{5.9}{keV}\) X-ray from a \cefe calibration source.</figcaption>
+</figure>
+
+<p>
+Given the distinct geometric properties of these different types of
+events and the fact that a GridPix provides extremely high spatial
+resolution and single electron efficiency, the data reconstruction
+fully embraces this. Most of the computed properties, which we will
+introduce in the next sections, are directly related to geometric
+properties of the events.
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-org4a4e08f">
+<h4 id="org4a4e08f"><span class="section-number-4">9.3.1.</span> Generate example events for known events   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-9-3-1">
+<p>
+While we have two pretty nice events to plot as examples, in
+principle, they are generated by <code>karaPlot</code> (an extensive plotting
+tool part of TPA) and thus not quite suited to a thesis.
+</p>
+
+<p>
+As we know the run number and event number, we can just generate them
+quickly here. The two events (and plots) are:
+</p>
+<ul class="org-ul">
+<li>  <img src="./figs/home/basti/org/Figs/statusAndProgress/exampleEvents/background_event_run267_chip3_event1456_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.svg" class="org-svg" alt="background_event_run267_chip3_event1456_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.svg" /></li>
+<li>  <img src="./figs/home/basti/org/Figs/statusAndProgress/exampleEvents/calibration_event_run266_chip3_event5791_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.svg" class="org-svg" alt="calibration_event_run266_chip3_event5791_region_crAll_hits_200.0_250.0_centerX_4.5_9.5_centerY_4.5_9.5_applyAll_true_numIdxs_100.svg" /></li>
+</ul>
+<p>
+so run 267 and 266, events 1456 and 5791.
+</p>
+
+<p>
+Ah, I had forgotten that these are not the event numbers, but their
+indices of the clusters. Therefore, we&apos;ll just search for pretty
+events in the same runs.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #75715E;"># </span><span style="color: #75715E;">Laptop</span>
+<span style="color: #75715E;">#</span><span style="color: #75715E;">const calib = &quot;/mnt/1TB/CAST/2018_2/CalibrationRuns/Run_266_181107-22-14&quot;</span>
+<span style="color: #75715E;">#</span><span style="color: #75715E;">const back  = &quot;/mnt/1TB/CAST/2018_2/DataRuns/Run_267_181108-02-05&quot;</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">Desktop</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">All raw files found in `</span><span style="color: #AE81FF;">/mnt/4TB/CAST</span><span style="color: #75715E;">`. The two runs needed here copied to</span>
+<span style="color: #F92672;">from</span> std/os <span style="color: #F92672;">import</span> expandTilde
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">calib </span>= <span style="color: #E6DB74;">&quot;~/CastData/data/2018_2/Run_266_181107-22-14&quot;</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">calibration</span>
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">back  </span>= <span style="color: #E6DB74;">&quot;~/CastData/data/2018_2/Run_267_181108-02-05&quot;</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">data</span>
+
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">cEv </span>= <span style="font-style: italic;">5898</span>
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">bEv </span>= <span style="font-style: italic;">1829</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">this event is nice</span>
+<span style="color: #F92672;">import</span> ingrid / tos_helpers
+<span style="color: #F92672;">import</span> std / <span style="color: #AE81FF;">[</span>strformat, os, strutils, sequtils<span style="color: #AE81FF;">]</span>
+<span style="color: #F92672;">import</span> ggplotnim
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">toFile</span><span style="color: #AE81FF;">(</span>i: <span style="color: #66D9EF;">int</span>, path: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">string</span> =
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">z </span>= align<span style="color: #AE81FF;">(</span>$i, <span style="font-style: italic;">6</span>, <span style="color: #E6DB74;">&apos;0&apos;</span><span style="color: #AE81FF;">)</span>
+  path / &amp;<span style="color: #E6DB74;">&quot;data{z}.txt&quot;</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">drawPlot</span><span style="color: #AE81FF;">()</span> =   
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">protoFiles </span>= readMemFilesIntoBuffer<span style="color: #AE81FF;">(</span>@<span style="color: #66D9EF;">[</span>toFile<span style="color: #A6E22E;">(</span>cEv, calib.expandTilde<span style="color: #A6E22E;">)</span>, toFile<span style="color: #A6E22E;">(</span>bEv, back.expandTilde<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= newDataFrame<span style="color: #AE81FF;">()</span>
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">names </span>= @<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;X-ray&quot;</span>, <span style="color: #E6DB74;">&quot;Background&quot;</span><span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">for</span> <span style="color: #AE81FF;">(</span>pf, name<span style="color: #AE81FF;">)</span> <span style="color: #F92672;">in</span> zip<span style="color: #AE81FF;">(</span>protoFiles, names<span style="color: #AE81FF;">)</span>:
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">ev </span>= processEventWithScanf<span style="color: #AE81FF;">(</span>pf<span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">pix </span>= ev.chips<span style="color: #AE81FF;">[</span><span style="font-style: italic;">3</span><span style="color: #AE81FF;">]</span>.pixels
+    <span style="color: #F92672;">if</span> pix.<span style="color: #F92672;">len</span> == <span style="font-style: italic;">0</span>: <span style="color: #F92672;">return</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dfL </span>= toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span> <span style="color: #E6DB74;">&quot;x&quot;</span> : pix.mapIt<span style="color: #A6E22E;">(</span>it.x.<span style="color: #66D9EF;">int</span><span style="color: #A6E22E;">)</span>, <span style="color: #E6DB74;">&quot;y&quot;</span> : pix.mapIt<span style="color: #A6E22E;">(</span>it.y.<span style="color: #66D9EF;">int</span><span style="color: #A6E22E;">)</span>,
+                     <span style="color: #E6DB74;">&quot;ToT&quot;</span> : pix.mapIt<span style="color: #A6E22E;">(</span>it.ch.<span style="color: #66D9EF;">int</span><span style="color: #A6E22E;">)</span>, <span style="color: #E6DB74;">&quot;type&quot;</span> : name <span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+    df.<span style="color: #F92672;">add</span> dfL
+  <span style="color: #F92672;">echo</span> df
+  ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;y&quot;</span>, color = <span style="color: #E6DB74;">&quot;ToT&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+    facet_wrap<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;type&quot;</span><span style="color: #AE81FF;">)</span> +
+    geom_point<span style="color: #AE81FF;">()</span> +
+    xlim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">256</span><span style="color: #AE81FF;">)</span> + ylim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">256</span><span style="color: #AE81FF;">)</span> +
+    <span style="color: #75715E;">#</span><span style="color: #75715E;">theme_font_scale(2.0) +</span>
+    <span style="color: #75715E;">#</span><span style="color: #75715E;">margin(left = 3, bottom = 3, right = 5) +</span>
+    margin<span style="color: #AE81FF;">(</span>right = <span style="font-style: italic;">3</span>.<span style="font-style: italic;">5</span><span style="color: #AE81FF;">)</span> + 
+    <span style="color: #75715E;">#</span><span style="color: #75715E;">facetHeaderText(font = font(12.0, alignKind = taCenter)) +</span>
+    xlab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;x [Pixel]&quot;</span>, margin = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">5</span><span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;y [Pixel]&quot;</span>, margin = <span style="font-style: italic;">2</span><span style="color: #AE81FF;">)</span> + 
+    legendPosition<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">88</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
+    themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">9</span>, width = <span style="font-style: italic;">800</span>, height = <span style="font-style: italic;">400</span>, baseTheme = singlePlot<span style="color: #AE81FF;">)</span> + 
+    ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/reco/gridpix_example_events.pdf&quot;</span>, width = <span style="font-style: italic;">800</span>, height = <span style="font-style: italic;">400</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span><span style="color: #AE81FF;">)</span>
+
+drawPlot<span style="color: #AE81FF;">()</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:reco:data_reconstruction">
+<h3 id="sec:reco:data_reconstruction"><span class="section-number-3">9.4.</span> Data reconstruction</h3>
+<div class="outline-text-3" id="text-sec:reco:data_reconstruction">
+<p>
+With the data stored in an HDF5 file after processing the raw data
+with <code>raw_data_manipulation</code>, the actual data and event reconstruction
+can begin. This is handled by the
+<code>reconstruction</code> <sup>  <a role="doc-backlink" class="footref" id="fnr.6" href="#fn.6">6</a></sup> program. It continues from
+the HDF5 file created before and proceeds to reconstruct all runs in
+the given input file.
+</p>
+
+<p>
+For each run, each GridPix chip is processed sequentially, while all
+events for that chip are then processed in parallel using
+multithreading. For each event, the data processing is essentially a
+two step process:
+</p>
+<ol class="org-ol">
+<li>perform cluster finding, see section <a href="./reconstruction.html#sec:reco:cluster_finding">9.4.1</a>.</li>
+<li>compute geometric properties for each found cluster, see section
+<a href="./reconstruction.html#sec:reco:cluster_geometry">9.4.2</a>.</li>
+</ol>
+</div>
+
+<div class="outline-4" id="outline-container-sec:reco:cluster_finding">
+<h4 id="sec:reco:cluster_finding"><span class="section-number-4">9.4.1.</span> Cluster finding</h4>
+<div class="outline-text-4" id="text-sec:reco:cluster_finding">
+<p>
+The cluster finding algorithm splits a single event into possibly
+multiple clusters. Clusters are defined based on a certain notion of
+distance (the details depend on the clustering algorithm used). The
+multiple clusters from a single event are then treated fully equally
+for the rest of the analysis. The fact that they originate from the
+same event has no further relevance (with a slight exception for one
+veto technique, which utilizes clustering over multiple chips, more on
+that in section <a href="./background.html#sec:background:septem_veto">12.5.3</a>).
+</p>
+
+<p>
+There are two different cluster finding algorithms implemented for use
+in <code>TimepixAnalysis</code>. The default one is strictly used for the general
+cluster finding as part of the reconstruction, the other is intended
+to be used for one of the vetoes (again, sec. <a href="./background.html#sec:background:septem_veto">12.5.3</a>). The
+choice is user configurable however. <sup>  <a role="doc-backlink" class="footref" id="fnr.7" href="#fn.7">7</a></sup> 
+</p>
+
+<dl class="org-dl">
+<dt>Default</dt><dd>The default one is the same clustering algorithm
+introduced for the data reconstruction of the 2014/15 GridPix
+detector in (<a href="./bibliography.html#citeproc_bib_item_137">Krieger 2018</a>). It defines a cluster by all
+pixels within the squares of side length \(N\) centered around each
+pixel. It is best thought of as a recursive square neighbor search
+around each pixel. For each neighbor in the search square, start
+another search square. Once no neighbor finds any neighbors not
+already part of the cluster, it is finished.</dd>
+<dt>DBSCAN</dt><dd>The secondary clustering algorithm is the
+\textbf{D}ensity-\textbf{b}ased \textbf{s}patial \textbf{c}lustering
+of \textbf{a}pplications with \textbf{n}oise (DBSCAN)
+(<a href="./bibliography.html#citeproc_bib_item_85">Ester et al. 1996</a>) algorithm. In contrast to the default
+algorithm it is – as the name implies – a density based
+algorithm. This means it distinguishes points which have more
+neighbors (high density) from those with few neighbors (low
+density). The algorithm has a parameter <code>minSamples</code>, which defines
+the density threshold. If a point has at least <code>minSamples</code> neighbors within a
+(euclidean) distance of \(ε\) (the second parameter) it is considered
+a &quot;core point&quot;. All core points build a cluster with all other
+points in their reach. Those points in reach of a core point,
+but do itself not have <code>minSamples</code> neighbors are still part of the
+cluster. Any point <span class="underline">not</span> in reach of a core point is a &quot;noise
+point&quot;. The main advantage of this algorithm over many other more
+classical algorithms is the ability to separate clusters close to one
+another, which are not separateable by a linear cut. This results in
+a more humanly &quot;intuitive&quot; clustering.
+DBSCAN is one of the most widely used clustering algorithm in many
+scientific fields and even in 2017 was still considered highly
+relevant (<a href="./bibliography.html#citeproc_bib_item_205">Schubert et al. 2017</a>).</dd>
+</dl>
+
+<p>
+Another clustering algorithm (currently not implemented) is CLASSIX
+(<a href="./bibliography.html#citeproc_bib_item_62">Chen and Güttel 2022</a>), which promises fast clustering based on sorting along
+the first principal component axis. Based on its properties as
+presented in its paper it could be an extremely useful algorithm for
+our application and should be investigated in the future.
+</p>
+</div>
+
+<div class="outline-5" id="outline-container-org7cc3cfb">
+<h5 id="org7cc3cfb"><span class="section-number-5">9.4.1.1.</span> CLASSIX clustering algorithm <code>[/]</code>   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-9-4-1-1">
+<ul class="org-ul">
+<li class="off"><code>[ ]</code> <b>OR SHOULD THIS GO INTO MAIN SECTION BEFORE?</b> OR AS :optional:?</li>
+</ul>
+
+<p>
+There is one further clustering algorithm, which is extremely exciting
+and seems like a great candidate for a clustering algorithm for
+<code>TimepixAnalysis</code>. That is the CLASSIX algorithm, introduced as &quot;a
+fast and explainable clustering method&quot; (<a href="./bibliography.html#citeproc_bib_item_62">Chen and Güttel 2022</a>).
+</p>
+
+<p>
+See the GitHub page with many examples here:
+<a href="https://github.com/nla-group/classix">https://github.com/nla-group/classix</a>
+</p>
+
+<p>
+It is an algorithm, which first sorts the data based on the first
+principal component in the data. 
+</p>
+</div>
+</div>
+
+<div class="outline-5" id="outline-container-org38c33fa">
+<h5 id="org38c33fa"><span class="section-number-5">9.4.1.2.</span> Clustering bug in MarlinTPC for 2014/15 data   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-9-4-1-2">
+<p>
+One of the initial goals of <code>TimepixAnalysis</code> was the reproduction of
+the background rate computed for the 2014/15 data with the MarlinTPC
+framework. While that whole ordeal wasted a lot of time trying to
+achieve the exact same results from both frameworks to satisfy other
+people, among other things it lead to the discovery of a clustering
+bug in MarlinTPC (which was finally the point that let me drop this
+pursuit).
+</p>
+
+<ul class="org-ul">
+<li class="off"><code>[ ]</code> <b>INSERT DISCUSSION FROM STATUSANDPROGRESS ABOUT MARLIN CLUSTER
+BUG</b> See section <code>sec:marlin_vs_tpa_output</code> in TPA for the Marlin
+clustering bug.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:reco:cluster_geometry">
+<h4 id="sec:reco:cluster_geometry"><span class="section-number-4">9.4.2.</span> Calculation of geometric properties</h4>
+<div class="outline-text-4" id="text-sec:reco:cluster_geometry">
+<p>
+For each individual cluster the geometric event reconstruction is up
+next. As the basic differentiator between X-rays and common background
+events is their circularity, most properties are in some sense related
+to how eccentric clusters are. Therefore, the first thing to be
+computed for each cluster, is the rotation angle <sup>  <a role="doc-backlink" class="footref" id="fnr.8" href="#fn.8">8</a></sup>.
+</p>
+
+<p>
+The rotation angle is found via a non linear optimization of
+</p>
+
+\begin{align*}
+  x&apos;_i &amp;= \cos(θ) \left( x_i - \bar{x} \right) · P - \sin(θ) \left( y_i - \bar{y} \right) · P \\
+  y&apos;_i &amp;= \sin(θ) \left( x_i - \bar{x} \right) · P + \cos(θ) \left( y_i - \bar{y} \right) · P 
+\end{align*}
+
+<p>
+where \(θ\) is the rotation angle (in the context of the optimization
+the parameter to be fitted), \(x_i, y_i\) the coordinates of the \(i\text{-th}\)
+pixel in the cluster, and \(\bar{x}, \bar{y}\) the center coordinates of
+the cluster. \(P = \SI{55}{μm}\) is the pixel pitch of a Timepix. The
+resulting variables \(x&apos;_i, y&apos;_i\) define a new rotated coordinate
+system. From these coordinates, the RMS <sup>  <a role="doc-backlink" class="footref" id="fnr.9" href="#fn.9">9</a></sup> of each of these new axes is
+computed via
+</p>
+
+\begin{align*}
+  x_{\text{RMS}} &amp;= \sqrt{ \frac{1}{N} \left( \sum_i x^{\prime2}_i \right) - \frac{1}{N²} \left( \sum_i x&apos;_i \right)² }\\
+  y_{\text{RMS}} &amp;= \sqrt{ \frac{1}{N} \left( \sum_i y^{\prime2}_i \right) - \frac{1}{N²} \left( \sum_i y&apos;_i \right)² }.
+\end{align*}
+
+
+<p>
+Based on these we then simply redefine
+</p>
+
+\begin{align*}
+σ_{\text{transverse}} &amp;= \text{min}(x_{\text{RMS}}, y_{\text{RMS}}) \\
+σ_{\text{longitudinal}} &amp;= \text{max}(x_{\text{RMS}}, y_{\text{RMS}}),
+\end{align*}
+
+<p>
+which then define the eccentricity \(ε\) to (see also fig. <a href="#fig:reco:prop_expl_ecc">2(b)</a>)
+</p>
+
+<p>
+\[
+ε = \frac{σ_{\text{longitudinal}}}{σ_{\text{transverse}}},
+\]
+</p>
+
+<p>
+guaranteeing \(ε \geq 1\).
+</p>
+
+<p>
+During the non linear optimization, the algorithm attempts to maximize
+the eccentricity. In a track like cluster, the maximum eccentricity is
+found under the rotation angle \(θ\), which points along the longest
+axis of the cluster. The resulting rotated coordinate system after the
+fit has converged, is illustrated in fig. <a href="#fig:reco:prop_expl_axes">2(a)</a>.
+</p>
+
+<p>
+Once the rotation angle and therefore the rotated coordinate system of
+a cluster is defined, most other properties follow in a straight
+forward fashion. In the rotated coordinate system the axis along the
+long axis of the cluster is called &quot;longitudinal&quot; and the short axis
+&quot;transverse&quot; in the following. The higher moments skewness and
+kurtosis for each axis are computed as well as the length and width of
+the cluster based on the biggest spread of pixels along each axis.  In
+addition to the geometric properties a few other properties like the
+number of pixels are also computed. Three of the most important
+variables are illustrated in
+fig. <a href="#fig:reco:property_explanations">2</a>. These enter the likelihood
+cut definition as we will see in sec. <a href="./background.html#sec:background:likelihood_method">12.1</a>.
+</p>
+
+
+<figure class="figure-wrapper" id="fig:reco:property_explanations">
+<figure class="subfigure" id="fig:reco:prop_expl_axes" data-width="49%">  <img src="./figs/~/org/Figs/InGridPropExplanation/long_short_axis.svg" data-width="99%" />  <figcaption>Figure 2(a): Rotated axes</figcaption></figure> <figure class="subfigure" id="fig:reco:prop_expl_ecc" data-width="49%">  <img src="./figs/~/org/Figs/InGridPropExplanation/eccentricity.svg" data-width="99%" />  <figcaption>Figure 2(b): Eccentricity</figcaption></figure> <figure class="subfigure" id="fig:reco:prop_expl_fracRms" data-width="49%">  <img src="./figs/~/org/Figs/InGridPropExplanation/frac_in_trans_rms.svg" data-width="99%" />  <figcaption>Figure 2(c): Fraction in transverse RMS</figcaption></figure> <figure class="subfigure" id="fig:reco:prop_expl_ldiv" data-width="49%">  <img src="./figs/~/org/Figs/InGridPropExplanation/length_div_rms_trans.svg" data-width="99%" />  <figcaption>Figure 2(d): Length divided by transverse RMS</figcaption></figure>
+<figcaption>Figure 2: Schematic explanation of the basic cluster reconstruction and the three most 
+    important geometric properties. <a href="#fig:reco:prop_expl_axes">2(a)</a> defines the rotated coordinate system found by non-linear optimization of the long and
+     short cluster axis. Along the long and short axes, <a href="#fig:reco:prop_expl_ecc">2(b)</a>, the transverse standard deviation $σ_{\text{transverse}}$ is computed, which then defines the eccentricity 
+     by this ratio. <a href="#fig:reco:prop_expl_fracRms">2(c)</a> shows the definition of a less obvious variable: the fraction of pixels within a 
+     circle of one $σ_{\text{transverse}}$ radius around the cluster center.
+     Similarly <a href="#fig:reco:prop_expl_ldiv">2(d)</a> shows the full cluster length defined by the furthest active pixels in the cluster
+     divided by $σ_{\text{transverse}}$ as another variable. These three variables enter
+     the likelihood cut used for background suppression.</figcaption>
+</figure>
+
+
+<p>
+The following is a list of all properties of a single cluster computed
+by the <code>reconstruction</code> tool. The <code>ig</code> prefix is due to the internal
+naming convention. All but the likelihood, charge and energy
+properties are computed during the first pass of the tool, namely in
+the context discussed above. <sup>  <a role="doc-backlink" class="footref" id="fnr.10" href="#fn.10">10</a></sup>
+</p>
+
+<dl class="org-dl">
+<dt>igEventNumber</dt><dd>The event number the cluster is part of (multiple
+clusters may share the same event number).</dd>
+<dt>igHits</dt><dd>The number of pixels in the cluster.</dd>
+<dt>igCenterX / igCenterY</dt><dd>The center position of the cluster along
+the <code>x</code> / <code>y</code> axis of the detector.</dd>
+<dt>igRotationAngle</dt><dd>The rotation angle of the long axis of the
+cluster over the chip coordinate system.</dd>
+<dt>igLength</dt><dd>The length of the cluster along the long axis in the 
+rotated coordinate system, defined by the furthest pixel at each
+end in that direction.</dd>
+<dt>igWidth</dt><dd>The equivalent of <b>igLength</b> for the short axis.</dd>
+</dl>
+
+<dl class="org-dl">
+<dt>igRmsLongitudinal</dt><dd>The root mean square (RMS) along the long axis.</dd>
+<dt>igRmsTransverse</dt><dd>The RMS along the short axis.</dd>
+<dt>igSkewnessLongitudinal / igKurtosisLongitudinal</dt><dd>The skewness / kurtosis along the long axis.</dd>
+<dt>igSkewnessTransverse / igKurtosisTransverse</dt><dd>The skewness / kurtosis along the short axis.</dd>
+<dt>igEccentricity</dt><dd>The eccentricity of the cluster, defined by the
+ratio of the longitudinal RMS over the transverse RMS.</dd>
+<dt>igLengthDivRmsTrans</dt><dd>The length of the cluster divided by the
+transverse RMS (see fig. <a href="#fig:reco:prop_expl_ldiv">2(d)</a>).</dd>
+<dt>igFractionInTransverseRms</dt><dd>The fraction of all pixels within a
+radius of the transverse RMS around the center (see fig. <a href="#fig:reco:prop_expl_fracRms">2(c)</a>).</dd>
+</dl>
+
+<dl class="org-dl">
+<dt>igTotalCharge</dt><dd>The sum of the charge of the <code>ToT</code> calibrated
+charges of all pixels in the cluster (see sec. <a href="./reconstruction.html#sec:reco:data_calibration">9.4.4</a>).</dd>
+<dt>igEnergyFromCharge</dt><dd>The calibrated energy of the cluster in
+\(\si{keV}\) (see sec. <a href="./calibration.html#sec:calibration:energy">11.1</a>).</dd>
+<dt>igLikelihood</dt><dd>The likelihood value of the cluster for the
+likelihood cut method, explained in detail in section
+<a href="./background.html#sec:background:likelihood_method">12.1</a>.</dd>
+</dl>
+
+<p>
+After the calculation of all geometric properties for all events and
+chips, the data is written to an output HDF5 file (similar in format to
+the output of <code>raw_data_manipulation</code>) for each run. This concludes
+the first pass of <code>reconstruction</code> over the data. See appendix
+section <a href="./software.html#sec:appendix:tos:reco_data_layout">34.3.5.2</a> for an explanation of the
+produced data layout.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org45549a0">
+<h4 id="org45549a0"><span class="section-number-4">9.4.3.</span> Example of data reconstruction <code>[/]</code>   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-9-4-3">
+<ul class="org-ul">
+<li class="off"><code>[ ]</code> GIVE EXAMPLE</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-sh">reconstruction -i &lt;h5file&gt; --out /tmp/reco_foo.h5
+</pre>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:reco:data_calibration">
+<h4 id="sec:reco:data_calibration"><span class="section-number-4">9.4.4.</span> Data calibration</h4>
+<div class="outline-text-4" id="text-sec:reco:data_calibration">
+<p>
+The next step of the reconstruction is the data calibration. This is a
+separate pass over the data as it is optional on the one hand and
+requires further inputs about each used GridPix than just the raw data
+(different calibration files) on the other hand.
+</p>
+
+<p>
+There are different calibrations to be performed:
+</p>
+
+<ol class="org-ol">
+<li>the charge calibration via the application of the <code>ToT</code> calibration
+as introduced in section <a href="./operation_calibration.html#sec:operation_calibration:tot_calibration">8.1.1</a>.</li>
+<li>the calculation of the gas gain, introduced previously in section
+<a href="./operation_calibration.html#sec:daq:polya_distribution">8.1.2</a> and more in sec. <a href="./calibration.html#sec:calib:gas_gain_time_binning">11.2.2</a>.</li>
+<li>the energy calibration (see sec. <a href="./calibration.html#sec:calibration:energy">11.1</a> and
+<a href="./calibration.html#sec:calib:final_energy_calibration">11.3</a>).</li>
+</ol>
+
+<p>
+The <code>ToT</code> calibration is in principle performed simply by converting
+each <code>ToT</code> value to an equivalent charge in electrons using the
+calibration as presented in section
+<a href="./operation_calibration.html#sec:operation_calibration:tot_calibration">8.1.1</a>. For each GridPix used in a
+detector, a <code>ToT</code> calibration must be available.
+</p>
+
+<p>
+<code>TimepixAnalysis</code> comes with a library and helper program, which
+manages a simple database about different GridPixes, their
+calibrations and their validity (in time and runs they apply to). The
+user needs to add the chips for which they wish to perform a <code>ToT</code>
+calibration to the database before it can be performed. See appendix
+<a href="./software.html#sec:appendix:software:ingrid_database">34.3.10</a> for a detailed overview. For
+any chip part of the database, the <code>ToT</code> calibration is a single pass
+over the <code>ToT</code> values of all runs. This generates a calibrated charge
+for every pixel of every cluster and a combined property, the
+<code>totalCharge</code> of the full charge of each cluster.
+</p>
+
+<p>
+Gas gain values are computed in \(\SI{90}{min}\) time intervals for each
+chip. This strikes a good balance between enough statistics and
+reduced sensitivity to variation in gas gain due to external
+effects. As this deserves its own discussion, more on this in
+sec. <a href="./calibration.html#sec:calib:gas_gain_time_binning">11.2.2</a>. 
+</p>
+
+<p>
+Finally, while the energy calibration is also handled by <code>reconstruction</code>, we
+will cover it in section <a href="./calibration.html#sec:calibration">11</a>, due to its more
+complex nature.
+</p>
+</div>
+
+<div class="outline-5" id="outline-container-org5a97517">
+<h5 id="org5a97517"><span class="section-number-5">9.4.4.1.</span> Example of data calibration <code>[/]</code>   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-9-4-4-1">
+<p>
+The following three commands perform the three calibration steps
+mentioned above:
+</p>
+<dl class="org-dl">
+<dt>ToT calibration</dt><dd>  <code>--only_charge</code></dd>
+<dt>Gas gain calc</dt><dd>  <code>--only_gas_gain</code></dd>
+<dt>Energy calibration</dt><dd>  <code>--only_energy_from_e</code></dd>
+</dl>
+<div class="org-src-container">
+<pre class="src src-sh">reconstruction -i &lt;h5file&gt; --only_charge
+reconstruction -i &lt;h5file&gt; --only_gas_gain
+reconstruction -i &lt;h5file&gt; --only_energy_from_e
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:reco:event_duration">
+<h4 id="sec:reco:event_duration"><span class="section-number-4">9.4.5.</span> Event duration</h4>
+<div class="outline-text-4" id="text-sec:reco:event_duration">
+<p>
+During the reconstruction of the data, another important parameter is
+computed, namely the event duration of each individual event. In
+principle each event has a fixed length, because the Timepix uses a
+shutter based readout, with the shutter length predefined. However, as
+the FADC is used as an external trigger to close the shutter early, if
+it recorded a signal, all events with an FADC trigger have a shorter
+duration.
+</p>
+
+<p>
+For the fixed length duration events their length is computed by the
+shutter length as indicated in TOS. In appendix
+<a href="./daq.html#sec:daq:tos_output_format">17.2.1</a>, listing
+<a href="code:daq:zero_suppressed_readout_run_header">2</a> the <code>shutterTime</code> and
+<code>shutterMode</code> fields are listed. These define the absolute length of
+the shutter opening in (effectively) number of clock cycles. The
+<code>shutterMode</code> acts as a modifier to the number of clock cycles:
+</p>
+
+<p>
+\[
+t_{\text{clocks}}(\mathtt{mode}, t) = 256^{\mathtt{mode}} · t
+\]
+</p>
+
+<p>
+where \(t\) is the <code>shutterTime</code> and \(\mathtt{mode}\) corresponds to the
+<code>shutterMode</code>. The available modes are:
+</p>
+<ul class="org-ul">
+<li><code>short</code>: \num{0}</li>
+<li><code>long</code>: \num{1}</li>
+<li><code>verylong</code>: \num{2}</li>
+</ul>
+
+<p>
+In case of the FADC triggering, the clock cycles after shutter opening
+that were recorded up to the trigger is also reported in the data
+files, see appendix sec. <a href="./daq.html#sec:daq:tos_output_format">17.2.1</a>, listing
+<a href="code:daq:zero_suppressed_readout_event_header">3</a>. With the number of
+clock cycles the shutter was open, the total event duration can then
+be computed in either case via:
+</p>
+
+<p>
+\[
+d(t_{\text{clocks}}) = \frac{t_{\text{clocks}} · 46}{40 · \num{1000000}}.
+\]
+</p>
+</div>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:reco:fadc_data">
+<h3 id="sec:reco:fadc_data"><span class="section-number-3">9.5.</span> FADC reconstruction</h3>
+<div class="outline-text-3" id="text-sec:reco:fadc_data">
+<p>
+The data files created from the FADC data sent upon a trigger are
+essentially memory snapshots of the circular register of the FADC. We
+will go through the necessary steps to convert that raw data into
+usable signals, given the FADC settings we use and the data TOS
+generates from it. See appendix sec. <a href="./daq.html#sec:daq:fadc_data_files">17.2.1.1</a> for an
+overview of the raw FADC data files. For a detailed overview of the
+FADC readout process see the FADC manual
+(<a href="./bibliography.html#citeproc_bib_item_57">CAEN 2010</a>) <sup>  <a role="doc-backlink" class="footref" id="fnr.11" href="#fn.11">11</a></sup>.
+</p>
+
+<p>
+In <code>TimepixAnalysis</code> FADC data is automatically parsed from the ASCII
+data files into HDF5 files as part of <code>raw_data_manipulation</code> if FADC
+files are present. The spectrum reconstruction is done automatically
+as part of the <code>reconstruction</code> program, but calculation of the
+baseline, rise and fall time is an optional step.
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-sec:reco:fadc_pedestal_calc">
+<h4 id="sec:reco:fadc_pedestal_calc"><span class="section-number-4">9.5.1.</span> FADC pedestal calculation</h4>
+<div class="outline-text-4" id="text-sec:reco:fadc_pedestal_calc">
+<p>
+As alluded to in sec. <a href="./operation_calibration.html#sec:operation_calibration:fadc">8.2</a> the pedestal
+values cannot only be taken from a pedestal run recorded before data
+taking, but can also be extracted from real data, under the condition
+that a decent fraction of FADC registers in a single FADC event is on
+the baseline and normally distributed between events.
+</p>
+
+<p>
+The idea is to look at an ensemble of values for each register taken
+from different events and remove all those events in each register, in
+which it was involved in a real signal. Due to the cyclic nature of
+the FADC registers, different registers will capture signals in each
+event. At least in typical signals recorded with a GridPix the signal
+lengths are \(\mathcal{O}(\SI{10}{\percent})\) of the window length,
+leaving plenty of registers free to recover pedestal
+information. Regular noise affects things, but is partially taken care
+by the truncation and partially cancels out as real noise is normal
+distributed around the actual pedestal. This latter approach is the
+one used in the data analysis by calculating:
+</p>
+
+\begin{equation}
+\label{fig:reco:fadc_pedestals_trunc_mean}
+p_i(r) = \text{mean}_{20^{\text{th}}}^{98^{\text{th}}}(\{r_i\})
+\end{equation}
+
+<p>
+where \(p_i(r)\) is the pedestal in register \(r_i\) and the mean is taken
+over all data \(\{r_i\}\) in that register within the 20-th and
+98-th percentile. All data refers to a full data run of
+\(\sim\SI{1}{day}\). The highly biased nature is due to the real
+signals being negative. Removing the smallest \(\SI{20}{\percent}\) of
+data guarantees in the vast majority of events the full physical
+signal is excluded given the typical signal lengths involved. A
+small upper percentile is used to exclude possible significant
+outliers to the top. While such a biased estimator will not result in
+the real mean (and in case of signal and noise free input data thus
+the real pedestals), a slight bias is irrelevant, as the baseline is
+still calculated for each reconstructed signal which is used to
+correct any global offset. 
+</p>
+</div>
+</div>
+
+
+<div class="outline-4" id="outline-container-org0f2cde8">
+<h4 id="org0f2cde8"><span class="section-number-4">9.5.2.</span> FADC spectrum reconstruction</h4>
+<div class="outline-text-4" id="text-9-5-2">
+<p>
+The first step to reconstruct the FADC signals, is to perform the pedestal
+correction. This is simply done by subtracting the pedestals register
+by register from the data file
+</p>
+
+<p>
+\[
+N_{i, \text{corr}} = N_{i, \text{raw}} - N_{i, \text{pedestal}}
+\]
+</p>
+
+<p>
+with the raw data \(N_{i, \text{raw}}\) and the pedestals \(N_{i,
+\text{pedestal}}\) in register \(i\) (as computed according to
+eq. \eqref{fig:reco:fadc_pedestals_trunc_mean}).
+</p>
+
+<p>
+With the pedestals removed, the temporal correction is next to unfold
+the data into the correct order. This needs to be performed on each of
+the \(\num{2560}\) registers for each channel separately. The temporal
+rotation is performed by shifting all registers by
+</p>
+
+<p>
+\[
+n_\text{rot} = (\mathtt{TRIG\_REC} - \mathtt{POSTTRIG}) · 20
+\]
+</p>
+
+<p>
+places to the left. The constants \(\mathtt{TRIG\_REC}\) and
+\(\mathtt{POSTTRIG}\) are from appendix section <a href="./daq.html#sec:daq:fadc_data_files">17.2.1.1</a>,
+written in each data file in the header.
+</p>
+
+<p>
+The final step is to convert the ADC values of each register into
+voltages in \(\si{V}\). Given that the ADC covers the range of
+\(\SIrange{-1}{1}{V}\) as the ADC values 0 to 4096 (16384) with 12 (14)
+bit <sup>  <a role="doc-backlink" class="footref" id="fnr.12" href="#fn.12">12</a></sup>, this means the conversion from ADC to volts is simply
+</p>
+
+<p>
+\[
+U_i = \frac{N_{i, \text{corr}} - 2048}{2048}
+\]
+</p>
+
+<p>
+when using the 12 bit operating mode for each register.
+</p>
+
+<p>
+With these corrections applied, the recorded FADC spectrum is
+recovered, centered around the trigger position.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:fadc:definition_baseline_rise_fall_time">
+<h4 id="sec:fadc:definition_baseline_rise_fall_time"><span class="section-number-4">9.5.3.</span> Signal baseline, rise time and fall time</h4>
+<div class="outline-text-4" id="text-sec:fadc:definition_baseline_rise_fall_time">
+<p>
+Assuming a singular event is recorded with the FADC, the main
+properties of interest of the resulting signal pulse are the signal
+baseline and based on that the rise and fall time.
+</p>
+
+<p>
+Computing the position of the baseline is generally a non trivial
+problem, as a priori the position, width and number of signals in the
+spectrum is unknown. A reasonable expectation though is that the
+majority of points in a signal should lie close to the baseline, as
+the fraction of the FADC window covered by a signal is typically less
+than a quarter. As such a somewhat empirical way to compute the
+baseline \(B\) was chosen using a biased truncated mean 
+</p>
+
+<p>
+\[
+B = \text{mean}_{30^{\text{th}}}^{95^{\text{th}}}(S)  %\text{median}(S) + 0.1 · \max(S)
+\]
+</p>
+
+<p>
+between the \(30^{\text{th}}\) and \(95^{\text{th}}\) percentile of the
+data. The bias is intended to remove the impact of the negative signal
+amplitude and remove the worst positive outliers. An optimal solution
+would perform a rigorous peak finding for a signal pulse, remove those
+points and compute the mean of the remainder of the
+points. <sup>  <a role="doc-backlink" class="footref" id="fnr.13" href="#fn.13">13</a></sup>
+</p>
+
+<p>
+Once the baseline is defined it can be used to determine both the rise
+and the fall time. These are generally computed based on the number of
+registers between the minimum of the signal and some threshold
+slightly below the baseline (compare with
+fig. <a href="#fig:reco:fadc_reco_example">3</a>) in order to reduce the effect of
+local noise variations. While configurable, the default value of the
+threshold \(c_B\) (\(B\) for baseline) is
+</p>
+
+<p>
+\[
+c_B = B - 0.1 · \left| B - \text{min}(S)\right|,
+\]
+</p>
+
+<p>
+\(\SI{10}{\%}\) of the difference between the baseline \(B\) and the
+minimum value of the spectrum \(S\) from the baseline. Similarly, for the
+end of the rise time / beginning of the fall time a similar offset is
+used. In this case the threshold value \(c_P\) (\(P\) for peak) is defined
+as
+</p>
+
+<p>
+\[
+c_P = \text{min}(S) + 0.025 · \left| B - \text{min}(S)\right|,
+\]
+</p>
+
+<p>
+so \(\SI{2.5}{\%}\) of the amplitude above the minimum of the signal
+\(S\). The position where either threshold is crossed in registers is
+based on where the <span class="underline">simple moving average</span> (of window size 5) crosses
+\(c_B\) and \(c_P\). The number of registers between \(c_B\) and \(c_P\)
+defines the rise time (left of the peak) and fall time (right of the
+peak). <sup>  <a role="doc-backlink" class="footref" id="fnr.14" href="#fn.14">14</a></sup> At the used clock frequency of
+\(\SI{1}{GHz}\) each register corresponds to \(\SI{1}{ns}\) in time.
+</p>
+
+<p>
+A reconstructed FADC spectrum including indications for baseline, rise
+and fall time as well as the minimum is shown in
+fig. <a href="#fig:reco:fadc_reco_example">3</a> <sup>  <a role="doc-backlink" class="footref" id="fnr.15" href="#fn.15">15</a></sup>, together with the
+corresponding event on the Septemboard.
+</p>
+
+
+<figure id="fig:reco:fadc_reco_example">
+<img src="./figs/home/basti/phd/Figs/CalibrationRuns2018_Reco_2023-10-15_22-49-53/septemEvents/septem_fadc_run_239_event_1068_region_crAll.svg" class="org-svg" alt="septem_fadc_run_239_event_1068_region_crAll.svg" />
+
+<figcaption>Figure 3: <span class="figure-number">Figure 34: </span>Example of a fully reconstructed InGrid event and FADC spectrum from a \SI{5.9}{keV} X-ray recorded with the Septemboard detector during a calibration run. On the left of each plot are all properties computed for the data. In the FADC plot the blue line indicates the baseline. Green vertical: rise time from full to dashed line. Red vertical: point of spectrum minimum. Light red: fall time from dashed to full line. Rise / fall time stops \(\SI{2.5}{\%}\) before baseline is reached.</figcaption>
+</figure>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org18cd026">
+<h4 id="org18cd026"><span class="section-number-4">9.5.4.</span> Generate the FADC baseline plot <code>[/]</code>   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-9-5-4">
+<ul class="org-ul">
+<li class="off"><code>[ ]</code> <b>GENERATE THE PLOT CURRENTLY USED IN THE ABOVE BODY HERE</b>
+-&gt; The current version comes from the TPA test suite!</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> nimhdf5, ggplotnim
+<span style="color: #F92672;">import</span> std / <span style="color: #AE81FF;">[</span>strutils, os, sequtils<span style="color: #AE81FF;">]</span>
+<span style="color: #F92672;">import</span> ingrid / <span style="color: #AE81FF;">[</span>tos_helpers, fadc_helpers, ingrid_types, fadc_analysis<span style="color: #AE81FF;">]</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">stripPrefix</span><span style="color: #AE81FF;">(</span>s, p: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">string</span> =
+  <span style="color: #FD971F;">result</span> = s
+  <span style="color: #FD971F;">result</span>.removePrefix<span style="color: #AE81FF;">(</span>p<span style="color: #AE81FF;">)</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">plotIdx</span><span style="color: #AE81FF;">(</span>df: <span style="color: #66D9EF;">DataFrame</span>, fadcData: <span style="color: #66D9EF;">Tensor</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span>, runNumber, idx: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span> =
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xmin </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;xmin&quot;</span>, <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xminY </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;minvals&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xminlineX </span>= @<span style="color: #AE81FF;">[</span>xmin, xmin<span style="color: #AE81FF;">]</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">one point for x of min, max</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fData </span>= fadcData<span style="color: #AE81FF;">[</span>idx, _<span style="color: #AE81FF;">]</span>.squeeze
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">xminlineY </span>= linspace<span style="color: #AE81FF;">(</span>fData.<span style="color: #F92672;">min</span>, fData.<span style="color: #F92672;">max</span>, <span style="font-style: italic;">2</span><span style="color: #AE81FF;">)</span>
+
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">riseStart </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;riseStart&quot;</span>, <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fallStop </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;fallStop&quot;</span>, <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">riseStartX </span>= @<span style="color: #AE81FF;">[</span>riseStart, riseStart<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fallStopX </span>= @<span style="color: #AE81FF;">[</span>fallStop, fallStop<span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">baseline </span>= df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;baseline&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">][</span>idx<span style="color: #AE81FF;">]</span>  
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">baselineY </span>= @<span style="color: #AE81FF;">[</span>baseline, baseline<span style="color: #AE81FF;">]</span>
+  
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dfLoc </span>= toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span> <span style="color: #E6DB74;">&quot;x&quot;</span>         : toSeq<span style="color: #A6E22E;">(</span><span style="font-style: italic;">0</span> ..&lt; <span style="font-style: italic;">2560</span><span style="color: #A6E22E;">)</span>,
+                     <span style="color: #E6DB74;">&quot;baseline&quot;</span>  : baseline,
+                     <span style="color: #E6DB74;">&quot;data&quot;</span>      : fData,
+                     <span style="color: #E6DB74;">&quot;xminX&quot;</span>     : xminlineX, 
+                     <span style="color: #E6DB74;">&quot;xminY&quot;</span>     : xminlineY,
+                     <span style="color: #E6DB74;">&quot;riseStart&quot;</span> : riseStartX,
+                     <span style="color: #E6DB74;">&quot;fallStop&quot;</span>  : fallStopX <span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+                     <span style="color: #75715E;"># </span><span style="color: #75715E;">Comparison has to be done by hand unfortunately</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">path </span>= <span style="color: #E6DB74;">&quot;/t/fadc_spectrum_baseline_</span><span style="color: #F92672;">$#</span><span style="color: #E6DB74;">.pdf&quot;</span> % $idx
+  ggplot<span style="color: #AE81FF;">(</span>dfLoc, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;data&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">()</span> +
+    geom_point<span style="color: #AE81FF;">(</span>color = color<span style="color: #66D9EF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">(</span>aes = aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;baseline&quot;</span><span style="color: #66D9EF;">)</span>,
+              color = <span style="color: #E6DB74;">&quot;blue&quot;</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">(</span>data = dfLoc.head<span style="color: #66D9EF;">(</span><span style="font-style: italic;">2</span><span style="color: #66D9EF;">)</span>, aes = aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;xminX&quot;</span>, <span style="color: #E6DB74;">&quot;xminY&quot;</span><span style="color: #66D9EF;">)</span>,
+                     color = <span style="color: #E6DB74;">&quot;red&quot;</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">(</span>data = dfLoc.head<span style="color: #66D9EF;">(</span><span style="font-style: italic;">2</span><span style="color: #66D9EF;">)</span>, aes = aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;riseStart&quot;</span>, <span style="color: #E6DB74;">&quot;xminY&quot;</span><span style="color: #66D9EF;">)</span>,
+                     color = <span style="color: #E6DB74;">&quot;green&quot;</span><span style="color: #AE81FF;">)</span> +
+    geom_line<span style="color: #AE81FF;">(</span>data = dfLoc.head<span style="color: #66D9EF;">(</span><span style="font-style: italic;">2</span><span style="color: #66D9EF;">)</span>, aes = aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;fallStop&quot;</span>, <span style="color: #E6DB74;">&quot;xminY&quot;</span><span style="color: #66D9EF;">)</span>,
+                     color = <span style="color: #E6DB74;">&quot;pink&quot;</span><span style="color: #AE81FF;">)</span> +
+    ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;FADC spectrum of run </span><span style="color: #F92672;">$#</span><span style="color: #E6DB74;"> and index </span><span style="color: #F92672;">$#</span><span style="color: #E6DB74;">&quot;</span> % <span style="color: #66D9EF;">[</span>$runNumber, $idx<span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span> +
+    xlab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;FADC Register&quot;</span><span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;FADC signal voltage U [V]&quot;</span><span style="color: #AE81FF;">)</span> + 
+    ggsave<span style="color: #AE81FF;">(</span>path<span style="color: #AE81FF;">)</span>
+  copyFile<span style="color: #AE81FF;">(</span>path, <span style="color: #E6DB74;">&quot;/t/fadc_spectrum_baseline.pdf&quot;</span><span style="color: #AE81FF;">)</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">toDf</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">U</span>: <span style="color: #F92672;">object</span><span style="color: #AE81FF;">](</span>x: <span style="color: #66D9EF;">U</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
+  <span style="color: #FD971F;">result</span> = newDataFrame<span style="color: #AE81FF;">()</span>
+  <span style="color: #F92672;">for</span> field, val <span style="color: #F92672;">in</span> <span style="color: #F92672;">fieldPairs</span><span style="color: #AE81FF;">(</span>x<span style="color: #AE81FF;">)</span>:
+    <span style="color: #F92672;">type</span> <span style="color: #66D9EF;">T</span> = typeof<span style="color: #AE81FF;">(</span>val<span style="color: #66D9EF;">[</span><span style="font-style: italic;">0</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span> 
+    <span style="color: #F92672;">when</span> <span style="color: #66D9EF;">T</span> <span style="color: #F92672;">isnot</span> <span style="color: #66D9EF;">int</span> <span style="color: #F92672;">and</span> <span style="color: #66D9EF;">T</span> <span style="color: #F92672; font-style: italic;">is</span> <span style="color: #66D9EF;">SomeInteger</span>:
+      <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span>field<span style="color: #AE81FF;">]</span> = val.asType<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">elif</span> <span style="color: #66D9EF;">T</span> <span style="color: #F92672;">isnot</span> <span style="color: #66D9EF;">float</span> <span style="color: #F92672;">and</span> <span style="color: #66D9EF;">T</span> <span style="color: #F92672; font-style: italic;">is</span> <span style="color: #66D9EF;">SomeFloat</span>:
+      <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span>field<span style="color: #AE81FF;">]</span> = val.asType<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">else</span>:
+      <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span>field<span style="color: #AE81FF;">]</span> = val
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">plotFadc</span><span style="color: #AE81FF;">(</span>h5f: <span style="color: #66D9EF;">H5File</span>, runNumber, sleep: <span style="color: #66D9EF;">int</span><span style="color: #AE81FF;">)</span> =
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">run </span>= h5f.readRecoFadcRun<span style="color: #AE81FF;">(</span>runNumber<span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">data </span>= h5f.readRecoFadc<span style="color: #AE81FF;">(</span>runNumber<span style="color: #AE81FF;">)</span>  
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= data.toDf<span style="color: #AE81FF;">()</span>
+  df<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;minvals&quot;</span><span style="color: #AE81FF;">]</span> = run.minvals
+  <span style="color: #F92672;">for</span> idx <span style="color: #F92672;">in</span> <span style="font-style: italic;">0</span> ..&lt; df.<span style="color: #F92672;">len</span>:
+    plotIdx<span style="color: #AE81FF;">(</span>df, run.fadc_data, runNumber, idx<span style="color: #AE81FF;">)</span>
+    sleep<span style="color: #AE81FF;">(</span>sleep<span style="color: #AE81FF;">)</span>
+
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">main</span><span style="color: #AE81FF;">(</span>fname: <span style="color: #66D9EF;">string</span>, runNumber: <span style="color: #66D9EF;">int</span>, sleep = <span style="font-style: italic;">1000</span><span style="color: #AE81FF;">)</span> =
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">h5f </span>= <span style="color: #66D9EF;">H5open</span><span style="color: #AE81FF;">(</span>fname, <span style="color: #E6DB74;">&quot;r&quot;</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fileInfo </span>= h5f.getFileInfo<span style="color: #AE81FF;">()</span>
+  <span style="color: #F92672;">for</span> run <span style="color: #F92672;">in</span> fileInfo.runs:
+    <span style="color: #F92672;">if</span> run == runNumber:
+      plotFadc<span style="color: #AE81FF;">(</span>h5f, run, sleep<span style="color: #AE81FF;">)</span>
+      
+<span style="color: #F92672;">when</span> <span style="color: #AE81FF;">isMainModule</span>:
+  <span style="color: #F92672;">import</span> cligen
+  dispatch main
+</pre>
+</div>
+
+<ul class="org-ul">
+<li class="off"><code>[ ]</code> <b>MAKE PLOT PRETTY AND RERUN FOR THIS:</b>
+run 281 and index 1533</li>
+</ul>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org2a27d72">
+<h4 id="org2a27d72"><span class="section-number-4">9.5.5.</span> Generate plot of InGrid and FADC event   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-9-5-5">
+<p>
+The command to produce the plot as seen in the thesis is:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #FD971F;">W1</span>=825 <span style="color: #FD971F;">W2</span>=675 <span style="color: #FD971F;">G_LEFT</span>=0.65 <span style="color: #FD971F;">F_LEFT</span>=0.3 <span style="color: #FD971F;">L_MARGIN</span>=10 <span style="color: #FD971F;">R_MARGIN</span>=4 <span style="color: #FD971F;">USE_TEX</span>=true <span style="color: #FD971F;">SCALE</span>=1.3 plotData <span style="color: #E6DB74; font-weight: bold;">\</span>
+       --h5file ~/CastData/data/CalibrationRuns2018_Reco.h5 <span style="color: #E6DB74; font-weight: bold;">\</span>
+       --runType=rtCalibration <span style="color: #E6DB74; font-weight: bold;">\</span>
+       --eventDisplay --septemboard <span style="color: #E6DB74; font-weight: bold;">\</span>
+       --events 1068 --runs 239
+</pre>
+</div>
+<p>
+The parameters used here are the default now outside the
+<code>USE_TEX=true</code> and <code>SCALE=1.3</code>.
+</p>
+
+<p>
+The resulting plot needs to be copied over to the <code>phd</code> repository
+manually, as <code>plotData</code> currently does not support outputting a plot
+to a specific file name (it&apos;s intended to produce many plots
+automatically and act more as a fast way to visualize data under
+different cuts).
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orga7be002">
+<h4 id="orga7be002"><span class="section-number-4">9.5.6.</span> Noise sensitive   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-9-5-6">
+<p>
+Because of the small amplitude of the associated signals induced on
+the grid, electromagnetic interference is a serious issue with this
+FADC setup. Ideally, the detector should be installed in a Faraday
+cage and a short, shielded LEMO cable should be used to connect it to
+the pre-amplifier and amplifier.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org0961628">
+<h4 id="org0961628"><span class="section-number-4">9.5.7.</span> FADC amplifier settings   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-9-5-7">
+<p>
+The FADC does not require a proper calibration in the same sense as
+the Timepix needs to be calibrated. However, the amplifier settings
+have a large impact on the resulting signals. Better measurements of
+the effect of the different integration / differentiation settings of
+the amplifier would have been very valuable, but were never performed
+for lack of time. The same holds for different amplifications as to
+properly understand the data ranges the FADC can record and how the
+trigger threshold in equivalent \(\si{keV}\) on the center GridPix is
+related. This would have made smarter decisions about the settings
+possible (e.g. to optimize the lowest possible activation to have the
+FADC as a trigger for lower energies available). Only a single set of
+measurements exists comparing the FADC integration time of
+\(\SI{50}{ns}\) and \(\SI{100}{ns}\), which is only partially useful (in
+particular because the other parameters (differentiation time,
+amplification etc.) were not properly recorded for these. The problem
+is especially that the TOS data does not record these parameters
+anyway, as they are physical rotary knobs on the amplifier.
+</p>
+
+<p>
+We will talk about these things in sec. <a href="./calibration.html#sec:calib:fadc">11.4</a> again when
+discussing the impact of noise on the FADC data taking and changing
+parameters that were done to mitigate that to an extent.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org54c60bd">
+<h4 id="org54c60bd"><span class="section-number-4">9.5.8.</span> Example to reconstruct FADC data   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-9-5-8">
+<p>
+As mentioned in the beginning of sec. <a href="./reconstruction.html#sec:reco:fadc_data">9.5</a>
+reconstruction is done as part of <code>raw_data_manipulation</code>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">raw_data_manipulation -p &lt;run path&gt; --runType rtBackground --h5out /tmp/run_foo.h5
+</pre>
+</div>
+
+<p>
+In <code>reconstruction</code>:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">reconstruction -i &lt;h5file&gt; --only_fadc
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:reco:scintillator_data">
+<h3 id="sec:reco:scintillator_data"><span class="section-number-3">9.6.</span> Scintillator data</h3>
+<div class="outline-text-3" id="text-sec:reco:scintillator_data">
+<p>
+For the scintillator signals we only record a trigger flag and the
+number of clock cycles since the last scintillator trigger from the
+moment the FADC triggered. These two pieces of information are part of
+the Septemboard data files included in the
+header. <sup>  <a role="doc-backlink" class="footref" id="fnr.16" href="#fn.16">16</a></sup> <sup>, </sup><sup>  <a role="doc-backlink" class="footref" id="fnr.17" href="#fn.17">17</a></sup>
+</p>
+</div>
+</div>
+</div>
+
+<div id="footnotes"><h2 class="footnotes">Footnotes: </h2><div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.1" href="#fnr.1">1</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://github.com/Vindaar/TimepixAnalysis">https://github.com/Vindaar/TimepixAnalysis</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.2" href="#fnr.2">2</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://nim-lang.org">https://nim-lang.org</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.3" href="#fnr.3">3</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/raw_data_manipulation.nim">https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/raw_data_manipulation.nim</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.4" href="#fnr.4">4</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+HDF5 (<a href="#citeproc_bib_item_221">The HDF Group 1997</a>) is the Hierarchical Data Format of
+version 5. It is a binary data format intended for scientific
+datasets, which uses an in-file layout similar to a virtual file
+system. Datasets (equivalent to files) are stored in groups
+(equivalent to directories). Metadata can be attached to either and
+linking between datasets, even across files is supported. It supports
+a large number of compression filters to reduce the file size of the
+stored data.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.5" href="#fnr.5">5</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+These type of cuts are applied at this
+stage of the processing, because for certain use cases or certain
+detectors specific <code>ToT</code> or <code>ToA</code> ranges are of no interest / contain
+junk data (because of a faulty chip for example). In this case it is
+useful to remove such data in this preprocessing stage to lighten the
+workload for anything after.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.6" href="#fnr.6">6</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/reconstruction.nim">https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/reconstruction.nim</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.7" href="#fnr.7">7</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The clustering logic of TPA is found here: <a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/clustering.nim">https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/clustering.nim</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.8" href="#fnr.8">8</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+Note that the absolute value of the rotation angle
+is of secondary importance. For X-rays the rotation angle is going to
+be random, as the definition of a long and short axis in a
+(theoretically perfect) circle depends on the statistical distribution
+of the pixels. However, for pure muons it allows to map the rotation
+angle to the incidence angle.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.9" href="#fnr.9">9</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The term &apos;root mean square&apos; is used although we
+actually refer to the standard deviation of the sample. We follow
+(<a href="#citeproc_bib_item_137">Krieger 2018</a>), but this ambiguity is often encountered unfortunately.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.10" href="#fnr.10">10</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+In particular all these properties are computed
+here: <a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L331-L391">https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L331-L391</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.11" href="#fnr.11">11</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+A PDF of the FADC manual is available here:
+<a href="https://archive.org/details/manualzilla-id-5646050/">https://archive.org/details/manualzilla-id-5646050/</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.12" href="#fnr.12">12</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The FADC can be operated in a 12 or 14-bit mode. We run
+in the 12-bit mode. Also see <a href="#sec:daq:fadc_data_files">17.2.1.1</a>.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.13" href="#fnr.13">13</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+Aside from performing peak fitting (which is
+difficult and requires understanding of the expected signal shapes)
+another approach might be a local linear smoothing (e.g. a
+Savitzky-Golay filter with polynomial of order 1) in a suitable window
+range. The result would be a much more stable spectrum. This could
+then be used to compute the numerical derivative from which all those
+intervals with a slope smaller than some epsilon provide the dataset
+from which to compute the mean. The tricky aspect would be choice of
+window size and the behavior in very noisy events.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.14" href="#fnr.14">14</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The naming of the rise and fall time in the
+context of a negative pulse is slightly confusing. Rise time refers to
+the <span class="underline">negative rise</span> towards the minimum of the pulse and the fall time
+to the time to return-to-baseline.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.15" href="#fnr.15">15</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+Excuse the small text for the annotations. They are
+not important, but may be interesting for some readers!
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.16" href="#fnr.16">16</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+Important note for people potentially
+investigating the raw data from 2017: There was a small bug in the
+readout software during the beginning of the 2017 data taking period,
+which wrote the scintillator trigger clock cycle values into
+subsequent output files even if no FADC trigger was received (and thus
+no scintillator trigger was actually read out). However, there is a
+flag for an FADC trigger. To correctly read the first data runs it is
+therefore required to not only look at the scintillator trigger clock
+cycles, but also at whether the FADC actually triggered. This is
+handled in the analysis framework.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.17" href="#fnr.17">17</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+In addition to the above bug, there was
+unfortunately a more serious bug, which rendered the scintillator
+counts useless in the end of 2017 / beginning of 2018 data taking
+period. The polarity of the signals was inverted in the detector
+firmware, resulting in useless &quot;trigger&quot; information.
+</p></div></div>
+
+</div>
+<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
+</div>
+</body>
+</html>

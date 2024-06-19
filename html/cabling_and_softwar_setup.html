@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--  2024-06-18 Tue 23:44  -->
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1" name="viewport" />
+<title>‎</title>
+<meta content="Vindaar" name="author" />
+<meta content="Org Mode" name="generator" />
+
+<link type="text/css" rel="stylesheet" href="org_html_export.css" />
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set the initial width for subfigures and their images
+    document.querySelectorAll('figure.subfigure[data-width]').forEach(function(subfigure) {
+        subfigure.style.width = subfigure.getAttribute('data-width');
+    });
+
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.style.width = img.getAttribute('data-width');
+    });
+
+    // Event listener for images within subfigures
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.addEventListener('click', function() {
+            // Determine the .figure-wrapper that contains the clicked image
+            let wrapper = this.closest('.figure-wrapper');
+
+            // If found, adjust the sizes of its subfigures
+            if (wrapper) {
+                let subfigures = wrapper.querySelectorAll('figure.subfigure');
+                subfigures.forEach(subfigure => {
+                    let width = parseFloat(subfigure.getAttribute('data-width'));
+                    if (width < 50) { // Double size if less than 50%
+                        subfigure.setAttribute('data-width', (width * 2) + '%');
+                        subfigure.style.width = (width * 2) + '%';
+                    } else { // Halve size otherwise
+                        subfigure.setAttribute('data-width', (width / 2) + '%');
+                        subfigure.style.width = (width / 2) + '%';
+                    }
+                });
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var headers = document.querySelectorAll('h1 .extended, h2 .extended, h3 .extended, h4 .extended, h5 .extended, h6 .extended');
+
+    headers.forEach(function (header) {
+        var foldableHeader = header.closest('h1, h2, h3, h4, h5, h6');
+        if (foldableHeader) {
+            foldableHeader.classList.add('foldable-header');
+            var nextElement = foldableHeader.nextElementSibling;
+            var contentToFold = [];
+            while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                contentToFold.push(nextElement);
+                nextElement = nextElement.nextElementSibling;
+            }
+            contentToFold.forEach(function (element) {
+                element.classList.add('folded-content');
+            });
+
+            foldableHeader.addEventListener('click', function () {
+                contentToFold.forEach(function (element) {
+                    if (element.style.display === 'none' || element.style.display == '') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+<!-- /* --><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js", "[Contrib]/siunitx/siunitx.js", "[Contrib]/mhchem/mhchem.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"], ['$', '$'], ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 1.0,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        },
+        TeX: {
+              equationNumbers: { autoNumber: 'AMS' },
+              Macros: {
+                  ccsini: '{\\mathrm{Si}₃\\mathrm{N}₄}',
+                  cefe: '{\\ce{^{55}Fe}}',
+                  vektor: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  mtrix: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  cp: '{\\mathrm{CP}}',
+                  cpt: '{\\mathrm{CPT}}',
+                  dd: '{\\mathop{}\\!{\\mathrm{d}}}',
+                  sinc: '{\\mathrm{sinc}}'
+              }
+        }
+    });
+/*]]>*///--&gt;
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<nav role="doc-toc" id="table-of-contents">
+<h2>Table of Contents</h2>
+<div role="doc-toc" id="text-table-of-contents">
+<ul>
+<li>  <a href="./errata.html#sec:errata">1. Errata   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
+<li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
+<ul>
+<li>  <a href="./about_thesis.html#orgc36e3ba">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org976c329">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orga7aaacb">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory.html#sec:theory:useful_reading_material">4.1. Useful reading material   <span class="tag">    <span class="optional">optional</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:illustration_cpt">4.2. Illustration of the \cpt symmetry <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:invisible_axion_models">4.3. Invisible axion models and axion couplings</a></li>
+<li>  <a href="./theory.html#sec:theory:axion_interactions">4.4. Implications for axion interactions - conversion probability</a></li>
+<li>  <a href="./theory.html#sec:theory:solar_axion_flux">4.5. Solar axion flux</a></li>
+<li>  <a href="./theory.html#sec:theory:chameleon">4.6. Chameleons</a></li>
+<li>  <a href="./theory.html#sec:theory:current_bounds">4.7. Current bounds on coupling constants</a></li>
+</ul>
+</li>
+<li><a href="./helioscopes.html#sec:helioscopes">5. Axion helioscopes   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./helioscopes.html#sec:helioscopes:cast">5.1. CERN Axion Solar Telescope (CAST)</a></li>
+<li>  <a href="./helioscopes.html#sec:helioscopes:iaxo">5.2. International AXion Observatory (IAXO)</a></li>
+</ul>
+</li>
+<li><a href="./theory_detector.html#sec:theory_detector">6. X-rays, cosmic muons and gaseous detectors   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory_detector.html#sec:theory:particle_int">6.1. Particle interactions with matter</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:cosmic_radiation">6.2. Cosmic rays</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:gas_fundamentals">6.3. Gaseous detector fundamentals</a></li>
+</ul>
+</li>
+<li><a href="./septemboard.html#sec:septemboard">7. Septemboard detector   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./septemboard.html#sec:detector:micromegas">7.1. Micromegas working principle</a></li>
+<li>  <a href="./septemboard.html#sec:detector:timepix">7.2. Timepix ASIC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
+<li>  <a href="./septemboard.html#orgc654d28">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
+<li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
+<li>  <a href="./septemboard.html#sec:detector:septemboard">7.10. Septemboard - 6 GridPixes around a center one</a></li>
+<li>  <a href="./septemboard.html#sec:detector:water_cooling">7.11. Water cooling and temperature readout for the septemboard</a></li>
+<li>  <a href="./septemboard.html#sec:septem:efficiency">7.12. Detector efficiency</a></li>
+<li>  <a href="./septemboard.html#sec:detector:daq">7.13. Data acquisition and detector monitoring</a></li>
+</ul>
+</li>
+<li><a href="./operation_calibration.html#sec:operation_calibration">8. Detector calibration for operation   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:timepix">8.1. Timepix calibrations</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:fadc">8.2. FADC calibration</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:scintillators">8.3. Scintillator calibration</a></li>
+</ul>
+</li>
+<li><a href="./reconstruction.html#sec:reconstruction">9. Data reconstruction   <span class="tag">  <span class="Reconstruction">Reconstruction</span></span></a>
+<ul>
+<li>  <a href="./reconstruction.html#sec:reco:tpa">9.1. <code>TimepixAnalysis</code> and Nim</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:tos_data_parsing">9.2. TOS data parsing</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:event_shape">9.3. Expectation of event shapes</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:data_reconstruction">9.4. Data reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:fadc_data">9.5. FADC reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:scintillator_data">9.6. Scintillator data</a></li>
+</ul>
+</li>
+<li><a href="./cast.html#sec:cast">10. Detector installation &amp; data taking at CAST   <span class="tag">  <span class="CAST">CAST</span></span></a>
+<ul>
+<li>  <a href="./cast.html#sec:cast:timeline">10.1. Timeline</a></li>
+<li>  <a href="./cast.html#sec:cast:alignment">10.2. Alignment</a></li>
+<li>  <a href="./cast.html#sec:cast:detector_setup">10.3. Detector setup at CAST</a></li>
+<li>  <a href="./cast.html#sec:cast:window_accident">10.4. Window accident</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_woes">10.5. Data taking woes</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_campaigns">10.6. Summary of CAST data taking</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:calibration">11. Data calibration   <span class="tag">  <span class="Calibration">Calibration</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:calibration:energy">11.1. Energy calibration - in principle</a></li>
+<li>  <a href="./calibration.html#sec:calib:detector_behavior_over_time">11.2. Detector behavior over time</a></li>
+<li>  <a href="./calibration.html#sec:calib:final_energy_calibration">11.3. Energy calibration dependence on the gas gain</a></li>
+<li>  <a href="./calibration.html#sec:calib:fadc">11.4. FADC</a></li>
+</ul>
+</li>
+<li><a href="./background.html#sec:background">12. Finding signal and defining background | Background rate computation   <span class="tag">  <span class="Analysis">Analysis</span></span></a>
+<ul>
+<li>  <a href="./background.html#sec:background:likelihood_method">12.1. Likelihood method</a></li>
+<li>  <a href="./background.html#sec:cdl">12.2. CAST Detector Lab</a></li>
+<li>  <a href="./background.html#sec:background:likelihood_cut">12.3. Application of likelihood cut for background rate</a></li>
+<li>  <a href="./background.html#sec:background:mlp">12.4. Artificial neural networks as cluster classifiers</a></li>
+<li>  <a href="./background.html#sec:background:additional_vetoes">12.5. Additional detector features as vetoes</a></li>
+<li>  <a href="./background.html#sec:background:all_vetoes_combined">12.6. Background rates of combined vetoes and efficiencies</a></li>
+</ul>
+</li>
+<li><a href="./limit.html#sec:limit">13. Limit calculation   <span class="tag">  <span class="Limit">Limit</span></span></a>
+<ul>
+<li>  <a href="./limit.html#sec:limit:method_introduction">13.1. Limit method - introduction</a></li>
+<li>  <a href="./limit.html#sec:limit:method_likelihood">13.2. Limit method - likelihood function \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_L">13.3. Limit method - computing \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_a_limit">13.4. Limit method - computing a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
+<li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
+<li>  <a href="./limit.html#org5e81b6c">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orge06cfa1">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
+<li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:expected_limits">13.13. Expected limits of different setups</a></li>
+<li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
+<li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
+<li>  <a href="./limit.html#orgc627f43">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgda19ced">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
+<li>  <a href="./summary.html#sec:summary">15. Summary &amp; conclusion</a></li>
+<li>  <a href="./bibliography.html#sec:bibliography">16. Bibliography   <span class="tag">    <span class="html">html</span>  </span></a></li>
+<li><a href="./daq.html#sec:daq">17. Data acquisition and detector monitoring   <span class="tag"><span class="Appendix">Appendix</span> <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./daq.html#sec:daq:tof">17.1. Timepix Operating Firmware - TOF</a></li>
+<li>  <a href="./daq.html#sec:daq:tos">17.2. Timepix Operating Software - TOS</a></li>
+<li>  <a href="./daq.html#sec:daq:septemboard_event_display">17.3. Septemboard event display</a></li>
+</ul>
+</li>
+<li><a href="./configuration.html#sec:appendix:configuration">18. Configuration and TOS / TOF versions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_config">18.1. TOS configuration file</a></li>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_tof_versions">18.2. TOS and TOF versions used at CAST</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:appendix:calibration">19. Calibrations   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:appendix:calibration:timepix">19.1. Timepix calibrations</a></li>
+<li>  <a href="./calibration.html#sec:appendix:septemboard_calibrations">19.2. Septemboard calibration</a></li>
+<li>  <a href="./calibration.html#sec:appendix:scintillator_calibration_notes">19.3. Calibration measurements of the veto scintillator paddle   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_operations.html#sec:appendix:cast_operations">20. CAST operation procedures   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_operations:terminology">20.1. CAST terminology</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:high_voltage">20.2. High voltage supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:vacuum_system">20.3. Vacuum system</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:watercooling_gas">20.4. Watercooling system &amp; gas supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:interlock_systems">20.5. Interlock systems</a></li>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_log_files">20.6. CAST log files</a></li>
+</ul>
+</li>
+<li><a href="./cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_run_list.html#orgd304089">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cast_data_taking_notes.html#orge4011be">22.1. Run table</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgeba5174">22.2. Data runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgd62eab2">22.3. Calibration runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org0271f47">22.4. Automatically generated run list</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgb34c028">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org338e161">22.6. InGrid temperature from shift forms</a></li>
+</ul>
+</li>
+<li><a href="./cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cabling_and_softwar_setup.html#org7cb11ec">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org3244c1a">23.2. Detector cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org7c3b445">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#orgda4f123">23.4. Setting up the chips in TOS</a></li>
+</ul>
+</li>
+<li><a href="./vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./vacuum_contamination.html#org35e49a4">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./vacuum_contamination.html#orgdf125cb">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./vacuum_contamination.html#orgf5a7285">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./vacuum_contamination.html#orgeeae0bd">24.4. Calculation of possible contamination</a></li>
+</ul>
+</li>
+<li><a href="./detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:choice_gas_gain_binning">25.1. Choice of gas gain binning time interval</a></li>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:correlation_gas_gain_ambient_temp">25.2. Correlation of gas gain and ambient CAST temperature</a></li>
+</ul>
+</li>
+<li><a href="./cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_detector_lab.html#orgfed071e">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
+</ul>
+</li>
+<li><a href="./fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
+</ul>
+</li>
+<li><a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./morphing_cdl_spectra.html#orgabd5f0e">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#orga5d9c5b">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#org218c56a">28.6. Notes on CDL morphing development   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./occupancy.html#orgdce408e">29.1. Run-2</a></li>
+<li>  <a href="./occupancy.html#orge5d3863">29.2. Run-3</a></li>
+<li>  <a href="./occupancy.html#org971382a">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
+<li>  <a href="./fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
+<li>  <a href="./fadc.html#org517ef50">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
+</ul>
+</li>
+<li><a href="./background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
+<li>  <a href="./background_rates.html#org01e8b4b">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#org2774ce8">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#orgd0f5dfb">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li><a href="./limit_additional.html#sec:appendix:limit_additional">33. Additional limit information   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./limit_additional.html#sec:appendix:conversion_probability">33.1. Conversion probability as a function of mass   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:exp_limit_percentiles">33.2. Expected limit table with percentiles</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:axion_photon">33.3. Observed limit - axion photon \(g_{aγ}\)</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:chameleon">33.4. Observed limit - chameleon \(β_γ\)</a></li>
+</ul>
+</li>
+<li><a href="./software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./software.html#orgbae2c69">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#org13d471b">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
+<li>  <a href="./software.html#orgb88ee40">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+</ul>
+</li>
+<li><a href="./full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./full_data_reconstruction.html#org39ad6bd">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./full_data_reconstruction.html#org1eac87c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./full_data_reconstruction.html#org09b2461">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./full_data_reconstruction.html#org3344338">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./full_data_reconstruction.html#org18a2de7">35.5. Applying a classifier</a></li>
+<li>  <a href="./full_data_reconstruction.html#org17bde80">35.6. Computing limits</a></li>
+</ul>
+</li>
+<li><a href="./average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./average_depth_xrays_argon.html#org2d84fd5">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org11eec4e">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org28b81a5">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:traxer">37.1. TrAXer - An interactive axion raytracer</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
+<li>  <a href="./raytracing.html#org7d687b6">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./raytracing.html#orgc4745d9">37.6. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Part5">Part5</span>  </span></a></li>
+</ul>
+</div>
+</nav>
+<div class="outline-2" id="outline-container-sec:appendix:cabling_and_softwar_setup">
+<h2 id="sec:appendix:cabling_and_softwar_setup"><span class="section-number-2">23.</span> Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></h2>
+<div class="outline-text-2" id="text-sec:appendix:cabling_and_softwar_setup">
+<p>
+This appendix gives a short overview on how the cabling of the
+detector needs to be set up and how to set up a computer to flash the
+firmware TOF. Finally, an example is given on how to start up TOS and
+start a background run. These are mainly notes taken for myself, but I
+think they should be useful for anyone attempting to run this detector.
+</p>
+</div>
+
+<div class="outline-3" id="outline-container-org7cb11ec">
+<h3 id="org7cb11ec"><span class="section-number-3">23.1.</span> Virtex V6 cabling</h3>
+<div class="outline-text-3" id="text-23-1">
+<p>
+The following pieces are required:
+</p>
+<ul class="org-ul">
+<li>power supply</li>
+<li>2 HDMI to intermediate board</li>
+<li>mini USB into JTAG port on backside (to computer)</li>
+<li>RJ45 from ethernet port into 2nd ethernet card on DAQ PC</li>
+</ul>
+
+<p>
+The RJ45 connection is only required to flash the firmware onto the
+Virtex.
+</p>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-org3244c1a">
+<h3 id="org3244c1a"><span class="section-number-3">23.2.</span> Detector cabling</h3>
+<div class="outline-text-3" id="text-23-2">
+<p>
+The following is the cabling for the FADC and the scintillators to the
+intermediate board. It&apos;s a useful reference when connecting the
+cabling!
+</p>
+
+<p>
+FADC Trig out (on the FADC):
+</p>
+<ul class="org-ul">
+<li>trig out -&gt; level adapter (NIM module) into NIM IN, set to <del>NORM</del> /
+<b>COMPL</b> (<b>this is active</b>)
+TTL out -&gt; TTL signal clipper (TTL 5V -&gt; 2.4V) into port marked <code>I</code>
+TTL signal clipper -&gt; adapter board into <b>left LEMO at back</b> (viewed
+from behind the crate; cable still at CAST)</li>
+</ul>
+
+<p>
+FPGA to FADC (shutter signal)
+</p>
+<ul class="org-ul">
+<li>Adapter board <b>right LEMO at back</b> (viewed from behind crate) -&gt;
+level adapter (NIM module), set to <b>NORM</b> / <del>COMPL</del> into TTL IN
+NIM out -&gt; FADC EXT EN TRIG</li>
+</ul>
+
+<p>
+Veto scintillator (<b>NOTE</b> this may be <b>WRONG</b>; input to adapter board
+that is); signal order is reversed!
+</p>
+<ul class="org-ul">
+<li>Adapter board <b>left LEMO on top</b> (viewed from behind the crate,
+input number <b>1</b> on adapter board) -&gt; discriminator OUT (top discriminator in NIM module)
+discriminator IN -&gt; back of Amplifier Discriminator NIM module
+amplifier input -&gt; veto scintillator signal
+The signal is needs to be <b>2.4 V TTL signal!</b></li>
+</ul>
+</div>
+</div>
+
+
+<div class="outline-3" id="outline-container-org7c3b445">
+<h3 id="org7c3b445"><span class="section-number-3">23.3.</span> Vivado / ISE on void linux &amp; flashing Virtex V6</h3>
+<div class="outline-text-3" id="text-23-3">
+<p>
+The setup described here was written for <a href="https://voidlinux.org/">Void Linux</a>, but of course
+should hold generally with minor modification.
+</p>
+
+
+<p>
+Installing Vivado on void linux is relatively straight forward (does
+not mean it&apos;s not annoying).
+</p>
+
+<p>
+First of all note that apparently Vivado version 2020.3 dropped
+support for many devices! That&apos;s why I decided to download the 2020.2
+self installing linux web installer from here:
+<a href="https://www.xilinx.com/member/forms/download/xef.html?filename=Xilinx_Unified_2020.2_1118_1232_Lin64.bin">https://www.xilinx.com/member/forms/download/xef.html?filename=Xilinx_Unified_2020.2_1118_1232_Lin64.bin</a>
+(need a Xilinx account of course).
+</p>
+
+<p>
+Installation of it is simply done by running the installer and waiting
+a long time (it seems to work just fine on Void). On <code>tpc19</code> I
+installed it under <code>/data/Xilinx</code> (that&apos;s the 2 TB HDD in there).
+</p>
+
+<p>
+It complained at the end about some Python runtime error setting up
+some stuff or something, but said compilation was otherwise
+successful.
+</p>
+
+<p>
+Note: It needs about 56 GB (!!!) of space!
+</p>
+
+<p>
+After installation we need to do 3 more things to actually run it:
+</p>
+<ol class="org-ol">
+<li><p>
+install (if not already done) <code>libtinfo</code>:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   sudo xbps-install -S ncurses-libtinfo-libs ncurses-libtinfo-devel
+</pre>
+</div>
+<p>
+However, this only installs version 6 of <code>libtinfo</code>, but we
+need 5. Fortunately, 5 and 6 are API compatible, so we can link 6
+to version 5:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   <span style="color: #F92672;">cd</span> /lib64
+   sudo ln -s libtinfo.so.6 libtinfo.so.5
+</pre>
+</div></li>
+<li><p>
+we need to source the <code>settings64.sh</code> file here:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   <span style="color: #F92672;">source</span> /data/Xilinx/Vivado/2020.2/settings64.sh
+</pre>
+</div></li>
+<li><p>
+and finally we need to set some Java related environment variable,
+because otherwise under a tiling WM we only get a white screen upon
+launch:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   <span style="color: #F92672;">export</span> <span style="color: #FD971F;">_JAVA_AWT_WM_NONREPARENTIN</span>=1
+</pre>
+</div>
+<p>
+(ref:
+ <a href="https://forums.xilinx.com/t5/Installation-and-Licensing/Vivado-hangs-forever-with-white-window-during-startup-Linux/td-p/479058">https://forums.xilinx.com/t5/Installation-and-Licensing/Vivado-hangs-forever-with-white-window-during-startup-Linux/td-p/479058</a>)
+</p></li>
+</ol>
+
+<p>
+After that it should launch succesfully.
+</p>
+</div>
+
+<div class="outline-4" id="outline-container-org831b606">
+<h4 id="org831b606"><span class="section-number-4">23.3.1.</span> Installing ISE</h4>
+<div class="outline-text-4" id="text-23-3-1">
+<p>
+ISE has the advantage over Vivado that it allows for a so called &quot;lab
+tools&quot; installation, which only weighs about 5.5 GB (compared to
+Vivado&apos;s &gt; 50 GB. 
+</p>
+
+<p>
+Download the installer from:
+<a href="https://www.xilinx.com/member/forms/download/xef.html?filename=Xilinx_ISE_DS_Lin_14.7_1015_1.tar">https://www.xilinx.com/member/forms/download/xef.html?filename=Xilinx_ISE_DS_Lin_14.7_1015_1.tar</a>
+(requires Xilinx account).
+</p>
+
+<p>
+Untar the file somewhere and execute the <code>xsetup</code> with superuser
+access. This is in case the chosen installation path is not user writable or
+the user wishes to install the USB drivers. The latter is very useful,
+but possibly does not work. It&apos;s relatively straightforward to install
+USB drivers manually though (see below <a href="./cabling_and_softwar_setup.html#org60767df">23.3.2</a>).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">tar xf Xilinx_ISE_DS_Lin_14.7_1015_1.tar
+<span style="color: #F92672;">cd</span> Xilinx_ISE_DS_Lin_14.7_1015_1
+sudo ./xsetup
+</pre>
+</div>
+
+<p>
+Simply follow the installation instructions and select the &quot;LabTools&quot;
+package. It contains <code>impact</code>, which is all we care about to flash the
+Virtex V6.
+</p>
+
+<p>
+To run <code>impact</code> we need to source the <code>settings64.sh</code> file:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #F92672;">source</span> &lt;ISE_PATH&gt;/settings64.sh
+</pre>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org60767df">
+<h4 id="org60767df"><span class="section-number-4">23.3.2.</span> Install USB drivers</h4>
+<div class="outline-text-4" id="text-23-3-2">
+<p>
+To see whether the correct USB drivers are installed on a machine,
+connect the Virtex V6 board using a mini USB cable in the JTAG port to
+the computer. In the terminal:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">lsusb
+</pre>
+</div>
+<p>
+we should see a Xilinx device.
+The Bus and device number of course depends on the machine and
+port. If the device is recognized, the ID can either be:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">03fd:000d Xilinx, Inc.
+</pre>
+</div>
+<p>
+or 
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">03fd:0008 Xilinx, Inc. Platform Cable USB II
+</pre>
+</div>
+<p>
+The former means only some generic Xilinx driver was loaded. The
+latter is the one we want.
+</p>
+
+<p>
+There are 4 different ways to install USB drivers, 3 are very similar
+to one another:
+</p>
+<ol class="org-ol">
+<li><p>
+Using the USB drivers shipped with Vivado. These are found in:
+</p>
+<pre class="example">
+   &lt;Vivado_Path&gt;/data/xicom/cable_drivers/lin64/install_script/install_drivers
+</pre>
+<p>
+From here in theory we should just have to run the
+<code>install_drivers</code> script with sudo rights and they should be
+installed. This does <b>not</b> work on Void Linux.
+Ref: <a href="https://www.xilinx.com/support/answers/59128.html">https://www.xilinx.com/support/answers/59128.html</a>
+</p></li>
+<li><p>
+Using the USB drivers shipped with ISE. These are found in:
+</p>
+<pre class="example">
+   &lt;ISE_Path&gt;/LabTools/LabTools/bin/lin64/install_script/install_drivers
+</pre>
+<p>
+Here we also find a <code>readme.txt</code>, which contains instructions for
+the installation. In theory we should just have to run the
+<code>install_drivers</code> script with sudo rights and they should be
+installed. This also does <b>not</b> work on Void Linux.
+Ref: <a href="https://www.xilinx.com/support/answers/54381.html">https://www.xilinx.com/support/answers/54381.html</a>
+</p></li>
+<li><p>
+Using the USB drivers downloaded manually from Xilinx:
+Download the files from here:
+<a href="https://secure.xilinx.com/webreg/clickthrough.do?cid=103670">https://secure.xilinx.com/webreg/clickthrough.do?cid=103670</a>
+which gives us a <code>install_drivers.tar.gz</code>. Untar:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   tar xzf install_drivers.tar.gz
+   <span style="color: #F92672;">cd</span> install_drivers
+</pre>
+</div>
+<p>
+and again, in theory we should be able to run the <code>install_drivers</code>
+script here. 
+On Void Linux with this approach I got a bit farther. I had to
+install <code>fxload</code>, which I used from here:
+<a href="https://github.com/esden/fxload">https://github.com/esden/fxload</a>,
+compiled it and symlinked <code>fxload</code> to <code>/sbin/fxload</code>. That made the
+installer (which again has to be run with root) find
+fxload. However, from there many more errors happened, apparently
+because the scripts use <code>/bin/sh</code>, but expects a real bourne shell
+(bash) and not dash (typically used in ubuntu and many other
+distributions). I patched all occurences of <code>/bin/sh</code> to use
+explicitly <code>/bin/bash</code>, which got me farther, but in the end I
+still could not successfully install the drivers.
+Ref: <a href="https://www.xilinx.com/support/documentation/user_guides/ug344.pdf">https://www.xilinx.com/support/documentation/user_guides/ug344.pdf</a>
+</p></li>
+<li><p>
+The best way (and simplest) is to follow the Arch Wiki:
+Ref:
+<a href="https://wiki.archlinux.org/title/Xilinx_ISE_WebPACK#Xilinx_Platform_Cable_USB-JTAG_Drivers">https://wiki.archlinux.org/title/Xilinx_ISE_WebPACK#Xilinx_Platform_Cable_USB-JTAG_Drivers</a>
+The instructions here make use of a custom USB driver package by
+&quot;zerfleddert&quot;. Essentially just clone the repository:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   git clone git://git.zerfleddert.de/usb-driver
+</pre>
+</div>
+<p>
+and call compile by running <code>make</code>.
+Afterwards we need to run the <code>setup_pcusb</code> script with the path to
+the ISE installation (again with superuser rights). However, the
+path to the ISE installation is <b>not</b> just the path to the <code>ISE</code>
+directory, but:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   sudo ./setup_pcusb &lt;ISE_PATH&gt;/LabTools/common
+</pre>
+</div>
+<p>
+(the <code>common</code> directory is the one that contains the actual
+project).
+From here I compared my (now created)
+<code>/etc/udev/rules.d/xusbdfwu.rules</code> file with the file shown in the
+Arch wiki. They are not exactly identical, but I tried it first
+before modifying it. To be certain I reloaded the udev rules
+anyway:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">   sudo udevadm control --reload-rules
+</pre>
+</div>
+<p>
+Afterwards, reconnecting the Virtex V6 board and running <code>lsusb</code>
+showed the correct driver.
+Flashing the firmware works correctly both in Vivado as well as in
+Impact now.
+</p></li>
+</ol>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orge0e984f">
+<h4 id="orge0e984f"><span class="section-number-4">23.3.3.</span> Setting up ethernet device</h4>
+</div>
+
+<div class="outline-4" id="outline-container-org879f3a5">
+<h4 id="org879f3a5"><span class="section-number-4">23.3.4.</span> Ethernet connection with Virtex</h4>
+<div class="outline-text-4" id="text-23-3-4">
+<p>
+The ethernet connection with the Virtex needs to be set up
+manually.
+</p>
+
+<p>
+On the one hand it is required to use a static IP address for the
+secondary ethernet device and in addition we need to set an ARP entry
+(note: the <code>arp</code> program is part of the <code>net-tools</code> package, name same
+in ubuntu &amp; void linux).
+</p>
+
+<p>
+Under Ubuntu said setup can be done using the network manager. In Void
+we need to use <code>ip</code> from the terminal.
+</p>
+
+<p>
+The settings are as follows:
+</p>
+<ul class="org-ul">
+<li>IP address: 10.1.2.3</li>
+<li>Subnet: 24</li>
+</ul>
+
+<p>
+Setup of the device can be done according to the example here:
+<a href="https://docs.voidlinux.org/config/network/index.html">https://docs.voidlinux.org/config/network/index.html</a>
+namely (with superuser rights):
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">ip addr show
+<span style="color: #75715E;"># </span><span style="color: #75715E;">check the name of the correct, secondary device</span>
+ip link set dev enp4s0 up <span style="color: #75715E;"># </span><span style="color: #75715E;">name on tpc19</span>
+ip addr add 10.1.2.3/24 brd + dev enp4s0
+</pre>
+</div>
+<p>
+afterwards we can set the ARP entries (ref: <a href="https://confluence.team.uni-bonn.de/display/PHYGASDET/How+to+automatically+set+ARP+entries">https://confluence.team.uni-bonn.de/display/PHYGASDET/How+to+automatically+set+ARP+entries</a>):
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">arp -i enp4s0 -s 10.1.2.2 AA:BA:DD:EC:AD:E2
+</pre>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orgacc3479">
+<h4 id="orgacc3479"><span class="section-number-4">23.3.5.</span> Make these two steps automatic under void</h4>
+<div class="outline-text-4" id="text-23-3-5">
+<p>
+In principle it should be enough to set the above steps into <code>/etc/rc.local</code>.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org1dc55ae">
+<h4 id="org1dc55ae"><span class="section-number-4">23.3.6.</span> Temperature readout via MCP2210 and MAX31685</h4>
+<div class="outline-text-4" id="text-23-3-6">
+<p>
+Ref: <a href="https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf">https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf</a>
+</p>
+
+<p>
+The temperature readout via the MCP2210 micro-controllers installed on
+the intermediate board is done via SPI through a micro USB port on the
+intermediate board. This micro-controller talks to a MAX31685 for each
+of the sensors.
+</p>
+
+<p>
+The micro-controller is powered via an additional power line! That
+means one needs to use one of the &quot;big&quot; power supplies with an
+additional +5V input.
+</p>
+
+<p>
+Using such a power supply and plugging the micro USB port from the
+intermediate board into the PC, should yield an entry like the
+following on <code>lsusb</code>:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">lsusb
+</pre>
+</div>
+<p>
+Bus 001 Device 024: ID 04d8:00de Microchip Technology, Inc. MCP2210 USB to SPI Master
+</p>
+
+<p>
+The MCP2210 communication is done through code built on an open source
+library by Kerry Wong:
+<a href="https://github.com/kerrydwong/MCP2210-Library">https://github.com/kerrydwong/MCP2210-Library</a>
+</p>
+
+<p>
+In TOS this is embedded using the HID API. 
+</p>
+
+<p>
+To get the communication working, the final step is the <code>udev</code>
+rules. The file 
+<a href="https://github.com/kerrydwong/MCP2210-Library/blob/master/99-hid.rules">https://github.com/kerrydwong/MCP2210-Library/blob/master/99-hid.rules</a>
+needs to be placed in <code>/etc/udev/rules.d/</code>.
+Since we use the HID API the second entry is the relevant one. The
+file as it is being used on <code>tpc19</code> at the moment.
+<code>/etc/udev/rules.d/99-mcp2210.rules</code>:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #75715E;"># </span><span style="color: #75715E;">This is a sample udev file for HIDAPI devices which changes the permissions</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">to 0666 (world readable/writable) for a specified device on Linux systems.</span>
+
+<span style="color: #75715E;"># </span><span style="color: #75715E;">If you are using the hidraw implementation, then do something like the</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">following, substituting the VID and PID with your device. Busnum 1 is USB.</span>
+
+<span style="color: #75715E;"># </span><span style="color: #75715E;">HIDAPI/hidraw</span>
+<span style="color: #FD971F;">KERNEL</span>==<span style="color: #E6DB74;">&quot;hidraw*&quot;</span>, ATTRS{busnum}==<span style="color: #E6DB74;">&quot;1&quot;</span>, ATTRS{idVendor}==<span style="color: #E6DB74;">&quot;04d8&quot;</span>, ATTRS{idProduct}==<span style="color: #E6DB74;">&quot;00de&quot;</span>, <span style="color: #FD971F;">MODE</span>=<span style="color: #E6DB74;">&quot;0666&quot;</span>
+
+<span style="color: #75715E;"># </span><span style="color: #75715E;">Once done, optionally rename this file for your device, and drop it into</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">/etc/udev/rules.d and unplug and re-plug your device. This is all that is</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">necessary to see the new permissions. Udev does not have to be restarted.</span>
+
+<span style="color: #75715E;"># </span><span style="color: #75715E;">Note that the hexadecimal values for VID and PID are case sensitive and</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">must be lower case.</span>
+
+<span style="color: #75715E;"># </span><span style="color: #75715E;">If you think permissions of 0666 are too loose, then see:</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">http://reactivated.net/writing_udev_rules.html for more information on finer</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">grained permission setting. For example, it might be sufficient to just</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">set the group or user owner for specific devices (for example the plugdev</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">group on some systems).</span>
+</pre>
+</div>
+
+<p>
+After writing this file (take care to check that the USB device is
+actually on USB bus number 1, as in the case of the example output of
+<code>lsusb</code> above), we can reload the <code>udev</code> rues:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">sudo udevadm control --reload-rules
+</pre>
+</div>
+<p>
+and then replug the USB connection to the intermediate board. 
+</p>
+
+<p>
+Now, TOS (or a standalone program using the MCP2210) should work fine.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div class="outline-3" id="outline-container-orgda4f123">
+<h3 id="orgda4f123"><span class="section-number-3">23.4.</span> Setting up the chips in TOS</h3>
+<div class="outline-text-3" id="text-23-4">
+<p>
+This section is specific to the Septemboard used at CAST.
+</p>
+
+<p>
+Following the steps described in the shifter documentation
+<a href="./../org/Doc/ShiftDocumentation/shifter_documentation.html">./../org/Doc/ShiftDocumentation/shifter_documentation.html</a>
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #75715E;">#</span><span style="color: #75715E;">+BEGIN_SRC python</span>
+7 <span style="color: #75715E;"># </span><span style="color: #75715E;">number of chips</span>
+4 <span style="color: #75715E;"># </span><span style="color: #75715E;">preload</span>
+SetChipIDOffset
+190
+lf
+<span style="color: #75715E;"># </span><span style="color: #75715E;">7 times enter to load default paths</span>
+uma
+1 <span style="color: #75715E;"># </span><span style="color: #75715E;">Matrix settings</span>
+0
+1
+1
+0
+LoadThreshold <span style="color: #75715E;"># </span><span style="color: #75715E;">load threshold equalisation files</span>
+4 <span style="color: #75715E;"># </span><span style="color: #75715E;">write matrix</span>
+3 <span style="color: #75715E;"># </span><span style="color: #75715E;">read out</span>
+3
+ActivateHFM
+SetFadcSettings
+Run
+1 <span style="color: #75715E;"># </span><span style="color: #75715E;">run time via # frames</span>
+0
+0
+0
+2 <span style="color: #75715E;"># </span><span style="color: #75715E;">shutter range select</span>
+30 <span style="color: #75715E;"># </span><span style="color: #75715E;">shutter time select</span>
+0 <span style="color: #75715E;"># </span><span style="color: #75715E;">zero suppression</span>
+1 <span style="color: #75715E;"># </span><span style="color: #75715E;">FADC usage</span>
+0 <span style="color: #75715E;"># </span><span style="color: #75715E;">accept FADC settings</span>
+</pre>
+</div>
+
+<p>
+The above would launch a full background run.
+</p>
+</div>
+</div>
+</div>
+
+
+<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
+</div>
+</body>
+</html>

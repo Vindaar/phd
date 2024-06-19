@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--  2024-06-18 Tue 23:44  -->
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1" name="viewport" />
+<title>‎</title>
+<meta content="Vindaar" name="author" />
+<meta content="Org Mode" name="generator" />
+
+<link type="text/css" rel="stylesheet" href="org_html_export.css" />
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set the initial width for subfigures and their images
+    document.querySelectorAll('figure.subfigure[data-width]').forEach(function(subfigure) {
+        subfigure.style.width = subfigure.getAttribute('data-width');
+    });
+
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.style.width = img.getAttribute('data-width');
+    });
+
+    // Event listener for images within subfigures
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.addEventListener('click', function() {
+            // Determine the .figure-wrapper that contains the clicked image
+            let wrapper = this.closest('.figure-wrapper');
+
+            // If found, adjust the sizes of its subfigures
+            if (wrapper) {
+                let subfigures = wrapper.querySelectorAll('figure.subfigure');
+                subfigures.forEach(subfigure => {
+                    let width = parseFloat(subfigure.getAttribute('data-width'));
+                    if (width < 50) { // Double size if less than 50%
+                        subfigure.setAttribute('data-width', (width * 2) + '%');
+                        subfigure.style.width = (width * 2) + '%';
+                    } else { // Halve size otherwise
+                        subfigure.setAttribute('data-width', (width / 2) + '%');
+                        subfigure.style.width = (width / 2) + '%';
+                    }
+                });
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var headers = document.querySelectorAll('h1 .extended, h2 .extended, h3 .extended, h4 .extended, h5 .extended, h6 .extended');
+
+    headers.forEach(function (header) {
+        var foldableHeader = header.closest('h1, h2, h3, h4, h5, h6');
+        if (foldableHeader) {
+            foldableHeader.classList.add('foldable-header');
+            var nextElement = foldableHeader.nextElementSibling;
+            var contentToFold = [];
+            while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                contentToFold.push(nextElement);
+                nextElement = nextElement.nextElementSibling;
+            }
+            contentToFold.forEach(function (element) {
+                element.classList.add('folded-content');
+            });
+
+            foldableHeader.addEventListener('click', function () {
+                contentToFold.forEach(function (element) {
+                    if (element.style.display === 'none' || element.style.display == '') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+<!-- /* --><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js", "[Contrib]/siunitx/siunitx.js", "[Contrib]/mhchem/mhchem.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"], ['$', '$'], ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 1.0,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        },
+        TeX: {
+              equationNumbers: { autoNumber: 'AMS' },
+              Macros: {
+                  ccsini: '{\\mathrm{Si}₃\\mathrm{N}₄}',
+                  cefe: '{\\ce{^{55}Fe}}',
+                  vektor: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  mtrix: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  cp: '{\\mathrm{CP}}',
+                  cpt: '{\\mathrm{CPT}}',
+                  dd: '{\\mathop{}\\!{\\mathrm{d}}}',
+                  sinc: '{\\mathrm{sinc}}'
+              }
+        }
+    });
+/*]]>*///--&gt;
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<nav role="doc-toc" id="table-of-contents">
+<h2>Table of Contents</h2>
+<div role="doc-toc" id="text-table-of-contents">
+<ul>
+<li>  <a href="./errata.html#sec:errata">1. Errata   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
+<li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
+<ul>
+<li>  <a href="./about_thesis.html#orgc36e3ba">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org976c329">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orga7aaacb">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory.html#sec:theory:useful_reading_material">4.1. Useful reading material   <span class="tag">    <span class="optional">optional</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:illustration_cpt">4.2. Illustration of the \cpt symmetry <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:invisible_axion_models">4.3. Invisible axion models and axion couplings</a></li>
+<li>  <a href="./theory.html#sec:theory:axion_interactions">4.4. Implications for axion interactions - conversion probability</a></li>
+<li>  <a href="./theory.html#sec:theory:solar_axion_flux">4.5. Solar axion flux</a></li>
+<li>  <a href="./theory.html#sec:theory:chameleon">4.6. Chameleons</a></li>
+<li>  <a href="./theory.html#sec:theory:current_bounds">4.7. Current bounds on coupling constants</a></li>
+</ul>
+</li>
+<li><a href="./helioscopes.html#sec:helioscopes">5. Axion helioscopes   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./helioscopes.html#sec:helioscopes:cast">5.1. CERN Axion Solar Telescope (CAST)</a></li>
+<li>  <a href="./helioscopes.html#sec:helioscopes:iaxo">5.2. International AXion Observatory (IAXO)</a></li>
+</ul>
+</li>
+<li><a href="./theory_detector.html#sec:theory_detector">6. X-rays, cosmic muons and gaseous detectors   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory_detector.html#sec:theory:particle_int">6.1. Particle interactions with matter</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:cosmic_radiation">6.2. Cosmic rays</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:gas_fundamentals">6.3. Gaseous detector fundamentals</a></li>
+</ul>
+</li>
+<li><a href="./septemboard.html#sec:septemboard">7. Septemboard detector   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./septemboard.html#sec:detector:micromegas">7.1. Micromegas working principle</a></li>
+<li>  <a href="./septemboard.html#sec:detector:timepix">7.2. Timepix ASIC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
+<li>  <a href="./septemboard.html#orgc654d28">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
+<li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
+<li>  <a href="./septemboard.html#sec:detector:septemboard">7.10. Septemboard - 6 GridPixes around a center one</a></li>
+<li>  <a href="./septemboard.html#sec:detector:water_cooling">7.11. Water cooling and temperature readout for the septemboard</a></li>
+<li>  <a href="./septemboard.html#sec:septem:efficiency">7.12. Detector efficiency</a></li>
+<li>  <a href="./septemboard.html#sec:detector:daq">7.13. Data acquisition and detector monitoring</a></li>
+</ul>
+</li>
+<li><a href="./operation_calibration.html#sec:operation_calibration">8. Detector calibration for operation   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:timepix">8.1. Timepix calibrations</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:fadc">8.2. FADC calibration</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:scintillators">8.3. Scintillator calibration</a></li>
+</ul>
+</li>
+<li><a href="./reconstruction.html#sec:reconstruction">9. Data reconstruction   <span class="tag">  <span class="Reconstruction">Reconstruction</span></span></a>
+<ul>
+<li>  <a href="./reconstruction.html#sec:reco:tpa">9.1. <code>TimepixAnalysis</code> and Nim</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:tos_data_parsing">9.2. TOS data parsing</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:event_shape">9.3. Expectation of event shapes</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:data_reconstruction">9.4. Data reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:fadc_data">9.5. FADC reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:scintillator_data">9.6. Scintillator data</a></li>
+</ul>
+</li>
+<li><a href="./cast.html#sec:cast">10. Detector installation &amp; data taking at CAST   <span class="tag">  <span class="CAST">CAST</span></span></a>
+<ul>
+<li>  <a href="./cast.html#sec:cast:timeline">10.1. Timeline</a></li>
+<li>  <a href="./cast.html#sec:cast:alignment">10.2. Alignment</a></li>
+<li>  <a href="./cast.html#sec:cast:detector_setup">10.3. Detector setup at CAST</a></li>
+<li>  <a href="./cast.html#sec:cast:window_accident">10.4. Window accident</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_woes">10.5. Data taking woes</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_campaigns">10.6. Summary of CAST data taking</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:calibration">11. Data calibration   <span class="tag">  <span class="Calibration">Calibration</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:calibration:energy">11.1. Energy calibration - in principle</a></li>
+<li>  <a href="./calibration.html#sec:calib:detector_behavior_over_time">11.2. Detector behavior over time</a></li>
+<li>  <a href="./calibration.html#sec:calib:final_energy_calibration">11.3. Energy calibration dependence on the gas gain</a></li>
+<li>  <a href="./calibration.html#sec:calib:fadc">11.4. FADC</a></li>
+</ul>
+</li>
+<li><a href="./background.html#sec:background">12. Finding signal and defining background | Background rate computation   <span class="tag">  <span class="Analysis">Analysis</span></span></a>
+<ul>
+<li>  <a href="./background.html#sec:background:likelihood_method">12.1. Likelihood method</a></li>
+<li>  <a href="./background.html#sec:cdl">12.2. CAST Detector Lab</a></li>
+<li>  <a href="./background.html#sec:background:likelihood_cut">12.3. Application of likelihood cut for background rate</a></li>
+<li>  <a href="./background.html#sec:background:mlp">12.4. Artificial neural networks as cluster classifiers</a></li>
+<li>  <a href="./background.html#sec:background:additional_vetoes">12.5. Additional detector features as vetoes</a></li>
+<li>  <a href="./background.html#sec:background:all_vetoes_combined">12.6. Background rates of combined vetoes and efficiencies</a></li>
+</ul>
+</li>
+<li><a href="./limit.html#sec:limit">13. Limit calculation   <span class="tag">  <span class="Limit">Limit</span></span></a>
+<ul>
+<li>  <a href="./limit.html#sec:limit:method_introduction">13.1. Limit method - introduction</a></li>
+<li>  <a href="./limit.html#sec:limit:method_likelihood">13.2. Limit method - likelihood function \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_L">13.3. Limit method - computing \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_a_limit">13.4. Limit method - computing a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
+<li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
+<li>  <a href="./limit.html#org5e81b6c">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orge06cfa1">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
+<li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:expected_limits">13.13. Expected limits of different setups</a></li>
+<li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
+<li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
+<li>  <a href="./limit.html#orgc627f43">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgda19ced">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
+<li>  <a href="./summary.html#sec:summary">15. Summary &amp; conclusion</a></li>
+<li>  <a href="./bibliography.html#sec:bibliography">16. Bibliography   <span class="tag">    <span class="html">html</span>  </span></a></li>
+<li><a href="./daq.html#sec:daq">17. Data acquisition and detector monitoring   <span class="tag"><span class="Appendix">Appendix</span> <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./daq.html#sec:daq:tof">17.1. Timepix Operating Firmware - TOF</a></li>
+<li>  <a href="./daq.html#sec:daq:tos">17.2. Timepix Operating Software - TOS</a></li>
+<li>  <a href="./daq.html#sec:daq:septemboard_event_display">17.3. Septemboard event display</a></li>
+</ul>
+</li>
+<li><a href="./configuration.html#sec:appendix:configuration">18. Configuration and TOS / TOF versions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_config">18.1. TOS configuration file</a></li>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_tof_versions">18.2. TOS and TOF versions used at CAST</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:appendix:calibration">19. Calibrations   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:appendix:calibration:timepix">19.1. Timepix calibrations</a></li>
+<li>  <a href="./calibration.html#sec:appendix:septemboard_calibrations">19.2. Septemboard calibration</a></li>
+<li>  <a href="./calibration.html#sec:appendix:scintillator_calibration_notes">19.3. Calibration measurements of the veto scintillator paddle   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_operations.html#sec:appendix:cast_operations">20. CAST operation procedures   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_operations:terminology">20.1. CAST terminology</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:high_voltage">20.2. High voltage supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:vacuum_system">20.3. Vacuum system</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:watercooling_gas">20.4. Watercooling system &amp; gas supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:interlock_systems">20.5. Interlock systems</a></li>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_log_files">20.6. CAST log files</a></li>
+</ul>
+</li>
+<li><a href="./cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_run_list.html#orgd304089">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cast_data_taking_notes.html#orge4011be">22.1. Run table</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgeba5174">22.2. Data runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgd62eab2">22.3. Calibration runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org0271f47">22.4. Automatically generated run list</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgb34c028">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org338e161">22.6. InGrid temperature from shift forms</a></li>
+</ul>
+</li>
+<li><a href="./cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cabling_and_softwar_setup.html#org7cb11ec">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org3244c1a">23.2. Detector cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org7c3b445">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#orgda4f123">23.4. Setting up the chips in TOS</a></li>
+</ul>
+</li>
+<li><a href="./vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./vacuum_contamination.html#org35e49a4">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./vacuum_contamination.html#orgdf125cb">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./vacuum_contamination.html#orgf5a7285">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./vacuum_contamination.html#orgeeae0bd">24.4. Calculation of possible contamination</a></li>
+</ul>
+</li>
+<li><a href="./detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:choice_gas_gain_binning">25.1. Choice of gas gain binning time interval</a></li>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:correlation_gas_gain_ambient_temp">25.2. Correlation of gas gain and ambient CAST temperature</a></li>
+</ul>
+</li>
+<li><a href="./cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_detector_lab.html#orgfed071e">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
+</ul>
+</li>
+<li><a href="./fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
+</ul>
+</li>
+<li><a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./morphing_cdl_spectra.html#orgabd5f0e">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#orga5d9c5b">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#org218c56a">28.6. Notes on CDL morphing development   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./occupancy.html#orgdce408e">29.1. Run-2</a></li>
+<li>  <a href="./occupancy.html#orge5d3863">29.2. Run-3</a></li>
+<li>  <a href="./occupancy.html#org971382a">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
+<li>  <a href="./fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
+<li>  <a href="./fadc.html#org517ef50">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
+</ul>
+</li>
+<li><a href="./background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
+<li>  <a href="./background_rates.html#org01e8b4b">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#org2774ce8">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#orgd0f5dfb">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li><a href="./limit_additional.html#sec:appendix:limit_additional">33. Additional limit information   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./limit_additional.html#sec:appendix:conversion_probability">33.1. Conversion probability as a function of mass   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:exp_limit_percentiles">33.2. Expected limit table with percentiles</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:axion_photon">33.3. Observed limit - axion photon \(g_{aγ}\)</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:chameleon">33.4. Observed limit - chameleon \(β_γ\)</a></li>
+</ul>
+</li>
+<li><a href="./software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./software.html#orgbae2c69">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#org13d471b">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
+<li>  <a href="./software.html#orgb88ee40">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+</ul>
+</li>
+<li><a href="./full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./full_data_reconstruction.html#org39ad6bd">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./full_data_reconstruction.html#org1eac87c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./full_data_reconstruction.html#org09b2461">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./full_data_reconstruction.html#org3344338">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./full_data_reconstruction.html#org18a2de7">35.5. Applying a classifier</a></li>
+<li>  <a href="./full_data_reconstruction.html#org17bde80">35.6. Computing limits</a></li>
+</ul>
+</li>
+<li><a href="./average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./average_depth_xrays_argon.html#org2d84fd5">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org11eec4e">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org28b81a5">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:traxer">37.1. TrAXer - An interactive axion raytracer</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
+<li>  <a href="./raytracing.html#org7d687b6">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./raytracing.html#orgc4745d9">37.6. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Part5">Part5</span>  </span></a></li>
+</ul>
+</div>
+</nav>
+<div class="outline-2" id="outline-container-sec:daq">
+<h2 id="sec:daq"><span class="section-number-2">17.</span> Data acquisition and detector monitoring   <span class="tag"><span class="Appendix">Appendix</span> <span class="Detector">Detector</span></span></h2>
+<div class="outline-text-2" id="text-sec:daq">
+<p>
+Having introduced the detector used for the data taking in chapter 
+<a href="./septemboard.html#sec:septemboard">7</a>, this appendix introduces the data acquisition (DAQ)
+software for the detector (sec. <a href="./daq.html#sec:daq:tof">17.1</a> and <a href="./daq.html#sec:daq:tos">17.2</a>),
+discusses the data formats used for readout as well as the logging
+facilities. In the last section <a href="./daq.html#sec:daq:septemboard_event_display">17.3</a> we
+will discuss the event display tool used to monitor daily data taking
+at CAST.
+</p>
+</div>
+
+<div class="outline-3" id="outline-container-sec:daq:tof">
+<h3 id="sec:daq:tof"><span class="section-number-3">17.1.</span> Timepix Operating Firmware - TOF</h3>
+<div class="outline-text-3" id="text-sec:daq:tof">
+<p>
+Starting with the firmware of the detector, the \textbf{T}imepix
+\textbf{O}perating \textbf{F}irmware (TOF), which runs on the Virtex-6
+FPGA, specifically a Xilinx Virtex-6 (V6) ML605 evaluation board. TOF
+controls the Timepix ASICs of the Septemboard (both the slow control
+aspects and data taking) as well as coordinates the scintillator
+signals and FADC trigger. It is a VHDL project, intended to run at a
+clock frequency of \(\SI{40}{MHz}\). Communication with the GridPixes is
+done via two \textbf{H}igh-\textbf{D}efinition \textbf{M}ultimedia
+\textbf{I}nterface (HDMI) cables, while communication with the readout
+software on the DAQ computer is handled via Ethernet. For a detailed
+introduction to TOF, see (<a href="./bibliography.html#citeproc_bib_item_151">Lupberger 2016</a>) as well as
+(<a href="./bibliography.html#citeproc_bib_item_193">Schiffer 2024</a>).
+</p>
+
+<p>
+See sec. <a href="./configuration.html#sec:appendix:configuration:tos_tof_versions">18.2</a> for a few notes
+on the used firmware versions during data taking.
+</p>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-sec:daq:tos">
+<h3 id="sec:daq:tos"><span class="section-number-3">17.2.</span> Timepix Operating Software - TOS</h3>
+<div class="outline-text-3" id="text-sec:daq:tos">
+<p>
+The \textbf{T}imepix \textbf{O}perating \textbf{S}oftware (TOS) is the
+computer-side data acquisition software to read out Timepix based
+detectors. It is an object oriented C++ project, available at (<a href="./bibliography.html#citeproc_bib_item_202">Schmidt 2022d</a>). <sup>  <a role="doc-backlink" class="footref" id="fnr.1" href="#fn.1">1</a></sup> 
+The project needs to be used in conjunction with the \textbf{T}imepix
+\textbf{O}perating \textbf{F}irmware (TOF), which communicates with
+TOS via Ethernet. The TOS project started as far back as 2009 by
+people at the University of Mainz. Next is a short overview over the
+basic blocks that make up the main logic of the software. 
+</p>
+
+<p>
+The fully object oriented nature of the project means that there are
+different classes for the different software pieces:
+</p>
+<dl class="org-dl">
+<dt>  <code>Console</code></dt><dd>A class representing the user facing REPL
+(Read-Evaluate-Print Loop, an &apos;interpreter&apos;) to control the
+software</dd>
+<dt>  <code>PC</code></dt><dd>A class representing the network layer and communication side
+of the software, sitting between the console and lower layers.</dd>
+<dt>  <code>FPGA</code></dt><dd>A class representing the functionality required to control
+the FPGA on the Virtex-6 evaluation board.</dd>
+<dt>  <code>Chip</code></dt><dd>A class representing each Timepix ASIC and its
+functionality.</dd>
+<dt>  <code>HFManager</code></dt><dd>A class unifying the FADC &amp; Wiener HV control unit as
+they are both controlled via USB, installed in a VME crate. This
+class contains individual attributes that contain explicit classes
+for these two devices. The name is shortened for &apos;High Voltage and
+FADC Manager&apos;.
+<dl class="org-dl">
+<dt>  <code>V1729</code></dt><dd>A class representing the Ortec Flash ADC.</dd>
+<dt>  <code>HV*</code></dt><dd>Multiple classes representing HV channels, groups and more.</dd>
+</dl></dd>
+<dt>  <code>MCP2210</code></dt><dd>A class representing the PT1000 temperature sensors
+installed on the detector via a <code>MCP2210</code> micro controller,
+optionally connected via USB. The actual micro-controllers with
+attached PT1000s are <code>MAX31685</code> models.</dd>
+<dt>Misc</dt><dd>there are a few further classes of minor interest to the general
+functionality of TOS (tab command completion and history, classes
+to set masks on the chips, etc.)</dd>
+</dl>
+
+<p>
+In general TOS is a fully command line driven software package, with
+its own REPL (Read-Evaluate-Print Loop; the name for an
+interactive terminal process, which takes commands that are evaluated
+and returns to the terminal). It brings all the expected features one
+might wish from a REPL, including auto completion, history lookup,
+emacs style keybindings (based on GNU Readline <sup>  <a role="doc-backlink" class="footref" id="fnr.2" href="#fn.2">2</a></sup>) and more.
+</p>
+
+<p>
+The aforementioned <code>HFManager</code> and the temperature sensors are
+optional pieces that are not required for basic Timepix
+operation. Their functionality has to be activated via a manual
+command, <code>ActivateHFM</code>. This triggers the USB connection to the VME
+crate and tries to find the Wiener HV module as well as the Ortec FADC
+in the crate. Additionally, the temperature sensors are attempted to
+be found (via a secondary, optional USB connection). If the latter are
+found a continuous temperature logging begins (see
+sec. <a href="./daq.html#sec:daq:temperature_readout">17.2.4</a>). 
+</p>
+
+<p>
+The HV controls are specific to Wiener HV power supplies. In principle
+the implemented functionality is a fully featured HV controller that
+supports all Wiener functionality like grouping different channels to
+ramp up together, kill channels on a trip and more. Most importantly,
+it implements a custom, slow HV ramping logic, which keeps the
+relative potentials constant between channels in a group to avoid
+tripping a channel.
+</p>
+
+<p>
+An example of a typical startup procedure is shown in listing
+<a href="TOS_startup_commands">1</a>, in this case to start a background run. Note
+that most essential commands in TOS also have shortened names via
+numbers, due to historic reasons (TOS originally did not have
+autocompletion or allowed moving the cursor in text input, making
+typing complex names cumbersome and error prone), which is why many of
+the inputs are simple numbers.
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 1: </span>An example of the typical startup routine of TOS for a background data taking measurement at CAST for the Septemboard based GridPix detector. The indented lines refer to commands given to the previous command at top level.</label><pre class="src src-sh" id="TOS_startup_commands">user@ingrid-DAQ~/ ./TOS
+  &gt; 7 <span style="color: #75715E;"># </span><span style="color: #75715E;">number of chips</span>
+  &gt; 4 <span style="color: #75715E;"># </span><span style="color: #75715E;">preload</span>
+&gt; SetChipIDOffset
+  &gt; 190
+&gt; lf <span style="color: #75715E;"># </span><span style="color: #75715E;">load FSR values for the chips</span>
+  &gt; <span style="color: #75715E;"># </span><span style="color: #75715E;">return 7 times enter to load default paths</span>
+&gt; uma <span style="color: #75715E;"># </span><span style="color: #75715E;">create a uniform matrix for all chips</span>
+  &gt; 1 <span style="color: #75715E;"># </span><span style="color: #75715E;">Matrix settings</span>
+  &gt; 0
+  &gt; 1
+  &gt; 1
+  &gt; 0
+&gt; LoadThreshold <span style="color: #75715E;"># </span><span style="color: #75715E;">load threshold equalisation files</span>
+  &gt; 4 <span style="color: #75715E;"># </span><span style="color: #75715E;">write matrix</span>
+  &gt; 3 <span style="color: #75715E;"># </span><span style="color: #75715E;">read out</span>
+  &gt; 3 <span style="color: #75715E;"># </span><span style="color: #75715E;">2nd readout to make sure pixels are &apos;empty&apos;</span>
+&gt; ActivateHFM <span style="color: #75715E;"># </span><span style="color: #75715E;">startup HV &amp; FADC controls</span>
+&gt; SetFadcSettings <span style="color: #75715E;"># </span><span style="color: #75715E;">load the FADC settings</span>
+&gt; Run <span style="color: #75715E;"># </span><span style="color: #75715E;">start a data taking run</span>
+  &gt; 1 <span style="color: #75715E;"># </span><span style="color: #75715E;">run time via # frames</span>
+  &gt; 0
+  &gt; 0
+  &gt; 0
+  &gt; 2 <span style="color: #75715E;"># </span><span style="color: #75715E;">shutter range select</span>
+  &gt; 30 <span style="color: #75715E;"># </span><span style="color: #75715E;">shutter time select (2 + 30 yields ~2.2 s frames)</span>
+  &gt; 0 <span style="color: #75715E;"># </span><span style="color: #75715E;">zero suppression</span>
+  &gt; 1 <span style="color: #75715E;"># </span><span style="color: #75715E;">FADC usage</span>
+  &gt; 0 <span style="color: #75715E;"># </span><span style="color: #75715E;">accept FADC settings</span>
+</pre>
+</div>
+</div>
+
+
+<div class="outline-4" id="outline-container-sec:daq:tos_output_format">
+<h4 id="sec:daq:tos_output_format"><span class="section-number-4">17.2.1.</span> TOS output data format</h4>
+<div class="outline-text-4" id="text-sec:daq:tos_output_format">
+<p>
+When starting a data taking run with TOS, a new directory for the run
+is created in the <code>data/runs</code> subdirectory. The name will be of the
+form <code>Run_&lt;run number&gt;_YYMMdd-HH-mm</code> where the run number is an
+increasing number based on the last run present in the directory and
+the suffix is the date and time of day when starting the run. This
+directory contains the configuration of all DACs for each chip,
+<code>fsr&lt;chip number&gt;.txt</code>, the written configuration matrix for all
+pixels, <code>matrix&lt;chip number&gt;.txt</code> and finally the data files
+<code>data&lt;event number&gt;.txt</code>. If an FADC is used for the readout
+additional <code>data&lt;event number&gt;.txt-fadc</code> files are created, one for
+each file in which the FADC triggered (sec. <a href="./daq.html#sec:daq:fadc_data_files">17.2.1.1</a>).
+</p>
+
+<p>
+The Timepix data files are stored – for historic reasons – in raw ASCII
+format. Two different readout modes (with different output
+formats) are supported. For the following explanation it is assumed
+the Timepix is used in the ToT (Time-over-Threshold) mode.
+</p>
+<dl class="org-dl">
+<dt>full matrix readout</dt><dd>reads out the whole Timepix ASIC(s) and writes
+a single 256x256 pixel matrix as an ASCII file (for each chip). 256
+lines, each containing space separated ToT values for each pixel.</dd>
+<dt>zero suppressed readout</dt><dd>reads out only those pixels that have ToT
+values larger than 0, up to \num{4096} pixels. Stores the data in
+TSV files (tab separated values) &apos;<code>X Y ToT</code>&apos; with an additional
+header. The header contains a global &quot;run&quot; and &quot;event&quot; header,
+which contains information about the run the event is taken from
+and a &quot;chip&quot; header, which contains information about the specific
+Timepix ASIC(s) being read out (up to 8 can be read out at the same
+time using TOS).</dd>
+</dl>
+
+<p>
+As for our purposes most events are extremely sparse (&lt; 500 pixels
+active) the zero suppressed readout is the only relevant readout
+mode. The data files can be split into 3 distinct parts. A global run
+header, see listing <a href="code:daq:zero_suppressed_readout_run_header">2</a>, which
+contains information about the run the event is part of including
+important settings used as well as the timestamp of the event. Next is
+an event specific header, which contains specific information about
+the event in relation to the FADC and the scintillators, see listing
+<a href="code:daq:zero_suppressed_readout_event_header">3</a>. The final part of the
+zero suppressed data files is the chip header and tab separated value
+part of the &apos;<code>X Y ToT</code>&apos; pairs of the active pixels for each chip of
+the detector in that event, see listing
+<a href="code:daq:zero_suppressed_readout_chips">4</a>.
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 2: </span>TOS generated data files start with a general header, which mainly contains information about the run the data file is part of. The only exception is the <code>dateTime</code> field, which represents the timestamp of the event (an oversight, should have been in the <code>[Event]</code> header).</label><pre class="src src-toml" id="code:daq:zero_suppressed_readout_run_header"><span style="color: #75715E;">## </span><span style="color: #75715E;">[General]</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">runNumber:        339</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">runTime:          7200</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">runTimeFrames:    0</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">pathName:         data/runs/Run_339_190218-10-36</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">dateTime:         2019-02-18.10:36:34</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">numChips:         7</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">shutterTime:      2</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">shutterMode:      verylong</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">runMode:          0</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">fastClock:        0</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">externalTrigger:  0</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 3: </span>After the general header follows the event header in similar fashion. It records the event number and information about the FADC and scintillators. If the FADC triggered, <code>fadcReadout</code> is 1. Scintillator triggers may then be values in \([0, 4096)\). The <code>fadcTriggerClock</code> is the clock cycle of the Timepix frame in which the FADC trigger was received.</label><pre class="src src-sh" id="code:daq:zero_suppressed_readout_event_header"><span style="color: #75715E;">## </span><span style="color: #75715E;">[Event]</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">eventNumber:      2</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">useHvFadc:        1</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">fadcReadout:      1</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">szint1ClockInt:   0</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">szint2ClockInt:   0</span>
+<span style="color: #75715E;">## </span><span style="color: #75715E;">fadcTriggerClock: 647246</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 4: </span>The event header is followed by the beginning of the actual GridPix data. Each chip appears with a 3 line chip header containing number and name as well as the number of hits seen by that chip in the event. <code>numHits</code> lines follow with &apos;<code>X Y TOT</code>&apos; values in tab seperated fashion. This snippet would be followed by the remaining chips, as many as written in the run header <a href="code:daq:zero_suppressed_readout_run_header">2</a> as <code>numChips</code>.</label><pre class="src src-sh" id="code:daq:zero_suppressed_readout_chips"><span style="color: #75715E;"># </span><span style="color: #75715E;">chipNumber: 0</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">chipName:   E 6 W69</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">numHits:    0</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">chipNumber: 1</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">chipName:   K 6 W69</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">numHits:    0</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">chipNumber: 2</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">chipName:   H 9 W69</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">numHits:    2</span>
+106     160     75
+211     142     2
+</pre>
+</div>
+</div>
+
+<div class="outline-5" id="outline-container-sec:daq:fadc_data_files">
+<h5 id="sec:daq:fadc_data_files"><span class="section-number-5">17.2.1.1.</span> FADC data files</h5>
+<div class="outline-text-5" id="text-sec:daq:fadc_data_files">
+<p>
+If the FADC triggered during an event, as indicated by the
+<code>fadcReadout</code> field in the event header seen in listing
+<a href="code:daq:zero_suppressed_readout_event_header">3</a>, an additional data file
+is written with the same name as the event file, but a <code>.txt-fadc</code>
+extension. It contains a memory dump of the channels of the circular
+memory of the FADC plus a basic header about the FADC settings and the
+information about when the trigger happened.
+</p>
+
+<p>
+The different fields in the header, see listing
+<a href="code:daq:fadc_data_header">5</a>, are as follows:
+</p>
+<ul class="org-ul">
+<li><code>nb of channels</code>: decimal value of a 4-bit field that decides the
+number of active channels. <code>0</code> corresponds to using all channels as
+separate. We only use a single channel. <sup>  <a role="doc-backlink" class="footref" id="fnr.3" href="#fn.3">3</a></sup></li>
+<li><code>channel mask</code>: decimal value of a 4-bit field to (de-)activate
+channels. <code>15</code> corresponds to all 4 channels active.</li>
+<li><code>posttrig</code>: how many clock cycles in the \(\SI{50}{MHz}\) <sup>  <a role="doc-backlink" class="footref" id="fnr.4" href="#fn.4">4</a></sup> base clock of
+the FADC it continues taking data before commencing the readout
+(useful to record the rest of the signal and center it in the
+readout window)</li>
+<li><code>pretrig</code>: the minimum acquisition time before a trigger is allowed
+to happen, in units of the \(\SI{50}{MHz}\) <sup>  <a role="doc-backlink" class="footref" id="fnr.4" href="#fn.4">4</a></sup> base clock.</li>
+<li><code>triggerrecord</code>: together with <code>posttrig</code> allows to reconstruct the
+time of the trigger in the acquisition window</li>
+<li><code>frequency</code>: decimal representation of a 6-bit field to select the
+operating frequency. <code>2 = 0b000010</code> corresponds to \(\SI{1}{GHz}\)
+operation.</li>
+<li><code>sampling mode</code>: decimal representation of a 3-bit field changing
+the operation mode (manual or automatic trigger) and register
+working mode (12 or 14-bit sensitivity of each register). We run in
+manual trigger and 12-bit mode. <sup>  <a role="doc-backlink" class="footref" id="fnr.3" href="#fn.3">3</a></sup></li>
+<li><code>pedestal run</code>: a 1-bit flag indicating whether this file is a
+pedestal run.</li>
+</ul>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 5: </span>The file starts with a header indicated by <code>#</code>. Some of the values are decimal representation of bit fields, hence the weird values like &quot;0 channels&quot;. It mixes both the configuration used as well as the time the trigger occurred (<code>triggerrecord</code>).</label><pre class="src src-sh" id="code:daq:fadc_data_header"><span style="color: #75715E;"># </span><span style="color: #75715E;">nb of channels: 0  </span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">channel mask: 15</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">posttrig: 80</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">pretrig: 15000</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">triggerrecord: 56</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">frequency: 2</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">sampling mode: 0</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">pedestal run: 0</span>
+</pre>
+</div>
+
+<p>
+The data portion starts with another semi-header of 12 data points,
+see listing <a href="code:daq:fadc_data_header_2">6</a>. It contains fields that are
+not explained in the FADC manual, but instead refer to &quot;reserved for
+expert usage&quot; (<a href="./bibliography.html#citeproc_bib_item_57">CAEN 2010</a>). One exception is data point 2, which
+is the so called Vernier, which could be used to determine the trigger
+time within two registers to get up to \(\sim\SI{50}{ps}\) RMS accurate
+time information. For our purposes though \(\SI{1}{ns}\) time resolution
+is more than enough, given the signal undergoes integration and
+differentiation of a multiple of that in the shaping amplifier, anyway.
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 6: </span>After the header starts the data portion with some auxiliary information. The lines are neither of significant interest to us, nor are they properly explained in the manual. The second number corresponds to the Vernier, which can be used to determine the trigger more precisely than between individual register values, which is also not important for our purposes, as \(\SI{1}{ns}\) resolution is plenty.</label><pre class="src src-sh" id="code:daq:fadc_data_header_2"><span style="color: #75715E;"># </span><span style="color: #75715E;">Data:</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">3928</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">8022</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">3957</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">8076</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">3928</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">8023</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">3957</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">8077</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">2048</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">6138</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">2031</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">6151</span>
+</pre>
+</div>
+
+<p>
+The final portion of the file contains the actual data (\(\num{10240}\)
+lines) and 3 fields at the very end to reconstruct the trigger within
+the acquisition window <sup>  <a role="doc-backlink" class="footref" id="fnr.5" href="#fn.5">5</a></sup>. The data
+represents a pure memory dump of the cyclic register. See listing
+<a href="code:daq:fadc_data_raw">7</a> for a shortened example.
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 7: </span>Actual data portion of the FADC data. The first \(\num{10240}\) lines represent a memory dump of the cyclic registers at trigger time (that is in their natural order instead of starting from the register in which the trigger was recorded). It starts at register 0 for channel 0, followed by register 0 of channel 1, and so on. As such each \(4^{\text{th}}\) line corresponds to one channel. This is why the values jump so much from line to line. The last 3 lines are information to recover the trigger point in the acquisition window.</label><pre class="src src-sh" id="code:daq:fadc_data_raw">2028 <span style="color: #75715E;"># </span><span style="color: #75715E;">register 0, channel 0</span>
+6119 <span style="color: #75715E;"># </span><span style="color: #75715E;">register 0, channel 1</span>
+1999 <span style="color: #75715E;"># </span><span style="color: #75715E;">register 0, channel 2</span>
+6100 <span style="color: #75715E;"># </span><span style="color: #75715E;">register 0, channel 3</span>
+2021 <span style="color: #75715E;"># </span><span style="color: #75715E;">register 1, channel 0</span>
+6108 <span style="color: #75715E;"># </span><span style="color: #75715E;">...</span>
+... <span style="color: #75715E;"># </span><span style="color: #75715E;">10240 lines of data in total</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">56</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">4096</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">0</span>
+</pre>
+</div>
+</div>
+
+<ol class="org-ol">
+<li><a id="org7f15ffe"> </a>Explanation of beginning of data portion   <span class="tag">  <span class="extended">extended</span></span><br />
+<div class="outline-text-6" id="text-17-2-1-1-1">
+<p>
+Explanation of the data header <a href="code:daq:fadc_data_header_2">6</a> here:
+</p>
+<ul class="org-ul">
+<li><code>hvFadcManager.cpp</code> <code>writeFadcData</code></li>
+<li>FADC manual page 27 lists the data sent by the FADC.</li>
+</ul>
+
+<p>
+However, neither explains what the &quot;first sample&quot; and the &quot;rest
+baseline&quot; is. The manual calls these &quot;expert features&quot; and doesn&apos;t
+explain them… That&apos;s how you keep it as an expert feature! The
+second line is the Vernier, that I honestly don&apos;t really understand
+either. I think it allows to more precisely find the time of trigger
+between two register entries? Ah yes, see page 14 of the manual about
+the Vernier. Allows for 50 ps RMS time information between two bins.
+</p>
+</div>
+</li>
+
+<li><a id="orge6c09a4"> </a>Explanation of FADC settings   <span class="tag">  <span class="extended">extended</span></span><br />
+<div class="outline-text-6" id="text-17-2-1-1-2">
+<p>
+As mentioned in the footnote in the previous section, I really don&apos;t
+understand the choice of FADC settings we used for the actual data
+taking. It&apos;s quite possible I&apos;m nowadays just not aware of something
+important, but well. Either way, unfortunately I only started being
+serious about note taking about my work around the beginning of the
+data taking period in October 2017. So retracing my thoughts during my
+master thesis (2015-2016) and beginning of my PhD is unfortunately pretty much
+impossible.
+</p>
+
+<p>
+However, as mentioned the settings are good enough for what we are
+doing with the data. The much bigger issues are related to the noise
+we observed at times etc., which will be mentioned later.
+</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:daq:tos_config_file">
+<h4 id="sec:daq:tos_config_file"><span class="section-number-4">17.2.2.</span> TOS configuration file</h4>
+<div class="outline-text-4" id="text-sec:daq:tos_config_file">
+<p>
+Everything related to the <code>HFManager</code> in TOS is controlled by a
+configuration file, normally located in
+<code>TOS/config/HFM_settings.ini</code>. The TOS configuration file used during
+CAST data taking is found in appendix
+<a href="./configuration.html#sec:appendix:configuration:tos_config">18.1</a>. We will go through the
+sections of it one by one and explain them.
+</p>
+
+<p>
+Starting with the <code>[General]</code> section, listing
+<a href="code:daq:general_config">8</a>. This section defines the VME related
+settings. The VME address of the HV module installed in the crate is
+used as the base address. The FADC address in the same VME crate is
+calculated from an offset in units of the VME address spacing of
+<code>0x0400</code>. <sup>  <a role="doc-backlink" class="footref" id="fnr.6" href="#fn.6">6</a></sup>
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 8: </span>General section of the TOS configuration file. It sets the base address of the HV module installed in the VME crate. The FADC address is given as an offset from the base address.</label><pre class="src src-toml" id="code:daq:general_config">[<span style="color: #66D9EF;">General</span>]
+<span style="color: #FD971F;">sAddress_fadc</span> = 1
+<span style="color: #FD971F;">baseAddress_hv</span> = 0x4000
+</pre>
+</div>
+
+<p>
+The next section <code>[HvModule]</code>, listing <a href="code:daq:hv_module_config">9</a>, are
+general settings about the used HV module. The settings are related to
+the <code>KillEnable</code> feature of Wiener HV power supplies, the ramping
+speed of the HV channels and the time in seconds between sanity checks
+of the HV during data taking. <sup>  <a role="doc-backlink" class="footref" id="fnr.7" href="#fn.7">7</a></sup>
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 9: </span>The <code>[HvModule]</code> section contains settings related to the HV module as a whole. Whether a single channel tripping causes all channels to ramp down (<code>KillEnable</code>) the ramp speed and interval in which the HV module sanity status is checked.</label><pre class="src src-toml" id="code:daq:hv_module_config">[<span style="color: #66D9EF;">HvModule</span>]
+<span style="color: #FD971F;">setKillEnable</span>                   = <span style="color: #F92672;">true</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">Voltage and Current RampSped currently set to arbitrary value</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">in percent / second</span>
+<span style="color: #FD971F;">moduleVoltageRampSpeed</span>          = 0.1
+<span style="color: #FD971F;">moduleCurrentRampSpeed</span>          = 50
+<span style="color: #75715E;"># </span><span style="color: #75715E;">checkModuleTimeInterval       = 60, checks the status of the</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">module every 60 seconds during a Run, between two events</span>
+<span style="color: #FD971F;">checkModuleTimeInterval</span>         = 60
+</pre>
+</div>
+
+<p>
+Next up, the <code>[HvGroups]</code> section in listing <a href="code:daq:hv_groups_config">10</a>
+defines the different groups that combine multiple channels. There are
+multiple different kinds of groups in Wiener HV power supplies. The
+important groups are ramping groups and trip groups. Essentially, if
+one channel in a group starts ramping / trips all others also start
+ramping / shut off the HV, respectively. The section in the config
+file mainly exposes the already predefined sets of groups that are
+relevant for the Septemboard detector in TOS. 
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 10: </span><code>[HvGroups]</code> defines multiple groups of different HV channels together. The config file does not expose arbitrary groupings, but only sets flags whether groups are active and what their numbers are.</label><pre class="src src-toml" id="code:daq:hv_groups_config"><span style="color: #75715E;"># </span><span style="color: #75715E;">if this flag is set to true, anode and grid</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">will be coupled to one group</span>
+[<span style="color: #66D9EF;">HvGroups</span>]
+<span style="color: #FD971F;">anodeGridGroupFlag</span>              = <span style="color: #F92672;">true</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">grid is master channel of set on group</span>
+<span style="color: #FD971F;">anodeGridGroupMasterChannel</span>     = 4
+<span style="color: #FD971F;">anodeGridGroupNumber</span>            = 0
+<span style="color: #FD971F;">monitorTripGroupFlag</span>            = <span style="color: #F92672;">true</span>
+<span style="color: #FD971F;">monitorTripGroupNumber</span>          = 1
+<span style="color: #FD971F;">rampingGroupFlag</span>                = <span style="color: #F92672;">true</span>
+<span style="color: #FD971F;">rampingGroupNumber</span>              = 2                          
+<span style="color: #FD971F;">gridChannelNumber</span>               = 4
+<span style="color: #FD971F;">anodeChannelNumber</span>              = 5
+<span style="color: #FD971F;">cathodeChannelNumber</span>            = 8
+</pre>
+</div>
+
+<p>
+After the <code>[HvGroups]</code> section is the definition of the individual HV
+channels in listing <a href="code:daq:hv_channels_config">11</a>. Here the physical
+channels on the device are mapped to the desired voltages and current
+bounds as well as to a human readable name. The fields repeat with
+increasing prefix numbers.
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 11: </span>This is an excerpt of the full <code>[HvChannels]</code> section for a single HV channel. It maps the physical HV connectors to their voltages, current bounds and a human readable name. In this case the grid of the GridPixes of the Septemboard all receive a voltage of \(\SI{300}{V}\). The naming scheme of the fields is hardcoded for practical reasons and simply repeats with increasing numbers.</label><pre class="src src-toml" id="code:daq:hv_channels_config">[<span style="color: #66D9EF;">HvChannels</span>]
+<span style="color: #75715E;"># </span><span style="color: #75715E;">all currents given in A (vmecontrol shows mA)</span>
+<span style="color: #FD971F;">0_Name</span>                          = grid
+<span style="color: #FD971F;">0_Number</span>                        = 5
+<span style="color: #FD971F;">0_VoltageSet</span>                    = 300
+<span style="color: #FD971F;">0_VoltageNominal</span>                = 500
+<span style="color: #FD971F;">0_VoltageBound</span>                  = 2.5
+<span style="color: #FD971F;">0_CurrentSet</span>                    = 0.000050
+<span style="color: #FD971F;">0_CurrentNominal</span>                = 0.000500 
+<span style="color: #FD971F;">0_CurrentBound</span>                  = 0
+</pre>
+</div>
+
+<p>
+Second to last is the <code>[FADC]</code> section in listing
+<a href="code:daq:fadc_config">12</a>. As the name implies it configures all parameters
+of the FADC. The main parameter to change is the
+<code>fadcTriggerThresholdRegisterAll</code> parameter, which defines the trigger
+threshold in effectively \(\si{mV}\). Depending on the amount of noise in
+the system, adjustments to the threshold may be necessary. 
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 12: </span>The <code>[FADC]</code> section configures the FADC. The most important setting is the trigger threshold as it defines the voltage required to trigger the FADC.</label><pre class="src src-toml" id="code:daq:fadc_config">[<span style="color: #66D9EF;">Fadc</span>] <span style="color: #75715E;"># </span><span style="color: #75715E;">FADC Settings</span>
+<span style="color: #FD971F;">fadcTriggerType</span>                 = 3 
+<span style="color: #FD971F;">fadcFrequency</span>                   = 2
+<span style="color: #FD971F;">fadcPosttrig</span>                    = 80
+<span style="color: #FD971F;">fadcPretrig</span>                     = 15000
+<span style="color: #75715E;"># </span><span style="color: #75715E;">was 2033 before, 1966 corresponds to -40 mV</span>
+<span style="color: #FD971F;">fadcTriggerThresholdRegisterAll</span> = 1966 
+<span style="color: #75715E;"># </span><span style="color: #75715E;">run time of a single pedestal run for the FADC in ms</span>
+<span style="color: #FD971F;">fadcPedestalRunTime</span>             = 100
+<span style="color: #75715E;"># </span><span style="color: #75715E;">number of acquisition runs done for each pedestal calibration</span>
+<span style="color: #FD971F;">fadcPedestalNumRuns</span>             = 10
+<span style="color: #75715E;"># </span><span style="color: #75715E;">using channel 0 on FADC as trigger source, thus bit 0 = 1!</span>
+<span style="color: #FD971F;">fadcChannelSource</span>               = 1
+<span style="color: #75715E;"># </span><span style="color: #75715E;">set FADC mode register (mainly to enable 14-bit readout)</span>
+<span style="color: #FD971F;">fadcModeRegister</span>                = 0b000
+</pre>
+</div>
+
+<p>
+The last section of the configuration file is the <code>[Temperature]</code>
+section, which deals with the safety ranges of the temperature of the
+detector. If the temperature leaves the safe range, the detector is to
+be shut down. <sup>  <a role="doc-backlink" class="footref" id="fnr.8" href="#fn.8">8</a></sup>
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 13: </span><code>[Temperature]</code> defines the safe operating ranges of the detector. If the range is left, the detector is to be shut down.</label><pre class="src src-toml" id="code:daq:temperature_config">[<span style="color: #66D9EF;">Temperature</span>] <span style="color: #75715E;"># </span><span style="color: #75715E;">temperature related parameters, all temps in °C</span>
+<span style="color: #FD971F;">safeUpperTempIMB</span>                = 61
+<span style="color: #FD971F;">safeUpperTempSeptem</span>             = 61
+<span style="color: #FD971F;">safeLowerTempIMB</span>                = 0
+<span style="color: #FD971F;">safeLowerTempSeptem</span>             = 0
+</pre>
+</div>
+</div>
+
+<div class="outline-5" id="outline-container-org1c03ad5">
+<h5 id="org1c03ad5"><span class="section-number-5">17.2.2.1.</span> Understanding FADC settings   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-17-2-2-1">
+<ul class="org-ul">
+<li class="off"><code>[ ]</code> <b>This should at least</b> be an :extended: section with an
+explanation of all the fields that one can actually set.</li>
+</ul>
+
+<p>
+Given the time since last working with this, I need to look up the
+values of the TOS config file in the FADC manual.
+</p>
+
+<p>
+For reference our settings:
+</p>
+<div class="org-src-container">
+<pre class="src src-toml">[<span style="color: #66D9EF;">Fadc</span>] <span style="color: #75715E;"># </span><span style="color: #75715E;">FADC Settings</span>
+<span style="color: #FD971F;">fadcTriggerType</span>                 = 3 
+<span style="color: #FD971F;">fadcFrequency</span>                   = 2
+<span style="color: #FD971F;">fadcPosttrig</span>                    = 80
+<span style="color: #FD971F;">fadcPretrig</span>                     = 15000
+<span style="color: #75715E;"># </span><span style="color: #75715E;">was 2033 before, 1966 corresponds to -40 mV</span>
+<span style="color: #FD971F;">fadcTriggerThresholdRegisterAll</span> = 1966 
+<span style="color: #75715E;"># </span><span style="color: #75715E;">run time of a single pedestal run for the FADC in ms</span>
+<span style="color: #FD971F;">fadcPedestalRunTime</span>             = 100
+<span style="color: #75715E;"># </span><span style="color: #75715E;">number of acquisition runs done for each pedestal calibration</span>
+<span style="color: #FD971F;">fadcPedestalNumRuns</span>             = 10
+<span style="color: #75715E;"># </span><span style="color: #75715E;">using channel 0 on FADC as trigger source, thus bit 0  1!</span>
+<span style="color: #FD971F;">fadcChannelSource</span>               = 1
+<span style="color: #75715E;"># </span><span style="color: #75715E;">set FADC mode register (mainly to enable 14-bit readout)</span>
+<span style="color: #FD971F;">fadcModeRegister</span>                = 0b000
+</pre>
+</div>
+
+<p>
+<code>FP_FREQUENCY</code> is the name for the address <code>0x01</code> for the. It needs 6
+bits of data:
+</p>
+<pre class="example">
+Bits 0-5 Function
+Val = 1 =&gt; Fsample = 2GHz.
+Val = 2 =&gt; Fsample = 1GHz.
+Val = 4 =&gt; Fsample = 500MHz.
+Val = 5 =&gt; Fsample = 400MHz.
+Val = 10 =&gt; Fsample = 200MHz.
+Val = 20 =&gt; Fsample = 100MHz.
+Val = 40 =&gt; Fsample = 50MHz.
+</pre>
+<p>
+As such our used value of <code>fadcFrequency = 2</code> corresponds to
+\(\SI{1}{GHz}\) as I remembered.
+</p>
+
+<p>
+<code>MODE_REGISTER</code> is for value <code>0x03</code> and its 3 bits of data.
+<img src="./figs/home/basti/phd/Figs/fadc_settings_mode_register.png" alt="fadc_settings_mode_register.png" />
+Our value of <code>0b000</code> for the data means no interruption tagging, 12
+bits data output and normal acquisition mode.
+</p>
+
+<p>
+The <code>fadcTriggerThresholdRegisterAll</code> controls the trigger threshold
+of the FADC. See (<a href="./bibliography.html#citeproc_bib_item_57">CAEN 2010</a>) page 31-32:
+</p>
+<blockquote>
+<p>
+TRIGGER THRESHOLD DAC : common pre-loading register of the DACs. This
+12-bit register covers the range from –1V (000) to +1V (FFF). By USB
+or GPIB, one has access to the MSBs and LSBs via 2 distinct
+sub-addresses. The access is necessarily made in the order MSB (0B)
+then LSB (0A). By VME, the access is made via a single sub-address
+(0A). After loading of this register, one must transfer the value in
+the analog converter via the LOAD<sub>TRIGGER</sub> THRESHOLD DAC (09) command.
+</p>
+</blockquote>
+
+<p>
+This implies the trigger is calculated by:
+</p>
+<div class="org-src-container">
+<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained
+<span style="color: #F92672;">const</span> <span style="color: #66D9EF;">U_range</span> = <span style="font-style: italic;">2</span>.<span style="color: #66D9EF;">V</span>
+<span style="color: #F92672;">const</span> <span style="color: #66D9EF;">DAC_range</span> = <span style="font-style: italic;">4096</span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">threshold</span><span style="color: #AE81FF;">(</span>x: <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">MilliVolt</span> =
+  <span style="color: #FD971F;">result</span> = <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">U_range</span> / <span style="color: #66D9EF;">DAC_range</span> * x - <span style="font-style: italic;">1</span>.<span style="color: #66D9EF;">V</span><span style="color: #AE81FF;">)</span>.to<span style="color: #AE81FF;">(</span>mV<span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">echo</span> threshold<span style="color: #AE81FF;">(</span><span style="font-style: italic;">1966</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> 
+</pre>
+</div>
+
+<p>
+which precisely reproduces our \(\SI{-40}{mV}\) number.
+</p>
+</div>
+</div>
+</div>
+
+
+
+<div class="outline-4" id="outline-container-sec:daq:tos_hv_control">
+<h4 id="sec:daq:tos_hv_control"><span class="section-number-4">17.2.3.</span> HV control via TOS</h4>
+<div class="outline-text-4" id="text-sec:daq:tos_hv_control">
+<p>
+As is being alluded to in the previous section 
+<a href="./daq.html#sec:daq:tos_config_file">17.2.2</a>, the HV control built into TOS can also
+handle ramping the channels of the detector. This is particularly
+convenient as it offers a very smooth ramping mode, which keeps the
+voltage potentials between all channels under a constant
+ratio. This allows for automatic ramping even for highly sensitive
+channels (like the GridPix grid).
+</p>
+
+<p>
+In order to use the HV control and ramp the channels via TOS,
+<code>ActivateHFM</code> must be followed by <code>InitHV</code>, which attempts to connect
+to the HV power supply using the configuration of the config file. If
+the channels are not ramped up, a call to <code>RampChannels</code> will start
+the smooth ramping process (see listing <a href="code:daq:ramp_hv_channels">14</a>).
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 14: </span>The required commands to ramp the HV channels using the configuration from the config file using a smooth ramping mode.</label><pre class="src src-sh" id="code:daq:ramp_hv_channels">&gt; ActivateHFM
+&gt; InitHV
+&gt; RampChannels
+</pre>
+</div>
+
+<p>
+If the HV is to be ramped down, a call to <code>ShutdownHFM</code> will ask
+whether the channels should be ramped down. There are a multitude of
+further commands available to communicate with the module, check the
+voltages, print status information etc.
+</p>
+
+<p>
+Note that TOS can be started without ramping the HV channels and
+stopped without ramping the channels down. It is capable of connecting
+to a running HV power supply or leave it running after shut down. 
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:daq:temperature_readout">
+<h4 id="sec:daq:temperature_readout"><span class="section-number-4">17.2.4.</span> Temperature monitoring</h4>
+<div class="outline-text-4" id="text-sec:daq:temperature_readout">
+<p>
+The two <code>MAX31685</code> micro controllers read out <code>PT1000</code> sensors, a
+group of \textbf{R}esistance \textbf{T}emperature \textbf{S}ensors
+(RTDs), which measure temperatures by its effect on the electrical
+resistance. They are platinum based and have a resistance of
+\(\SI{1000}{Ω}\) at \(\SI{0}{\celsius}\). As the expected change in
+resistance is well understood, the temperature can be precisely
+measured.
+</p>
+
+<p>
+The micro controller communicates with another micro controller, an
+<code>MCP2210</code> via the \textbf{S}erial \textbf{P}eripheral
+\textbf{I}nterface (SPI). SPI allows to address both <code>MAX31685</code> from
+the single <code>MCP2210</code>. The <code>MCP2210</code> is a USB-to-SPI micro
+controller. The USB connection from the intermediate board with the
+computer is separate from the rest of the detector
+communication. <code>TOS</code> communicates with it via the standard
+\textbf{H}uman \textbf{I}nteface \textbf{D}evice (HID) driver and
+utilizes an existing open source library for the <code>MCP2210</code>
+(<a href="./bibliography.html#citeproc_bib_item_238">Wong 2013</a>), which is slightly adapted.
+</p>
+
+<p>
+The <code>ActivateHFM</code> command mentioned in the previous section also
+attempts to find the USB device of the <code>MCP2210</code> (the two are
+intertwined mainly, as the Septemboard detector is the only detector
+with either of the two features). If it is found, temperature logging
+starts immediately and the log files are placed in the default <code>log</code>
+directory of the <code>TOS</code> repository. Once a data taking run starts,
+the logging location is moved over to the data storage directory of
+the run. In either case the log file is named <code>temp_log.txt</code> and
+contains one temperature value for the intermediate board sensor
+(<code>Temp_IMB</code>) and one for the carrier board sensor (<code>Temp_Septem</code>)
+computed – based on an average over \(\SI{5}{s}\) – and a timestamp
+(<code>DateTime</code>). A short snippet of the temperature log is shown in listing
+<a href="code:daq:temperature_readout">15</a>. <sup>  <a role="doc-backlink" class="footref" id="fnr.9" href="#fn.9">9</a></sup>
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 15: </span>Snippet of a temperature log file as recorded for a run during the CAST detector lab measurements. Tabs were replaced by spaces for better visual alignment here.</label><pre class="src src-sh" id="code:daq:temperature_readout"><span style="color: #75715E;"># </span><span style="color: #75715E;">Temperature log file</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">Temp_IMB  Temp_Septem   DateTime</span>
+26.5186     42.1472       2019-02-16.16:11:45
+26.5217     42.2798       2019-02-16.16:11:51
+26.5202     42.4371       2019-02-16.16:11:57
+26.5309     42.5944       2019-02-16.16:12:03
+26.5324     42.7347       2019-02-16.16:12:09
+26.5355     42.8627       2019-02-16.16:12:15
+26.5416     42.9707       2019-02-16.16:12:21
+26.5432     43.0771       2019-02-16.16:12:27
+26.5616     43.1804       2019-02-16.16:12:33
+...
+</pre>
+</div>
+</div>
+</div>
+
+
+<div class="outline-4" id="outline-container-org64611b3">
+<h4 id="org64611b3"><span class="section-number-4">17.2.5.</span> TOS development   <span class="tag">  <span class="extended">extended</span></span></h4>
+<div class="outline-text-4" id="text-17-2-5">
+<p>
+As mentioned in one of the footnotes in the previous section, there
+are nowadays 2 independent versions of TOS.
+</p>
+
+<p>
+The detector used for CAST in 2014/15 (and thus its successor used in
+this thesis) was based on a readout using the Virtex 6 FPGA. This
+system was, at the point I started on my master thesis in 2015,
+already quite diverged from the SRS based system, which was mainly
+developed for multi chip detectors that were initially planned for a
+large GridPix based TPC to be used for the ILD (the detector planned
+for the ILC, the International Linear Collider to be built in Japan).
+</p>
+
+<p>
+In addition there was recent a master thesis (by Alexander Deisting
+(<a href="./bibliography.html#citeproc_bib_item_78">Deisting 2014</a>)), which included work on using an FADC to read out the
+induced charges on the grid of the InGrid by decoupling the signal
+using a capacitor. The software library to interact with the used FADC
+had partially been implemented into the Virtex 6 TOS.
+</p>
+
+<p>
+As the FADC was an integral part in the new detector design, it was
+natural to start with the Virtex 6 version. 
+</p>
+
+<p>
+At the same time the SRS TOS version at the time was even more
+ugly than the same code paths in the Virtex 6 TOS, due to its
+hardcoded extra loops for each FEC of the TOS. At a later time the SRS
+TOS was required for other detectors and so development effort was
+spent on both systems unfortunately. 
+</p>
+</div>
+</div>
+</div>
+
+
+<div class="outline-3" id="outline-container-sec:daq:septemboard_event_display">
+<h3 id="sec:daq:septemboard_event_display"><span class="section-number-3">17.3.</span> Septemboard event display</h3>
+<div class="outline-text-3" id="text-sec:daq:septemboard_event_display">
+<p>
+In order to monitor the data taking process while the detector is
+running, an online event display tool was developed during the first
+CAST data taking period in March 2017. It is a Python <sup>  <a role="doc-backlink" class="footref" id="fnr.10" href="#fn.10">10</a></sup>
+based project making heavy use of <code>matplotlib</code> (<a href="./bibliography.html#citeproc_bib_item_117">Hunter 2007</a>) for
+an interactive view of both the Septemboard events as they are
+recorded, the FADC readout as well as a general information header
+about the current data taking run.
+</p>
+
+<p>
+The backend consists of a multiprocessing architecture with multiple
+worker processes. One process watches the current run directory for
+changes and reads the raw data files, another performs basic event
+reconstruction and a last one updates the current event to be
+displayed. The main process renders the <code>matplotlib</code> based graphical
+user interface (GUI) <sup>  <a role="doc-backlink" class="footref" id="fnr.11" href="#fn.11">11</a></sup>. 
+</p>
+
+<p>
+Fig. <a href="#fig:daq:septemboard_event_display_example">1</a> shows the graphical
+user interface of the septemboard event display during a background
+run. General information about the current run and event is shown in
+the box at the top center. The top left box shows hit specific
+information for the current event.  The current septemboard event is
+always shown in the left pane in a realistic layout of the
+septemboard. By default the Viridis <sup>  <a role="doc-backlink" class="footref" id="fnr.12" href="#fn.12">12</a></sup> color scale is used
+in the display of the septemboard events, each shown as an image of
+\((256, 256)\) pixels. If a chip did not record any activity during an
+event, its plot remains white for easier identification of few hits
+compared to no hits. The color scale can be adjusted when starting the
+program and the images can be downsampled by any factor of 2 for
+better visibility, as is done in
+fig. <a href="#fig:daq:septemboard_event_display_example">1</a>. The right pane of the
+event display shows the last recorded event of the FADC. It does not
+automatically update the plot every time a new septemboard event is
+recorded, as there can be multiple events without FADC activity and it
+is useful to be able to glance at the last large event on the
+FADC. The filename is printed as the title of the plot to show which
+septemboard event it corresponds to.
+</p>
+
+
+<figure id="fig:daq:septemboard_event_display_example">
+<img src="./figs/home/basti/phd/Figs/daq/example_event_display.svg" class="org-svg" alt="example_event_display.svg" />
+
+<figcaption>Figure 1: <span class="figure-number">Figure 113: </span>Screenshot of the Septemboard event display showing a background event from a CAST data taking run in 2017. The pixel density in the septemboard on the left has been downsampled by a factor of 2 from \((256, 256)\) for each chip to \((128, 128)\) for better visibilty of the activity. The event display shows general information like run and event number in the box at the top, hit specific information for the current event in the left top box and the current septemboard event in the left pane. The right pane shows the last FADC event (if no new FADC event is recorded, it stays).</figcaption>
+</figure>
+
+<p>
+The event display provides multiple forms of interactivity, such as an
+&quot;auto follow&quot; mode (the default in which new events are shown as they
+are recorded), a &quot;playback&quot; mode (walks through all events with a
+certain delay and general back and forth optionality. Further, a
+shortcut to save images directly exists, as well as simple computation
+of aggregate statistics of the current data taking period (different
+occupancy maps and simple histograms showing the number of hits per
+each event and chip).
+</p>
+
+<p>
+All in all it provides a simple, but powerful way to monitor the
+detector activity online as it takes data. <sup>  <a role="doc-backlink" class="footref" id="fnr.13" href="#fn.13">13</a></sup>
+</p>
+</div>
+</div>
+</div>
+
+<div id="footnotes"><h2 class="footnotes">Footnotes: </h2><div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.1" href="#fnr.1">1</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+There are unfortunately 2 different versions of TOS,
+as development diverged for different readout systems. One version is
+for the Xilinx Virtex-6 (V6) ML605 evaluation board and the other for
+the \textbf{S}calable \textbf{R}eadout \textbf{S}ystem (SRS). The V6
+version can read out only a single detector (with up to 8 Timepix
+ASICs), but supports readout of an Ortec FADC and controlling a Wiener
+HV module via VME. The SRS version instead supports neither of these
+additional features, but supports multiple detectors at the same
+time. The detector used in this thesis is read out using the Virtex-6
+board.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.2" href="#fnr.2">2</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://tiswww.case.edu/php/chet/readline/rltop.html">https://tiswww.case.edu/php/chet/readline/rltop.html</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.3" href="#fnr.3">3</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+As of writing this thesis, I don&apos;t remember
+why the choice was made to only use a single channel instead of using
+all 4 channels to extend the time interval (development of these
+things happened between 2015-2017). It&apos;s possible there were issues
+trying to combine all 4 channels. But it&apos;s also just as likely it was
+an oversight due to lack of time combined with the fact that a
+\(\SI{2.5}{μs}\) window is long enough for all intents and
+purposes. However, combining all 4 channels would even yield a long
+enough acquisition window when running in the \(\SI{2}{GHz}\) sampling
+mode. Similarly, the choice of the 12-bit readout mode may represent
+plenty resolution in ADC values, but it seems prudent to not use the
+14-bit mode given availability. All in all it leaves me head
+scratching (and thinking the likely reason will have been lack of time
+and being happy things working in the first place at the time).
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.4" href="#fnr.4">4</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+If running in \(\SI{1}{GHz}\) mode. Else it corresponds to
+\(\SI{100}{MHz}\) clocks.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.5" href="#fnr.5">5</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The last 3 lines of the data portion
+contain the trigger record, which is already printed by us in the
+header part and the <code>Valp_cp</code> and <code>Vali_cp</code> registers, which are only
+important if the FADC is used at a sampling frequency of \(&lt;
+\SI{1}{GHz}\), which is why we ignore it here.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.6" href="#fnr.6">6</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+If in doubt about what the base address of the HV
+supply in the VME crate is, start one of the Wiener HV programs (for
+example <code>isegControl</code>), as it auto detects the module and prints the
+address.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.7" href="#fnr.7">7</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The <code>checkModuleTimeInterval</code> setting
+to check the HV status during the data taking was disabled at CAST, as
+it caused issues due to false alarms of the HV status. Given that the
+<code>KillEnable</code> flag was used, it was deemed unimportant. Attempting to
+fix it would have caused possible data loss as it would have been
+tested on the live detector.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.8" href="#fnr.8">8</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The temperature safety range
+is coupled to the <code>checkModuleTimeInterval</code> setting in the previous
+footnote. It was disabled together with the above during actual data
+taking.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.9" href="#fnr.9">9</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+This default temperature logging location was also
+used as an unintended fallback mechanism during data taking, if the HV
+of the detector was considered out of certain bounds. Unfortunately,
+the bounds checking was entangled with the HV module sanity checks. As
+both features were very only implemented shortly before data taking,
+they triggered data taking aborts. For that reason the feature was
+disabled manually in code for the data taking at CAST. This however
+triggered a secondary code path for the temperature logging, storing
+it in the default location outside the specific run directories. As an
+effect the majority of CAST temperature logging data has been lost, as
+most of it was overwritten several times. Roughly daily manual temperature
+measurements are still left and show the detector operating in a good
+temperature range. Precise correlations with certain detector
+behaviors are unfortunately impossible. The two different code paths
+for the temperature logging are essentially a bug in the code that was
+never intended, stemming from the fact that temperature logging must
+be done to a &apos;global&apos; location outside of data taking (as no data
+taking specific directory exists). Due to how the temperature logging
+and HV &amp; FADC controls were added to TOS, these things were more
+entangled than necessary. A more thorough testing period of the
+detector and software package should have been performed, but was not
+in scope.
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.10" href="#fnr.10">10</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://python.org">https://python.org</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.11" href="#fnr.11">11</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<code>matplotlib</code> provides a multitude of different GUI
+backends. The explicit choice depends on the specific machine
+(available backends may differ) and preference. Common choices are GTK
+and TkAg. <a href="https://matplotlib.org/stable/users/explain/figure/backends.html">https://matplotlib.org/stable/users/explain/figure/backends.html</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.12" href="#fnr.12">12</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+See here for the introduction of Viridis and its siblings: <a href="https://bids.github.io/colormap/">https://bids.github.io/colormap/</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.13" href="#fnr.13">13</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+The main drawbacks are related to it being a
+Python based project that utilizes <code>matplotlib</code> possibly too
+heavily. The combination means the tool is not useful for fast data
+taking, as it is too slow to show events in real time if data taking
+exceeds one frame per second significantly.
+</p></div></div>
+
+</div>
+<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--  2024-06-18 Tue 23:44  -->
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1" name="viewport" />
+<title>‎</title>
+<meta content="Vindaar" name="author" />
+<meta content="Org Mode" name="generator" />
+
+<link type="text/css" rel="stylesheet" href="org_html_export.css" />
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set the initial width for subfigures and their images
+    document.querySelectorAll('figure.subfigure[data-width]').forEach(function(subfigure) {
+        subfigure.style.width = subfigure.getAttribute('data-width');
+    });
+
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.style.width = img.getAttribute('data-width');
+    });
+
+    // Event listener for images within subfigures
+    document.querySelectorAll('figure.subfigure img[data-width]').forEach(function(img) {
+        img.addEventListener('click', function() {
+            // Determine the .figure-wrapper that contains the clicked image
+            let wrapper = this.closest('.figure-wrapper');
+
+            // If found, adjust the sizes of its subfigures
+            if (wrapper) {
+                let subfigures = wrapper.querySelectorAll('figure.subfigure');
+                subfigures.forEach(subfigure => {
+                    let width = parseFloat(subfigure.getAttribute('data-width'));
+                    if (width < 50) { // Double size if less than 50%
+                        subfigure.setAttribute('data-width', (width * 2) + '%');
+                        subfigure.style.width = (width * 2) + '%';
+                    } else { // Halve size otherwise
+                        subfigure.setAttribute('data-width', (width / 2) + '%');
+                        subfigure.style.width = (width / 2) + '%';
+                    }
+                });
+            }
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var headers = document.querySelectorAll('h1 .extended, h2 .extended, h3 .extended, h4 .extended, h5 .extended, h6 .extended');
+
+    headers.forEach(function (header) {
+        var foldableHeader = header.closest('h1, h2, h3, h4, h5, h6');
+        if (foldableHeader) {
+            foldableHeader.classList.add('foldable-header');
+            var nextElement = foldableHeader.nextElementSibling;
+            var contentToFold = [];
+            while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                contentToFold.push(nextElement);
+                nextElement = nextElement.nextElementSibling;
+            }
+            contentToFold.forEach(function (element) {
+                element.classList.add('folded-content');
+            });
+
+            foldableHeader.addEventListener('click', function () {
+                contentToFold.forEach(function (element) {
+                    if (element.style.display === 'none' || element.style.display == '') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+});
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+<!-- /* --><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js", "[Contrib]/siunitx/siunitx.js", "[Contrib]/mhchem/mhchem.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"], ['$', '$'], ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 1.0,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        },
+        TeX: {
+              equationNumbers: { autoNumber: 'AMS' },
+              Macros: {
+                  ccsini: '{\\mathrm{Si}₃\\mathrm{N}₄}',
+                  cefe: '{\\ce{^{55}Fe}}',
+                  vektor: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  mtrix: ['{\\begin{pmatrix}#1\\end{pmatrix}}', 1],
+                  cp: '{\\mathrm{CP}}',
+                  cpt: '{\\mathrm{CPT}}',
+                  dd: '{\\mathop{}\\!{\\mathrm{d}}}',
+                  sinc: '{\\mathrm{sinc}}'
+              }
+        }
+    });
+/*]]>*///--&gt;
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<nav role="doc-toc" id="table-of-contents">
+<h2>Table of Contents</h2>
+<div role="doc-toc" id="text-table-of-contents">
+<ul>
+<li>  <a href="./errata.html#sec:errata">1. Errata   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
+<li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
+<ul>
+<li>  <a href="./about_thesis.html#orgc36e3ba">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org976c329">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orga7aaacb">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory.html#sec:theory:useful_reading_material">4.1. Useful reading material   <span class="tag">    <span class="optional">optional</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:illustration_cpt">4.2. Illustration of the \cpt symmetry <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./theory.html#sec:theory:invisible_axion_models">4.3. Invisible axion models and axion couplings</a></li>
+<li>  <a href="./theory.html#sec:theory:axion_interactions">4.4. Implications for axion interactions - conversion probability</a></li>
+<li>  <a href="./theory.html#sec:theory:solar_axion_flux">4.5. Solar axion flux</a></li>
+<li>  <a href="./theory.html#sec:theory:chameleon">4.6. Chameleons</a></li>
+<li>  <a href="./theory.html#sec:theory:current_bounds">4.7. Current bounds on coupling constants</a></li>
+</ul>
+</li>
+<li><a href="./helioscopes.html#sec:helioscopes">5. Axion helioscopes   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./helioscopes.html#sec:helioscopes:cast">5.1. CERN Axion Solar Telescope (CAST)</a></li>
+<li>  <a href="./helioscopes.html#sec:helioscopes:iaxo">5.2. International AXion Observatory (IAXO)</a></li>
+</ul>
+</li>
+<li><a href="./theory_detector.html#sec:theory_detector">6. X-rays, cosmic muons and gaseous detectors   <span class="tag">  <span class="Theory">Theory</span></span></a>
+<ul>
+<li>  <a href="./theory_detector.html#sec:theory:particle_int">6.1. Particle interactions with matter</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:cosmic_radiation">6.2. Cosmic rays</a></li>
+<li>  <a href="./theory_detector.html#sec:theory:gas_fundamentals">6.3. Gaseous detector fundamentals</a></li>
+</ul>
+</li>
+<li><a href="./septemboard.html#sec:septemboard">7. Septemboard detector   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./septemboard.html#sec:detector:micromegas">7.1. Micromegas working principle</a></li>
+<li>  <a href="./septemboard.html#sec:detector:timepix">7.2. Timepix ASIC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
+<li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
+<li>  <a href="./septemboard.html#orgc654d28">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
+<li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
+<li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
+<li>  <a href="./septemboard.html#sec:detector:septemboard">7.10. Septemboard - 6 GridPixes around a center one</a></li>
+<li>  <a href="./septemboard.html#sec:detector:water_cooling">7.11. Water cooling and temperature readout for the septemboard</a></li>
+<li>  <a href="./septemboard.html#sec:septem:efficiency">7.12. Detector efficiency</a></li>
+<li>  <a href="./septemboard.html#sec:detector:daq">7.13. Data acquisition and detector monitoring</a></li>
+</ul>
+</li>
+<li><a href="./operation_calibration.html#sec:operation_calibration">8. Detector calibration for operation   <span class="tag">  <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:timepix">8.1. Timepix calibrations</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:fadc">8.2. FADC calibration</a></li>
+<li>  <a href="./operation_calibration.html#sec:operation_calibration:scintillators">8.3. Scintillator calibration</a></li>
+</ul>
+</li>
+<li><a href="./reconstruction.html#sec:reconstruction">9. Data reconstruction   <span class="tag">  <span class="Reconstruction">Reconstruction</span></span></a>
+<ul>
+<li>  <a href="./reconstruction.html#sec:reco:tpa">9.1. <code>TimepixAnalysis</code> and Nim</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:tos_data_parsing">9.2. TOS data parsing</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:event_shape">9.3. Expectation of event shapes</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:data_reconstruction">9.4. Data reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:fadc_data">9.5. FADC reconstruction</a></li>
+<li>  <a href="./reconstruction.html#sec:reco:scintillator_data">9.6. Scintillator data</a></li>
+</ul>
+</li>
+<li><a href="./cast.html#sec:cast">10. Detector installation &amp; data taking at CAST   <span class="tag">  <span class="CAST">CAST</span></span></a>
+<ul>
+<li>  <a href="./cast.html#sec:cast:timeline">10.1. Timeline</a></li>
+<li>  <a href="./cast.html#sec:cast:alignment">10.2. Alignment</a></li>
+<li>  <a href="./cast.html#sec:cast:detector_setup">10.3. Detector setup at CAST</a></li>
+<li>  <a href="./cast.html#sec:cast:window_accident">10.4. Window accident</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_woes">10.5. Data taking woes</a></li>
+<li>  <a href="./cast.html#sec:cast:data_taking_campaigns">10.6. Summary of CAST data taking</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:calibration">11. Data calibration   <span class="tag">  <span class="Calibration">Calibration</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:calibration:energy">11.1. Energy calibration - in principle</a></li>
+<li>  <a href="./calibration.html#sec:calib:detector_behavior_over_time">11.2. Detector behavior over time</a></li>
+<li>  <a href="./calibration.html#sec:calib:final_energy_calibration">11.3. Energy calibration dependence on the gas gain</a></li>
+<li>  <a href="./calibration.html#sec:calib:fadc">11.4. FADC</a></li>
+</ul>
+</li>
+<li><a href="./background.html#sec:background">12. Finding signal and defining background | Background rate computation   <span class="tag">  <span class="Analysis">Analysis</span></span></a>
+<ul>
+<li>  <a href="./background.html#sec:background:likelihood_method">12.1. Likelihood method</a></li>
+<li>  <a href="./background.html#sec:cdl">12.2. CAST Detector Lab</a></li>
+<li>  <a href="./background.html#sec:background:likelihood_cut">12.3. Application of likelihood cut for background rate</a></li>
+<li>  <a href="./background.html#sec:background:mlp">12.4. Artificial neural networks as cluster classifiers</a></li>
+<li>  <a href="./background.html#sec:background:additional_vetoes">12.5. Additional detector features as vetoes</a></li>
+<li>  <a href="./background.html#sec:background:all_vetoes_combined">12.6. Background rates of combined vetoes and efficiencies</a></li>
+</ul>
+</li>
+<li><a href="./limit.html#sec:limit">13. Limit calculation   <span class="tag">  <span class="Limit">Limit</span></span></a>
+<ul>
+<li>  <a href="./limit.html#sec:limit:method_introduction">13.1. Limit method - introduction</a></li>
+<li>  <a href="./limit.html#sec:limit:method_likelihood">13.2. Limit method - likelihood function \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_L">13.3. Limit method - computing \(\mathcal{L}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:method_computing_a_limit">13.4. Limit method - computing a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
+<li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
+<li>  <a href="./limit.html#org5e81b6c">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orge06cfa1">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
+<li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
+<li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
+<li>  <a href="./limit.html#sec:limit:expected_limits">13.13. Expected limits of different setups</a></li>
+<li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
+<li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
+<li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
+<li>  <a href="./limit.html#orgc627f43">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgda19ced">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
+<li>  <a href="./summary.html#sec:summary">15. Summary &amp; conclusion</a></li>
+<li>  <a href="./bibliography.html#sec:bibliography">16. Bibliography   <span class="tag">    <span class="html">html</span>  </span></a></li>
+<li><a href="./daq.html#sec:daq">17. Data acquisition and detector monitoring   <span class="tag"><span class="Appendix">Appendix</span> <span class="Detector">Detector</span></span></a>
+<ul>
+<li>  <a href="./daq.html#sec:daq:tof">17.1. Timepix Operating Firmware - TOF</a></li>
+<li>  <a href="./daq.html#sec:daq:tos">17.2. Timepix Operating Software - TOS</a></li>
+<li>  <a href="./daq.html#sec:daq:septemboard_event_display">17.3. Septemboard event display</a></li>
+</ul>
+</li>
+<li><a href="./configuration.html#sec:appendix:configuration">18. Configuration and TOS / TOF versions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_config">18.1. TOS configuration file</a></li>
+<li>  <a href="./configuration.html#sec:appendix:configuration:tos_tof_versions">18.2. TOS and TOF versions used at CAST</a></li>
+</ul>
+</li>
+<li><a href="./calibration.html#sec:appendix:calibration">19. Calibrations   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./calibration.html#sec:appendix:calibration:timepix">19.1. Timepix calibrations</a></li>
+<li>  <a href="./calibration.html#sec:appendix:septemboard_calibrations">19.2. Septemboard calibration</a></li>
+<li>  <a href="./calibration.html#sec:appendix:scintillator_calibration_notes">19.3. Calibration measurements of the veto scintillator paddle   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_operations.html#sec:appendix:cast_operations">20. CAST operation procedures   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_operations:terminology">20.1. CAST terminology</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:high_voltage">20.2. High voltage supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:vacuum_system">20.3. Vacuum system</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:watercooling_gas">20.4. Watercooling system &amp; gas supply</a></li>
+<li>  <a href="./cast_operations.html#sec:cast:interlock_systems">20.5. Interlock systems</a></li>
+<li>  <a href="./cast_operations.html#sec:appendix:cast_log_files">20.6. CAST log files</a></li>
+</ul>
+</li>
+<li><a href="./cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_run_list.html#orgd304089">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cast_data_taking_notes.html#orge4011be">22.1. Run table</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgeba5174">22.2. Data runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgd62eab2">22.3. Calibration runs</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org0271f47">22.4. Automatically generated run list</a></li>
+<li>  <a href="./cast_data_taking_notes.html#orgb34c028">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./cast_data_taking_notes.html#org338e161">22.6. InGrid temperature from shift forms</a></li>
+</ul>
+</li>
+<li><a href="./cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./cabling_and_softwar_setup.html#org7cb11ec">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org3244c1a">23.2. Detector cabling</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#org7c3b445">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./cabling_and_softwar_setup.html#orgda4f123">23.4. Setting up the chips in TOS</a></li>
+</ul>
+</li>
+<li><a href="./vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
+<ul>
+<li>  <a href="./vacuum_contamination.html#org35e49a4">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./vacuum_contamination.html#orgdf125cb">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./vacuum_contamination.html#orgf5a7285">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./vacuum_contamination.html#orgeeae0bd">24.4. Calculation of possible contamination</a></li>
+</ul>
+</li>
+<li><a href="./detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:choice_gas_gain_binning">25.1. Choice of gas gain binning time interval</a></li>
+<li>  <a href="./detector_time_behavior.html#sec:appendix:correlation_gas_gain_ambient_temp">25.2. Correlation of gas gain and ambient CAST temperature</a></li>
+</ul>
+</li>
+<li><a href="./cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./cast_detector_lab.html#orgfed071e">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
+</ul>
+</li>
+<li><a href="./fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
+</ul>
+</li>
+<li><a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./morphing_cdl_spectra.html#orgabd5f0e">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#orga5d9c5b">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
+<li>  <a href="./morphing_cdl_spectra.html#org218c56a">28.6. Notes on CDL morphing development   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./occupancy.html#orgdce408e">29.1. Run-2</a></li>
+<li>  <a href="./occupancy.html#orge5d3863">29.2. Run-3</a></li>
+<li>  <a href="./occupancy.html#org971382a">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
+<li>  <a href="./fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
+<li>  <a href="./fadc.html#org517ef50">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
+</ul>
+</li>
+<li><a href="./background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
+<li>  <a href="./background_rates.html#org01e8b4b">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#org2774ce8">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./background_rates.html#orgd0f5dfb">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li><a href="./limit_additional.html#sec:appendix:limit_additional">33. Additional limit information   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./limit_additional.html#sec:appendix:conversion_probability">33.1. Conversion probability as a function of mass   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:exp_limit_percentiles">33.2. Expected limit table with percentiles</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:axion_photon">33.3. Observed limit - axion photon \(g_{aγ}\)</a></li>
+<li>  <a href="./limit_additional.html#sec:appendix:limit_additional:chameleon">33.4. Observed limit - chameleon \(β_γ\)</a></li>
+</ul>
+</li>
+<li><a href="./software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./software.html#orgbae2c69">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#org13d471b">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
+<li>  <a href="./software.html#orgb88ee40">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+</ul>
+</li>
+<li><a href="./full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./full_data_reconstruction.html#org39ad6bd">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./full_data_reconstruction.html#org1eac87c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./full_data_reconstruction.html#org09b2461">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./full_data_reconstruction.html#org3344338">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./full_data_reconstruction.html#org18a2de7">35.5. Applying a classifier</a></li>
+<li>  <a href="./full_data_reconstruction.html#org17bde80">35.6. Computing limits</a></li>
+</ul>
+</li>
+<li><a href="./average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./average_depth_xrays_argon.html#org2d84fd5">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org11eec4e">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./average_depth_xrays_argon.html#org28b81a5">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li><a href="./raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
+<ul>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:traxer">37.1. TrAXer - An interactive axion raytracer</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
+<li>  <a href="./raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
+<li>  <a href="./raytracing.html#org7d687b6">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./raytracing.html#orgc4745d9">37.6. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+</ul>
+</li>
+<li>  <a href="./acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Part5">Part5</span>  </span></a></li>
+</ul>
+</div>
+</nav>
+<div class="outline-2" id="outline-container-sec:appendix:software">
+<h2 id="sec:appendix:software"><span class="section-number-2">34.</span> Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></h2>
+<div class="outline-text-2" id="text-sec:appendix:software">
+<p>
+In this appendix we will go over the software developed and used in
+the course of this thesis with a bit more detail than in the main
+thesis (beginning of chapter <a href="./reconstruction.html#sec:reconstruction">9</a>). The focus is
+more on the technical and usability side and not the physics
+application. Read this appendix either if you
+</p>
+
+<ul class="org-ul">
+<li>are simply interested,</li>
+<li>are intending to reproduce the analysis or use (parts of) the software
+for your own data,</li>
+<li>wish to further process data produced by these tools with your own software.</li>
+</ul>
+</div>
+
+<div class="outline-3" id="outline-container-orgbae2c69">
+<h3 id="orgbae2c69"><span class="section-number-3">34.1.</span> Why did I start writing my own analysis framework?   <span class="tag">  <span class="extended">extended</span></span></h3>
+<div class="outline-text-3" id="text-34-1">
+<p>
+Some of you may wonder why I wrote all this code in order to analyze
+my data. It is a huge undertaking with not much upside in the context
+of finishing my PhD after all.
+</p>
+
+<p>
+The reason boils down to 2 main points:
+</p>
+
+<ol class="org-ol">
+<li>Christoph (<a href="./bibliography.html#citeproc_bib_item_137">Krieger 2018</a>) used the software framework
+<a href="https://ilcsoft.desy.de/portal/software_packages/marlintpc/">MarlinTPC</a> (see also <sup>  <a role="doc-backlink" class="footref" id="fnr.1" href="#fn.1">1</a></sup>). It is an extension
+to the <a href="https://github.com/iLCSoft/Marlin">&apos;Marlin&apos;</a> framework intended for the application of TPCs in
+the context of the International Linear Collider (ILC).
+I had multiple issues with this:
+<ul class="org-ul">
+<li>it is mostly intended for TPCs. While a GridPix is a TPC of
+sorts, most regular TPCs use strips or pads as a readout and not
+pixels. This made the GridPix introduction inefficient.</li>
+<li>Christoph&apos;s existing code was written for a single GridPix. The
+addition of the Septemboard and more importantly detector vetoes
+would have anyhow meant significant time investment. From a
+simple glance it did not seem like MarlinTPC would make for an
+easy platform to introduce the required features.</li>
+<li>it is a framework based on a base program, which is controlled by
+XML filed called &apos;steering files&apos;. These describe the processes
+to be run in order. Instead of building small programs that do
+one thing, the main program is large and decides at runtime which
+processes to run. All this is built in a very heavy object
+oriented manner, resulting in massive amounts of boilerplate code
+for each new feature. In addition assembling processes in such a
+way results in generally low performance.</li>
+<li>it uses CERN&apos;s ROOT internally, of which I am not a fan,
+especially not for projects that are not LHC scale.</li>
+</ul></li>
+<li>I was a bit naive in some respects. Less so in terms of
+underestimating the amount of code needing to write to reproduce
+the basic reconstruction of Christoph&apos;s code. Yes, that also was
+quite some work, but manageable. Firstly, I was naive enough to
+think people would &quot;accept&quot; my results easily, in case their are
+discrepancies between my and Christoph&apos;s results (of which there
+were many). As it turns out two competing pieces of code often
+don&apos;t produce the exact same results. Understanding and minimizing
+discrepancies was a serious hindrance. Some boiled down to bugs in
+my own code, but others due to bugs in MarlinTPC.
+Secondly, by choosing Nim as the target language I underestimated
+the amount of code I would / had to write completely independent of
+the actual <code>TimepixAnalysis</code> code base. Things like a plotting
+library, dataframe library etc. Initially I thought I would either
+not need these ore simply use Python for additional processing, but
+the joy of building things and my urge for &quot;purity&quot; (few external
+dependencies) lead me down the path to replace more and more of my
+dependencies by my own code.</li>
+</ol>
+
+<p>
+It was a lot of work of course. But while it certainly delayed the
+end of my thesis by a significant time, I learned <i>way</i> more than I
+would have otherwise.
+</p>
+
+<p>
+On another note: Having looked into MarlinTPC now
+(<span class="timestamp-wrapper">  <span class="timestamp">&lt;2024-01-04 Thu 16:38&gt;</span></span>) again, the choice was <i>very much</i> the right
+one. Development seemingly has halted or at the very least is not
+public. This page <a href="https://znwiki3.ifh.de/MarlinTPC/">https://znwiki3.ifh.de/MarlinTPC/</a> mentions a
+migration to DESY&apos;s GitLab here:
+<a href="https://gitlab.desy.de/users/sign_in">https://gitlab.desy.de/users/sign_in</a>. Let me be blunt: screw non
+public code access!
+</p>
+
+<p>
+Second note: <a href="https://github.com/rest-for-physics/framework">REST</a> was not known to me at the time when I started
+development. But more importantly, it pretty much follows in the
+footsteps of MarlinTPC (in terms of XML steering files plus a base
+<code>rest-manager</code> program, being based on CERN&apos;s ROOT, heavy OOP paradigm
+etc.). We&apos;ll see how REST holds up in 10 years time (maybe it blooms
+in the context of BabyIAXO!). At the very least I&apos;m pretty confident
+I&apos;ll be able to get this code up and running with little work at that
+point.
+</p>
+</div>
+</div>
+
+<div class="outline-3" id="outline-container-org13d471b">
+<h3 id="org13d471b"><span class="section-number-3">34.2.</span> Nim   <span class="tag">  <span class="extended">extended</span></span></h3>
+<div class="outline-text-3" id="text-34-2">
+<p>
+As briefly mentioned already in the main body, Nim is a – relatively
+– young programming language that offers C-like performance combined
+with Lisp-like metaprogramming, Python-like whitespace-sensitive, few
+operator based syntax and an Ada-like type system. Combined, these
+provide the perfect base for the single developer to be productive and
+build fast, safe software.
+</p>
+
+<p>
+In other words: the language gets out of my way and let&apos;s me build
+stuff that is fast and should <i>in theory</i> be understandable to people
+coming after me. 
+</p>
+</div>
+</div>
+
+
+<div class="outline-3" id="outline-container-sec:appendix:timepix_analysis">
+<h3 id="sec:appendix:timepix_analysis"><span class="section-number-3">34.3.</span> TimepixAnalysis</h3>
+<div class="outline-text-3" id="text-sec:appendix:timepix_analysis">
+<p>
+Introduced in the main part, in sec. <a href="./reconstruction.html#sec:reco:tpa">9.1</a>, <code>TimepixAnalysis</code>
+(<a href="./bibliography.html#citeproc_bib_item_201">Schmidt 2022c</a>) is the name for the repository containing a large collection
+of different programs for the data reconstruction and analysis of
+Timepix based detectors.
+</p>
+
+<p>
+Generally, the <code>README</code> in the repository gives an overview of all the
+relevant programs, installation instructions and more. For further
+details therefore check there or simply open an issue in the
+repository (<a href="./bibliography.html#citeproc_bib_item_201">Schmidt 2022c</a>).
+</p>
+
+<p>
+Here we will now go over the main programs required to handle the
+Septemboard data taken at CAST so that in appendix
+<a href="./full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35</a> we can present the commands to
+for the entire CAST data reconstruction.
+</p>
+
+<blockquote>
+<p>
+Note: in the PDF and HTML version of the thesis I provide some links
+to different parts of the repository. These generally point to Github,
+because the main public repository of <code>TimepixAnalysis</code> is found
+there. This is mostly out of convenience though. It should be
+straightforward to map them to the paths inside of your local copy of
+the repository, but that makes it trickier to link to.
+</p>
+</blockquote>
+</div>
+
+<div class="outline-4" id="outline-container-org6174509">
+<h4 id="org6174509"><span class="section-number-4">34.3.1.</span> Common points between all TimepixAnalysis programs</h4>
+<div class="outline-text-4" id="text-34-3-1">
+<p>
+All programs in the TimepixAnalysis repository are command line
+only. While it would be quite doable to merge the different programs
+into a single graphical user interface (GUI), I&apos;m personally not much
+of a GUI person. Each program usually has a large number of (optional)
+parameters. Keeping the GUI up to date with (in the past, quickly)
+changing features is just extra work, which I personally did not have
+any use for (if someone wishes to write a GUI for TimepixAnalysis, I&apos;d
+be more than happy to mentor though).
+</p>
+
+<p>
+Every program uses <code>cligen</code> <sup>  <a role="doc-backlink" class="footref" id="fnr.2" href="#fn.2">2</a></sup>, a command line interface
+generator. Based on the definition of the main procedure(s) in the
+program, a command line interface is generated. While <code>cligen</code>
+provides extremely simplified command line argument parsing for the
+developer, it also gives a nice <code>help</code> screen for every program. For
+example, running the first program of the analysis pipeline
+<code>raw_data_manipulation</code> with the <code>-h</code> or <code>--help</code> option:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh">raw_data_manipulation -h
+</pre>
+</div>
+
+<p>
+yields the help screen as shown in listing
+<a href="list:raw_data_manipulation_help">16</a> <sup>  <a role="doc-backlink" class="footref" id="fnr.3" href="#fn.3">3</a></sup>. Keep this in mind, if you
+are unsure about how to use any of the here mentioned programs.
+</p>
+
+<p>
+Further, there is a TOML configuration file in the repository
+(<code>Analysis/ingrid/config.toml</code> from the repository root), which
+controls many aspects of the different programs. Most of these can be
+overwritten by command line arguments to the appropriate programs and
+some also via environment variables. See the extended thesis for
+information about this, it is mentioned where important.
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 16: </span>Example help output of the <code>raw_data_manipulation</code> program when run with <code>-h</code> or <code>--help</code> (some options were removed here to shorten the output).</label><pre class="src src-sh" id="list:raw_data_manipulation_help">Usage:
+  main [REQUIRED,optional-params]
+Version: 44c0c91 built on: 2023-12-06 at 13:01:35
+Options:
+  -h, --help                               print this cligen-erated help
+
+  --help-syntax                            advanced: prepend,plurals,..
+
+  -p=, --path=        string      REQUIRED set path
+
+  -r=, --runType=     RunTypeKind REQUIRED Select run type (Calib | Back | Xray)
+                                           The following are parsed case
+                                           insensetive:
+                                             <span style="color: #FD971F;">Calib</span> = {<span style="color: #E6DB74;">&quot;calib&quot;</span>, <span style="color: #E6DB74;">&quot;calibration&quot;</span>, <span style="color: #E6DB74;">&quot;c&quot;</span>}
+                                             <span style="color: #FD971F;">Back</span> = {<span style="color: #E6DB74;">&quot;back&quot;</span>, <span style="color: #E6DB74;">&quot;background&quot;</span>, <span style="color: #E6DB74;">&quot;b&quot;</span>}
+                                             <span style="color: #FD971F;">Xray</span> = {<span style="color: #E6DB74;">&quot;xray&quot;</span>, <span style="color: #E6DB74;">&quot;xrayfinger&quot;</span>, <span style="color: #E6DB74;">&quot;x&quot;</span>}
+
+  -o=, --out=         string      <span style="color: #E6DB74;">&quot;&quot;</span>       Filename of output file. If none
+                                           given will be set to run_file.h5.
+
+  -n, --nofadc        bool        false    Do not read FADC files.
+
+  -i, --ignoreRunList bool        false    If set ignores the run list 2014/15
+                                           to indicate using any rfOldTos run
+
+  -c=, --config=      string      <span style="color: #E6DB74;">&quot;&quot;</span>       Path to the configuration file to use.
+                                           Default is config.toml<span style="color: #F92672;"> in</span> directory of
+                                           this source file.
+  ...                                         
+
+  -t, --tpx3          bool        false    Convert data from a Timepix3 H5 file
+                                           to TPA format instead of a Tpx1 run
+                                           directory
+  ...                                         
+</pre>
+</div>
+</div>
+</div>
+
+
+<div class="outline-4" id="outline-container-org5bcec21">
+<h4 id="org5bcec21"><span class="section-number-4">34.3.2.</span> Dependencies</h4>
+<div class="outline-text-4" id="text-34-3-2">
+<p>
+TimepixAnalysis mainly has a single noteworthy external dependency,
+namely the HDF5 (<a href="./bibliography.html#citeproc_bib_item_221">The HDF Group 1997</a>) library. The vast majority of code (inside
+the repository itself and its dependencies) is pure Nim. Two
+optimization libraries written in C <code>mpfit</code>
+(Levenberg-Marquardt) <sup>  <a role="doc-backlink" class="footref" id="fnr.4" href="#fn.4">4</a></sup> and NLopt <sup>  <a role="doc-backlink" class="footref" id="fnr.5" href="#fn.5">5</a></sup> are wrapped from
+Nim and are further minor dependencies. Local compilation and
+installation of these is trivial and explained in the TimepixAnalysis
+README.
+</p>
+
+<p>
+For those programs related to the multilayer perceptron (MLP) training
+or usage, PyTorch (<a href="./bibliography.html#citeproc_bib_item_167">Paszke et al. 2019</a>) is an
+additional dependency via (<a href="./bibliography.html#citeproc_bib_item_206">SciNim contributors 2023</a>). Flambeau installs a suitable
+PyTorch version for you. 
+</p>
+
+<p>
+Common other dependencies are the <code>cairo</code> graphics library <sup>  <a role="doc-backlink" class="footref" id="fnr.6" href="#fn.6">6</a></sup>
+and a working BLAS and LAPACK installation.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orgaff771b">
+<h4 id="orgaff771b"><span class="section-number-4">34.3.3.</span> Compilation</h4>
+<div class="outline-text-4" id="text-34-3-3">
+<p>
+Nim being a compiled language means we need to compile the programs
+mentioned below. It can target a C or C++ backend (among others). The
+compilation commands differ slightly between the different programs
+and can depend on usage. The <code>likelihood</code> program below for example
+can be compiled for the C or C++ backend. In the latter case, the MLP
+as a classifier is compiled in.
+</p>
+
+<p>
+Generally, compilation is done via:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">nim c -d:release foo.nim
+</pre>
+</div>
+<p>
+where <code>foo.nim</code> is any of the programs below. <code>-d:release</code> tells the
+Nim compiler to compile with optimizations (you can compile with
+<code>-d:danger</code> for even faster, but less safe, code). Replace <code>c</code> by
+<code>cpp</code> to compile to the C++ backend.
+</p>
+
+<p>
+See the TimepixAnalysis README for further details on how to compile
+each program.
+</p>
+
+<p>
+Unless otherwise specified, each program mentioned below is located in
+<code>Analysis/ingrid</code> from the root of the TimepixAnalysis repository.
+</p>
+</div>
+</div>
+
+
+<div class="outline-4" id="outline-container-org95d137d">
+<h4 id="org95d137d"><span class="section-number-4">34.3.4.</span> <code>raw_data_manipulation</code></h4>
+<div class="outline-text-4" id="text-34-3-4">
+<p>
+<code>raw_data_manipulation</code> is the first step of the analysis
+pipeline. Essentially, it is a parsing stage of the data generated by
+TOS (see section <a href="./daq.html#sec:daq:tos_output_format">17.2.1</a> for an explanation of it)
+and storing it in a compressed HDF5 (<a href="./bibliography.html#citeproc_bib_item_221">The HDF Group 1997</a>) data file.
+</p>
+
+<p>
+The program is fed a directory containing a TOS run via the <code>-p /
+--path</code> argument. Either a directory containing a single run (i.e. a
+data taking period ranging typically from minutes to days in length),
+or a directory that itself contains multiple TOS run directories. Runs
+compressed as gzipped TAR balls, <code>.tar.gz</code> are also supported.
+</p>
+
+<p>
+All data files contained in a run directory will then be parsed in a
+multithreaded way. The files are memory mapped and parsed in parallel
+into a <code>Run</code> data structure, which itself contains <code>Event</code> structures.
+</p>
+
+<p>
+If FADC files are present in a directory, these will also be parsed
+into <code>FadcEvent</code> structures in a similar fashion, unless explicitly
+disabled via the <code>--nofadc</code> option.
+</p>
+
+<p>
+Each run is then written into the output HDF5 file as a &apos;group&apos; (HDF5
+terminology). The meta data about each run and event are stored as
+&apos;attributes&apos; and additional &apos;datasets&apos;, respectively. The structure of
+the produced HDF5 file is shown in sec. <a href="./software.html#sec:appendix:tos:raw_data_layout">34.3.4.1</a>.
+</p>
+
+<p>
+In addition, the tool also supports input from HDF5 files containing
+the raw data from a Timepix3 detector. That data is parsed and
+reprocessed into the same kind of file structure.
+</p>
+</div>
+
+<div class="outline-5" id="outline-container-sec:appendix:tos:raw_data_layout">
+<h5 id="sec:appendix:tos:raw_data_layout"><span class="section-number-5">34.3.4.1.</span> HDF5 data layout generated by <code>raw_data_manipulation</code></h5>
+<div class="outline-text-5" id="text-sec:appendix:tos:raw_data_layout">
+<p>
+The listing <a href="code:reco:abstract_hdf5_layout">17</a> shows the layout of the
+data stored in the HDF5 files after the <code>raw_data_manipulation</code>
+program has processed the TOS run folders. The data is structured in
+groups based on each run, chip and the FADC (if available). Generally
+each &quot;property&quot; is stored in its own dataset for performance reasons
+to allow faster access to individual subsets of the data (read only
+the hits, only \(x/y\) data, etc.). While HDF5 supports even
+heterogeneous compound datasets (that is different data types in
+different &quot;columns&quot; of a 2D like dataset), these are only used
+sparingly and not at all in the <code>raw_data_manipulation</code> output, as
+reading individual columns from these is inefficient.
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 17: </span>An abstract overview of the general layout of the generated HDF5 files. Each entry shown that has any children is an HDF5 group. Every leaf node is an HDF5 dataset. The data is ordered by availability. Each run is a separate group. Within all chips have their own groups with data associated to that chip. The common datasets are those that contain data from the TOS event header. FADC data stored as the raw memory dumps from the FADC files (for which fewer than regular TOS data files exist).</label><pre class="src src-toml" id="code:reco:abstract_hdf5_layout">- runs
+  - run_&lt;number&gt;
+    - chip_0 <span style="color: #75715E;"># </span><span style="color: #75715E;">one for each chip in the event</span>
+      - Hits <span style="color: #75715E;"># </span><span style="color: #75715E;">number of hits in each event</span>
+      - Occupancy <span style="color: #75715E;"># </span><span style="color: #75715E;">a 2D occupancy map of this run</span>
+      - ToT <span style="color: #75715E;"># </span><span style="color: #75715E;">all ToT values of this run</span>
+      - raw_ch <span style="color: #75715E;"># </span><span style="color: #75715E;">the ToT/ToA values recorded for each event (ragged data)</span>
+      - raw_x <span style="color: #75715E;"># </span><span style="color: #75715E;">the x coordinates recorded for each event (ragged data)</span>
+      - raw_y <span style="color: #75715E;"># </span><span style="color: #75715E;">the y coordinates recorded for each event (ragged data)</span>
+    - chip_i <span style="color: #75715E;"># </span><span style="color: #75715E;">all other chips</span>
+      - ...
+    - fadc <span style="color: #75715E;"># </span><span style="color: #75715E;">if available</span>
+      - eventNumber <span style="color: #75715E;"># </span><span style="color: #75715E;">event number of each entry</span>
+                    <span style="color: #75715E;"># </span><span style="color: #75715E;">(not all events have FADC data)</span>
+      - raw_fadc <span style="color: #75715E;"># </span><span style="color: #75715E;">raw FADC data (uncorrected, all 10240 registers)</span>
+      - trigger_record <span style="color: #75715E;"># </span><span style="color: #75715E;">temporal correction factor for each event</span>
+    - fadcReadout <span style="color: #75715E;"># </span><span style="color: #75715E;">flag if FADC was readout in each event</span>
+    - fadcTriggerClock <span style="color: #75715E;"># </span><span style="color: #75715E;">clock cycle FADC triggered</span>
+    - szintillator trigger clocks <span style="color: #75715E;"># </span><span style="color: #75715E;">datasets for each scintillator</span>
+    - timestamp <span style="color: #75715E;"># </span><span style="color: #75715E;">timestamp of each event</span>
+  - run_i <span style="color: #75715E;"># </span><span style="color: #75715E;">all other runs</span>
+    - ...
+</pre>
+</div>
+</div>
+
+<ol class="org-ol">
+<li><a id="org5965c6d"> </a>Notes on data layout   <span class="tag">  <span class="extended">extended</span></span><br />
+<div class="outline-text-6" id="text-34-3-4-1-1">
+<p>
+Of course we could generate the layout from real data files. Either
+using <code>h5ls</code> or using <code>nimhdf5</code>, most conveniently using its iterators
+and/or the JSON interface of it.
+</p>
+</div>
+</li>
+</ol>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:appendix:tpa:reconstruction">
+<h4 id="sec:appendix:tpa:reconstruction"><span class="section-number-4">34.3.5.</span> <code>reconstruction</code></h4>
+<div class="outline-text-4" id="text-sec:appendix:tpa:reconstruction">
+<p>
+After the raw data has been converted to storage in HDF5, the
+<code>reconstruction</code> tool is used to start the actual analysis of the
+data. The program receives an input HDF5 file via the <code>-i / --input</code>
+argument. As the name implies, the first stage of data analysis is in
+the form of reconstructing the basic properties of each event. In this
+stage all events are processed in a multithreaded way. The steps for
+cluster finding and <a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L308-L366">geometric</a> <a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Analysis/ingrid/private/geometry.nim#L517-L569">cluster</a> reconstruction (as mentioned in
+sec. <a href="./reconstruction.html#sec:reco:data_reconstruction">9.4</a>) are performed and the data is
+written to the desired output file given by <code>-o / --outfile</code>.
+</p>
+
+<p>
+The produced output HDF5 file then also acts as the <i>input</i> file for
+<code>reconstruction</code> for all further, optional reconstruction steps. These
+are mentioned at different parts in the thesis, but we will explain
+them shortly here now.
+</p>
+
+<dl class="org-dl">
+<dt>  <code>--only_fadc</code></dt><dd>Performs the reconstruction of the FADC data to
+calculate FADC values such as rise and fall times.</dd>
+<dt>  <code>--only_fe_spec</code></dt><dd>If the input file contains \cefe calibration
+runs, creates the \cefe spectra and performs fits to them. Also
+performs the energy calibration for each run.</dd>
+<dt>  <code>--only_charge</code></dt><dd>Performs the <code>ToT</code> calibration of all runs to
+compute the detected charges in electrons. Requires each chip to be
+present in the InGrid database (see sec. <a href="./software.html#sec:appendix:software:ingrid_database">34.3.10</a>).</dd>
+<dt>  <code>--only_gas_gain</code></dt><dd>Computes the gas gain in the desired interval
+lengths via Pólya fits.</dd>
+<dt>  <code>--only_gain_fit</code></dt><dd>If the input file contains \cefe calibration
+runs, performs the fit of energy calibration runs against the gas
+gain of each interval. Required to perform energy calibration in
+background runs.</dd>
+<dt>  <code>--only_energy_from_e</code></dt><dd>Performs the energy calibration for each
+cluster in the input file.</dd>
+</dl>
+</div>
+
+<div class="outline-5" id="outline-container-org254763d">
+<h5 id="org254763d"><span class="section-number-5">34.3.5.1.</span> Command line interface of <code>reconstruction</code>   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-34-3-5-1">
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 18: </span>Usage of the <code>reconstruction</code> tool. Input is in the form of a run directory / a directory containing multiple run directories. The parsed output is stored in compressed HDF5 files.</label><pre class="src src-sh" id="list:reconstruction_help">Usage:
+  main [REQUIRED,optional-params]
+InGrid reconstruction and energy calibration.  NOTE: When calling reconstruction
+without any of the --only_ flags, the input file has to be a H5 file resulting
+from raw_data_manipulation. In the other cases the input is simply a file
+resulting from a prior reconstruction call!  The optional flags are given
+roughly<span style="color: #F92672;"> in</span> the order<span style="color: #F92672;"> in</span> which the full analysis chain requires them to be run.
+If unsure on the order, check the runAnalysisChain.nim file. Version: 6f8ed08
+built on: 2023-11-17 at 18:36:40
+Options:
+  -h, --help                                         print this cligen-erated
+                                                     help
+
+  --help-syntax                                      advanced:
+                                                     prepend,plurals,..
+
+  -i=, --input=         string              REQUIRED set input
+
+  -o=, --outfile=       string              <span style="color: #E6DB74;">&quot;&quot;</span>       Filename and path of output
+                                                     file
+
+  -r=, --runNumber=     int                 none     Only work on this run
+
+  -c, --create_fe_spec  bool                false    Toggle to create Fe calibration spectrum based on cuts
+                                                     Takes precedence over --calib_energy if set!
+
+  --only_fadc           bool                false    If this flag is set, the reconstructed FADC data is used to calculate
+                                                     FADC values such as rise and fall times among others, which are written
+                                                     to the H5 file.
+
+  --only_fe_spec        bool                false    Toggle to /only/ create the Fe spectrum for this run and perform the
+                                                     fit of it. Will try to perform a charge calibration, if possible.
+
+  --only_charge         bool                false    Toggle to /only/ calculate the charge for each TOT value based on
+                                                     the TOT calibration. The ingridDatabase.h5 needs to be present.
+
+  --only_gas_gain       bool                false    Toggle to /only/ calculate the gas gain for the runs<span style="color: #F92672;"> in</span> the input file based on
+                                                     the polya fits to time slices defined by gasGainInterval. ingridDatabase.h5 needs to be present.
+
+  --only_gain_fit       bool                false    Toggle to /only/ calculate the fit mapping the energy calibration
+                                                     factors of the 55Fe runs to the gas gain values for each time slice. Required to calculate the
+                                                     energy<span style="color: #F92672;"> in</span> any run using only_energy_from_e.
+
+  --only_energy_from_e  bool                false    Toggle to /only/ calculate the energy for each cluster based on
+                                                     the Fe charge spectrum vs gas gain calibration
+
+  --only_energy=        float               none     Toggle to /only/ perform energy calibration using the given factor.
+                                                     Takes precedence over --create_fe_spec if set.
+                                                     If no runNumber is given, performs energy calibration on all runs
+                                                     <span style="color: #F92672;">in</span> the HDF5 file.
+
+  --clusterAlgo=        ClusteringAlgorithm none     The clustering algorithm
+                                                     to use. Leave at caDefault
+                                                     unless you know what you<span style="color: #E6DB74;">&apos;re</span>
+<span style="color: #E6DB74;">                                                     doing.</span>
+
+<span style="color: #E6DB74;">  -s=, --searchRadius=  int                 none     The radius in pixels to use</span>
+<span style="color: #E6DB74;">                                                     for the default clustering</span>
+<span style="color: #E6DB74;">                                                     algorithm.</span>
+
+<span style="color: #E6DB74;">  -d=, --dbscanEpsilon= float               none     The radius in pixels to use</span>
+<span style="color: #E6DB74;">                                                     for the DBSCAN clustering</span>
+<span style="color: #E6DB74;">                                                     algorithm.</span>
+
+<span style="color: #E6DB74;">  -u=, --useTeX=        bool                none     Whether to use TeX to</span>
+<span style="color: #E6DB74;">                                                     produce plots instead of</span>
+<span style="color: #E6DB74;">                                                     Cairo.</span>
+
+<span style="color: #E6DB74;">  --config=             string              &quot;&quot;       Path to the configuration</span>
+<span style="color: #E6DB74;">                                                     file to use.</span>
+
+<span style="color: #E6DB74;">  -p=, --plotOutPath=   string              none     set plotOutPath</span>
+</pre>
+</div>
+</div>
+</div>
+
+
+<div class="outline-5" id="outline-container-sec:appendix:tos:reco_data_layout">
+<h5 id="sec:appendix:tos:reco_data_layout"><span class="section-number-5">34.3.5.2.</span> HDF5 data layout generated by <code>reconstruction</code></h5>
+<div class="outline-text-5" id="text-sec:appendix:tos:reco_data_layout">
+<p>
+The HDF5 file generated by <code>reconstruction</code> follows closely the one
+from <code>raw_data_manipulation</code>. The main difference is that within each
+chip group now each chip has a different number of entries in the
+datasets, as each entry now corresponds to a single cluster, not an
+event from the detector. On some events multiple clusters on a single
+chip may be reconstructed, while other events may be fully empty. This
+means an additional <code>eventNumber</code> dataset is required for each chip,
+which maps back each cluster to a corresponding event.
+</p>
+
+<p>
+Aside from that the other major difference is simply that each chip
+has a larger number of datasets, as each computed cluster property is
+a single variable. Also additional new datasets will be created during
+the data calibration (charge calibration, computation of the gas gain,
+etc.).
+</p>
+
+<p>
+Listing <a href="code:reco:abstract_reco_hdf5_layout">19</a> shows the layout in a
+similar fashion to the equivalent for <code>raw_data_manipulation</code> before.
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 19: </span>Abstract overview of the data layout of the <code>reconstruction</code> HDF5 output. It is essentially the same layout as the <code>raw_data_manipulation</code> HDF5 files, but contains more datasets, due to larger number of properties.</label><pre class="src src-toml" id="code:reco:abstract_reco_hdf5_layout">- reconstruction
+  - run_&lt;number&gt;
+    - chip_0 <span style="color: #75715E;"># </span><span style="color: #75715E;">one for each chip in the event</span>
+      - datasets for each property
+      - optional datasets for calibrations
+    - chip_i <span style="color: #75715E;"># </span><span style="color: #75715E;">all other chips</span>
+      - ...
+    - fadc <span style="color: #75715E;"># </span><span style="color: #75715E;">if available</span>
+      - datasets for each FADC property
+    - common datasets <span style="color: #75715E;"># </span><span style="color: #75715E;">copied from `raw_data_manipulation` input </span>
+  - run_i <span style="color: #75715E;"># </span><span style="color: #75715E;">all other runs</span>
+    - ...
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<div class="outline-4" id="outline-container-org815bb13">
+<h4 id="org815bb13"><span class="section-number-4">34.3.6.</span> <code>cdl_spectrum_creation</code></h4>
+<div class="outline-text-4" id="text-34-3-6">
+<p>
+This is a helper program responsible for the treatment of the X-ray
+reference data taken at the CAST Detector Lab in Feb. 2019. It
+receives an HDF5 file as input that is fully reconstructed using
+<code>raw_data_manipulation</code> and <code>reconstruction</code> containing all runs taken
+in the CDL. An additional Org table is used as reference to map each
+run to the correct target/filter kind, found in
+<code>resources/cdl_runs_2019.org</code>.
+</p>
+
+<p>
+The program performs the fits to the correct fluorescence lines for
+each run based on the target/filter kind in use. It can also produce a
+helper HDF5 file called <code>calibration-cdl-2018.h5</code> via the <code>genCdlFile</code>
+argument, which contains all CDL data split by target/filter
+kind. This file is used in the context of the likelihood cut method to
+produce the reference distributions for each cluster property used.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orgf295655">
+<h4 id="orgf295655"><span class="section-number-4">34.3.7.</span> <code>likelihood</code></h4>
+<div class="outline-text-4" id="text-34-3-7">
+<p>
+The <code>likelihood</code> program is the (historically named) tool that applies
+the classifier and any selection of vetoes to an input file. The input
+files are a fully reconstructed background HDF5 file, corresponding
+calibration runs and the <code>calibration-cdl-2018.h5</code> file mentioned
+above. It has a large number of command line options to adjust the
+classifier that is used, software efficiency, vetoes, region of the
+chip to cut to, whether tracking data or background data is selected
+and more. The program writes the remaining clusters (with additional
+meta information) to the HDF5 file given by the <code>--h5out</code>
+argument. The structure is essentially identical to that of the
+<code>reconstruction</code> tool (the data is stored in a <code>likelihood</code> group
+instead of a <code>reconstruction</code> group).
+</p>
+
+<p>
+The selection of tracking or non-tracking data requires information
+about when solar trackings took place as attributes inside of the
+background HDF5 files. These are added using the <code>cast_log_reader</code>,
+see sec. <a href="./software.html#sec:appendix:software:cast_log_reader">34.3.11</a>. 
+</p>
+
+<p>
+It is also used directly to estimate the random coincidences of the
+septem and line vetoes, as mentioned in
+sec. <a href="./background.html#sec:background:estimate_veto_efficiency">12.5.5</a>.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org046f178">
+<h4 id="org046f178"><span class="section-number-4">34.3.8.</span> <code>determineDiffusion</code> directory</h4>
+<div class="outline-text-4" id="text-34-3-8">
+<p>
+The <code>Analysis/ingrid/determineDiffusion</code> directory contains the
+library / binary to empirically determine the gas diffusion parameters
+from input data, as explained in
+sec. <a href="./background.html#sec:background:mlp:determine_gas_diffusion">12.4.3</a>. It can either be
+compiled as a standalone program or be used as a library.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-org7261b11">
+<h4 id="org7261b11"><span class="section-number-4">34.3.9.</span> <code>nn</code> directory</h4>
+<div class="outline-text-4" id="text-34-3-9">
+<p>
+The <code>Analysis/ingrid/nn</code> subdirectory in the TimepixAnalysis
+repository contains the programs related to the training and
+evaluation of the multilayer perceptrons (MLP) used in the thesis. Of
+note is the <code>train_ingrid</code> program, which is the program to train a
+network. It allows to customize the network to be trained based on
+command line arguments describing the number of neurons, hidden
+layers, optimizers, activation functions and so forth. The extended
+thesis contains the command to train the best performing network.
+</p>
+
+<p>
+Secondly, the <code>simulate_xrays</code> program is a helper program to produce
+an HDF5 file containing simulated X-rays as described in
+sec. <a href="./background.html#sec:background:mlp:event_generation">12.4.2</a>. It makes use of the
+<code>fake_event_generator.nim</code> file in the <code>ingrid</code> directory, which
+contains the actual logic.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:appendix:software:ingrid_database">
+<h4 id="sec:appendix:software:ingrid_database"><span class="section-number-4">34.3.10.</span> <code>InGridDatabase</code></h4>
+<div class="outline-text-4" id="text-sec:appendix:software:ingrid_database">
+<p>
+The InGrid database is both a library part of the TimepixAnalysis
+repository (<code>InGridDatabase</code> directory) as well as a binary tool and
+the name for a very simple &apos;database&apos; storing information about
+different GridPix chips.
+</p>
+
+<p>
+At its core the &apos;database&apos; part is an HDF5 file containing chip
+calibrations (ToT, SCurve, …) mapped to timestamps or run numbers in
+which these are applicable. This allows (mainly) the <code>reconstruction</code>
+program to retrieve the required calibrations automatically without
+user input based on the given input files.
+</p>
+
+<p>
+To utilize it, the <a href="https://github.com/Vindaar/TimepixAnalysis/tree/master/InGridDatabase">  <code>databaseTool</code></a> needs to be compiled as a
+binary. Chips are added to the database using this tool. A directory
+describing the applicable run period and containing calibration files
+for the chip need to follow the format seen for example in:
+</p>
+
+<p>
+<a href="https://github.com/Vindaar/TimepixAnalysis/tree/master/resources/ChipCalibrations/Run2">https://github.com/Vindaar/TimepixAnalysis/tree/master/resources/ChipCalibrations/Run2</a>
+</p>
+
+<p>
+for the Run-2 period of the Septemboard. The <code>runPeriod.toml</code> file
+describes the applicability of the data, see listing
+<a href="list:ingrid_database:run_period_config">20</a> for the file in this case. For
+each chip, there is simply a directory with the calibration files as
+produced by TOS and an additional <code>chipInfo.txt</code> file, see listing
+<a href="list:ingrid_database:chip_info">21</a>. Note that the <code>runPeriod</code> name needs
+to match the name of one of the run periods listed in the TOML file.
+</p>
+
+<p>
+The <code>databaseTool</code> also allows to perform fits to the calibration
+data, if needed (for example to analyze SCurves or the raw ToT
+calibration data). 
+</p>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 20: </span>Example of a <code>runPeriod.toml</code> file.</label><pre class="src src-toml" id="list:ingrid_database:run_period_config"><span style="color: #FD971F;">title</span> = <span style="color: #E6DB74;">&quot;Run period 2 of CAST, 2017/18&quot;</span>
+<span style="color: #75715E;"># </span><span style="color: #75715E;">list of the run periods defined in the file</span>
+<span style="color: #FD971F;">runPeriods</span> = [<span style="color: #E6DB74;">&quot;Run2&quot;</span>]
+
+[<span style="color: #66D9EF;">Run2</span>]
+<span style="color: #FD971F;">start</span> = 2017-10-30
+<span style="color: #FD971F;">stop</span> = 2018-04-11
+<span style="color: #75715E;"># </span><span style="color: #75715E;">either as a sequence of run numbers</span>
+<span style="color: #FD971F;">validRuns</span> = [ 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89
+  90, 91, 92, 93, 94, 95, 96, 97, 98, 99,100,101,102,103
+  104,105,106,107,108,109,110,111,112,113,114,115,116,117
+  118,119,120,121,122,123,124,125,126,127,128,145,146,147
+  148,149,150,151,152,153,154,155,156,157,158,159,160,161
+  162,163,164,165,166,167,168,169,170,171,172,173,174,175
+  176,177,178,179,180,181,182,183,184,185,186,187,188,189
+]
+<span style="color: #75715E;"># </span><span style="color: #75715E;">or as simply a range given as start and stop values</span>
+<span style="color: #FD971F;">firstRun</span> = 76
+<span style="color: #FD971F;">lastRun</span> = 189
+</pre>
+</div>
+
+<div class="org-src-container">
+<label class="org-src-name"><span class="listing-number">Listing 21: </span>An example of a <code>chipInfo.txt</code> file describing a single chip for a run period.</label><pre class="src src-sh" id="list:ingrid_database:chip_info">chipName: H10 W69
+runPeriod: Run2
+board: SeptemH
+chipNumber: 3
+Info: This calibration data is valid for Run 2 starting until March 2018!
+</pre>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-sec:appendix:software:cast_log_reader">
+<h4 id="sec:appendix:software:cast_log_reader"><span class="section-number-4">34.3.11.</span> <code>cast_log_reader</code></h4>
+<div class="outline-text-4" id="text-sec:appendix:software:cast_log_reader">
+<p>
+The <a href="https://github.com/Vindaar/TimepixAnalysis/tree/master/LogReader">  <code>LogReader/cast_log_reader</code></a> is a utility to work with the slow control and
+tracking log files produced by CAST. It can parse and analyze the
+different log file formats used over the years and provide different
+information (magnet operation statistics for example). For the
+Septemboard detector it provides the option to parse the tracking
+log files and add the tracking information to the background HDF5
+files.
+</p>
+
+<p>
+The program first parses the log files and determines valid solar
+trackings. Then, given an HDF5 data file containing the background
+data each solar tracking is mapped to a background run. One background
+run may have zero or more solar trackings attached to it. In the final
+step the solar tracking start and stop information is added to each
+run as additional meta data. During the later stages of processing in
+other <code>TimepixAnalysis</code> programs, notably <code>likelihood</code>, this meta data
+is then used to only consider background (non tracking) or solar
+tracking data.
+</p>
+
+<p>
+The CAST log files relevant for the Septemboard detector can be found
+together with the Septemboard CAST data.
+</p>
+</div>
+
+<div class="outline-5" id="outline-container-orgf8300be">
+<h5 id="orgf8300be"><span class="section-number-5">34.3.11.1.</span> Adding tracking information to HDF5 files   <span class="tag">  <span class="extended">extended</span></span></h5>
+<div class="outline-text-5" id="text-34-3-11-1">
+<p>
+See sec. <a href="./cast_operations.html#sec:cast:log_files:add_tracking_info">20.6.1</a> on how to use
+<code>cast_log_reader</code> to add the tracking information to the HDF5 files.
+</p>
+</div>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orgf752bae">
+<h4 id="orgf752bae"><span class="section-number-4">34.3.12.</span> <code>mcmc_limit_calculation</code></h4>
+<div class="outline-text-4" id="text-34-3-12">
+<p>
+<code>mcmc_limit_calculation</code> is the &apos;final&apos; tool relevant for this
+thesis. As the name implies it performs the limit calculation using
+Markov Chain Monte Carlo (MCMC) as explained in detail in chapter
+<a href="./limit.html#sec:limit">13</a>. See the extended thesis on how to use it.
+</p>
+</div>
+</div>
+
+
+<div class="outline-4" id="outline-container-orgc6dec7e">
+<h4 id="orgc6dec7e"><span class="section-number-4">34.3.13.</span> <code>Tools</code> directory</h4>
+<div class="outline-text-4" id="text-34-3-13">
+<p>
+Multitude of tools for various things that were analyzed over the
+years. Includes things like computing the gas properties of the
+Septemboard gas mixture and detection efficiency. 
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orgb7877c5">
+<h4 id="orgb7877c5"><span class="section-number-4">34.3.14.</span> <code>resources</code> directory</h4>
+<div class="outline-text-4" id="text-34-3-14">
+<p>
+A large number of resources required or simply useful about different
+data takings, efficiencies, log files and more, which are small enough
+to be part of a non LFS git repository.
+</p>
+</div>
+</div>
+
+<div class="outline-4" id="outline-container-orgabd26b0">
+<h4 id="orgabd26b0"><span class="section-number-4">34.3.15.</span> <code>Plotting</code> directory</h4>
+<div class="outline-text-4" id="text-34-3-15">
+<p>
+From a practical analysis point of view, the <a href="https://github.com/Vindaar/TimepixAnalysis/tree/master/Plotting">  <code>Plotting</code></a> directory is
+one of the most interesting parts of the repository. It contains
+different tools to visualize data at various stages of the analysis
+pipeline. The most relevant are mentioned briefly here.
+</p>
+</div>
+
+<div class="outline-5" id="outline-container-orgef1fbbc">
+<h5 id="orgef1fbbc"><span class="section-number-5">34.3.15.1.</span> <code>plotBackgroundClusters</code></h5>
+<div class="outline-text-5" id="text-34-3-15-1">
+<p>
+<a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/plotBackgroundClusters/plotBackgroundClusters.nim">  <code>plotBackgroundCluster</code></a> produces plots of the distribution of cluster
+center left after application of the <code>likelihood</code> program. This is
+used to produce figures like <a href="#fig:detector:cluster_centers_likelihood">23</a>
+and fig. <a href="#fig:background:background_suppression_comparison">#fig:background:background_suppression_comparison</a>. 
+</p>
+</div>
+</div>
+
+<div class="outline-5" id="outline-container-org186182f">
+<h5 id="org186182f"><span class="section-number-5">34.3.15.2.</span> <code>plotBackgroundRate</code></h5>
+<div class="outline-text-5" id="text-34-3-15-2">
+<p>
+<a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/plotBackgroundRate/plotBackgroundRate.nim">  <code>plotBackgroundRate</code></a> is the main tool to visualize background (or raw
+data) spectra. All such plots in the thesis are produced with
+it. Input files are reconstructed HDF5 files or the result of the
+<code>likelihood</code> program.
+</p>
+</div>
+</div>
+
+<div class="outline-5" id="outline-container-org43aa74f">
+<h5 id="org43aa74f"><span class="section-number-5">34.3.15.3.</span> <code>plotCalibration</code></h5>
+<div class="outline-text-5" id="text-34-3-15-3">
+<p>
+<a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/plotCalibration/plotCalibration.nim">  <code>plotCalibration</code></a> is a tool to produce visualizations of the different
+Timepix calibration steps, e.g. ToT calibration, SCurve scans and so
+on. The figures in sec. <a href="./calibration.html#sec:appendix:calibration:timepix">19.1</a> are produced
+with it.
+</p>
+</div>
+</div>
+
+<div class="outline-5" id="outline-container-org70b648a">
+<h5 id="org70b648a"><span class="section-number-5">34.3.15.4.</span> <code>plotData</code></h5>
+<div class="outline-text-5" id="text-34-3-15-4">
+<p>
+<a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/karaPlot/plotData.nim">  <code>plotData</code></a> is a very versatile tool to produce a variety of different
+plots. It can produce histograms of the different geometric
+properties, occupancy maps, event displays and more. If desired, it can
+produce a large number of plots for an input data file in one go. It
+is very powerful, because it can receive an arbitrary number of cuts
+on any dataset present in the input. This allows to produce
+visualizations for any desired subset of the data. For example to
+produce event displays or histograms for only those events with
+specific geometric properties. It is an exceptionally useful tool to
+understand certain subsets of data that appear &apos;interesting&apos;.
+</p>
+
+<p>
+In sec. <a href="./fadc.html#sec:appendix:background:fadc">30.2</a> we mention non noisy FADC events
+in a region of the rise time / skewness space of
+fig. <a href="#fig:appendix:fadc_veto:rise_skewness_run2">186</a>. These are easily
+filtered to and investigated using <code>plotData</code>. Also
+fig. <a href="#fig:appendix:empirical_cluster_lengths">189</a> and
+fig. <a href="#fig:reco:fadc_reco_example">34</a> are produced with it, among
+others. Generally, it favors information (density) over aesthetically
+pleasing visualizations though.
+</p>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="outline-3" id="outline-container-orgb88ee40">
+<h3 id="orgb88ee40"><span class="section-number-3">34.4.</span> Other libraries relevant for TimepixAnalysis</h3>
+<div class="outline-text-3" id="text-34-4">
+<p>
+A few other libraries not part of the TimepixAnalysis repository bear
+mentioning, due to their importance. They were written alongside TimepixAnalysis.
+</p>
+
+<dl class="org-dl">
+<dt>  <a href="https://github.com/Vindaar/ggplotnim">ggplotnim</a></dt><dd>A <code>ggplot2</code> <sup>  <a role="doc-backlink" class="footref" id="fnr.7" href="#fn.7">7</a></sup> inspired plotting library. All
+plots in this thesis are produced with it.</dd>
+<dt>  <a href="https://github.com/SciNim/Datamancer">Datamancer</a></dt><dd>A <code>dpylr</code> <sup>  <a role="doc-backlink" class="footref" id="fnr.8" href="#fn.8">8</a></sup> inspired data frame library.</dd>
+<dt>  <a href="https://github.com/Vindaar/nimhdf5">nimhdf5</a></dt><dd>A high level interface to the HDF5 (<a href="./bibliography.html#citeproc_bib_item_221">The HDF Group 1997</a>) library,
+somewhat similar to <code>h5py</code> <sup>  <a role="doc-backlink" class="footref" id="fnr.9" href="#fn.9">9</a></sup> for Python.</dd>
+<dt>  <a href="https://github.com/SciNim/Unchained">Unchained</a></dt><dd>A library to perform zero runtime overhead,
+compile-time checking and conversion of physical
+units. Exceptionally useful to avoid bugs due to wrong unit
+conversions and a big help when dealing with natural units.</dd>
+<dt>  <a href="https://github.com/SciNim/Measuremancer">Measuremancer</a></dt><dd>A library to deal with measurements with
+uncertainties. Performs automatic Gaussian error propagation when
+performing calculations with measurements.</dd>
+<dt>  <a href="https://github.com/SciNim/xrayAttenuation">xrayAttenuation</a></dt><dd>A library dealing with the interaction of X-rays
+with matter (gases and solids). It is used to calculate things like
+absorption of gas and reflectivities of the X-ray telescope in this thesis.</dd>
+<dt>  <a href="https://github.com/Vindaar/TrAXer">TrAXer</a></dt><dd>The raytracer used to compute the axion image, expanded on
+in appendix <a href="./raytracing.html#sec:appendix:raytracing">37</a>.</dd>
+</dl>
+</div>
+</div>
+</div>
+
+<div id="footnotes"><h2 class="footnotes">Footnotes: </h2><div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.1" href="#fnr.1">1</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://arxiv.org/abs/0709.0790">https://arxiv.org/abs/0709.0790</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.2" href="#fnr.2">2</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://github.com/c-blake/cligen">https://github.com/c-blake/cligen</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.3" href="#fnr.3">3</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+You can have a <code>$HOME/.config/cligen/config</code> configuration
+file to adjust the output style (color, column widths, drop entire
+columns etc.).
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.4" href="#fnr.4">4</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://pages.physics.wisc.edu/~craigm/idl/cmpfit.html">https://pages.physics.wisc.edu/~craigm/idl/cmpfit.html</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.5" href="#fnr.5">5</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://nlopt.readthedocs.io/en/latest/">https://nlopt.readthedocs.io/en/latest/</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.6" href="#fnr.6">6</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://cairographics.org/download/">https://cairographics.org/download/</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.7" href="#fnr.7">7</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://ggplot2.tidyverse.org/">https://ggplot2.tidyverse.org/</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.8" href="#fnr.8">8</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://dplyr.tidyverse.org/">https://dplyr.tidyverse.org/</a>
+</p></div></div>
+
+<div class="footdef"><sup>  <a role="doc-backlink" class="footnum" id="fn.9" href="#fnr.9">9</a></sup> <div role="doc-footnote" class="footpara">  <p class="footpara">
+<a href="https://www.h5py.org/">https://www.h5py.org/</a>
+</p></div></div>
+
+</div>
+<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
+</div>
+</body>
+</html>
