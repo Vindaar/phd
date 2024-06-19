@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- 2024-05-10 Fri 12:42 -->
+<!-- 2024-06-19 Wed 12:44 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -42,6 +42,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var headers = document.querySelectorAll('h1 .extended, h2 .extended, h3 .extended, h4 .extended, h5 .extended, h6 .extended');
+
+    headers.forEach(function (header) {
+        var foldableHeader = header.closest('h1, h2, h3, h4, h5, h6');
+        if (foldableHeader) {
+            foldableHeader.classList.add('foldable-header');
+            var nextElement = foldableHeader.nextElementSibling;
+            var contentToFold = [];
+            while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                contentToFold.push(nextElement);
+                nextElement = nextElement.nextElementSibling;
+            }
+            contentToFold.forEach(function (element) {
+                element.classList.add('folded-content');
+            });
+
+            foldableHeader.addEventListener('click', function () {
+                contentToFold.forEach(function (element) {
+                    if (element.style.display === 'none' || element.style.display == '') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                });
+            });
+        }
     });
 });
 
@@ -106,39 +136,31 @@ document.addEventListener('DOMContentLoaded', function() {
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgd3a0a2f">1. Search for solar axions using a 7-GridPix IAXO prototype detector at CAST</a>
+<li><a href="#org5a3c298">1. Search for solar axions using a 7-GridPix IAXO prototype detector at CAST</a>
 <ul>
-<li><a href="#org2279841">1.1. Errata (print version)</a></li>
-<li><a href="#orgd1a1799">1.2. Abstract</a></li>
-<li><a href="#org33bde42">1.3. Data</a></li>
-<li><a href="#org638f7e0">1.4. Software</a></li>
-<li><a href="#orgde17a11">1.5. Additional notes and information</a></li>
-<li><a href="#orgc9cf0da">1.6. Note about TLS</a></li>
+<li><a href="#orgf7fbdd0">1.1. Errata (print version)&#xa0;&#xa0;&#xa0;<span class="tag"><span class="extended">extended</span></span></a></li>
+<li><a href="#org5ceb72a">1.2. Thesis</a></li>
+<li><a href="#orgc527852">1.3. Data</a></li>
+<li><a href="#org1e5024e">1.4. Abstract</a></li>
+<li><a href="#org837f2c8">1.5. Software</a></li>
+<li><a href="#orgd3394c6">1.6. Additional notes and information</a></li>
+<li><a href="#org76344d6">1.7. Note about TLS</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </nav>
 
-<div id="outline-container-orgd3a0a2f" class="outline-2">
-<h2 id="orgd3a0a2f"><span class="section-number-2">1.</span> Search for solar axions using a 7-GridPix IAXO prototype detector at CAST</h2>
+<div id="outline-container-org5a3c298" class="outline-2">
+<h2 id="org5a3c298"><span class="section-number-2">1.</span> Search for solar axions using a 7-GridPix IAXO prototype detector at CAST</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-This is the companion website to my PhD thesis of the above title. At
-the time of writing this, <span class="timestamp-wrapper"><span class="timestamp">&lt;2024-01-18 Thu 18:49&gt;</span></span>, it does not yet link
-to the entire thesis document. That will only be done once the thesis
-has been defended and published (it seems like otherwise I might get
-into trouble).
-</p>
-
-<p>
-If you want access to the extended version of the thesis beforehand,
-please just get in touch by mail via phd@vindaar.de.
+This is the companion website to my PhD thesis of the above title. 
 </p>
 </div>
 
-<div id="outline-container-org2279841" class="outline-3">
-<h3 id="org2279841"><span class="section-number-3">1.1.</span> Errata (print version)</h3>
+<div id="outline-container-orgf7fbdd0" class="outline-3">
+<h3 id="orgf7fbdd0"><span class="section-number-3">1.1.</span> Errata (print version)&#xa0;&#xa0;&#xa0;<span class="tag"><span class="extended">extended</span></span></h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 This is a list of known issues in the printed version that I handed
@@ -172,9 +194,70 @@ the limit section about it is the correct value).</li>
 </div>
 </div>
 
-<div id="outline-container-orgd1a1799" class="outline-3">
-<h3 id="orgd1a1799"><span class="section-number-3">1.2.</span> Abstract</h3>
+<div id="outline-container-org5ceb72a" class="outline-3">
+<h3 id="org5ceb72a"><span class="section-number-3">1.2.</span> Thesis</h3>
 <div class="outline-text-3" id="text-1-2">
+<p>
+The official publication of the thesis can be found at:
+</p>
+
+<p>
+<a href="https://doi.org/10.48565/bonndoc-303">https://doi.org/10.48565/bonndoc-303</a>
+</p>
+
+<p>
+It contains the PDF version that I printed and handed in for my
+defense. However, it was long clear to me that I didn't only want to
+produce a single PDF that is static and misses many crucial pieces of
+information. For that reason an 'extended' version of the thesis
+exists. Indeed, the Org document that is the source of the thesis,
+</p>
+
+<p>
+<a href="https://github.com/Vindaar/phd/blob/master/thesis.org">https://github.com/Vindaar/phd/blob/master/thesis.org</a>,
+</p>
+
+<p>
+contains a massive amount of extra information. For every plot, table
+and important result you will find extra sections that provide the
+explanation how the result was computed, the commands for it or short
+code snippets.
+</p>
+
+<p>
+Thus, I also provide an HTML version of the thesis, which you can find
+here:
+</p>
+
+<p>
+<a href="./../html/introduction.html">./../html/introduction.html</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc527852" class="outline-3">
+<h3 id="orgc527852"><span class="section-number-3">1.3.</span> Data</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+One of the most important parts for my thesis has always been being
+able to replicate results. Part of that is providing access to my
+data, including the raw data taken with our detector at CAST.
+</p>
+
+<p>
+The raw data, as well as reconstructed data and further miscellaneous
+files can be found on <a href="https://zenodo.org">Zenodo</a>:
+</p>
+
+<p>
+<a href="https://zenodo.org/records/10521887">https://zenodo.org/records/10521887</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1e5024e" class="outline-3">
+<h3 id="org1e5024e"><span class="section-number-3">1.4.</span> Abstract</h3>
+<div class="outline-text-3" id="text-1-4">
 <p>
 The Standard Model of particle physics (SM) is extremely successful at
 describing three out of the four known fundamental forces of
@@ -254,29 +337,12 @@ for data analysis for a GridPix3 based future detector.
 </div>
 </div>
 
-<div id="outline-container-org33bde42" class="outline-3">
-<h3 id="org33bde42"><span class="section-number-3">1.3.</span> Data</h3>
-<div class="outline-text-3" id="text-1-3">
-<p>
-One of the most important parts for my thesis has always been being
-able to replicate results. Part of that is providing access to my
-data, including the raw data taken with our detector at CAST.
-</p>
 
-<p>
-The raw data, as well as reconstructed data and further miscellaneous
-files can be found on <a href="https://zenodo.org">Zenodo</a>:
-</p>
 
-<p>
-<a href="https://zenodo.org/records/10521887">https://zenodo.org/records/10521887</a>
-</p>
-</div>
-</div>
 
-<div id="outline-container-org638f7e0" class="outline-3">
-<h3 id="org638f7e0"><span class="section-number-3">1.4.</span> Software</h3>
-<div class="outline-text-3" id="text-1-4">
+<div id="outline-container-org837f2c8" class="outline-3">
+<h3 id="org837f2c8"><span class="section-number-3">1.5.</span> Software</h3>
+<div class="outline-text-3" id="text-1-5">
 <p>
 The main repository used in my thesis is <a href="https://github.com/Vindaar/TimepixAnalysis">TimepixAnalysis</a>. See the
 appendix about the software and how to reconstruct all data in the
@@ -292,9 +358,9 @@ reproducibility. Once the final thesis is published I'll create a
 </div>
 </div>
 
-<div id="outline-container-orgde17a11" class="outline-3">
-<h3 id="orgde17a11"><span class="section-number-3">1.5.</span> Additional notes and information</h3>
-<div class="outline-text-3" id="text-1-5">
+<div id="outline-container-orgd3394c6" class="outline-3">
+<h3 id="orgd3394c6"><span class="section-number-3">1.6.</span> Additional notes and information</h3>
+<div class="outline-text-3" id="text-1-6">
 <p>
 There are 2 major files potentially of interest to the kind of reader
 who may stumble on this website.
@@ -350,14 +416,15 @@ These are almost identical to the appendix about the same in the thesis.</li>
 <p>
 A few other documents exist that I might upload at some other time
 (related to the LLNL telescope, raytracing etc.). These are mostly
-already contained in some form or another in the above though. 
+already contained in some form or another in the above though.
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgc9cf0da" class="outline-3">
-<h3 id="orgc9cf0da"><span class="section-number-3">1.6.</span> Note about TLS</h3>
-<div class="outline-text-3" id="text-1-6">
+
+<div id="outline-container-org76344d6" class="outline-3">
+<h3 id="org76344d6"><span class="section-number-3">1.7.</span> Note about TLS</h3>
+<div class="outline-text-3" id="text-1-7">
 <p>
 This main page is hosted on Github using Github Pages. But all the
 linked pages mentioned in the section above are just files publicly
@@ -369,13 +436,16 @@ to support TLS there too, but as all the plots alone sum up to almost
 <p>
 But then again, who cares for this kind of stuff?
 </p>
+
+
+<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Sebastian Schmidt</p>
-<p class="date">Created: 2024-05-10 Fri 12:42</p>
+<p class="date">Created: 2024-06-19 Wed 12:44</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
