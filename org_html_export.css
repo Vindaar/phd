@@ -1,0 +1,1065 @@
+/*
+Stylesheet for use with Docutils/rst2html.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+
+Modified from Chad Skeeters' rst2html-style
+https://bitbucket.org/cskeeters/rst2html-style/
+
+Modified by Boyd Greenfield and narimiran
+
+And modified by myself (Vindaar) for my Org exported HTML documents
+*/
+
+:root {
+    --primary-background: #333333; /* #171921; */
+    --toc-background: #171122;
+    --scrollbar-color: #666666;
+    --secondary-background: #1e202a;
+    --third-background: #1b1e2b;
+    --info-background: #008000;
+    --warning-background: #807000;
+    --error-background: #030000; /* #bd93f9; */
+    --border: #0e1014;
+    --text: #fff;
+    --anchor: #8be9fd;
+    --anchor-focus: #8be9fd;
+    --input-focus: #8be9fd;
+    --strong: #bd93f9;
+    --hint: #7A7C85;
+    --keyword: #ff79c6;
+    --identifier: #f8f8f2;
+    --comment: #6272a4;
+    --operator: #ff79c6;
+    --punctuation: #f8f8f2;
+    --other: #f8f8f2;
+    --escapeSequence: #bd93f9;
+    --number: #bd93f9;
+    --literal: #f1fa8c;
+    --raw-data: #8be9fd;
+
+    /* Maybe left a bit bigger for table of contents. 35%, 33% is maybe a bit too narrow?*/
+    margin-left: 30%;
+    margin-right: 30%;
+    margin-bottom: 2.5%;
+    font-size: 15px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-color);
+    border-radius: 20px;
+}
+
+/*::-webkit-scrollbar-track {
+    background-color: #fca5a5;
+}*/
+
+
+::-webkit-scrollbar-corner {
+    background-color: var(--primary-background);
+}
+
+
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.theme-switch-wrapper em {
+  margin-left: 10px;
+  font-size: 1rem;
+}
+
+.theme-switch {
+  display: inline-block;
+  height: 22px;
+  position: relative;
+  width: 50px;
+}
+
+.theme-switch input {
+  display: none;
+}
+
+.slider {
+  background-color: #ccc;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
+
+.slider:before {
+  background-color: #fff;
+  bottom: 4px;
+  content: "";
+  height: 13px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 13px;
+}
+
+input:checked + .slider {
+  background-color: #66bb6a;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 17px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%; }
+
+body {
+    font-family: "DejaVu Sans", serif;
+    font-weight: 400;
+    font-size: 1.125em;
+    line-height: 1.5;
+    color: var(--text);
+    background-color: var(--primary-background); }
+
+/* Skeleton grid */
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box; }
+
+.column,
+.columns {
+  width: 100%;
+  float: left;
+  box-sizing: border-box;
+  margin-left: 1%;
+}
+
+.column:first-child,
+.columns:first-child {
+  margin-left: 0; }
+
+.three.columns {
+  width: 22%;
+}
+
+.nine.columns {
+  width: 77.0%; }
+
+.twelve.columns {
+  width: 100%;
+  margin-left: 0; }
+
+@media screen and (max-width: 860px) {
+  .three.columns {
+    display: none;
+  }
+  .nine.columns {
+    width: 98.0%;
+  }
+  body {
+    font-size: 1em;
+    line-height: 1.35;
+  }
+}
+
+cite {
+  font-style: italic !important; }
+
+
+/* Nim search input */
+div#searchInputDiv {
+  margin-bottom: 1em;
+}
+input#searchInput {
+  width: 80%;
+}
+
+/*
+ * Some custom formatting for input forms.
+ * This also fixes input form colors on Firefox with a dark system theme on Linux.
+ */
+input {
+  -moz-appearance: none;
+  background-color: var(--secondary-background);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-family: "Lato", "Helvetica Neue", "HelveticaNeue", Helvetica, Arial, sans-serif;
+  font-size: 0.9em;
+  padding: 6px;
+}
+
+input:focus {
+  border: 1px solid var(--input-focus);
+  box-shadow: 0 0 3px var(--input-focus);
+}
+
+select {
+  -moz-appearance: none;
+  background-color: var(--secondary-background);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-family: "Lato", "Helvetica Neue", "HelveticaNeue", Helvetica, Arial, sans-serif;
+  font-size: 0.9em;
+  padding: 6px;
+}
+
+select:focus {
+  border: 1px solid var(--input-focus);
+  box-shadow: 0 0 3px var(--input-focus);
+}
+
+/* Docgen styles */
+/* Links */
+a {
+  color: var(--anchor);
+  text-decoration: none;
+}
+
+a span.Identifier {
+  text-decoration: underline;
+  text-decoration-color: #aab;
+}
+
+a.reference-toplevel {
+  font-weight: bold;
+}
+
+a.toc-backref {
+  text-decoration: none;
+  color: var(--text); }
+
+a.link-seesrc {
+  color: #607c9f;
+  font-size: 0.9em;
+  font-style: italic; }
+
+a:hover,
+a:focus {
+  color: var(--anchor-focus);
+  text-decoration: underline; }
+
+a:hover span.Identifier {
+  color: var(--anchor);
+}
+
+
+sub,
+sup {
+  position: relative;
+  font-size: 75%;
+  line-height: 0;
+  vertical-align: baseline; }
+
+sup {
+  top: -0.5em; }
+
+sub {
+  bottom: -0.25em; }
+
+img {
+    /* The first three are required to make sure single images are centered */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    vertical-align: middle;
+    border: 0;
+    -ms-interpolation-mode: bicubic;
+}
+
+
+
+@media print {
+  * {
+    color: black !important;
+    text-shadow: none !important;
+    background: transparent !important;
+    box-shadow: none !important; }
+
+  a,
+  a:visited {
+    text-decoration: underline; }
+
+  a[href]:after {
+    content: " (" attr(href) ")"; }
+
+  abbr[title]:after {
+    content: " (" attr(title) ")"; }
+
+  .ir a:after,
+  a[href^="javascript:"]:after,
+  a[href^="#"]:after {
+    content: ""; }
+
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid; }
+
+  thead {
+    display: table-header-group; }
+
+  tr,
+  img {
+    page-break-inside: avoid; }
+
+  img {
+    max-width: 100% !important; }
+
+  @page {
+    margin: 0.5cm; }
+
+  h1 {
+    page-break-before: always; }
+
+  h1.title {
+    page-break-before: avoid; }
+
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3; }
+
+  h2,
+  h3 {
+    page-break-after: avoid; }
+}
+
+
+p {
+  margin-top: 1em; /* Can be used to adjust margin between paragraphs */
+  margin-bottom: 1em;
+  text-align: justify; /* Justify the text! */
+}
+
+small {
+  font-size: 85%; }
+
+strong {
+  font-weight: 600;
+  font-size: 0.95em;
+  color: var(--strong);
+}
+
+em {
+  font-style: italic; }
+
+h1 {
+  font-size: 1.8em;
+  font-weight: 400;
+  padding-bottom: .25em;
+  border-bottom: 6px solid var(--third-background);
+  margin-top: 2.5em;
+  margin-bottom: 1em;
+  line-height: 1.2em; }
+
+h1.title {
+  padding-bottom: 1em;
+  border-bottom: 0px;
+  font-size: 2.5em;
+  text-align: center;
+  font-weight: 900;
+  margin-top: 0.75em;
+  margin-bottom: 0em;
+}
+
+h2 {
+  font-size: 1.3em;
+  margin-top: 2em; }
+
+h2.subtitle {
+  text-align: center; }
+
+h3 {
+  font-size: 1.125em;
+  font-style: italic;
+  margin-top: 1.5em; }
+
+h4 {
+  font-size: 1.125em;
+  margin-top: 1em; }
+
+h5 {
+  font-size: 1.125em;
+  margin-top: 0.75em; }
+
+h6 {
+  font-size: 1.1em; }
+
+
+ul,
+ol {
+  padding: 0;
+  margin-top: 0.5em;
+  margin-left: 0.75em; }
+
+ul ul,
+ul ol,
+ol ol,
+ol ul {
+  margin-bottom: 0;
+  margin-left: 1.25em; }
+
+ul.simple > li {
+    list-style-type: circle;
+}
+
+ul.simple-boot li {
+    list-style-type: none;
+    margin-left: 0em;
+    margin-bottom: 0.5em;
+}
+
+ol.simple > li, ul.simple > li {
+  margin-bottom: 0.2em;
+  margin-left: 0.4em }
+
+ul.simple.simple-toc > li {
+    margin-top: 1em;
+}
+
+ul.simple-toc {
+  list-style: none;
+  font-size: 0.9em;
+  margin-left: -0.3em;
+  margin-top: 1em; }
+
+ul.simple-toc > li {
+    list-style-type: none;
+}
+
+ul.simple-toc-section {
+  list-style-type: circle;
+  margin-left: 0.8em;
+  color: #6c9aae; }
+
+ul.nested-toc-section {
+  list-style-type: circle;
+  margin-left: -0.75em;
+  color: var(--text);
+}
+
+ul.nested-toc-section > li {
+  margin-left: 1.25em;
+}
+
+
+ol.arabic {
+  list-style: decimal; }
+
+ol.loweralpha {
+  list-style: lower-alpha; }
+
+ol.upperalpha {
+  list-style: upper-alpha; }
+
+ol.lowerroman {
+  list-style: lower-roman; }
+
+ol.upperroman {
+  list-style: upper-roman; }
+
+ul.auto-toc {
+  list-style-type: none; }
+
+
+dl {
+  margin-bottom: 1.5em; }
+
+dt {
+  margin-bottom: -0.5em;
+  margin-left: 0.0em; }
+
+dd {
+  margin-left: 2.0em;
+  margin-bottom: 3.0em;
+  margin-top: 0.5em; }
+
+
+hr {
+  margin: 2em 0;
+  border: 0;
+  border-top: 1px solid #aaa; }
+
+blockquote {
+  font-size: 0.9em;
+  font-style: italic;
+  padding-left: 0.5em;
+  margin-left: 0;
+  border-left: 5px solid #bbc;
+}
+
+.pre {
+  font-family: "Source Code Pro", Monaco, Menlo, Consolas, "Courier New", monospace;
+  font-weight: 500;
+  font-size: 0.85em;
+  color: var(--text);
+  background-color: var(--third-background);
+  padding-left: 3px;
+  padding-right: 3px;
+  border-radius: 4px;
+}
+
+pre {
+  font-family: "Source Code Pro", Monaco, Menlo, Consolas, "Courier New", monospace;
+  color: var(--text);
+  font-weight: 500;
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 100%;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  font-size: 0.85em;
+  background-color: var(--secondary-background);
+  border: 1px solid var(--border);
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  white-space: pre-wrap;
+  border-radius: 6px; }
+
+.pre-scrollable {
+  max-height: 340px;
+}
+
+
+/* Nim line-numbered tables */
+.line-nums-table {
+  width: 100%;
+  table-layout: fixed; }
+
+table.line-nums-table {
+  border-radius: 4px;
+  border: 1px solid #cccccc;
+  background-color: ghostwhite;
+  border-collapse: separate;
+  margin-top: 15px;
+  margin-bottom: 25px; }
+
+.line-nums-table tbody {
+  border: none; }
+
+.line-nums-table td pre {
+  border: none;
+  background-color: transparent; }
+
+.line-nums-table td.blob-line-nums {
+  width: 28px; }
+
+.line-nums-table td.blob-line-nums pre {
+  color: #b0b0b0;
+  -webkit-filter: opacity(75%);
+  filter: opacity(75%);
+  text-align: right;
+  border-color: transparent;
+  background-color: transparent;
+  padding-left: 0px;
+  margin-left: 0px;
+  padding-right: 0px;
+  margin-right: 0px; }
+
+
+table {
+  max-width: 100%;
+  background-color: transparent;
+  margin-top: 0.5em;
+  margin-bottom: 1.5em;
+  border-collapse: collapse;
+  border-color: var(--third-background);
+  border-spacing: 0;
+  font-size: 0.9em;
+}
+
+table th, table td {
+  padding: 0px 0.5em 0px;
+  border-color: var(--third-background);
+}
+
+table th {
+  background-color: var(--third-background);
+  border-color: var(--third-background);
+  font-weight: bold; }
+
+table th.docinfo-name {
+    background-color: transparent;
+    text-align: right;
+}
+
+table tr:hover {
+  background-color: var(--third-background); }
+
+
+/* rst2html default used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0; }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 !important; }
+
+.admonition {
+    padding: 0.3em;
+    background-color: var(--secondary-background);
+    border-left: 0.4em solid #7f7f84;
+    margin-bottom: 0.5em;
+    -webkit-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+       -moz-box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+            box-shadow: 0 5px 8px -6px rgba(0,0,0,.2);
+}
+.admonition-info {
+    border-color: var(--info-background);
+}
+.admonition-info-text {
+    color: var(--info-background);
+}
+.admonition-warning {
+    border-color: var(--warning-background);
+}
+.admonition-warning-text {
+    color: var(--warning-background);
+}
+.admonition-error {
+    border-color: var(--error-background);
+}
+.admonition-error-text {
+    color: var(--error-background);
+}
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 !important; }
+
+.last, .with-subtitle {
+  margin-bottom: 0 !important; }
+
+.hidden {
+  display: none; }
+
+blockquote.epigraph {
+  margin: 2em 5em; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em; }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden; }
+
+
+div.figure {
+  margin-left: 2em;
+  margin-right: 2em; }
+
+
+.figure-number {
+    display: none;
+}
+
+
+
+/* NOTE: Use the below if you use an Org exported HTML directly, without splitting it */
+/* with the `split_org_html.nim` tool! */
+
+/* body { */
+/*     /\* Reset only the main figure counter *\/ */
+/*     counter-reset: fig-counter subfig-counter; */
+/* } */
+
+/* figure { */
+/*     /\* Increment the global figure counter for every top-level figure *\/ */
+/*     counter-increment: fig-counter; */
+/* } */
+
+
+.figure-wrapper {
+    margin: 3%;
+}
+
+/* figure:not(.subfigure) { */
+/*     /\* Reset the subfigure counter for every new top-level figure *\/ */
+/*     counter-reset: subfig-counter; */
+/* } */
+
+/* Use a class to identify subfigures, say 'subfig' */
+/* Use the data-width attribute for the subfigure width */
+figure.subfigure {
+    /* Increment the subfigure counter for every subfigure */
+    /* counter-increment: subfig-counter; */
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    padding: 0 0.0%;
+    margin: 0;
+/* vertical alignment could be nice, but is broken if one caption is longer! */
+/*    vertical-align: bottom; */
+}
+
+figure.subfigure[data-width] {
+    width: attr(data-width);  /* Fetch width from data-width attribute */
+}
+
+/* Use the data-width attribute for the image width within subfigures */
+figure.subfigure img[data-width] {
+    width: attr(data-width);      /* Fetch width from data-width attribute */
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+figure.subfigure figcaption {
+    text-align: center; /* Centers the text within the figcaption */
+    display: block;     /* Ensures figcaption behaves like a block */
+    margin: 0 auto;     /* Centers the block itself, if it's not already full width */
+}
+
+
+/* figcaption::before { */
+/*     /\* Display the global counter value before each main figcaption *\/ */
+/*     content: "Figure " counter(fig-counter) ": "; */
+/* } */
+
+/* /\* Use the subfig class to display the subfigure counter *\/ */
+/* figure.subfigure figcaption::before { */
+/*     /\* Display the combined global and subfigure counter values *\/ */
+/*     content: counter(fig-counter) " - " counter(subfig-counter, lower-alpha) ": "; */
+/* } */
+
+div.footer, div.header {
+  clear: both;
+  text-align: center;
+  color: #666;
+  font-size: smaller; }
+
+div.footer {
+    padding-top: 5em;
+}
+
+div.line-block {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 1em; }
+
+div.line-block div.line-block {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 1.5em; }
+
+div.topic {
+  margin: 2em; }
+
+div.search_results {
+  background-color: var(--third-background);
+  margin: 3em;
+  padding: 1em;
+  border: 1px solid #4d4d4d;
+}
+
+div#global-links ul {
+  margin-left: 0;
+  list-style-type: none;
+}
+
+div#global-links > simple-boot {
+    margin-left: 3em;
+}
+
+hr.docutils {
+  width: 75%; }
+
+img.align-left, .figure.align-left, object.align-left {
+  clear: left;
+  float: left;
+  margin-right: 1em; }
+
+img.align-right, .figure.align-right, object.align-right {
+  clear: right;
+  float: right;
+  margin-left: 1em; }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto; }
+
+.align-left {
+  text-align: left; }
+
+.align-center {
+  clear: both;
+  text-align: center; }
+
+.align-right {
+  text-align: right; }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit; }
+
+p.attribution {
+  text-align: right;
+  margin-left: 50%; }
+
+p.caption {
+  font-style: italic; }
+
+p.credits {
+  font-style: italic;
+  font-size: smaller; }
+
+p.label {
+  white-space: nowrap; }
+
+p.rubric {
+  font-weight: bold;
+  font-size: larger;
+  color: maroon;
+  text-align: center; }
+
+p.topic-title {
+  font-weight: bold; }
+
+pre.address {
+  margin-bottom: 0;
+  margin-top: 0;
+  font: inherit; }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em;
+  margin-right: 2em; }
+
+pre.code .ln {
+  color: grey; }
+
+/* line numbers */
+pre.code, code {
+    background-color: #222222;
+    color: #8a2be2;
+    font-family: monospace;
+}
+
+#table-of-contents {
+    position: fixed;
+    left: 0%;
+    width: 17.5%;
+    height: 100%;
+    top: 0%;
+    overflow: auto;
+    overflow-wrap: break-word;
+    font-size: 14px;
+    font-family: "DejaVu Sans", sans-serif;
+    background-color: var(--toc-background);
+}
+
+
+pre.code .comment, code .comment {
+  color: #5c6576; }
+
+pre.code .keyword, code .keyword {
+  color: #3B0D06;
+  font-weight: bold; }
+
+pre.code .literal.string, code .literal.string {
+  color: #0c5404; }
+
+pre.code .name.builtin, code .name.builtin {
+  color: #352b84; }
+
+pre.code .deleted, code .deleted {
+  background-color: #DEB0A1; }
+
+pre.code .inserted, code .inserted {
+  background-color: #A3D289; }
+
+span.classifier {
+  font-style: oblique; }
+
+span.classifier-delimiter {
+  font-weight: bold; }
+
+span.option {
+  white-space: nowrap; }
+
+span.problematic {
+  color: #b30000; }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80%; }
+
+span.DecNumber {
+  color: var(--number); }
+
+span.BinNumber {
+  color: var(--number); }
+
+span.HexNumber {
+  color: var(--number); }
+
+span.OctNumber {
+  color: var(--number); }
+
+span.FloatNumber {
+  color: var(--number); }
+
+span.Identifier {
+  color: var(--identifier); }
+
+span.Keyword {
+  font-weight: 600;
+  color: var(--keyword); }
+
+span.StringLit {
+  color: var(--literal); }
+
+span.LongStringLit {
+  color: var(--literal); }
+
+span.CharLit {
+  color: var(--literal); }
+
+span.EscapeSequence {
+  color: var(--escapeSequence); }
+
+span.Operator {
+  color: var(--operator); }
+
+span.Punctuation {
+  color: var(--punctuation); }
+
+span.Comment, span.LongComment {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--comment); }
+
+span.RegularExpression {
+  color: darkviolet; }
+
+span.TagStart {
+  color: darkviolet; }
+
+span.TagEnd {
+  color: darkviolet; }
+
+span.Key {
+  color: #252dbe; }
+
+span.Value {
+  color: #252dbe; }
+
+span.RawData {
+  color: var(--raw-data); }
+
+span.Assembler {
+  color: #252dbe; }
+
+span.Preprocessor {
+  color: #252dbe; }
+
+span.Directive {
+  color: #252dbe; }
+
+span.Command, span.Rule, span.Hyperlink, span.Label, span.Reference,
+span.Other {
+  color: var(--other); }
+
+/* Pop type, const, proc, and iterator defs in nim def blocks */
+dt pre > span.Identifier, dt pre > span.Operator {
+  color: var(--identifier);
+  font-weight: 700; }
+
+dt pre > span.Keyword ~ span.Identifier, dt pre > span.Identifier ~ span.Identifier,
+dt pre > span.Operator ~ span.Identifier, dt pre > span.Other ~ span.Identifier {
+  color: var(--identifier);
+  font-weight: inherit; }
+
+span.pragmadots {
+  /* Position: relative frees us up to make the dots
+  look really nice without fucking up the layout and
+  causing bulging in the parent container */
+  position: relative;
+  /* 1px down looks slightly nicer */
+  top: 1px;
+  padding: 2px;
+  background-color: var(--third-background);
+  border-radius: 4px;
+  margin: 0 2px;
+  cursor: pointer;
+  font-size: 0.8em;
+}
+
+span.pragmadots:hover {
+  background-color: var(--hint);
+}
+span.pragmawrap {
+  display: none;
+}
+
+span.attachedType {
+  display: none;
+  visibility: hidden;
+}
+
+
+
+/* Add behavior for elements that are folded */
+.folded-content {
+  display: none;
+}
+.foldable-header {
+  cursor: pointer;
+}
+
+/* Add hint box */
+.hint-message {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  z-index: 1000; /* Ensures the message is on top */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Optional: Adds a shadow for better visibility */
+}
+
+.extended {
+    color: #A6E22E; /*#66D9EF;*/ /* rgb(253, 151, 31);*/
+}
+
+[class^="section-number-"] {
+    color: #F92672;
+}
+
+h2, h3, h4, h5, h6 {
+    color: #FD971F; /* #A6E22E;*/
+}
+
+.Theory, .CAST, .Detector, .Reconstruction, .Calibration, .Analysis, .Limit, .Appendix, .Ack {
+    color: #E6DB74; /*#FD5FF0;*/
+}
