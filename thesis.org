@@ -2151,10 +2151,170 @@ https://raw.githubusercontent.com/jkitchin/org-ref/master/org-ref.org
 to use ~org-ref~ export explicitly! That is ~C-c C-e r h~ instead of
 'Export to html' via ~h~!
 
-*** Multiple file from thesis
+
+*** DONE Multiple file from thesis
 
 For the HTML export we'll likely want to have all sections to be on
 separate pages.
+
+In the end we decided to produce multiple HTML files from a single
+HTML file using a small Nim program. This now handles all of the
+annoying little things that I couldn't get to work in a reasonable
+time.
+
+The program:
+[[file:code/split_thesis_html.nim]]
+which is simply run, pointing to the *single exported HTML* file
+produced by a ~C-c C-e r h~ (export to HTML via ~org-ref~). The latter
+is important for the bibliography and citations of course.
+
+However, because of our subfigure DSL we have to hack around _quite a
+bit_. We use ~advice-add~ with ~:around~ as seen in the below section to first
+perform our DSL replacement, _then_ let ~org-ref~ do its thing and
+finally walk the document again to put all ~<figure>~ tags into a
+~#+BEGIN_EXPORT HTML~ block. This is required, because if we emit the
+expanded DSL into such a block, ~org-ref~ just ignores it. We still
+have to do some postprocessing in the above mentioned Nim script however!
+
+**** DONE Making org-ref citations work in subfigures
+:PROPERTIES:
+:CUSTOM_ID: sec:todos:html_export:org_ref_subfigure_dsl
+:END:
+
+*EXPERIMENT*:
+We will try to use ~advice-add~ to run our subfigure DSL before the
+org-ref export functions are being run.
+
+When calling ~org-export-dispatch~ (C-c C-e) and selecting any org-ref
+function, it calls e.g. ~org-ref-export-to-html~. This looks like:
+[[file:~/.emacs.d/elpa/org-ref-20230921.1327/org-ref-export.el]]
+#+begin_src emacs-lisp
+(defun org-ref-export-to-html (&optional async subtreep visible-only
+					 body-only info)
+  "Export the buffer to HTML and open.
+See `org-export-as' for the meaning of ASYNC SUBTREEP
+VISIBLE-ONLY BODY-ONLY and INFO."
+  (org-ref-export-to 'html async subtreep visible-only
+		     body-only info))
+
+#+end_src
+Inside of ~org-ref-export-to~ it calls
+#+begin_src emacs-lisp
+     (org-ref-process-buffer backend subtreep)
+#+end_src
+which performs the actual org-ref replacements etc.
+
+Only at the end does it call:
+#+begin_src emacs-lisp
+	(org-open-file (org-export-to-file backend export-name
+			 async subtreep visible-only
+			 body-only info)
+		       'system)
+#+end_src
+
+where *importantly* ~org-export-to-file~ is the function that the
+#+begin_src emacs-lisp
+; (add-hook 'org-export-before-processing-hook 'my/org-process-subfigure-dsl)
+#+end_src
+~org-export-before-processing-hook~ are being run!
+
+This implies that our subfigure DSL is being evaluated after org-ref
+is through and so we cannot turn our subfigure DSL ~cite~ commands
+into the ~org-ref~ syntax.
+
+What we need to do? We need to make sure that our subfigure logic is
+run *before*. And we'll use ~advice-add~ to do so.
+
+#+begin_src emacs-lisp
+(defun replace-html-tags-in-region (start stop)
+  "Replace @@html:( some text ) @@ with some text in the region from START to STOP.
+Return the total number of characters removed.
+NOTE: The space after `)` and before `@@` MIGHT EXIST in the file!"
+  (interactive "r")  ;; Make the function interactive to select the region
+  (save-excursion
+    (goto-char start)
+    (let ((pattern "@@html:\\([^@]+\\)@@")  ;; Define the regex pattern
+          (total-removed 0))  ;; Initialize the counter
+      (while (re-search-forward pattern stop t)
+        (let ((match-length (- (match-end 0) (match-beginning 0)))
+              (replacement-length (length (match-string 1))))
+          (replace-match (match-string 1) nil nil)
+          (setq total-removed (+ total-removed (- match-length replacement-length)))))
+      (message "Total characters removed: %d" total-removed)
+      total-removed)))
+
+(defun wrap-html-figures-in-org ()
+  "Wrap <figure> HTML blocks inside `#+BEGIN_EXPORT HTML ... #+END_EXPORT` in the current Org buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (condition-case err
+        (while (re-search-forward "<figure class=\"figure-wrapper\"" nil t)
+          (let ((start (match-beginning 0))
+                (figure-count 1))
+            ;; Move forward to find the matching closing </figure> tag
+            (while (and (> figure-count 0)
+                        (re-search-forward "</?figure" nil t))
+              (if (string= (match-string 0) "<figure")
+                  (setq figure-count (1+ figure-count))
+                (setq figure-count (1- figure-count))))
+            (if (zerop figure-count)
+                (let ((end (match-end 0)))
+                  ;; First remove any possible @@html:( ... ) @@ org-ref statements and leave ...
+                  (setq end (- end (replace-html-tags-in-region start end)))
+                  ;; Insert the export block delimiters
+                  (goto-char (+ end 1)) ;; We match `</figure`, so need to insert after closing `>`
+                  (insert "\n#+END_EXPORT")
+                  (goto-char start)
+                  (insert "#+BEGIN_EXPORT HTML\n")
+                  ;; Move point to end to avoid reprocessing the same block
+                  (goto-char (+ end (length "\n#+END_EXPORT"))))
+              (error "Unmatched <figure> tags"))))
+      (error
+       (let ((error-position (point)))
+         (switch-to-buffer (current-buffer))
+         (goto-char error-position)
+         (message "Error: %s" (error-message-string err)))))))
+
+(defun org-html-subfigure-dsl-process (fn backend &optional subtreep)
+  "Wraps around the `org-ref-process-buffer`.
+The idea is that we:
+- before org-ref does its thing, apply the regular subfigure DSL processing
+  (but without inserting #+BEGIN_EXPORT statements for HTML)
+- perform the org-ref processing so that the cite:&foo statements are handled
+  correctly
+- then, wrap the resulting code of the <figure> ... </figure> statements in
+  a #+BEGIN_EXPORT HTML .. #+END_EXPORT environment
+"
+  ;; (switch-to-buffer (current-buffer)) ;; open buffer to investigate
+  (my/org-process-subfigure-dsl backend subtreep) ;; process subfigure DSL
+  ;;(debug)  
+  (apply fn backend subtreep) ;; call the org-ref processing
+  ;;(debug)
+  ;;(switch-to-buffer (current-buffer)) ;; open buffer again to investigate
+  (wrap-html-figures-in-org)
+  ;;(debug)
+  ) ;; wrap the figure envrionments up
+
+#+end_src
+
+#+begin_src emacs-lisp
+(advice-add 'org-ref-process-buffer :around #'org-html-subfigure-dsl-process)
+#+end_src
+
+#+begin_src emacs-lisp
+;; (advice-remove 'org-ref-process-buffer 'my/org-process-subfigure-dsl)
+#+end_src
+
+This makes it so that when the org-ref function is called it *first*
+performs the subfigure DSL replacement and *then* the org-ref
+code. That should give us precisely what we want.
+
+*UPDATE*: <2024-06-18 Tue 19:47>
+The above *DOES WORK* now! :partying_face:
+
+
+**** Old ideas about multiple files from single Org
 
 I found the following code here:
 https://stackoverflow.com/a/65428989
@@ -2234,8 +2394,8 @@ Alternatively it proposed to write a custom Org export backend that
 derives from the HTML backend. That looks pretty elegant actually.
 
 #+begin_src emacs-lisp
-(org-export-define-derived-backend 'custom-html 'html
-  :translate-alist '((link . custom-html-link-transcoder)))
+;;(org-export-define-derived-backend 'custom-html 'html
+;;  :translate-alist '((link . custom-html-link-transcoder)))
 
 (defun custom-html-link-transcoder (link contents info)
   "Transcode a LINK from Org to custom HTML."
@@ -2275,15 +2435,80 @@ derives from the HTML backend. That looks pretty elegant actually.
          (widen)))
      "LEVEL=1")))
 
+(org-export-define-derived-backend 'custom-html 'html
+  :menu-entry
+  '(?X "Export to Custom HTML"
+       ((?h "to html" custom-html-export-to-separate-files))))
+
 (defun custom-html-export-menu-entry ()
   "Menu entry for the custom HTML export."
   (interactive)
-  (org-export--dispatch-ui
-   '((?H "To separate files by level 1 heading" custom-html-export-to-separate-files))
-   "Export with Custom HTML"))
+  (org-export-backend-dispatch))
+;;(defun custom-html-export-menu-entry ()
+;;  "Menu entry for the custom HTML export."
+;;  (interactive)
+;;  (org-export-dispatch))
 
-(define-key org-mode-map (kbd "C-c C-e H") 'custom-html-export-menu-entry)
+;; Ensure the key binding is correctly defined
+(define-key org-mode-map (kbd "C-c e H") 'custom-html-export-menu-entry)
 #+end_src
+
+#+begin_src emacs-lisp
+(defun custom-html-link-transcoder (link contents info)
+  "Transcode a LINK from Org to custom HTML."
+  (let ((type (org-element-property :type link))
+        (path (org-element-property :path link))
+        (raw-path (org-element-property :raw-link link)))
+    (cond
+     ;; For CUSTOM_ID links, replace them with corresponding filenames.
+     ((and (string= type "id") 
+           (assoc path (org-export-get-id-to-filename-alist info)))
+      (format "<a href=\"%s.html\">%s</a>"
+              (cdr (assoc path (org-export-get-id-to-filename-alist info)))
+              contents))
+     ;; Default handling for other links
+     (t (org-html-link link contents info)))))
+
+(defun custom-html-export-to-separate-files
+    (&optional async subtreep visible-only body-only ext-plist)    
+    ;;(plist filename pub-dir extra)
+  "Export all level 1 headings in the current buffer to separate HTML files.
+PLIST is the property list for the export. FILENAME is the name
+of the output file. PUB-DIR is the publishing directory."
+  (let* ((base-dir (file-name-directory (buffer-file-name)))
+         (id-to-filename 
+          (mapcar (lambda (headline)
+                    (let ((id (org-element-property :CUSTOM_ID headline)))
+                      (when id
+                        (cons id (concat base-dir
+                                         (org-element-property :raw-value headline)
+                                         ".html")))))
+                  (org-element-map (org-element-parse-buffer) 'headline
+                    (lambda (hl) hl)
+                    nil nil 'headline t))))
+    (org-map-entries
+     (lambda ()
+       (let ((title (nth 4 (org-heading-components))))
+         (org-narrow-to-subtree)
+         (org-export-to-file 'custom-html (concat base-dir title ".html") nil nil nil plist pub-dir)
+         (widen)))
+     "LEVEL=1")))
+
+(org-export-define-derived-backend 'custom-html 'html
+  :menu-entry
+  '(?X "Export to Custom HTML"
+       ((?h "to html" custom-html-export-to-separate-files))))
+
+(defun custom-html-export-menu-entry ()
+  "Menu entry for the custom HTML export."
+  (interactive)
+  (org-export-dispatch))
+
+;; Ensure the key binding is correctly defined
+(define-key org-mode-map (kbd "C-c e H") 'custom-html-export-menu-entry)
+
+#+end_src
+
 *NOTE*: This is currently broken: Adding it to the Org export dispatch
 window doesn't work yet, but more importantly:
 - [ ] The links are not actually working right now. So we'll need to fix it!
@@ -2305,7 +2530,6 @@ https://www.gnu.org/software/emacs/manual/html_node/org/Search-Options.html
 
 *Example*:
 [[file:~/org/Doc/StatusAndProgress.org::#sec:list_different_uncertainties]]
-
 
 
 *** Org mode subfigures for LaTeX
