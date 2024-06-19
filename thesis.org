@@ -1978,9 +1978,160 @@ In terms of table of contents:
 It would be nice to have the ToC for the entire thesis on the left,
 but something like this:
 https://agraphicsguynotes.com/posts/fiber_in_cpp_understanding_the_basics/
-on the right for the minitoc for each chapter! 
+on the right for the minitoc for each chapter!
 
-*** Bibliography for HTML
+*** DONE Attempt at automatic folding of ~:extended:~ sections
+
+The way we handle automatic folding of sections is by relying on how
+Org mode exports tags to HTML.
+
+It looks something like the following:
+#+begin_src html
+<h5 id="org4ff57a5"><span class="section-number-5">10.2.2.1.</span> Table of fit lines&#xa0;&#xa0;&#xa0;<span class="tag"><span class="extended">extended</span></span></h5>
+<div...>
+#+end_src
+With that in mind, I've (with GPT4o) written some JS that marks
+sections with extended tags as foldable and thus hides them.
+
+This work surprisingly well. See the added code in
+[[file:~/.emacs.d/myinit.org]] related to the added HTML preface script.
+
+It also needs the following two CSS fields:
+#+begin_src css
+.folded-content {
+  display: none;
+}
+.foldable-header {
+  cursor: pointer;
+}
+#+end_src
+
+**** Full working example of folding sections :noexport:
+
+#+begin_src html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .folded-content {
+      display: none;
+    }
+    .foldable-header {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h5 id="org4ff57a5"><span class="section-number-5">10.2.2.1.</span> Table of fit lines&#xa0;&#xa0;&#xa0;<span class="tag"><span class="extended">extended</span></span></h5>
+  <div>Content to be folded
+    <p>
+      what is goign on
+    </p>
+
+  </div>
+  <h5 id="org47a6"><span class="section-number-5">10.2.2.2.</span> Another heading</h5>
+  <div>More content</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var headers = document.querySelectorAll('h1 .extended, h2 .extended, h3 .extended, h4 .extended, h5 .extended, h6 .extended');
+
+        headers.forEach(function (header) {
+            var foldableHeader = header.closest('h1, h2, h3, h4, h5, h6');
+            if (foldableHeader) {
+                foldableHeader.classList.add('foldable-header');
+                var nextElement = foldableHeader.nextElementSibling;
+                var contentToFold = [];
+                while (nextElement && !nextElement.matches('h1, h2, h3, h4, h5, h6')) {
+                    contentToFold.push(nextElement);
+                    nextElement = nextElement.nextElementSibling;
+                }
+                contentToFold.forEach(function (element) {
+                    element.classList.add('folded-content');
+                });
+
+                foldableHeader.addEventListener('click', function () {
+                    contentToFold.forEach(function (element) {
+                        if (element.style.display === 'none' || element.style.display == '') {
+                            element.style.display = 'block';
+                        } else {
+                            element.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+    });
+  </script>
+</body>
+</html>
+#+end_src
+
+
+**** Attempts we didn't end up using :noexport:
+
+*NOT USED*:
+#+begin_src emacs-lisp
+(defun my/org-html-headline-with-folding (headline contents info)
+  "Custom function to add folding functionality to headlines with :extended: tag."
+  (if (member "extended" (org-element-property :tags headline))
+      (let* ((text (org-export-data (org-element-property :title headline) info))
+             (level (org-element-property :level headline))
+             (contents (or contents "")))
+        (format "<details><summary>%s</summary>%s</details>" text contents))
+    (org-html--headline headline contents info)))
+
+(with-eval-after-load 'ox-html
+  (advice-add 'org-html-headline :override #'my/org-html-headline-with-folding))
+
+(advice-remove 'org-html-headline #'my/org-html-headline-with-folding)
+;;(advice-add 'org-html-headline :override #'my/org-html-headline-with-folding)
+#+end_src
+
+#+RESULTS:
+
+*NOT USED*:
+#+begin_src emacs-lisp
+(require 'ox-html)
+
+(defun my/org-html-headline (headline contents info)
+  "Custom function to handle headlines with :folded: tag for HTML export."
+  (let ((tags (org-element-property :tags headline)))
+    (if (member "folded" tags)
+        (format "<details><summary>%s</summary>%s</details>"
+                (org-export-data (org-element-property :title headline) info)
+                (or contents ""))
+      (org-html--headline headline contents info))))
+
+(org-export-define-derived-backend 'my-html 'html
+  :translate-alist '((headline . my/org-html-headline)))
+#+end_src
+
+*NOT USED*:
+#+begin_src emacs-lisp
+(defun my/org-folded-preprocess (backend)
+  "Preprocess org file to convert :extended: tag into HTML <details> elements.
+This function will only be called during HTML export."
+  (when (org-export-derived-backend-p backend 'html)
+    (goto-char (point-min))
+    (while (re-search-forward "^\\*+ \\(.*\\) :extended:$" nil t)
+      (let ((level (org-current-level)))
+        (replace-match (format "<details><summary>\\1</summary>\n")))
+      (org-end-of-subtree t t)
+      (insert "\n</details>"))))
+(add-hook 'org-export-before-processing-hook #'my/org-folded-preprocess)
+(remove-hook 'org-export-before-processing-hook #'my/org-folded-preprocess)
+#+end_src
+
+#+RESULTS:
+| my/org-folded-preprocess | my/org-process-subfigure-dsl | my/org-html-export-figs |
+
+
+
+*** DONE Bibliography for HTML
 
 
 We should use ~org-ref~ to use do our citations and cross links in
