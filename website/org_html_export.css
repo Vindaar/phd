@@ -8,6 +8,8 @@ Modified from Chad Skeeters' rst2html-style
 https://bitbucket.org/cskeeters/rst2html-style/
 
 Modified by Boyd Greenfield and narimiran
+
+And modified by myself (Vindaar) for my Org exported HTML documents
 */
 
 :root {
@@ -40,7 +42,8 @@ Modified by Boyd Greenfield and narimiran
     /* Maybe left a bit bigger for table of contents. 35%, 33% is maybe a bit too narrow?*/
     margin-left: 30%;
     margin-right: 30%;
-    font-size: 16px;
+    margin-bottom: 2.5%;
+    font-size: 15px;
 }
 
 ::-webkit-scrollbar {
@@ -274,12 +277,20 @@ sub {
   bottom: -0.25em; }
 
 img {
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  vertical-align: middle;
-  border: 0;
-  -ms-interpolation-mode: bicubic; }
+    /* The first three are required to make sure single images are centered */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    vertical-align: middle;
+    border: 0;
+    -ms-interpolation-mode: bicubic;
+}
+
+
 
 @media print {
   * {
@@ -340,8 +351,8 @@ img {
 
 
 p {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-top: 1em; /* Can be used to adjust margin between paragraphs */
+  margin-bottom: 1em;
   text-align: justify; /* Justify the text! */
 }
 
@@ -670,30 +681,34 @@ div.figure {
 
 
 
-body {
-    /* Reset only the main figure counter */
-    counter-reset: fig-counter subfig-counter;
-}
+/* NOTE: Use the below if you use an Org exported HTML directly, without splitting it */
+/* with the `split_org_html.nim` tool! */
 
-figure {
-    /* Increment the global figure counter for every top-level figure */
-    counter-increment: fig-counter;
-}
+/* body { */
+/*     /\* Reset only the main figure counter *\/ */
+/*     counter-reset: fig-counter subfig-counter; */
+/* } */
+
+/* figure { */
+/*     /\* Increment the global figure counter for every top-level figure *\/ */
+/*     counter-increment: fig-counter; */
+/* } */
+
 
 .figure-wrapper {
     margin: 3%;
 }
 
-figure:not(.subfigure) {
-    /* Reset the subfigure counter for every new top-level figure */
-    counter-reset: subfig-counter;
-}
+/* figure:not(.subfigure) { */
+/*     /\* Reset the subfigure counter for every new top-level figure *\/ */
+/*     counter-reset: subfig-counter; */
+/* } */
 
 /* Use a class to identify subfigures, say 'subfig' */
 /* Use the data-width attribute for the subfigure width */
 figure.subfigure {
     /* Increment the subfigure counter for every subfigure */
-    counter-increment: subfig-counter;
+    /* counter-increment: subfig-counter; */
     display: inline-block;
     vertical-align: top;
     box-sizing: border-box;
@@ -721,35 +736,17 @@ figure.subfigure figcaption {
     margin: 0 auto;     /* Centers the block itself, if it's not already full width */
 }
 
-figcaption::before {
-    /* Display the global counter value before each main figcaption */
-    content: "Figure " counter(fig-counter) ": ";
-}
-
-/* Use the subfig class to display the subfigure counter */
-figure.subfigure figcaption::before {
-    /* Display the combined global and subfigure counter values */
-    content: counter(fig-counter) " - " counter(subfig-counter, lower-alpha) ": ";
-}
-
-
-
-/* /\* Initialize the counter *\/ */
-/* body { */
-/*     counter-reset: fig-counter; */
-/* } */
-
-/* figure { */
-/*     /\* Increment the counter for every figure *\/ */
-/*     counter-increment: fig-counter; */
-/* } */
 
 /* figcaption::before { */
-/*     /\* Display the counter value before each figcaption *\/ */
+/*     /\* Display the global counter value before each main figcaption *\/ */
 /*     content: "Figure " counter(fig-counter) ": "; */
 /* } */
 
-
+/* /\* Use the subfig class to display the subfigure counter *\/ */
+/* figure.subfigure figcaption::before { */
+/*     /\* Display the combined global and subfigure counter values *\/ */
+/*     content: counter(fig-counter) " - " counter(subfig-counter, lower-alpha) ": "; */
+/* } */
 
 div.footer, div.header {
   clear: both;
@@ -1024,4 +1021,45 @@ span.pragmawrap {
 span.attachedType {
   display: none;
   visibility: hidden;
+}
+
+
+
+/* Add behavior for elements that are folded */
+.folded-content {
+  display: none;
+}
+.foldable-header {
+  cursor: pointer;
+}
+
+/* Add hint box */
+.hint-message {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  z-index: 1000; /* Ensures the message is on top */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Optional: Adds a shadow for better visibility */
+}
+
+.extended {
+    color: #A6E22E; /*#66D9EF;*/ /* rgb(253, 151, 31);*/
+}
+
+[class^="section-number-"] {
+    color: #F92672;
+}
+
+h2, h3, h4, h5, h6 {
+    color: #FD971F; /* #A6E22E;*/
+}
+
+.Theory, .CAST, .Detector, .Reconstruction, .Calibration, .Analysis, .Limit, .Appendix, .Ack {
+    color: #E6DB74; /*#FD5FF0;*/
 }
