@@ -226,9 +226,9 @@ which will produce all HTMLs in [[file:html/]].
 (defun my-custom-org-exclude-tags (backend)
   "Set tags to exclude depending on BACKEND."
   (cond ((eq backend 'latex)
-         (setq-local org-export-exclude-tags '("noexport" "extended" "html")))
+         (setq-local org-export-exclude-tags '("noexport" "html"))) ;; `extended` is always exported
         ((eq backend 'html)
-         (setq-local org-export-exclude-tags '("noexport" "extended" "latex")))))
+         (setq-local org-export-exclude-tags '("noexport" "latex")))))
 
 (add-hook 'org-export-before-processing-hook 'my-custom-org-exclude-tags)
 
@@ -237,7 +237,7 @@ which will produce all HTMLs in [[file:html/]].
 (setq org-latex-prefer-user-labels t)
 #+end_src
 
-#+RESULTS:
+#+RESULTS: src:latex:setup
 : t
 
 For the printed version, the color scheme for code should be using a
@@ -248,7 +248,7 @@ bright background (we remove our background setting):
    '(("frame" "lines") ("linenos=true") ("fontsize=\\footnotesize")))
 #+end_src
 
-#+RESULTS:
+#+RESULTS: src:latex:setup_printed
 | frame                  | lines |
 | linenos=true           |       |
 | fontsize=\footnotesize |       |
@@ -318,7 +318,7 @@ export TPA=~/CastData/ExternCode/TimepixAnalysis
 (defun my-custom-org-exclude-tags (backend)
   "Set tags to exclude depending on BACKEND."
   (cond ((eq backend 'latex)
-         (setq-local org-export-exclude-tags '("noexport" "extended" "html")))
+         (setq-local org-export-exclude-tags '("noexport" "html")))
         ((eq backend 'html)
          (setq-local org-export-exclude-tags '("noexport" "extended" "latex")))))
 
