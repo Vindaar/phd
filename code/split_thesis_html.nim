@@ -84,6 +84,7 @@ proc findSection(html: XmlNode, section: string): XmlNode =
   ## returns the div matching:
   ## `<div id="outline-container-sec:introduction" class="outline-2">`
   for s in html.findUpTo("div", upToLevel = 3):
+    if "id" notin s.attrs: continue
     let id = s.attrs["id"]
     if id == ("outline-container-" & section):
       result = s
