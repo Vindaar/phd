@@ -15133,6 +15133,36 @@ file:Figs/CAST_Alignment/xray_finger_centers_run_189.pdf
 comment for ~--switchAxes~ in the code, see
 sec. [[#sec:limit:candidates:septemboard_layout_transformations]].
 
+*** Generate spectrum of X-ray finger run                        :extended:
+
+Let's also look at the spectrum of the X-ray finger run (at least
+189).
+
+Given the reconstructed H5 file of the run 189
+
+#+begin_src sh
+plotBackgroundRate \
+    \t\reco_xray_finger_189.h5 \
+    --names "X-ray finger" \
+    --title "X-ray finger run 189 spectrum" \
+    --centerChip 3 \
+    --region crGold \
+    --energyDset energyFromCharge \
+    --outfile xray_finger_spectrum_189.pdf \
+    --outpath ~/phd/Figs/XrayFinger/ \
+    --useTeX \
+    --quiet
+#+end_src
+
+Which yields the following figure:
+#+CAPTION: Spectrum of the X-ray finger run. Care needs to be taken interpreting it, because
+#+CAPTION: the spectrum passes _through_ the telescope. Given that the telescope has very
+#+CAPTION: low efficiency above $\SI{4}{keV}$, the rate of X-rays at higher energies is
+#+CAPTION: extremely suppressed.
+#+NAME: fig:cast:xray_finger_189_spectrum
+[[~/phd/Figs/XrayFinger/xray_finger_spectrum_189.pdf]]
+
+
 *** Systematic uncertainty from graphite spacer rotation [/]     :extended:
 
 - [X] Determine the rotation angle of the graphite spacer from the
@@ -27973,6 +28003,9 @@ PLOT_SEPTEM_E_CUTOFF=1.0 PLOT_SEPTEM_EVENT_NUMBER=44109 \
 -> To produce thesis plot, run command in ~/phd/Figs/<subdirectory>~
 
 **** Generate plot for background rate with all vetoes          :extended:
+:PROPERTIES:
+:CUSTOM_ID: sec:background:gen_bck_all_vetoes_compared
+:END:
 
 Let's generate the plot:
 
