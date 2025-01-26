@@ -216,6 +216,23 @@ proc patchHrefs(x: XmlNode, repl: Table[string, string],
         result.add newText("Figure " & figTab[currentFig] & ": ")
         for ch in x:
           result.add impl(ch)
+      elif tag in ["h2", "h3", "h4", "h5"]:
+        result = newElement(tag)
+        result.attrs = at
+        if not result.attrs.isNil and
+           "id" in result.attrs: # create the link
+          # In this case we are looking at a heading in the file that has an ID
+          # We want to insert an `<a href />` tag so that the links are clickable.
+          var link = newElement("a")
+          link.attrs = {"href" : "#" & result.attrs["id"]}.toXmlAttributes
+          let fig = if tag == "figure": at["id"] else: "" # get
+          for ch in x:
+            link.add impl(ch, fig) # pass down the current figure
+          result.add link
+        else: # a heading without an ID. Just treat like normal node
+          let fig = if tag == "figure": at["id"] else: "" # get
+          for ch in x:
+            result.add impl(ch, fig) # pass down the current figure
       else:
         result = newElement(tag)
         result.attrs = at
@@ -394,17 +411,19 @@ proc main(fname: string = path, outdir = OutDir) =
     let name = s.getLinkTag
     let sec = findSection(html, name)
     let path = outdir / getName(name)
+
+    # now walk the body of this section for other headings
+    for ch in sec.findAllOf(@["h2", "h3", "h4", "h5", "h6"]):
+      let chName = ch.getHeadingId()
+      let chNew = "./" & path.extractFilename & "#" & chName
+      repl[chName] = chNew
+      # and patch the heading to contain a link to itself
+
     let o = initOutputFile(path, name, toString(head), sec, $tocNav, footnotes = fn)
     files.add o
 
     let new = "./" & o.path.extractFilename & "#" & o.name
     repl[o.name] = new
-
-    # now walk the body of this section for other headings
-    for ch in sec.findAllOf(@["h2", "h3", "h4", "h5", "h6"]):
-      let chName = ch.getHeadingId()
-      let chNew = "./" & o.path.extractFilename & "#" & chName
-      repl[chName] = chNew
 
   # Patch the links in the table of content
   let newToc = tocNav.patchHrefs(repl)
