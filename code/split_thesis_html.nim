@@ -278,12 +278,11 @@ proc buildFootnoteTab(x: XmlNode): OrderedTable[string, string] =
 proc getName(s: string): string =
   ## Extracts the correct name for the output file from the given `sec:foo:bar`.
   ## If `foo` is `appendix` it means we are looking at an appendix chapter.
-  let spl = s.split(":")
-  if spl[1] == "appendix": # take index 2
-    result = spl[2]
-  else:
-    result = spl[1]
-  result &= ".html"
+  ## We generate the output file name by just replacing any `:` by `_`
+  ## If it starts with `sec:` we strip the `sec`
+  result = s.replace(":", "_") & ".html"
+  if result.startsWith("sec_"):
+    result = result.replace("sec_", "")
 
 proc filterFootnotes(x: XmlNode, fTab: OrderedTable[string, string]): XmlNode =
   ## `<a role="doc-backlink" class="footnum" id="fn.89" href="#fnr.89">89</a>`
