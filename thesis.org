@@ -23847,6 +23847,94 @@ code/generate_all_run_fake_data_plots --plot
 get a pretty version of the plot. For that reason no further
 modification is needed to get pretty plots.
 
+**** Compute test statistic of simulated vs real data           :extended:
+:PROPERTIES:
+:ID:       14c3da8d-b635-4ed0-99d8-a50e50e2a1b8
+:END:
+
+In order to compare quantitatively how well the simulated and real
+data match, we can compute the Kolmogorov-Smirnov statistic comparing
+the two distributions. We added the code to do that into
+~plotDatasetGgplot~ used above.
+
+Now, when rerunning the script from the previous section,
+#+begin_src sh
+code/generate_all_run_fake_data_plots --plot
+#+end_src
+
+we produce CSV files in the output directory named
+~kolmogorov_smirnov_test_run_{run}.csv~.
+
+Let's compute the percentiles for each dataset that we find among all
+the runs.
+
+#+begin_src nim :tangle code/compute_ks_statistic_simulated_vs_real.nim
+import std / [strutils, os]
+import datamancer
+import seqmath
+
+proc main(path: string) =
+  ## Given a path to a directory containing KS test statistic CSV files,
+  ## computes percentiles across all runs
+  var dfs = newSeq[DataFrame]()
+  for f in walkFiles(path / "kolmogorov_smirnov_test_run*.csv"):
+    let df = readCsv(f)
+    dfs.add df
+  let df = dfs.assignStack().group_by("Dset")
+    
+  let dfStat = df.summarize(
+    f{float: "mean" << mean(`KS`)},
+    f{float: "p1"  << percentile(`KS`, 1)},
+    f{float: "p5"  << percentile(`KS`, 5)},
+    f{float: "p20" << percentile(`KS`, 20)},
+    f{float: "p50" << percentile(`KS`, 50)},
+    f{float: "p80" << percentile(`KS`, 80)},
+    f{float: "p95" << percentile(`KS`, 95)},
+    f{float: "p99" << percentile(`KS`, 99)}
+  )
+  echo dfStat.toOrgTable()
+
+when isMainModule:
+  import cligen
+  dispatch main
+#+end_src
+
+Running the code yields:
+#+begin_src sh :dir ~/phd :results raw
+code/compute_ks_statistic_simulated_vs_real --path ~/phd/Figs/fakeEventSimulation/runComparisons
+#+end_src
+
+#+RESULTS:
+| Dset                    |        mean |           p1 |           p5 |         p20 |         p50 |         p80 |         p95 |         p99 | Mean of all |
+|-------------------------+-------------+--------------+--------------+-------------+-------------+-------------+-------------+-------------+-------------|
+| centerX                 | 0.017728811 |  0.010046727 |    0.0111067 | 0.012950967 | 0.017130935 | 0.022049046 | 0.025939566 |  0.03483331 |             |
+| centerY                 | 0.018396674 | 0.0096959435 |  0.011513562 | 0.014139809 |  0.01818335 | 0.022410802 | 0.026791784 | 0.032708395 |             |
+| eccentricity            | 0.020867733 | 0.0078969206 |  0.011347092 |  0.01349759 |  0.01948825 | 0.027237343 | 0.036488699 | 0.040057148 |             |
+| energyFromCharge        | 0.083196879 |   0.04614979 |  0.049682969 | 0.057280827 | 0.079046696 |   0.1125918 |  0.12807368 |  0.13489172 |             |
+| fractionInTransverseRms | 0.032327936 |  0.011427515 |  0.014773093 | 0.020309239 | 0.030970943 | 0.044436742 | 0.057154767 | 0.061012222 |             |
+|-------------------------+-------------+--------------+--------------+-------------+-------------+-------------+-------------+-------------+-------------|
+| hits                    |  0.29271251 |  0.094367833 |   0.11423308 |  0.21297282 |  0.30349812 |  0.38515457 |  0.43545029 |  0.46453369 |             |
+|-------------------------+-------------+--------------+--------------+-------------+-------------+-------------+-------------+-------------+-------------|
+| kurtosisLongitudinal    | 0.032548871 | 0.0091016192 |  0.016054657 | 0.021355939 | 0.033580472 | 0.041581081 | 0.051985063 |  0.05553674 |             |
+| kurtosisTransverse      | 0.029100149 |  0.010604393 |   0.01437168 | 0.017611287 | 0.029059067 | 0.039992735 | 0.045710155 | 0.047770201 |             |
+| length                  |  0.08948975 |  0.040213532 |  0.053710365 | 0.070741278 | 0.092273087 |  0.11162891 |  0.12002237 |  0.13239197 |             |
+| lengthDivRmsTrans       | 0.061240117 |  0.041514009 |  0.045875721 | 0.053211296 | 0.060220911 | 0.069994807 | 0.076571801 | 0.079596747 |             |
+| rmsLongitudinal         | 0.079783296 |  0.026333459 |  0.040461903 | 0.060652223 | 0.084985021 |  0.10133859 |  0.11428512 |  0.11743031 |             |
+| rmsTransverse           | 0.080539978 |  0.032498024 |  0.040842704 | 0.059591062 | 0.082445129 |  0.10120729 |  0.10956826 |  0.11848442 |             |
+| rotationAngle           | 0.047580387 |  0.027126835 |  0.029577571 | 0.036911666 | 0.048164035 |  0.05637761 | 0.069054677 | 0.070822082 |             |
+| skewnessLongitudinal    | 0.019420187 | 0.0086891301 |  0.010249849 | 0.013448027 | 0.018319759 | 0.022924685 | 0.035323778 | 0.038741185 |             |
+| skewnessTransverse      |  0.01658166 | 0.0086189234 | 0.0089088942 | 0.012016145 | 0.016433308 | 0.020219498 |  0.02610762 | 0.030517539 |             |
+| totalCharge             | 0.082306663 |  0.046149943 |  0.049816562 | 0.055996435 | 0.075904488 |  0.10383275 |  0.12470094 |  0.14119739 |             |
+| width                   | 0.084712604 |  0.039057166 |  0.050704309 | 0.063999393 |    0.089673 |  0.10318213 |   0.1141923 |   0.1273495 |             |
+|-------------------------+-------------+--------------+--------------+-------------+-------------+-------------+-------------+-------------+-------------|
+|                         |             |              |              |             |             |             |             |             | 0.049738856 |
+#+TBLFM: @>$10=(vsum(@I$2..@II$2)+vsum(@III$2..@IIII$2))/(vlen(@I$2..@II$2)+vlen(@III$2..@IIII$2))
+
+This means if we exclude the ~hits~ dataset as we should, the average
+maximum deviation across all runs and properties is slightly less than
+5%. 
+
+
 *** Determination of gas diffusion
 :PROPERTIES:
 :CUSTOM_ID: sec:background:mlp:determine_gas_diffusion
