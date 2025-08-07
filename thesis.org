@@ -28595,9 +28595,10 @@ text files.
 
 Let's calculate the fraction in all cases:
 #+begin_src nim :results drawer :tangle code/analyze_random_coincidence_results.nim
-import strutils
+import std/[strutils, stats]
+import measuremancer
 
-proc parseFile(fname: string): float =
+proc parseFile(fname: string): Measurement[float] =
   var lines = fname.readFile.strip.splitLines()
   var line = 0
   var numRuns = 0
@@ -28607,6 +28608,7 @@ proc parseFile(fname: string): float =
   if lines.len > 68:
     lines = lines[^68 .. ^1]
     doAssert lines.len == 68
+  var fracs = newSeq[float]()
   while line < lines.len:
     if lines[line].len == 0: break
     # parse input
@@ -28616,12 +28618,12 @@ proc parseFile(fname: string): float =
     # `Septem events after fake cut: 137`
     inc line
     let output = lines[line].split(':')[1].strip.parseInt
-    result += output.float / input.float
+    fracs.add output.float / input.float
     outputs += output
     inc numRuns
     inc line
   echo "\tMean output = ", outputs.float / numRuns.float
-  result = result / numRuns.float
+  result = fracs.mean ± fracs.standardDeviation
 
 # now all files in our eccentricity cut run directory
 const path = "/home/basti/phd/resources/estimateRandomCoinc/"
@@ -28660,7 +28662,7 @@ for f in walkFiles(path / "septem_veto_before_after*.txt"):
   echo "\tFraction of events left = ", frac
   let typ = determineType(f)
   echo "\tFraction of events left = ", frac
-  df.add toDf({"Type" : typ, "Septem" : hasSeptem(f), "Line" : hasLine(f), "Fake" : isFake(f), "ε_cut" : eccCut, "FractionPass" : frac})
+  df.add toDf({"Type" : typ, "Septem" : hasSeptem(f), "Line" : hasLine(f), "Fake" : isFake(f), "ε_cut" : eccCut, "FractionPass" : frac.value, "Fraction_σ" : frac.error})
 
 # Now write the table we want to use in the thesis for the efficiencies & random coinc
 # rate
@@ -28670,8 +28672,10 @@ proc convert(x: float): string =
   result = r"$\num{" & s & "}$"
   
 echo df.filter(f{`ε_cut` == 1.0})
-  .mutate(f{float -> string: "FractionPass" ~ convert(idx("FractionPass"))})
-  .drop("Type", "ε_cut")
+  .mutate(f{float -> string: "FractionPass" ~ convert(idx("FractionPass"))},
+          f{float -> string: "Fraction_σ" ~ convert(idx("Fraction_σ"))},
+          f{string -> string: "FractionPass" ~ `FractionPass` & "±" & `Fraction_σ`})
+  .drop("Type", "ε_cut", "Fraction_σ")
   .spread("Fake", "FractionPass").toOrgTable()
 # And finally create the plots and output CSV file
 if true:
@@ -28718,195 +28722,205 @@ block PlotFromCsv:
 #+RESULTS:
 :results:
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.0_Line.txt
-	Mean output = 206.4705882352941
-	Fraction of events left = 0.2532210933821111
-	Fraction of events left = 0.2532210933821111
+	Mean output = 206.47058823529412
+	Fraction of events left = 0.2532 ± 0.0212
+	Fraction of events left = 0.2532 ± 0.0212
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.0_Line_fake_events.txt
-	Mean output = 1707.823529411765
-	Fraction of events left = 0.8539117647058824
-	Fraction of events left = 0.8539117647058824
+	Mean output = 1707.8235294117646
+	Fraction of events left = 0.85391 ± 0.00719
+	Fraction of events left = 0.85391 ± 0.00719
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.0_Septem.txt
-	Mean output = 116.6176470588235
-	Fraction of events left = 0.1411615828924652
-	Fraction of events left = 0.1411615828924652
+	Mean output = 116.61764705882354
+	Fraction of events left = 0.1412 ± 0.0155
+	Fraction of events left = 0.1412 ± 0.0155
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.0_Septem_Line.txt
 	Mean output = 75.47058823529412
-	Fraction of events left = 0.09174300323817278
-	Fraction of events left = 0.09174300323817278
+	Fraction of events left = 0.0917 ± 0.0150
+	Fraction of events left = 0.0917 ± 0.0150
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.0_Septem_Line_fake_events.txt
-	Mean output = 1572.558823529412
-	Fraction of events left = 0.7862794117647059
-	Fraction of events left = 0.7862794117647059
+	Mean output = 1572.5588235294117
+	Fraction of events left = 0.7863 ± 0.0132
+	Fraction of events left = 0.7863 ± 0.0132
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.0_Septem_fake_events.txt
-	Mean output = 1662.117647058823
-	Fraction of events left = 0.8310588235294116
-	Fraction of events left = 0.8310588235294116
+	Mean output = 1662.1176470588234
+	Fraction of events left = 0.8311 ± 0.0145
+	Fraction of events left = 0.8311 ± 0.0145
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.1_Line.txt
 	Mean output = 207.2058823529412
-	Fraction of events left = 0.2539920546337319
-	Fraction of events left = 0.2539920546337319
+	Fraction of events left = 0.2540 ± 0.0209
+	Fraction of events left = 0.2540 ± 0.0209
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.1_Line_fake_events.txt
-	Mean output = 1708.911764705882
-	Fraction of events left = 0.854455882352941
-	Fraction of events left = 0.854455882352941
+	Mean output = 1708.9117647058824
+	Fraction of events left = 0.85446 ± 0.00721
+	Fraction of events left = 0.85446 ± 0.00721
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.1_Septem_Line.txt
 	Mean output = 75.55882352941177
-	Fraction of events left = 0.09183984521917411
-	Fraction of events left = 0.09183984521917411
+	Fraction of events left = 0.0918 ± 0.0150
+	Fraction of events left = 0.0918 ± 0.0150
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.1_Septem_Line_fake_events.txt
-	Mean output = 1573.411764705882
-	Fraction of events left = 0.7867058823529411
-	Fraction of events left = 0.7867058823529411
+	Mean output = 1573.4117647058824
+	Fraction of events left = 0.7867 ± 0.0132
+	Fraction of events left = 0.7867 ± 0.0132
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.2_Line.txt
-	Mean output = 208.5294117647059
-	Fraction of events left = 0.2554137342850585
-	Fraction of events left = 0.2554137342850585
+	Mean output = 208.52941176470588
+	Fraction of events left = 0.2554 ± 0.0208
+	Fraction of events left = 0.2554 ± 0.0208
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.2_Line_fake_events.txt
-	Mean output = 1711.088235294118
-	Fraction of events left = 0.8555441176470588
-	Fraction of events left = 0.8555441176470588
+	Mean output = 1711.0882352941176
+	Fraction of events left = 0.85554 ± 0.00690
+	Fraction of events left = 0.85554 ± 0.00690
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.2_Septem_Line.txt
-	Mean output = 75.64705882352941
-	Fraction of events left = 0.09202286831585582
-	Fraction of events left = 0.09202286831585582
+	Mean output = 75.6470588235294
+	Fraction of events left = 0.0920 ± 0.0152
+	Fraction of events left = 0.0920 ± 0.0152
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.2_Septem_Line_fake_events.txt
-	Mean output = 1574.85294117647
-	Fraction of events left = 0.7874264705882352
-	Fraction of events left = 0.7874264705882352
+	Mean output = 1574.8529411764705
+	Fraction of events left = 0.7874 ± 0.0132
+	Fraction of events left = 0.7874 ± 0.0132
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.3_Line.txt
-	Mean output = 210.2647058823529
-	Fraction of events left = 0.2574040555019554
-	Fraction of events left = 0.2574040555019554
+	Mean output = 210.26470588235293
+	Fraction of events left = 0.2574 ± 0.0206
+	Fraction of events left = 0.2574 ± 0.0206
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.3_Line_fake_events.txt
-	Mean output = 1713.676470588235
-	Fraction of events left = 0.8568382352941176
-	Fraction of events left = 0.8568382352941176
+	Mean output = 1713.6764705882354
+	Fraction of events left = 0.85684 ± 0.00691
+	Fraction of events left = 0.85684 ± 0.00691
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.3_Septem_Line.txt
 	Mean output = 75.91176470588235
-	Fraction of events left = 0.09236293067907482
-	Fraction of events left = 0.09236293067907482
+	Fraction of events left = 0.0924 ± 0.0152
+	Fraction of events left = 0.0924 ± 0.0152
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.3_Septem_Line_fake_events.txt
-	Mean output = 1576.411764705882
-	Fraction of events left = 0.7882058823529414
-	Fraction of events left = 0.7882058823529414
+	Mean output = 1576.4117647058824
+	Fraction of events left = 0.7882 ± 0.0132
+	Fraction of events left = 0.7882 ± 0.0132
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.4_Line.txt
-	Mean output = 212.8823529411765
-	Fraction of events left = 0.2605995866710243
-	Fraction of events left = 0.2605995866710243
+	Mean output = 212.88235294117646
+	Fraction of events left = 0.2606 ± 0.0199
+	Fraction of events left = 0.2606 ± 0.0199
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.4_Line_fake_events.txt
-	Mean output = 1717.323529411765
-	Fraction of events left = 0.8586617647058823
-	Fraction of events left = 0.8586617647058823
+	Mean output = 1717.3235294117646
+	Fraction of events left = 0.85866 ± 0.00697
+	Fraction of events left = 0.85866 ± 0.00697
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.4_Septem_Line.txt
 	Mean output = 76.32352941176471
-	Fraction of events left = 0.09278632207926356
-	Fraction of events left = 0.09278632207926356
+	Fraction of events left = 0.0928 ± 0.0152
+	Fraction of events left = 0.0928 ± 0.0152
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.4_Septem_Line_fake_events.txt
-	Mean output = 1578.294117647059
-	Fraction of events left = 0.7891470588235293
-	Fraction of events left = 0.7891470588235293
+	Mean output = 1578.2941176470588
+	Fraction of events left = 0.7891 ± 0.0131
+	Fraction of events left = 0.7891 ± 0.0131
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.5_Line.txt
-	Mean output = 215.7647058823529
-	Fraction of events left = 0.2638551947156842
-	Fraction of events left = 0.2638551947156842
+	Mean output = 215.76470588235293
+	Fraction of events left = 0.2639 ± 0.0200
+	Fraction of events left = 0.2639 ± 0.0200
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.5_Line_fake_events.txt
-	Mean output = 1721.029411764706
-	Fraction of events left = 0.8605147058823531
-	Fraction of events left = 0.8605147058823531
+	Mean output = 1721.0294117647059
+	Fraction of events left = 0.86051 ± 0.00684
+	Fraction of events left = 0.86051 ± 0.00684
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.5_Septem_Line.txt
 	Mean output = 76.76470588235294
-	Fraction of events left = 0.09315280077085082
-	Fraction of events left = 0.09315280077085082
+	Fraction of events left = 0.0932 ± 0.0152
+	Fraction of events left = 0.0932 ± 0.0152
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.5_Septem_Line_fake_events.txt
-	Mean output = 1580.205882352941
-	Fraction of events left = 0.7901029411764706
-	Fraction of events left = 0.7901029411764706
+	Mean output = 1580.2058823529412
+	Fraction of events left = 0.7901 ± 0.0129
+	Fraction of events left = 0.7901 ± 0.0129
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.6_Line.txt
-	Mean output = 219.3529411764706
-	Fraction of events left = 0.2682870402202033
-	Fraction of events left = 0.2682870402202033
+	Mean output = 219.35294117647058
+	Fraction of events left = 0.2683 ± 0.0199
+	Fraction of events left = 0.2683 ± 0.0199
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.6_Line_fake_events.txt
-	Mean output = 1724.617647058823
-	Fraction of events left = 0.8623088235294117
-	Fraction of events left = 0.8623088235294117
+	Mean output = 1724.6176470588234
+	Fraction of events left = 0.86231 ± 0.00642
+	Fraction of events left = 0.86231 ± 0.00642
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.6_Septem_Line.txt
 	Mean output = 77.02941176470588
-	Fraction of events left = 0.09352258111195
-	Fraction of events left = 0.09352258111195
+	Fraction of events left = 0.0935 ± 0.0152
+	Fraction of events left = 0.0935 ± 0.0152
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.6_Septem_Line_fake_events.txt
-	Mean output = 1581.970588235294
-	Fraction of events left = 0.7909852941176471
-	Fraction of events left = 0.7909852941176471
+	Mean output = 1581.9705882352941
+	Fraction of events left = 0.7910 ± 0.0128
+	Fraction of events left = 0.7910 ± 0.0128
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.7_Line.txt
 	Mean output = 222.7941176470588
-	Fraction of events left = 0.2724287318429282
-	Fraction of events left = 0.2724287318429282
+	Fraction of events left = 0.2724 ± 0.0195
+	Fraction of events left = 0.2724 ± 0.0195
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.7_Line_fake_events.txt
-	Mean output = 1729.294117647059
-	Fraction of events left = 0.864647058823529
-	Fraction of events left = 0.864647058823529
+	Mean output = 1729.2941176470588
+	Fraction of events left = 0.86465 ± 0.00620
+	Fraction of events left = 0.86465 ± 0.00620
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.7_Septem_Line.txt
 	Mean output = 77.5
-	Fraction of events left = 0.0941890725792015
-	Fraction of events left = 0.0941890725792015
+	Fraction of events left = 0.0942 ± 0.0153
+	Fraction of events left = 0.0942 ± 0.0153
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.7_Septem_Line_fake_events.txt
-	Mean output = 1583.823529411765
-	Fraction of events left = 0.7919117647058823
-	Fraction of events left = 0.7919117647058823
+	Mean output = 1583.8235294117646
+	Fraction of events left = 0.7919 ± 0.0126
+	Fraction of events left = 0.7919 ± 0.0126
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.8_Line.txt
 	Mean output = 226.2941176470588
-	Fraction of events left = 0.2767013938351873
-	Fraction of events left = 0.2767013938351873
+	Fraction of events left = 0.2767 ± 0.0199
+	Fraction of events left = 0.2767 ± 0.0199
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.8_Line_fake_events.txt
-	Mean output = 1733.823529411765
-	Fraction of events left = 0.8669117647058823
-	Fraction of events left = 0.8669117647058823
+	Mean output = 1733.8235294117646
+	Fraction of events left = 0.86691 ± 0.00607
+	Fraction of events left = 0.86691 ± 0.00607
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.8_Septem_Line.txt
 	Mean output = 78.05882352941177
-	Fraction of events left = 0.09518435513087023
-	Fraction of events left = 0.09518435513087023
+	Fraction of events left = 0.0952 ± 0.0158
+	Fraction of events left = 0.0952 ± 0.0158
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.8_Septem_Line_fake_events.txt
 	Mean output = 1586.235294117647
-	Fraction of events left = 0.7931176470588235
-	Fraction of events left = 0.7931176470588235
+	Fraction of events left = 0.7931 ± 0.0126
+	Fraction of events left = 0.7931 ± 0.0126
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.9_Line.txt
-	Mean output = 230.6176470588235
-	Fraction of events left = 0.2822650687339636
-	Fraction of events left = 0.2822650687339636
+	Mean output = 230.61764705882354
+	Fraction of events left = 0.2823 ± 0.0208
+	Fraction of events left = 0.2823 ± 0.0208
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.9_Line_fake_events.txt
 	Mean output = 1738.264705882353
-	Fraction of events left = 0.8691323529411764
-	Fraction of events left = 0.8691323529411764
+	Fraction of events left = 0.86913 ± 0.00592
+	Fraction of events left = 0.86913 ± 0.00592
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.9_Septem_Line.txt
 	Mean output = 78.70588235294117
-	Fraction of events left = 0.09597833815174873
-	Fraction of events left = 0.09597833815174873
+	Fraction of events left = 0.0960 ± 0.0162
+	Fraction of events left = 0.0960 ± 0.0162
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_1.9_Septem_Line_fake_events.txt
-	Mean output = 1588.176470588235
-	Fraction of events left = 0.7940882352941175
-	Fraction of events left = 0.7940882352941175
+	Mean output = 1588.1764705882354
+	Fraction of events left = 0.7941 ± 0.0126
+	Fraction of events left = 0.7941 ± 0.0126
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_2.0_Line.txt
 	Mean output = 235.3235294117647
-	Fraction of events left = 0.288884279607195
-	Fraction of events left = 0.288884279607195
+	Fraction of events left = 0.2889 ± 0.0208
+	Fraction of events left = 0.2889 ± 0.0208
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_2.0_Line_fake_events.txt
-	Mean output = 1742.85294117647
-	Fraction of events left = 0.8714264705882353
-	Fraction of events left = 0.8714264705882353
+	Mean output = 1742.8529411764705
+	Fraction of events left = 0.87143 ± 0.00594
+	Fraction of events left = 0.87143 ± 0.00594
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_2.0_Septem_Line.txt
 	Mean output = 79.58823529411765
-	Fraction of events left = 0.09703178862057435
-	Fraction of events left = 0.09703178862057435
+	Fraction of events left = 0.0970 ± 0.0160
+	Fraction of events left = 0.0970 ± 0.0160
 File: /home/basti/phd/resources/estimateRandomCoinc/septem_veto_before_after_septem_line_ecc_cutoff_2.0_Septem_Line_fake_events.txt
 	Mean output = 1590.0
-	Fraction of events left = 0.7949999999999999
-	Fraction of events left = 0.7949999999999999
-| Septem | Line | Real | Fake |
+	Fraction of events left = 0.7950 ± 0.0125
+	Fraction of events left = 0.7950 ± 0.0125
+| Septem | Line | Fake | Real |
 |----|----|----|----|
-|false|true|$\num{25.32}$|$\num{85.39}$|
-|true|false|$\num{14.12}$|$\num{83.11}$|
-|true|true|$\num{9.17}$|$\num{78.63}$|
+|false|true|$\num{85.39}$±$\num{0.72}$|$\num{25.32}$±$\num{2.12}$|
+|true|false|$\num{83.11}$±$\num{1.45}$|$\num{14.12}$±$\num{1.55}$|
+|true|true|$\num{78.63}$±$\num{1.32}$|$\num{9.17}$±$\num{1.50}$|
 
+[INFO]: No plot ratio given, using golden ratio.
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory Figs/background/estimateSeptemVetoRandomCoinc Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.tex
+Generated: Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf
+[INFO]: No plot ratio given, using golden ratio.
+[INFO] TeXDaemon ready for input.
+shellCmd: command -v lualatex
+shellCmd: lualatex -output-directory Figs/background/estimateSeptemVetoRandomCoinc Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.tex
+Generated: Figs/background/estimateSeptemVetoRandomCoinc/fraction_passing_line_veto_ecc_cut_only_relevant.pdf
 :end:
 
 #+begin_src sh :dir ~/phd
