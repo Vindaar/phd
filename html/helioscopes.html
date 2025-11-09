@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--  2025-02-01 Sat 13:23  -->
+<!--  2025-11-09 Sun 15:13  -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>‎</title>
@@ -9,6 +9,9 @@
 <meta name="generator" content="Org Mode" />
 
 <link type="text/css" rel="stylesheet" href="org_html_export.css" />
+
+<link type="font/woff2" crossorigin="" rel="preload" href="/fonts/Baskervville-VariableFont_wght.woff2" as="font" />
+
 <script type="text/javascript">
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -71,6 +74,128 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             });
+        }
+    });
+});
+
+// Mobile TOC Toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    var tocToggle = document.getElementById('tocToggle');
+    var toc = document.getElementById('table-of-contents');
+    var backdrop = document.getElementById('tocBackdrop');
+
+    if (tocToggle && toc && backdrop) {
+        // Toggle TOC when hamburger button is clicked
+        tocToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toc.classList.toggle('active');
+            backdrop.classList.toggle('active');
+        });
+
+        // Close TOC when backdrop is clicked
+        backdrop.addEventListener('click', function() {
+            toc.classList.remove('active');
+            backdrop.classList.remove('active');
+        });
+
+        // Close TOC when a link inside it is clicked
+        var tocLinks = toc.querySelectorAll('a');
+        tocLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            });
+        });
+
+        // Close TOC with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && toc.classList.contains('active')) {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            }
+        });
+    }
+});
+
+// Theme Selector functionality with system preference detection
+document.addEventListener('DOMContentLoaded', function() {
+    var themeSelector = document.getElementById('themeSelector');
+    var body = document.body;
+
+    // Define available themes
+    var themes = {
+        'light': { name: 'Light', type: 'light', class: 'light-theme' },
+        'monokai-soft': { name: 'Monokai (Soft Text)', type: 'dark', class: 'theme-monokai-soft-text' },
+        'monokai-neutral-toc': { name: 'Monokai (Neutral TOC)', type: 'dark', class: 'theme-monokai-white-text' },
+        'dracula': { name: 'Dracula', type: 'dark', class: 'theme-dracula' },
+        'gruvbox': { name: 'Gruvbox', type: 'dark', class: 'theme-gruvbox' },
+        'tokyo-night': { name: 'Tokyo Night', type: 'dark', class: 'theme-tokyo-night' },
+        'andromeda': { name: 'Andromeda', type: 'dark', class: 'theme-andromeda' },
+    };
+
+    // Get system preference
+    var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var systemThemeType = systemPrefersDark ? 'dark' : 'light';
+
+    // Populate dropdown - system-preferred type first
+    var darkThemes = [];
+    var lightThemes = [];
+
+    for (var key in themes) {
+        var theme = themes[key];
+        if (theme.type === 'dark') {
+            darkThemes.push({ key: key, theme: theme });
+        } else {
+            lightThemes.push({ key: key, theme: theme });
+        }
+    }
+
+    var orderedThemes = systemPrefersDark ? darkThemes.concat(lightThemes) : lightThemes.concat(darkThemes);
+
+    orderedThemes.forEach(function(item) {
+        var option = document.createElement('option');
+        option.value = item.key;
+        option.textContent = item.theme.name + ' (' + item.theme.type + ')';
+        themeSelector.appendChild(option);
+    });
+
+    // Check for saved theme preference
+    var savedTheme = localStorage.getItem('theme');
+    var currentTheme = savedTheme || (systemPrefersDark ? 'monokai-soft' : 'light');
+
+    // Apply current theme
+    function applyTheme(themeKey) {
+        // Remove all theme classes
+        for (var key in themes) {
+            body.classList.remove(themes[key].class);
+        }
+        // Add selected theme class
+        if (themes[themeKey]) {
+            body.classList.add(themes[themeKey].class);
+        }
+    }
+
+    applyTheme(currentTheme);
+    themeSelector.value = currentTheme;
+
+    // Handle theme changes
+    if (themeSelector) {
+        themeSelector.addEventListener('change', function() {
+            var selectedTheme = this.value;
+            applyTheme(selectedTheme);
+            localStorage.setItem('theme', selectedTheme);
+            console.log('Switched to theme:', themes[selectedTheme].name);
+        });
+    }
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        // Only auto-switch if user hasn't manually set a preference
+        if (!localStorage.getItem('theme')) {
+            var newTheme = e.matches ? 'monokai-soft' : 'light';
+            applyTheme(newTheme);
+            themeSelector.value = newTheme;
+            console.log('System switched to', e.matches ? 'dark' : 'light', 'theme');
         }
     });
 });
@@ -140,9 +265,9 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
 <li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
 <ul>
-<li>  <a href="./about_thesis.html#orgfe77eb6">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#orgf40a93d">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#org607bd89">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org5d5ca24">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgd071881">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgccd0201">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
@@ -176,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
-<li>  <a href="./septemboard.html#org2a0c0f4">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#org49593cc">7.6. Detector readout system</a></li>
 <li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
 <li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
 <li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
@@ -240,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
 <li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
-<li>  <a href="./limit.html#org5995639">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgc3e5f13">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org34c85eb">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org5c2677d">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
 <li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
@@ -249,8 +374,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
 <li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
 <li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
-<li>  <a href="./limit.html#org75d3b34">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgfcbf364">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org4fec592">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgc8fc2b2">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
@@ -288,33 +413,33 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_run_list.html#orgb52235a">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_run_list.html#orgf971eee">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd947e01">22.1. Run table</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgf8afac6">22.2. Data runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgfe96ddc">22.3. Calibration runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgac5a852">22.4. Automatically generated run list</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd5cdef1">22.5. Automatically calculated total run times</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#org2406344">22.6. InGrid temperature from shift forms</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgae4e0fb">22.1. Run table</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org1c94b8e">22.2. Data runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5613f30">22.3. Calibration runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5ee0a43">22.4. Automatically generated run list</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgb06ce92">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org23e9775">22.6. InGrid temperature from shift forms</a></li>
 </ul>
 </li>
 <li><a href="./appendix_cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge32a9e1">23.1. Virtex V6 cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge17b088">23.2. Detector cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org93c1c60">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org9625327">23.4. Setting up the chips in TOS</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org2ef941f">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#orga68ff49">23.2. Detector cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org0145cca">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org5e669ea">23.4. Setting up the chips in TOS</a></li>
 </ul>
 </li>
 <li><a href="./appendix_vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_vacuum_contamination.html#org3cd49bd">24.1. Calculation of vacuum volume</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc39e76f">24.2. Calculation of potential influx of gas</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc67dc29">24.3. Consider pumping of pumps</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgbac7f48">24.4. Calculation of possible contamination</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#orga39142b">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9050e58">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9f3bf66">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9adc478">24.4. Calculation of possible contamination</a></li>
 </ul>
 </li>
 <li><a href="./appendix_detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
@@ -325,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_detector_lab.html#orgc899fb3">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_detector_lab.html#org616f0be">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
@@ -334,13 +459,13 @@ document.addEventListener('DOMContentLoaded', function () {
 <li><a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
-<li>  <a href="./appendix_fit_by_run_justification.html#org13d2559">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fit_by_run_justification.html#orgf376779">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#org78be87a">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#orgdadd742">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org8ff2c41">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org4569db5">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
@@ -349,25 +474,25 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_occupancy.html#org71d0d19">29.1. Run-2</a></li>
-<li>  <a href="./appendix_occupancy.html#orgcbfcb5e">29.2. Run-3</a></li>
-<li>  <a href="./appendix_occupancy.html#org3a727ee">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_occupancy.html#org0c07dc3">29.1. Run-2</a></li>
+<li>  <a href="./appendix_occupancy.html#orgfd35f3d">29.2. Run-3</a></li>
+<li>  <a href="./appendix_occupancy.html#org575f0d0">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
-<li>  <a href="./appendix_fadc.html#org595d68a">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fadc.html#org359350e">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
 </ul>
 </li>
 <li><a href="./appendix_background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
-<li>  <a href="./appendix_background_rates.html#org6b8736f">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org7827cf1">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org88d5321">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#orge495bc9">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org152406e">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org4f4f786">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
@@ -381,27 +506,27 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_software.html#orge51f988">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_software.html#org378ccdf">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgf327581">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgdd3f2b1">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
-<li>  <a href="./appendix_software.html#org92b1f48">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+<li>  <a href="./appendix_software.html#org544765d">34.4. Other libraries relevant for TimepixAnalysis</a></li>
 </ul>
 </li>
 <li><a href="./appendix_full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgc87960b">35.1. Raw data parsing and reconstruction</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org652a080">35.2. Parse and reconstruct the CDL data</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org5831301">35.3. Add tracking information to background files</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org904d73c">35.4. Using <code>runAnalysisChain</code></a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgb4de31c">35.5. Applying a classifier</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org9252218">35.6. Computing limits</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org501eca1">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org552659c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org8581c7e">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgeb8db11">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgaaebe4e">35.5. Applying a classifier</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgde50894">35.6. Computing limits</a></li>
 </ul>
 </li>
 <li><a href="./appendix_average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#org89ae1e7">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc035fda">36.2. Calculate conversion point numerically</a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc101b38">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orga91983c">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#org02d2b56">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orgf60ccf9">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
@@ -410,10 +535,10 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
-<li>  <a href="./appendix_raytracing.html#orgdb277d0">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org33f56e2">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org66d4b31">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#orgab3dcf7">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org3755681">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgc57967b">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org2ddc502">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgfd56f1c">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Ack">Ack</span>  </span></a></li>
@@ -426,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <p>
 As discussed in the previous chapter in section
 <a href="./theory.html#sec:theory:solar_axion_flux">4.5</a>, stars are strong axion factories. In 1983
-Pierre Sikivie proposed (<a href="./bibliography.html#citeproc_bib_item_211">Sikivie 1983</a>, <a href="./bibliography.html#citeproc_bib_item_212">1985</a>)
+Pierre Sikivie proposed <a href="cite:PhysRevLett.51.1415,PhysRevD.32.2988">cite:PhysRevLett.51.1415,PhysRevD.32.2988</a>
 multiple methods to potentially detect axions, one of these making use
 of this solar axion production. The fundamental realization is that a
 transverse magnetic field can act as a means to reconvert axions back
@@ -447,8 +572,8 @@ ratio.
 <p>
 The first implementation of the helioscope idea was the
 Rochester-Brookhaven-Florida experiment
-(<a href="./bibliography.html#citeproc_bib_item_43">Van Bibber et al. 1989</a>; <a href="./bibliography.html#citeproc_bib_item_142">Lazarus et al. 1992</a>). It was followed by the SUMICO
-experiment in Tokyo (<a href="./bibliography.html#citeproc_bib_item_160">Moriyama et al. 1998</a>; <a href="./bibliography.html#citeproc_bib_item_120">Inoue et al. 2002</a>; <a href="./bibliography.html#citeproc_bib_item_119">Inoue et al. 2008</a>). The
+<a href="cite:vanBibber1989,PhysRevLett.69.2333">cite:vanBibber1989,PhysRevLett.69.2333</a>. It was followed by the SUMICO
+experiment in Tokyo <a href="cite:MORIYAMA1998147,INOUE200218,INOUE200893">cite:MORIYAMA1998147,INOUE200218,INOUE200893</a>. The
 third and latest helioscope is the CERN Axion Solar Telescope (CAST),
 which we will present in more detail in section
 <a href="./helioscopes.html#sec:helioscopes:cast">5.1</a>. In the final section we will introduce the next
@@ -461,8 +586,8 @@ generation of axion helioscopes, the International AXion Observatory
 <div id="text-sec:helioscopes:cast" class="outline-text-3">
 <p>
 The CERN Axion Solar Telescope (CAST) was proposed in 1999
-(<a href="./bibliography.html#citeproc_bib_item_238">Zioutas et al. 1999</a>) and started data taking in 2003
-(<a href="./bibliography.html#citeproc_bib_item_239">Zioutas et al. 2005</a>). Fig. <a href="#fig:helioscopes:cast:cast">1</a> shows a
+<a href="cite:ZIOUTAS1999480">cite:ZIOUTAS1999480</a> and started data taking in 2003
+<a href="cite:PhysRevLett.94.121301">cite:PhysRevLett.94.121301</a>. Fig. <a href="#fig:helioscopes:cast:cast">1</a> shows a
 panorama view of the experiment in its final year of data taking
 during some maintenance work.
 </p>
@@ -480,7 +605,7 @@ dipole magnet that was available from the developments for the LHC,
 CAST features an \(\SI{8.8}{T}\) <sup>  <a id="fnr.1" href="#fn.1" class="footref" role="doc-backlink">1</a></sup> strong transverse
 magnetic field for axion-photon conversion produced by a current of
 \(\SI{13}{kA}\) in the superconducting \(\ce{Nb Ti}\) wires
-(<a href="./bibliography.html#citeproc_bib_item_48">Bona et al. 1992</a>) at \(\SI{1.8}{K}\) (<a href="./bibliography.html#citeproc_bib_item_47">Bona et al. 1994</a>). It is
+<a href="cite:bona1992design">cite:bona1992design</a> at \(\SI{1.8}{K}\) <a href="cite:bona1994performance">cite:bona1994performance</a>. It is
 placed on a movable platform that allows for solar tracking both
 during sunrise as well as sunset. The vertical range of movement is
 about \(\sim\pm\SI{8}{°}\), but practically within
@@ -510,12 +635,12 @@ the &apos;sunrise&apos; side a Micromegas detector (Micromesh Gaseous Detector)
 and a Charged Coupled Device (CCD) detector were installed. The CCD
 was further behind a still in place X-ray telescope originally
 designed as a spare for the ABRIXAS X-ray space telescope
-(<a href="./bibliography.html#citeproc_bib_item_183">Richter et al. 1995</a>; <a href="./bibliography.html#citeproc_bib_item_89">Friedrich 1998</a>). (<a href="./bibliography.html#citeproc_bib_item_239">Zioutas et al. 2005</a>)
+<a href="cite:ABRIXAS_0a,ABRIXAS_0b">cite:ABRIXAS_0a,ABRIXAS_0b</a>. <a href="cite:PhysRevLett.94.121301">cite:PhysRevLett.94.121301</a>
 </p>
 
 <p>
 The full first phase I data taking period comprises of data taken in
-2003 and 2004 and achieved a best limit of \(g_{aγ} &lt; \SI{8.8e-11}{\GeV^{-1}}\) (<a href="./bibliography.html#citeproc_bib_item_12">Andriamonje et al. 2007</a>).
+2003 and 2004 and achieved a best limit of \(g_{aγ} &lt; \SI{8.8e-11}{\GeV^{-1}}\) <a href="cite:Andriamonje_2007">cite:Andriamonje_2007</a>.
 </p>
 
 <p>
@@ -525,19 +650,19 @@ the sensitivity for higher axion masses by inducing an effective
 photon mass (as mentioned in sec. <a href="./theory.html#sec:theory:buffer_gas">4.4.1</a>). First
 between late 2005 and early 2007 with \(^4\text{He}\). From March 2008 a
 run with \(^3\text{He}\) was started, which ran until 2011
-(<a href="./bibliography.html#citeproc_bib_item_22">Arik et al. 2009</a>; <a href="./bibliography.html#citeproc_bib_item_23">Arik et al. 2015</a>). \(\num{160}\) steps of different gas
+<a href="cite:Arik_2009,PhysRevD.92.021101">cite:Arik_2009,PhysRevD.92.021101</a>. \(\num{160}\) steps of different gas
 pressures were used to optimize sensitivity against time per step. In
 2012 another \(^4\text{He}\) data run took place
-(<a href="./bibliography.html#citeproc_bib_item_23">Arik et al. 2015</a>).
+<a href="cite:PhysRevD.92.021101">cite:PhysRevD.92.021101</a>.
 </p>
 
 <p>
 From 2013 on the CAST experiment has only run under vacuum
-configuration (<a href="./bibliography.html#citeproc_bib_item_68">Collaboration and others 2017</a>). Further, the physics scope has been
+configuration <a href="cite:&amp;cast_nature">cite:&amp;cast_nature</a>. Further, the physics scope has been
 extended to include searches for chameleons
-(<a href="./bibliography.html#citeproc_bib_item_65">Christoph Krieger 2018</a>; <a href="./bibliography.html#citeproc_bib_item_9">Anastassopoulos et al. 2019</a>, <a href="./bibliography.html#citeproc_bib_item_8">2015</a>; <a href="./bibliography.html#citeproc_bib_item_30">Baier, n.d.</a>; <a href="./bibliography.html#citeproc_bib_item_74">Cuendis et al. 2019</a>)
+<a href="cite:krieger2018search,krieger_chameleon_jcap,chameleons_sdd_cast,justin_phd,kwisp_first_results">cite:krieger2018search,krieger_chameleon_jcap,chameleons_sdd_cast,justin_phd,kwisp_first_results</a>
 and axions in the galactic halo via cavity experiments
-(<a href="./bibliography.html#citeproc_bib_item_75">Cuendis 2021</a>; <a href="./bibliography.html#citeproc_bib_item_156">Melcón et al. 2021</a>; <a href="./bibliography.html#citeproc_bib_item_154">Maroudas 2022</a>; <a href="./bibliography.html#citeproc_bib_item_2">Adair et al. 2022</a>).
+<a href="cite:sergio_phd,rades_2021,marios_phd,cast_capp_nature">cite:sergio_phd,rades_2021,marios_phd,cast_capp_nature</a>.
 </p>
 
 <p>
@@ -545,13 +670,13 @@ A video showing the CAST magnet during a typical solar tracking can be
 found under the link in this <sup>  <a id="fnr.4" href="#fn.4" class="footref" role="doc-backlink">4</a></sup> footnote.
 </p>
 </div>
-<div id="outline-container-org25b824c" class="outline-4">
-<h4 id="org25b824c">  <a href="#org25b824c">  <span class="section-number-4">5.1.1.</span> Generate a plot of the CAST magnet&apos;s magnetic field   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org28f2a44" class="outline-4">
+<h4 id="org28f2a44">  <a href="#org28f2a44">  <span class="section-number-4">5.1.1.</span> Generate a plot of the CAST magnet&apos;s magnetic field   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-5-1-1" class="outline-text-4">
 <div class="org-src-container">
-<pre class="src src-sh"><span style="color: #F92672;">cd</span> ~/CastData/ExternCode/TimepixAnalysis/LogReader/
+<pre class="src src-sh">  <code>  <span style="color: #F92672;">cd</span> ~/CastData/ExternCode/TimepixAnalysis/LogReader/
 ./cast_log_reader sc -p ../resources/LogFiles/SCLogs/2017_18 -s Version.idx
-</pre>
+</code></pre>
 </div>
 
 
@@ -562,8 +687,8 @@ found under the link in this <sup>  <a id="fnr.4" href="#fn.4" class="footref" r
 </ul>
 </div>
 </div>
-<div id="outline-container-org1e16ab7" class="outline-4">
-<h4 id="org1e16ab7">  <a href="#org1e16ab7">  <span class="section-number-4">5.1.2.</span> Calculate the maximum tilting angles of the magnet   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org66408be" class="outline-4">
+<h4 id="org66408be">  <a href="#org66408be">  <span class="section-number-4">5.1.2.</span> Calculate the maximum tilting angles of the magnet   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-5-1-2" class="outline-text-4">
 <p>
 The tilting angles of the CAST magnet are stored (among others, the
@@ -578,9 +703,9 @@ and
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh"><span style="color: #F92672;">cd</span> ~/CastData/ExternCode/TimepixAnalysis/LogReader/
+<pre class="src src-sh">  <code>  <span style="color: #F92672;">cd</span> ~/CastData/ExternCode/TimepixAnalysis/LogReader/
 ./cast_log_reader sc -p ../resources/LogFiles/SCLogs -s Version.idx
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -623,15 +748,15 @@ period discussed in this thesis.
 <p>
 The first X-ray telescope used at CAST as a focusing optics for the
 expected axion induced X-ray flux was a Wolter I type X-ray telescope
-(<a href="./bibliography.html#citeproc_bib_item_234">Wolter 1952</a>) originally built for a proposed German space
-based X-ray telescope mission, ABRIXAS (<a href="./bibliography.html#citeproc_bib_item_183">Richter et al. 1995</a>; <a href="./bibliography.html#citeproc_bib_item_89">Friedrich 1998</a>). The telescope
+<a href="cite:wolter_1_type">cite:wolter_1_type</a> originally built for a proposed German space
+based X-ray telescope mission, ABRIXAS <a href="cite:ABRIXAS_0a,ABRIXAS_0b">cite:ABRIXAS_0a,ABRIXAS_0b</a>. The telescope
 consists of 27 gold coated parabolic and hyperbolic shells and has a
 focal length of \(\SI{1.6}{m}\). Due to the small size of the dipole
 magnet&apos;s bores of only \(\SI{43}{mm}\) only a single section of the
 telescope can be exposed. The telescope is thus placed off-axis from
 the magnet bore to expose a single mirror section. An image of the
 mirror system with a rough indication of the exposed section is shown
-in fig. <a href="#fig:cast:abrixas_mirrors">4(b)</a>.
+in fig. <a href="#fig:cast:abrixas_mirrors">#fig:cast:abrixas_mirrors</a>.
 </p>
 
 <p>
@@ -647,29 +772,31 @@ about \(\SI{30}{\%}\) up to about \(\SI{7}{keV}\). From there it continues to
 drop until about \(\SI{5}{\%}\) efficiency at \(\SI{10}{keV}\). The efficiency
 is shown in a comparison with another telescope in the next section
 <a href="./helioscopes.html#sec:helioscopes:llnl_telescope">5.1.4</a> in
-fig. <a href="#fig:cast:telescope_efficiency_comparison_mpe_llnl">7</a>.
+fig. <a href="#fig:cast:telescope_efficiency_comparison_mpe_llnl">5</a>.
 </p>
 
 <p>
 A picture of the telescope installed at CAST behind the magnet on the
 &apos;sunrise&apos; side of the magnet is shown in
-fig. <a href="#fig:cast:abrixas_installed">4(a)</a>. <sup>  <a id="fnr.5" href="#fn.5" class="footref" role="doc-backlink">5</a></sup> This telescope
+fig. <a href="#fig:cast:abrixas_installed">#fig:cast:abrixas_installed</a>. <sup>  <a id="fnr.5" href="#fn.5" class="footref" role="doc-backlink">5</a></sup> This telescope
 was used for the data taking campaign in 2014 and 2015 using a GridPix
-based detector discussed in (<a href="./bibliography.html#citeproc_bib_item_65">Christoph Krieger 2018</a>) and serves as a
+based detector discussed in <a href="cite:krieger2018search">cite:krieger2018search</a> and serves as a
 comparison for certain aspects in this thesis.
 </p>
 
 
-<figure id="fig:cast:abrixas" class="figure-wrapper">
-<figure id="fig:cast:abrixas_installed" class="subfigure" data-width="55%">  <img src="./figs/home/basti/org/Figs/thesis/CAST/cast_abrixas_telescope_image_clear.png" data-width="94%" />  <figcaption>Figure 4(a): Side view</figcaption></figure> <figure id="fig:cast:abrixas_mirrors" class="subfigure" data-width="43%">  <img src="./figs/home/basti/org/Figs/thesis/CAST/abrixas_cast_telescope_system.png" data-width="94%" />  <figcaption>Figure 4(b): Mirrors</figcaption></figure>
-<figcaption>Figure 4: <a href="#fig:cast:abrixas_installed">4(a)</a>: Image of the ABRIXAS telescope installed at CAST on the &apos;sunrise&apos; side.
-           The image is taken from (<a href="./bibliography.html#citeproc_bib_item_138">Kuster et al. 2007</a>)  as it provides a 
-           relatively clear image of the telescope, which is hard to take nowadays.<a href="#fig:cast:abrixas_mirrors">4(b)</a>: Image of the ABRIXAS telescope mirror system. The different shells of the 
+<p>
+&lt;figure class=&quot;figure-wrapper&quot; id=&quot;fig:cast:abrixas&quot;&gt;
+&lt;figure class=&quot;subfigure&quot; id=&quot;fig:cast:abrixas<sub>installed</sub>&quot; data-width=&quot;55%&quot;&gt;&lt;img src=&quot;./figs/home/basti/org/Figs/thesis/CAST/cast<sub>abrixas</sub><sub>telescope</sub><sub>image</sub><sub>clear.png</sub>&quot; data-width=&quot;94%&quot; &gt;&lt;figcaption&gt;Side view&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:cast:abrixas<sub>mirrors</sub>&quot; data-width=&quot;43%&quot;&gt;&lt;img src=&quot;./figs/home/basti/org/Figs/thesis/CAST/abrixas<sub>cast</sub><sub>telescope</sub><sub>system.png</sub>&quot; data-width=&quot;94%&quot; &gt;&lt;figcaption&gt;Mirrors&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figcaption&gt;&lt;a href=&quot;#fig:cast:abrixas<sub>installed</sub>&quot;&gt;&lt;/a&gt;: Image of the ABRIXAS telescope installed at CAST on the &apos;sunrise&apos; side.
+           The image is taken from <a href="cite:&amp;CAST_telescope_ccd">cite:&amp;CAST_telescope_ccd</a>  as it provides a 
+           relatively clear image of the telescope, which is hard to take nowadays.&lt;a href=&quot;#fig:cast:abrixas<sub>mirrors</sub>&quot;&gt;&lt;/a&gt;: Image of the ABRIXAS telescope mirror system. The different shells of the 
            Wolter I type telescope system are visible. One section is exposed to the 
            magnet bore, the white line indicating roughly the extent of the bore. The 
            sproke like structure is the support for the mirror shells.
-           Image taken from (<a href="./bibliography.html#citeproc_bib_item_138">Kuster et al. 2007</a>) .</figcaption>
-</figure>
+           Image taken from <a href="cite:&amp;CAST_telescope_ccd">cite:&amp;CAST_telescope_ccd</a> .&lt;/figcaption&gt;
+&lt;/figure&gt;
+</p>
 </div>
 </div>
 <div id="outline-container-sec:helioscopes:llnl_telescope" class="outline-4">
@@ -680,15 +807,15 @@ Up to 2014 there was only a single X-ray telescope in use at CAST. In
 August 2014 a second X-ray optic was installed on the second bore next
 to the ABRIXAS telescope. This telescope, using technologies
 originally developed for the space based NuSTAR telescope by NASA
-(<a href="./bibliography.html#citeproc_bib_item_104">Harrison et al. 2013</a>, <a href="./bibliography.html#citeproc_bib_item_103">2006</a>; <a href="./bibliography.html#citeproc_bib_item_134">Koglin et al. 2009</a>; <a href="./bibliography.html#citeproc_bib_item_70">Craig et al. 2011</a>; <a href="./bibliography.html#citeproc_bib_item_101">Hailey et al. 2010</a>),
+<a href="cite:Harrison_2013,Harrison2006,nustar_design_performance,nustar_fabrication,nustar_overview_status">cite:Harrison_2013,Harrison2006,nustar_design_performance,nustar_fabrication,nustar_overview_status</a>,
 was purpose built for axion searches and in particular the CAST
 experiment. Contrary to the ABRIXAS telescope only a single telescope
 section of \(\SI{30}{°}\) wide mirrors of the telescope was built as the
 small bore cannot expose more area anyway. It uses a cone
 approximation to a Wolter I optic, meaning the hyperbolic and
-parabolic mirrors are replaced by cone sections (<a href="./bibliography.html#citeproc_bib_item_173">Petre and Serlemitsos 1985</a>). A side
+parabolic mirrors are replaced by cone sections <a href="cite:Petre:85">cite:Petre:85</a>. A side
 view and rear view of the open telescope after decommissioning at CAST
-are seen in fig. <a href="#fig:cast:llnl">5</a>. It consists of 13 platinum /
+are seen in fig. <a href="#fig:cast:llnl">#fig:cast:llnl</a>. It consists of 13 platinum /
 carbon coated glass shells in each telescope section, for a total of
 26 mirrors. Each mirror uses one of four different depth graded
 multilayer (see sec. <a href="./theory_detector.html#sec:theory:xray_reflectivity">6.1.2</a>) coating recipes to
@@ -697,38 +824,40 @@ the focal length was shortened to \(\SI{1.5}{m}\). The telescope section
 is rotated such that the focal point is pointing away from the other
 magnet bore to make more space for two detectors side by
 side. <sup>  <a id="fnr.6" href="#fn.6" class="footref" role="doc-backlink">6</a></sup> This can be seen in the render of the
-2017/18 detector setup in fig. <a href="llnl_telescope_setup_2017_render">6</a>, seen
+2017/18 detector setup in fig. <a href="llnl_telescope_setup_2017_render">4</a>, seen
 from the top. The development process of the telescope is documented
 in the PhD thesis by A. Jakobsen
-(<a href="./bibliography.html#citeproc_bib_item_123">Jakobsen 2015</a>). (<a href="./bibliography.html#citeproc_bib_item_28">Aznar et al. 2015</a>) gives an
+<a href="cite:anders_phd">cite:anders_phd</a>. <a href="cite:llnl_telescope_first_cast_results">cite:llnl_telescope_first_cast_results</a> gives an
 overview and shows preliminary results from CAST. The telescope was
 characterized and calibrated at the PANTER X-ray test facility in
 Munich.
 </p>
 
 
-<figure id="fig:cast:llnl" class="figure-wrapper">
-<figure id="fig:cast:llnl_side_view" class="subfigure" data-width="74%">  <img src="./figs/home/basti/phd/Figs/LLNL/llnl_side_view_cropped.jpg" data-width="94%" />  <figcaption>Figure 5(a): Side view</figcaption></figure> <figure id="fig:cast:llnl_back_view" class="subfigure" data-width="24%">  <img src="./figs/home/basti/phd/Figs/LLNL/llnl_open_back_rotated.jpg" data-width="94%" />  <figcaption>Figure 5(b): Rear view</figcaption></figure>
-<figcaption>Figure 5: <a href="#fig:cast:llnl_side_view">5(a)</a>: Image of the LLNL telescope outside its housing after decommissioning at CAST.
+<p>
+&lt;figure class=&quot;figure-wrapper&quot; id=&quot;fig:cast:llnl&quot;&gt;
+&lt;figure class=&quot;subfigure&quot; id=&quot;fig:cast:llnl<sub>side</sub><sub>view</sub>&quot; data-width=&quot;74%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/LLNL/llnl<sub>side</sub><sub>view</sub><sub>cropped.jpg</sub>&quot; data-width=&quot;94%&quot; &gt;&lt;figcaption&gt;Side view&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:cast:llnl<sub>back</sub><sub>view</sub>&quot; data-width=&quot;24%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/LLNL/llnl<sub>open</sub><sub>back</sub><sub>rotated.jpg</sub>&quot; data-width=&quot;94%&quot; &gt;&lt;figcaption&gt;Rear view&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figcaption&gt;&lt;a href=&quot;#fig:cast:llnl<sub>side</sub><sub>view</sub>&quot;&gt;&lt;/a&gt;: Image of the LLNL telescope outside its housing after decommissioning at CAST.
            Entrance side towards the magnet on the right with the largest shell radii.
-           Both sets of mirror shells are clearly seperated in the middle.<a href="#fig:cast:llnl_back_view">5(b)</a>: View of the telescope shells as seen from the detector side. Installed at CAST
-          the telescope was rotated by about $\SI{76}{°}$ counter clockwise from
+           Both sets of mirror shells are clearly seperated in the middle.&lt;a href=&quot;#fig:cast:llnl<sub>back</sub><sub>view</sub>&quot;&gt;&lt;/a&gt;: View of the telescope shells as seen from the detector side. Installed at CAST
+          the telescope was rotated by about \(\SI{76}{°}\) counter clockwise from
           this view.
-          Both images courtesy of Cristina Margalejo Blasco.</figcaption>
-</figure>
+          Both images courtesy of Cristina Margalejo Blasco.&lt;/figcaption&gt;
+&lt;/figure&gt;
+</p>
 
 
 
 <figure id="llnl_telescope_setup_2017_render">
 <img alt="llnl_cast_gridpix_render_small_annotated.png" src="./figs/home/basti/phd/Figs/llnl_cast_gridpix_render_small_annotated.png" />
 
-<figcaption>Figure 6: <span class="figure-number">Figure 6: </span>Render of the setup of the GridPix septemboard detector in 2017/18 showing the LLNL telescope on the left side. The diversion away from the extension of the bore is visible, to have more space for detector installation. The lead shielding and veto scintillator are not shown in the render. Render created by Tobias Schiffer.</figcaption>
+<figcaption>Figure 4: <span class="figure-number">Figure 6: </span>Render of the setup of the GridPix septemboard detector in 2017/18 showing the LLNL telescope on the left side. The diversion away from the extension of the bore is visible, to have more space for detector installation. The lead shielding and veto scintillator are not shown in the render. Render created by Tobias Schiffer.</figcaption>
 </figure>
 
 <p>
 This telescope achieves a significantly higher effective area than the
 ABRIXAS telescope in the energy range between \(\SIrange{2}{3}{keV}\)
-fig. <a href="#fig:cast:telescope_efficiency_comparison_mpe_llnl">7</a> (relevant for
+fig. <a href="#fig:cast:telescope_efficiency_comparison_mpe_llnl">5</a> (relevant for
 axion searches, compare with
 fig. <a href="#fig:theory:solar_axion_flux:differential_flux">#fig:theory:solar_axion_flux:differential_flux</a>). But outside
 this range the efficiency is comparable or lower.
@@ -746,11 +875,11 @@ simulate the expected distribution of axions from the Sun.
 <figure id="fig:cast:telescope_efficiency_comparison_mpe_llnl">
 <img alt="effective_area_mpe_llnl.svg" class="org-svg" src="./figs/home/basti/phd/Figs/telescopes/effective_area_mpe_llnl.svg" />
 
-<figcaption>Figure 7: <span class="figure-number">Figure 7: </span>Comparison of the efficiency between the two telescopes, the MPE (ABRIXAS) as the original CAST telescope and the LLNL telescope purpose built for axion searches. The LLNL telescope has superior efficiency in the energy range where the axion flux is assumed to dominate, but falls off sharper at high energies. The data for the LLNL telescope is extracted from fig. 3 in <a href="cite:llnl_telescope_first_cast_results">cite:llnl_telescope_first_cast_results</a>, whereas for the ABRIXAS telescope it is extracted from the red line in fig. 4 of <a href="cite:CAST_telescope_ccd">cite:CAST_telescope_ccd</a>.</figcaption>
+<figcaption>Figure 5: <span class="figure-number">Figure 7: </span>Comparison of the efficiency between the two telescopes, the MPE (ABRIXAS) as the original CAST telescope and the LLNL telescope purpose built for axion searches. The LLNL telescope has superior efficiency in the energy range where the axion flux is assumed to dominate, but falls off sharper at high energies. The data for the LLNL telescope is extracted from fig. 3 in <a href="cite:llnl_telescope_first_cast_results">cite:llnl_telescope_first_cast_results</a>, whereas for the ABRIXAS telescope it is extracted from the red line in fig. 4 of <a href="cite:CAST_telescope_ccd">cite:CAST_telescope_ccd</a>.</figcaption>
 </figure>
 </div>
-<div id="outline-container-org7e56db1" class="outline-5">
-<h5 id="org7e56db1">  <a href="#org7e56db1">  <span class="section-number-5">5.1.4.1.</span> Generate effective area plot for LLNL and MPE telescopes <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
+<div id="outline-container-org19d3f0e" class="outline-5">
+<h5 id="org19d3f0e">  <a href="#org19d3f0e">  <span class="section-number-5">5.1.4.1.</span> Generate effective area plot for LLNL and MPE telescopes <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
 <div id="text-5-1-4-1" class="outline-text-5">
 <p>
 We&apos;ll now create the comparison plot of the effective areas for the
@@ -760,7 +889,7 @@ two X-ray telescopes used at CAST.
 <p>
 For the MPE telescope: As mentioned in the caption of the figure
 above, the data for the MPE telescope is extracted from fig. 4 of
-(<a href="./bibliography.html#citeproc_bib_item_138">Kuster et al. 2007</a>), also found here
+<a href="cite:CAST_telescope_ccd">cite:CAST_telescope_ccd</a>, also found here
 <img alt="mpe_xray_telescope_cast_effective_area.svg" class="org-svg" src="./figs/home/basti/phd/resources/MPE/mpe_xray_telescope_cast_effective_area.svg" />. This
 is done using <a href="./code/other/extractDataFromPlot.nim">./code/other/extractDataFromPlot.nim</a> using a
 simplified version of fig. 4 as an input (i.e. crop the plot to
@@ -773,11 +902,11 @@ the data to be extracted. This plot looks like
 Then run
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./extractDataFromPlot <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./extractDataFromPlot <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f ~/phd/resources/MPE/mpe_xray_telescope_cast_effective_area_cropped_no_axes.png <span style="color: #E6DB74; font-weight: bold;">\</span>
     --xLow 0.305 --xHigh 10.0 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --yLow 0.0 --yHigh 8.0
-</pre>
+</code></pre>
 </div>
 <p>
 which produces a plot from the extracted data and writes a CSV file,
@@ -793,30 +922,30 @@ not! That&apos;s barely better than the MPE telescope…</li>
 </ul>
 
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> ggplotnim, ggplotnim/ggplot_sdl2
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> ggplotnim, ggplotnim/ggplot_sdl2
 <span style="color: #F92672;">import</span> unchained
 <span style="color: #F92672;">const</span> <span style="color: #FD971F;">mpe </span>= <span style="color: #E6DB74;">&quot;~/phd/resources/MPE/mpe_xray_telescope_cast_effective_area.csv&quot;</span>
 <span style="color: #F92672;">const</span> <span style="color: #FD971F;">llnl </span>= <span style="color: #E6DB74;">&quot;~/phd/resources/LLNL/EffectiveArea.txt&quot;</span>
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dfMpe </span>= readCsv<span style="color: #AE81FF;">(</span>mpe<span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">let</span> <span style="color: #FD971F;">dfLLNL </span>= readCsv<span style="color: #AE81FF;">(</span>llnl, sep = <span style="color: #E6DB74;">&apos; &apos;</span><span style="color: #AE81FF;">)</span>
-  .rename<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;Energy[keV]&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;E(keV)&quot;</span><span style="color: #66D9EF;">}</span>,
-          f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;EffectiveArea[cm²]&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;Area(cm^2)&quot;</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= bind_rows<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">[</span><span style="color: #A6E22E;">(</span><span style="color: #E6DB74;">&quot;MPE&quot;</span>, dfMpe<span style="color: #A6E22E;">)</span>, <span style="color: #A6E22E;">(</span><span style="color: #E6DB74;">&quot;LLNL&quot;</span>, dfLLNL<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">]</span>, <span style="color: #E6DB74;">&quot;Telescope&quot;</span><span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">const</span> <span style="color: #FD971F;">areaBore </span>= <span style="color: #AE81FF;">(</span><span style="font-style: italic;">4</span>.<span style="font-style: italic;">3</span>.cm / <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span> * π <span style="color: #E6DB74;">## Area of the CAST bore in cm²</span>
-ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Energy[keV]&quot;</span>, <span style="color: #E6DB74;">&quot;EffectiveArea[cm²]&quot;</span>, color = <span style="color: #E6DB74;">&quot;Telescope&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">dfLLNL </span>= readCsv<span style="color: #AE81FF;">(</span>llnl, sep = <span style="color: #E6DB74;">&apos; &apos;</span>  <span style="color: #AE81FF;">)</span>
+  .rename<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #E6DB74;">&quot;Energy[keV]&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;E(keV)&quot;</span>  <span style="color: #66D9EF;">}</span>,
+          f<span style="color: #66D9EF;">{</span>  <span style="color: #E6DB74;">&quot;EffectiveArea[cm²]&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;Area(cm^2)&quot;</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= bind_rows<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">[</span>  <span style="color: #A6E22E;">(</span>  <span style="color: #E6DB74;">&quot;MPE&quot;</span>, dfMpe<span style="color: #A6E22E;">)</span>, <span style="color: #A6E22E;">(</span>  <span style="color: #E6DB74;">&quot;LLNL&quot;</span>, dfLLNL<span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">]</span>, <span style="color: #E6DB74;">&quot;Telescope&quot;</span>  <span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">areaBore </span>= <span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">4</span>.<span style="font-style: italic;">3</span>.cm / <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span> * π <span style="color: #E6DB74;">## Area of the CAST bore in cm²</span>
+ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span>  <span style="color: #E6DB74;">&quot;Energy[keV]&quot;</span>, <span style="color: #E6DB74;">&quot;EffectiveArea[cm²]&quot;</span>, color = <span style="color: #E6DB74;">&quot;Telescope&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
   geom_line<span style="color: #AE81FF;">()</span> +
-  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Energy [\si{keV}]&quot;</span><span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;EffectiveArea [\si{cm^2}]&quot;</span><span style="color: #AE81FF;">)</span> +
-  scale_y_continuous<span style="color: #AE81FF;">(</span>secAxis = secAxis<span style="color: #66D9EF;">(</span>f<span style="color: #A6E22E;">{</span><span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span> / areaBore.<span style="color: #66D9EF;">float</span><span style="color: #A6E22E;">}</span>, name = r<span style="color: #E6DB74;">&quot;Transmission [\si{\%}]&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
-  legendPosition<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">83</span>, -<span style="font-style: italic;">0</span>.<span style="font-style: italic;">2</span><span style="color: #AE81FF;">)</span> +
+  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Energy [\si{keV}]&quot;</span>  <span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;EffectiveArea [\si{cm^2}]&quot;</span>  <span style="color: #AE81FF;">)</span> +
+  scale_y_continuous<span style="color: #AE81FF;">(</span>secAxis = secAxis<span style="color: #66D9EF;">(</span>f<span style="color: #A6E22E;">{</span>  <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span> / areaBore.<span style="color: #66D9EF;">float</span>  <span style="color: #A6E22E;">}</span>, name = r<span style="color: #E6DB74;">&quot;Transmission [\si{\%}]&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
+  legendPosition<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">0</span>.<span style="font-style: italic;">83</span>, -<span style="font-style: italic;">0</span>.<span style="font-style: italic;">2</span>  <span style="color: #AE81FF;">)</span> +
   themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">9</span>, width = <span style="font-style: italic;">600</span>, baseTheme = singlePlot<span style="color: #AE81FF;">)</span> + 
-  ggshow<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;~/phd/Figs/telescopes/effective_area_mpe_llnl.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span><span style="color: #AE81FF;">)</span>
-</pre>
+  ggshow<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;~/phd/Figs/telescopes/effective_area_mpe_llnl.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span>  <span style="color: #AE81FF;">)</span>
+</code></pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-org283fbbe" class="outline-4">
-<h4 id="org283fbbe">  <a href="#org283fbbe">  <span class="section-number-4">5.1.5.</span> Best limits set by CAST</a></h4>
+<div id="outline-container-org5f28b42" class="outline-4">
+<h4 id="org5f28b42">  <a href="#org5f28b42">  <span class="section-number-4">5.1.5.</span> Best limits set by CAST</a></h4>
 <div id="text-5-1-5" class="outline-text-4">
 <p>
 In the many years of data taking and countless detectors taking data
@@ -834,7 +963,7 @@ Specifically, CAST sets the current best helioscope limits on the:
 </ul>
 
 <p>
-For the axion-photon coupling the best limit is from (<a href="./bibliography.html#citeproc_bib_item_68">Collaboration and others 2017</a>)
+For the axion-photon coupling the best limit is from <a href="cite:cast_nature">cite:cast_nature</a>
 in 2017 based on the full Micromegas dataset including the data behind
 the LLNL telescope and constricts the coupling to
 \(g_{aγ} &lt; \SI{6.6e-11}{\GeV^{-1}}\).
@@ -842,8 +971,8 @@ the LLNL telescope and constricts the coupling to
 
 <p>
 For the axion-electron coupling the best limit is still from 2013 in
-(<a href="./bibliography.html#citeproc_bib_item_37">Barth et al. 2013</a>) using the theoretical calculations for an expected
-solar axion flux done by J. Redondo in (<a href="./bibliography.html#citeproc_bib_item_182">Redondo 2013</a>) for a limit
+<a href="cite:Barth_2013">cite:Barth_2013</a> using the theoretical calculations for an expected
+solar axion flux done by J. Redondo in <a href="cite:Redondo_2013">cite:Redondo_2013</a> for a limit
 on the product of the axion-electron and axion-photon coupling of
 \(g_{ae} · g_{aγ} &lt; \SI{8.1e-23}{\GeV^{-1}}\). The limit calculation was
 based on data taken in CAST phase I in 2003 - 2005 with a pn-CCD
@@ -854,7 +983,7 @@ detector behind the MPE telescope.
 CAST was also used to set a limit on the hypothetical chameleon
 particle. The best current limit on the chameleon-photon coupling
 \(β_γ\) is based on a single GridPix based detector with data taken in
-2014 and 2015 by C. Krieger in (<a href="./bibliography.html#citeproc_bib_item_65">Christoph Krieger 2018</a>; <a href="./bibliography.html#citeproc_bib_item_9">Anastassopoulos et al. 2019</a>), limiting the
+2014 and 2015 by C. Krieger in <a href="cite:krieger2018search,krieger_chameleon_jcap">cite:krieger2018search,krieger_chameleon_jcap</a>, limiting the
 coupling to \(β_γ &lt; \num{5.74e10}\), which is the first limit below the
 solar luminosity bound.
 </p>
@@ -873,10 +1002,10 @@ band in the mass-coupling constant phase space is a natural idea.
 
 <p>
 The first proposal for a next generation axion helioscope was
-published in 2011 (<a href="./bibliography.html#citeproc_bib_item_121">Irastorza et al. 2011</a>), with the name International AXion
-Observatory (IAXO) first appearing in 2013 (<a href="./bibliography.html#citeproc_bib_item_222">Vogel et al. 2013</a>). A
+published in 2011 <a href="cite:Irastorza_2011">cite:Irastorza_2011</a>, with the name International AXion
+Observatory (IAXO) first appearing in 2013 <a href="cite:vogel2013iaxo">cite:vogel2013iaxo</a>. A
 conceptual design report (CDR) was further published in 2014
-(<a href="./bibliography.html#citeproc_bib_item_24">Armengaud et al. 2014</a>). 
+<a href="cite:Armengaud_2014">cite:Armengaud_2014</a>. 
 </p>
 
 <p>
@@ -886,11 +1015,11 @@ magnetic field of \(\SI{2.5}{T}\) <sup>  <a id="fnr.7" href="#fn.7" class="footr
 specifically built for the experiment, much larger tilting angles of
 the magnet of about \(\pm\SI{25}{°}\) are proposed to allow for solar
 tracking for \(\SI{12}{\hour}\) per day for a 1:1 data split between
-tracking and background data. (<a href="./bibliography.html#citeproc_bib_item_24">Armengaud et al. 2014</a>)
+tracking and background data. <a href="cite:Armengaud_2014">cite:Armengaud_2014</a>
 </p>
 
 <p>
-In (<a href="./bibliography.html#citeproc_bib_item_121">Irastorza et al. 2011</a>) a &apos;figure of merit&apos; (FOM) is introduced
+In <a href="cite:Irastorza_2011">cite:Irastorza_2011</a> a &apos;figure of merit&apos; (FOM) is introduced
 to quantify the improvements possible by IAXO over CAST, defined by
 </p>
 
@@ -922,7 +1051,7 @@ bounds by an order of magnitude.
 
 <p>
 A schematic of the proposed design can be seen in
-fig. <a href="#fig:helioscopes:iaxo">8(a)</a>. Given the comparatively large budget
+fig. <a href="#fig:helioscopes:iaxo">#fig:helioscopes:iaxo</a>. Given the comparatively large budget
 requirements for such an experiment, a compromise was envisioned to
 prove the required technologies, in particular the magnet design. This
 intermediate experiment called BabyIAXO will be discussed in the next
@@ -930,19 +1059,21 @@ section, <a href="./helioscopes.html#sec:helioscopes:baby_iaxo">5.2.2</a>.
 </p>
 
 
-<figure id="fig:helioscopes:iaxo_babyiaxo_schematics" class="figure-wrapper">
-<figure id="fig:helioscopes:iaxo" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/IAXO/iaxo_annotated_schematic.png" data-width="94%" />  <figcaption>Figure 8(a): IAXO</figcaption></figure> <figure id="fig:helioscopes:baby_iaxo" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/IAXO/babyIAXO_schematic_annotated_ringwald23.png" data-width="94%" />  <figcaption>Figure 8(b): BabyIAXO</figcaption></figure>
-<figcaption>Figure 8: <a href="#fig:helioscopes:iaxo">8(a)</a>An annotated schematic of a potential IAXO design with 8 magnet bores. Taken from the IAXO CDR (<a href="./bibliography.html#citeproc_bib_item_24">Armengaud et al. 2014</a>) . <a href="#fig:helioscopes:baby_iaxo">8(b)</a>An annotated schematic of the current BabyIAXO design, showing the two bores. One bore intended
+<p>
+&lt;figure class=&quot;figure-wrapper&quot; id=&quot;fig:helioscopes:iaxo<sub>babyiaxo</sub><sub>schematics</sub>&quot;&gt;
+&lt;figure class=&quot;subfigure&quot; id=&quot;fig:helioscopes:iaxo&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/IAXO/iaxo<sub>annotated</sub><sub>schematic.png</sub>&quot; data-width=&quot;94%&quot; &gt;&lt;figcaption&gt;IAXO&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:helioscopes:baby<sub>iaxo</sub>&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/IAXO/babyIAXO<sub>schematic</sub><sub>annotated</sub><sub>ringwald23.png</sub>&quot; data-width=&quot;94%&quot; &gt;&lt;figcaption&gt;BabyIAXO&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figcaption&gt;&lt;a href=&quot;#fig:helioscopes:iaxo&quot;&gt;&lt;/a&gt;An annotated schematic of a potential IAXO design with 8 magnet bores. Taken from the IAXO CDR <a href="cite:&amp;Armengaud_2014">cite:&amp;Armengaud_2014</a> . &lt;a href=&quot;#fig:helioscopes:baby<sub>iaxo</sub>&quot;&gt;&lt;/a&gt;An annotated schematic of the current BabyIAXO design, showing the two bores. One bore intended
           for an XMM-Newton optic of \SI{7.5}{m} focal length, and a shorter \SI{5}{m} focal
-          length custom optic behind the other bore. Taken from (<a href="./bibliography.html#citeproc_bib_item_184">Ringwald 2023</a>) .</figcaption>
-</figure>
+          length custom optic behind the other bore. Taken from <a href="cite:&amp;ringwald23_axions_hamburg">cite:&amp;ringwald23_axions_hamburg</a> .&lt;/figcaption&gt;
+&lt;/figure&gt;
+</p>
 </div>
-<div id="outline-container-org340b9bd" class="outline-4">
-<h4 id="org340b9bd">  <a href="#org340b9bd">  <span class="section-number-4">5.2.1.</span> Calculate magnet figure of merit   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orgf9dae53" class="outline-4">
+<h4 id="orgf9dae53">  <a href="#orgf9dae53">  <span class="section-number-4">5.2.1.</span> Calculate magnet figure of merit   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-5-2-1" class="outline-text-4">
 <p>
 For more details on the figure of merit calculation, see sec. 3.1 in
-(<a href="./bibliography.html#citeproc_bib_item_121">Irastorza et al. 2011</a>).
+<a href="cite:Irastorza_2011">cite:Irastorza_2011</a>.
 </p>
 
 <p>
@@ -975,20 +1106,20 @@ Let&apos;s calculate the figure of merit for the CAST magnet as well as the
 IAXO / BabyIAXO magnets:
 </p>
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> unchained
 
 defUnit<span style="color: #AE81FF;">(</span>T²•m⁴<span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">fMagnet</span><span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">B</span>: <span style="color: #66D9EF;">Tesla</span>, <span style="color: #66D9EF;">L</span>: <span style="color: #66D9EF;">Meter</span>, d: <span style="color: #66D9EF;">CentiMeter</span><span style="color: #AE81FF;">)</span>: T²•m⁴ = <span style="color: #66D9EF;">B</span>^<span style="font-style: italic;">2</span> * <span style="color: #66D9EF;">L</span>^<span style="font-style: italic;">2</span> * <span style="color: #AE81FF;">(</span>d / <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span> * π
-<span style="color: #F92672;">let</span> <span style="color: #FD971F;">fCAST </span>= fMagnet<span style="color: #AE81FF;">(</span><span style="font-style: italic;">8</span>.<span style="font-style: italic;">8</span>.<span style="color: #66D9EF;">T</span>, <span style="font-style: italic;">9</span>.<span style="font-style: italic;">26</span>.m, <span style="font-style: italic;">4</span>.<span style="font-style: italic;">3</span>.cm<span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">fMagnet</span>  <span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">B</span>: <span style="color: #66D9EF;">Tesla</span>, <span style="color: #66D9EF;">L</span>: <span style="color: #66D9EF;">Meter</span>, d: <span style="color: #66D9EF;">CentiMeter</span>  <span style="color: #AE81FF;">)</span>: T²•m⁴ = <span style="color: #66D9EF;">B</span>^<span style="font-style: italic;">2</span> * <span style="color: #66D9EF;">L</span>^<span style="font-style: italic;">2</span> * <span style="color: #AE81FF;">(</span>d / <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span> * π
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">fCAST </span>= fMagnet<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">8</span>.<span style="font-style: italic;">8</span>.<span style="color: #66D9EF;">T</span>, <span style="font-style: italic;">9</span>.<span style="font-style: italic;">26</span>.m, <span style="font-style: italic;">4</span>.<span style="font-style: italic;">3</span>.cm<span style="color: #AE81FF;">)</span>
 <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;CAST magnet, single bore f_M = &quot;</span>, fCAST, <span style="color: #E6DB74;">&quot; at 8.8 T&quot;</span>
 <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;CAST, both bores f_M = &quot;</span>, fCAST * <span style="font-style: italic;">2</span>
 
-<span style="color: #F92672;">let</span> <span style="color: #FD971F;">fIAXO </span>= fMagnet<span style="color: #AE81FF;">(</span><span style="font-style: italic;">2</span>.<span style="font-style: italic;">5</span>.<span style="color: #66D9EF;">T</span>, <span style="font-style: italic;">20</span>.m, <span style="font-style: italic;">60</span>.cm<span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">fIAXO </span>= fMagnet<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">2</span>.<span style="font-style: italic;">5</span>.<span style="color: #66D9EF;">T</span>, <span style="font-style: italic;">20</span>.m, <span style="font-style: italic;">60</span>.cm<span style="color: #AE81FF;">)</span>
 <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;IAXO magnet, single bore f_M = &quot;</span>, fIAXO, <span style="color: #E6DB74;">&quot; at 2.5 T *average* field, 20 m length.&quot;</span>
 <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;IAXO, all bores f_M = &quot;</span>, fIAXO * <span style="font-style: italic;">8</span>
 
-<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;IAXO FOM over CAST: &quot;</span>, fIAXO * <span style="font-style: italic;">8</span> / <span style="color: #AE81FF;">(</span>fCAST * <span style="font-style: italic;">2</span><span style="color: #AE81FF;">)</span>
-</pre>
+<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;IAXO FOM over CAST: &quot;</span>, fIAXO * <span style="font-style: italic;">8</span> / <span style="color: #AE81FF;">(</span>fCAST * <span style="font-style: italic;">2</span>  <span style="color: #AE81FF;">)</span>
+</code></pre>
 </div>
 
 
@@ -997,32 +1128,32 @@ Time scaling:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained, math
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> unchained, math
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">g </span>= 8e-<span style="font-style: italic;">11</span>
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">g4 </span>= g^<span style="font-style: italic;">4</span>
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">t </span>= <span style="font-style: italic;">1</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">g⁴ = √t</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">g⁴ / √t = g&apos;⁴ / √t&apos;</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">g⁴ = √t</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">g⁴ / √t = g&apos;⁴ / √t&apos;</span>
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">tp </span>= <span style="font-style: italic;">2</span>
-<span style="color: #F92672;">let</span> <span style="color: #FD971F;">g4p </span>= g4 * sqrt<span style="color: #AE81FF;">(</span><span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;New g for twice the time: &quot;</span>, pow<span style="color: #AE81FF;">(</span>g4p, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">25</span><span style="color: #AE81FF;">)</span>
-</pre>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">g4p </span>= g4 * sqrt<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;New g for twice the time: &quot;</span>, pow<span style="color: #AE81FF;">(</span>g4p, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">25</span>  <span style="color: #AE81FF;">)</span>
+</code></pre>
 </div>
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained, math
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> unchained, math
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">g </span>= 8e-<span style="font-style: italic;">11</span>
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">g4 </span>= g^<span style="font-style: italic;">4</span>
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">t </span>= <span style="font-style: italic;">1</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">g⁴ · √t = N # &lt;- some number of photons: we observe 0</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">g⁴&apos; · √t&apos; = N&apos; # &lt;- new number of photons: we still observe 0</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">So</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">g⁴ · √t = g⁴&apos; · √t&apos;</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">should hold, meaning</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">g⁴ · √1 = g⁴&apos; · √2</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">g⁴&apos; = g⁴ / √2</span>
-<span style="color: #F92672;">let</span> <span style="color: #FD971F;">g4p </span>= g4 / sqrt<span style="color: #AE81FF;">(</span><span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;New g for twice the time: &quot;</span>, pow<span style="color: #AE81FF;">(</span>g4p, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">25</span><span style="color: #AE81FF;">)</span>
-</pre>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">g⁴ · √t = N # &lt;- some number of photons: we observe 0</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">g⁴&apos; · √t&apos; = N&apos; # &lt;- new number of photons: we still observe 0</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">So</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">g⁴ · √t = g⁴&apos; · √t&apos;</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">should hold, meaning</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">g⁴ · √1 = g⁴&apos; · √2</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">g⁴&apos; = g⁴ / √2</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">g4p </span>= g4 / sqrt<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;New g for twice the time: &quot;</span>, pow<span style="color: #AE81FF;">(</span>g4p, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">25</span>  <span style="color: #AE81FF;">)</span>
+</code></pre>
 </div>
 </div>
 </div>
@@ -1034,9 +1165,9 @@ The major difference between full grown IAXO and BabyIAXO is
 restricting the setup to 2 bores instead of 8 with a magnet length of
 only \(\SI{10}{m}\) to prove the magnet design works, before building a
 larger version of said design. Since the first conceptual design of
-IAXO (<a href="./bibliography.html#citeproc_bib_item_24">Armengaud et al. 2014</a>) the bore diameter for the two bores of
+IAXO <a href="cite:Armengaud_2014">cite:Armengaud_2014</a> the bore diameter for the two bores of
 BabyIAXO has increased from \(\SI{60}{cm}\) to
-\(\SI{70}{cm}\). (<a href="./bibliography.html#citeproc_bib_item_241">Collaboration et al. 2021</a>)
+\(\SI{70}{cm}\). <a href="cite:abeln2021conceptual">cite:abeln2021conceptual</a>
 </p>
 
 <p>
@@ -1059,15 +1190,15 @@ second bore would receive a custom built X-ray optic based on a hybrid
 design of a NuSTAR-like optic for the inner part – similar to the LLNL
 telescope introduced in sec. <a href="./helioscopes.html#sec:helioscopes:llnl_telescope">5.1.4</a> (just as
 a full telescope) – and a cold slumped glass design following
-(<a href="./bibliography.html#citeproc_bib_item_66">Civitani et al. 2016</a>) for the outer part. This
+<a href="cite:civitani16_cold_hot_slump_glass_optic">cite:civitani16_cold_hot_slump_glass_optic</a> for the outer part. This
 optic would have a focal length of only \(\SI{5}{m}\).
 </p>
 
 <p>
 An annotaded schematic of the BabyIAXO design can be seen in
-fig. <a href="#fig:helioscopes:baby_iaxo">8(b)</a>. The magnet figure of merit for
+fig. <a href="#fig:helioscopes:baby_iaxo">#fig:helioscopes:baby_iaxo</a>. The magnet figure of merit for
 BabyIAXO is aimed at being at least a factor 10 higher than for CAST,
-with (<a href="./bibliography.html#citeproc_bib_item_241">Collaboration et al. 2021</a>) listing values between
+with <a href="cite:abeln2021conceptual">cite:abeln2021conceptual</a> listing values between
 \(\SIrange{232}{326}{T^2.m^4}\) depending on how it is calculated.
 </p>
 </div>
@@ -1089,7 +1220,7 @@ logs. See the extended thesis.
 <div class="footdef"><sup>  <a id="fn.3" href="#fnr.3" class="footnum" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote">  <p class="footpara">
 There is some confusion about the
 diameter and length of the magnet. The original CAST proposal
-(<a href="#citeproc_bib_item_238">Zioutas et al. 1999</a>) talks about the prototype dipole magnets as
+<a href="cite:ZIOUTAS1999480">cite:ZIOUTAS1999480</a> talks about the prototype dipole magnets as
 having a bore diameter of \(\SI{42.5}{mm}\) and a length of
 \(\SI{9.25}{m}\). However, every CAST publication afterwards uses the
 numbers \(\SI{43}{mm}\) and \(\SI{9.26}{m}\). Digging into references about
@@ -1136,6 +1267,17 @@ happening via \(g²\) each.
 </p></div></div>
 
 </div>
+<div id="preamble" class="status">
+
+<button class="toc-toggle" id="tocToggle" aria-label="Toggle table of contents">☰</button>
+<div class="theme-selector-wrapper">
+  <select class="theme-selector" id="themeSelector" aria-label="Select theme">
+    <!-- Options populated by JavaScript -->
+  </select>
+</div>
+<div class="toc-backdrop" id="tocBackdrop"></div>
+</div>
+
 <div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
 </div>
 </body>

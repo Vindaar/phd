@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--  2025-02-01 Sat 13:23  -->
+<!--  2025-11-09 Sun 15:13  -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>‎</title>
@@ -9,6 +9,9 @@
 <meta name="generator" content="Org Mode" />
 
 <link type="text/css" rel="stylesheet" href="org_html_export.css" />
+
+<link type="font/woff2" crossorigin="" rel="preload" href="/fonts/Baskervville-VariableFont_wght.woff2" as="font" />
+
 <script type="text/javascript">
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -71,6 +74,128 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             });
+        }
+    });
+});
+
+// Mobile TOC Toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    var tocToggle = document.getElementById('tocToggle');
+    var toc = document.getElementById('table-of-contents');
+    var backdrop = document.getElementById('tocBackdrop');
+
+    if (tocToggle && toc && backdrop) {
+        // Toggle TOC when hamburger button is clicked
+        tocToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toc.classList.toggle('active');
+            backdrop.classList.toggle('active');
+        });
+
+        // Close TOC when backdrop is clicked
+        backdrop.addEventListener('click', function() {
+            toc.classList.remove('active');
+            backdrop.classList.remove('active');
+        });
+
+        // Close TOC when a link inside it is clicked
+        var tocLinks = toc.querySelectorAll('a');
+        tocLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            });
+        });
+
+        // Close TOC with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && toc.classList.contains('active')) {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            }
+        });
+    }
+});
+
+// Theme Selector functionality with system preference detection
+document.addEventListener('DOMContentLoaded', function() {
+    var themeSelector = document.getElementById('themeSelector');
+    var body = document.body;
+
+    // Define available themes
+    var themes = {
+        'light': { name: 'Light', type: 'light', class: 'light-theme' },
+        'monokai-soft': { name: 'Monokai (Soft Text)', type: 'dark', class: 'theme-monokai-soft-text' },
+        'monokai-neutral-toc': { name: 'Monokai (Neutral TOC)', type: 'dark', class: 'theme-monokai-white-text' },
+        'dracula': { name: 'Dracula', type: 'dark', class: 'theme-dracula' },
+        'gruvbox': { name: 'Gruvbox', type: 'dark', class: 'theme-gruvbox' },
+        'tokyo-night': { name: 'Tokyo Night', type: 'dark', class: 'theme-tokyo-night' },
+        'andromeda': { name: 'Andromeda', type: 'dark', class: 'theme-andromeda' },
+    };
+
+    // Get system preference
+    var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var systemThemeType = systemPrefersDark ? 'dark' : 'light';
+
+    // Populate dropdown - system-preferred type first
+    var darkThemes = [];
+    var lightThemes = [];
+
+    for (var key in themes) {
+        var theme = themes[key];
+        if (theme.type === 'dark') {
+            darkThemes.push({ key: key, theme: theme });
+        } else {
+            lightThemes.push({ key: key, theme: theme });
+        }
+    }
+
+    var orderedThemes = systemPrefersDark ? darkThemes.concat(lightThemes) : lightThemes.concat(darkThemes);
+
+    orderedThemes.forEach(function(item) {
+        var option = document.createElement('option');
+        option.value = item.key;
+        option.textContent = item.theme.name + ' (' + item.theme.type + ')';
+        themeSelector.appendChild(option);
+    });
+
+    // Check for saved theme preference
+    var savedTheme = localStorage.getItem('theme');
+    var currentTheme = savedTheme || (systemPrefersDark ? 'monokai-soft' : 'light');
+
+    // Apply current theme
+    function applyTheme(themeKey) {
+        // Remove all theme classes
+        for (var key in themes) {
+            body.classList.remove(themes[key].class);
+        }
+        // Add selected theme class
+        if (themes[themeKey]) {
+            body.classList.add(themes[themeKey].class);
+        }
+    }
+
+    applyTheme(currentTheme);
+    themeSelector.value = currentTheme;
+
+    // Handle theme changes
+    if (themeSelector) {
+        themeSelector.addEventListener('change', function() {
+            var selectedTheme = this.value;
+            applyTheme(selectedTheme);
+            localStorage.setItem('theme', selectedTheme);
+            console.log('Switched to theme:', themes[selectedTheme].name);
+        });
+    }
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        // Only auto-switch if user hasn't manually set a preference
+        if (!localStorage.getItem('theme')) {
+            var newTheme = e.matches ? 'monokai-soft' : 'light';
+            applyTheme(newTheme);
+            themeSelector.value = newTheme;
+            console.log('System switched to', e.matches ? 'dark' : 'light', 'theme');
         }
     });
 });
@@ -140,9 +265,9 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
 <li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
 <ul>
-<li>  <a href="./about_thesis.html#orgfe77eb6">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#orgf40a93d">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#org607bd89">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org5d5ca24">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgd071881">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgccd0201">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
@@ -176,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
-<li>  <a href="./septemboard.html#org2a0c0f4">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#org49593cc">7.6. Detector readout system</a></li>
 <li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
 <li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
 <li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
@@ -240,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
 <li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
-<li>  <a href="./limit.html#org5995639">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgc3e5f13">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org34c85eb">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org5c2677d">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
 <li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
@@ -249,8 +374,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
 <li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
 <li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
-<li>  <a href="./limit.html#org75d3b34">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgfcbf364">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org4fec592">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgc8fc2b2">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
@@ -288,33 +413,33 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_run_list.html#orgb52235a">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_run_list.html#orgf971eee">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd947e01">22.1. Run table</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgf8afac6">22.2. Data runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgfe96ddc">22.3. Calibration runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgac5a852">22.4. Automatically generated run list</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd5cdef1">22.5. Automatically calculated total run times</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#org2406344">22.6. InGrid temperature from shift forms</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgae4e0fb">22.1. Run table</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org1c94b8e">22.2. Data runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5613f30">22.3. Calibration runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5ee0a43">22.4. Automatically generated run list</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgb06ce92">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org23e9775">22.6. InGrid temperature from shift forms</a></li>
 </ul>
 </li>
 <li><a href="./appendix_cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge32a9e1">23.1. Virtex V6 cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge17b088">23.2. Detector cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org93c1c60">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org9625327">23.4. Setting up the chips in TOS</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org2ef941f">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#orga68ff49">23.2. Detector cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org0145cca">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org5e669ea">23.4. Setting up the chips in TOS</a></li>
 </ul>
 </li>
 <li><a href="./appendix_vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_vacuum_contamination.html#org3cd49bd">24.1. Calculation of vacuum volume</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc39e76f">24.2. Calculation of potential influx of gas</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc67dc29">24.3. Consider pumping of pumps</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgbac7f48">24.4. Calculation of possible contamination</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#orga39142b">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9050e58">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9f3bf66">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9adc478">24.4. Calculation of possible contamination</a></li>
 </ul>
 </li>
 <li><a href="./appendix_detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
@@ -325,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_detector_lab.html#orgc899fb3">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_detector_lab.html#org616f0be">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
@@ -334,13 +459,13 @@ document.addEventListener('DOMContentLoaded', function () {
 <li><a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
-<li>  <a href="./appendix_fit_by_run_justification.html#org13d2559">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fit_by_run_justification.html#orgf376779">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#org78be87a">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#orgdadd742">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org8ff2c41">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org4569db5">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
@@ -349,25 +474,25 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_occupancy.html#org71d0d19">29.1. Run-2</a></li>
-<li>  <a href="./appendix_occupancy.html#orgcbfcb5e">29.2. Run-3</a></li>
-<li>  <a href="./appendix_occupancy.html#org3a727ee">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_occupancy.html#org0c07dc3">29.1. Run-2</a></li>
+<li>  <a href="./appendix_occupancy.html#orgfd35f3d">29.2. Run-3</a></li>
+<li>  <a href="./appendix_occupancy.html#org575f0d0">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
-<li>  <a href="./appendix_fadc.html#org595d68a">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fadc.html#org359350e">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
 </ul>
 </li>
 <li><a href="./appendix_background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
-<li>  <a href="./appendix_background_rates.html#org6b8736f">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org7827cf1">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org88d5321">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#orge495bc9">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org152406e">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org4f4f786">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
@@ -381,27 +506,27 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_software.html#orge51f988">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_software.html#org378ccdf">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgf327581">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgdd3f2b1">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
-<li>  <a href="./appendix_software.html#org92b1f48">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+<li>  <a href="./appendix_software.html#org544765d">34.4. Other libraries relevant for TimepixAnalysis</a></li>
 </ul>
 </li>
 <li><a href="./appendix_full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgc87960b">35.1. Raw data parsing and reconstruction</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org652a080">35.2. Parse and reconstruct the CDL data</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org5831301">35.3. Add tracking information to background files</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org904d73c">35.4. Using <code>runAnalysisChain</code></a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgb4de31c">35.5. Applying a classifier</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org9252218">35.6. Computing limits</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org501eca1">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org552659c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org8581c7e">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgeb8db11">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgaaebe4e">35.5. Applying a classifier</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgde50894">35.6. Computing limits</a></li>
 </ul>
 </li>
 <li><a href="./appendix_average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#org89ae1e7">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc035fda">36.2. Calculate conversion point numerically</a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc101b38">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orga91983c">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#org02d2b56">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orgf60ccf9">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
@@ -410,10 +535,10 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
-<li>  <a href="./appendix_raytracing.html#orgdb277d0">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org33f56e2">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org66d4b31">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#orgab3dcf7">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org3755681">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgc57967b">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org2ddc502">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgfd56f1c">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Ack">Ack</span>  </span></a></li>
@@ -466,17 +591,17 @@ invariant, Lorentz invariant and so on). Here, \(θ\) is an angle, \(g²_s\)
 is the strong coupling constant and \(G^{μν}_α\) the gluon field
 strength tensor. As a matter of fact, this term is even required if
 the instanton solution to the \(\mathrm{U}(1)\) problem is considered
-(<a href="./bibliography.html#citeproc_bib_item_113">Hooft 1986</a>; <a href="./bibliography.html#citeproc_bib_item_169">Peccei 2008a</a>) and is a result of the complex
-vacuum structure of QCD (<a href="./bibliography.html#citeproc_bib_item_111">’T Hooft 1976</a>). This term violates \(\mathrm{P}\)
+<a href="cite:hooft1986instantons,Peccei2008">cite:hooft1986instantons,Peccei2008</a> and is a result of the complex
+vacuum structure of QCD <a href="cite:tHooftU1">cite:tHooftU1</a>. This term violates \(\mathrm{P}\)
 and \(\mathrm{T}\) transformations and as a result of \cpt symmetry also
 violates \cp.  Peculiarly, any effect expected from this \cp violation
 has still not been observed. One such effect is an expected electric
 dipole moment of the neutron
-(<a href="./bibliography.html#citeproc_bib_item_72">Crewther et al. 1979</a>, <a href="./bibliography.html#citeproc_bib_item_73">1980</a>; <a href="./bibliography.html#citeproc_bib_item_32">Baluni 1979</a>). Such a dipole
+<a href="cite:CREWTHER_NEDM,CREWTHER_NEDM_ERRATA,Baluni_NEDM">cite:CREWTHER_NEDM,CREWTHER_NEDM_ERRATA,Baluni_NEDM</a>. Such a dipole
 moment may naively be expected plainly from the fact that the
 constituent quarks of a neutron are charged after all. However, very
 stringent limits place an extremely low upper bound on it at
-(<a href="./bibliography.html#citeproc_bib_item_31">Baker et al. 2006</a>; <a href="./bibliography.html#citeproc_bib_item_172">Pendlebury et al. 2015</a>)
+<a href="cite:NEDM_Limit,Revised_NEDM_Limit">cite:NEDM_Limit,Revised_NEDM_Limit</a>
 </p>
 
 <p>
@@ -493,19 +618,19 @@ would be a massless up or down quark, in which case the QCD Lagrangian
 would feature a global \(\mathrm{U}(1)\) axial shift symmetry, which
 could shift \(θ ↦ 0\). Even in the late 1980&apos;s this was not entirely
 ruled out, despite the already understood mass ratio \(m_u / m_d = 5/9\)
-(<a href="./bibliography.html#citeproc_bib_item_226">Weinberg 1977</a>), due to \(2^{\text{nd}}\) order chiral effects
-(<a href="./bibliography.html#citeproc_bib_item_128">Kaplan and Manohar 1986</a>). However, nowadays based on lattice QCD
+<a href="cite:Weinberg1977_mass">cite:Weinberg1977_mass</a>, due to \(2^{\text{nd}}\) order chiral effects
+<a href="cite:PhysRevLett.56.2004">cite:PhysRevLett.56.2004</a>. However, nowadays based on lattice QCD
 calculations this has been ruled out
-(<a href="./bibliography.html#citeproc_bib_item_67">Cohen, Kaplan, and Nelson 1999</a>; <a href="./bibliography.html#citeproc_bib_item_83">Dine, Draper, and Festuccia 2015</a>; <a href="./bibliography.html#citeproc_bib_item_96">Group et al. 2022</a>).
+<a href="cite:AndrewG_Cohen_1999,PhysRevD.92.054004,10.1093/ptep/ptac097">cite:AndrewG_Cohen_1999,PhysRevD.92.054004,10.1093/ptep/ptac097</a>.
 </p>
 
 <p>
 While it is possible that our universe is simply one in which the
 effect of the strong \cp violation is suppressed (or even exactly
 zero) &quot;by chance&quot;, Helen Quinn and Roberto Peccei realized in 1977
-(<a href="./bibliography.html#citeproc_bib_item_167">Peccei and Quinn 1977a</a>, <a href="./bibliography.html#citeproc_bib_item_168">1977b</a>) that this behavior can be
+<a href="cite:PecceiQuinn1977_1,PecceiQuinn1977_2">cite:PecceiQuinn1977_1,PecceiQuinn1977_2</a> that this behavior can be
 explained in the presence of an additional scalar field. Shortly after
-both Weinberg and Wilczek (<a href="./bibliography.html#citeproc_bib_item_227">Weinberg 1978</a>; <a href="./bibliography.html#citeproc_bib_item_230">Wilczek 1978</a>) realized the
+both Weinberg and Wilczek <a href="cite:AxionWeinberg,AxionWilczek">cite:AxionWeinberg,AxionWilczek</a> realized the
 implication of such an additional field, namely a pseudo
 Nambu-Goldstone boson. Wilczek named it the <span class="underline">axion</span>, after a washing
 detergent, as it &quot;washes the Standard Model clean&quot; of the strong \cp
@@ -520,16 +645,16 @@ Models for an &apos;invisible axion&apos; manage to unify the solution to the
 strong \cp problem with the current lack of experimental evidence for
 an axion-like particle. There are two main models for the invisible
 axion, the KSVZ (Kim-Shifman-Vainshtein-Zakharov)
-(<a href="./bibliography.html#citeproc_bib_item_129">Kim 1979</a>; <a href="./bibliography.html#citeproc_bib_item_208">Shifman, Vainshtein, and Zakharov 1980</a>) and the DFSZ
+<a href="cite:Kim_KSVZ,SHIFMAN_KSVZ">cite:Kim_KSVZ,SHIFMAN_KSVZ</a> and the DFSZ
 (Dine-Fischler-Srednicki-Zhitnitskii)
-(<a href="./bibliography.html#citeproc_bib_item_84">Dine, Fischler, and Srednicki 1981</a>; <a href="./bibliography.html#citeproc_bib_item_237">Zhitnitskii 1980</a>) models.
+<a href="cite:DINE_DFSZ,Zhitnitskii_DFSZ">cite:DINE_DFSZ,Zhitnitskii_DFSZ</a> models.
 </p>
 
 <p>
 For the most comprehensive modern overview of the theory of axions,
 different models, best bounds on different axion couplings and a
 general axion reference, make sure to look into the aptly named
-&quot;landscape of QCD axion models&quot; (<a href="./bibliography.html#citeproc_bib_item_153">Luzio, Giannotti, et al. 2020</a>)!
+&quot;landscape of QCD axion models&quot; <a href="cite:DILUZIO20201">cite:DILUZIO20201</a>!
 </p>
 
 <p>
@@ -559,8 +684,8 @@ mileage may vary, of course.
 <p>
 First of all, at least have a short look at the original papers by
 Roberto Peccei and Helen Quinn
-(<a href="./bibliography.html#citeproc_bib_item_167">Peccei and Quinn 1977a</a>, <a href="./bibliography.html#citeproc_bib_item_168">1977b</a>), as well as the &apos;responses&apos;
-by Wilczek and Weinberg (<a href="./bibliography.html#citeproc_bib_item_230">Wilczek 1978</a>; <a href="./bibliography.html#citeproc_bib_item_227">Weinberg 1978</a>).
+<a href="cite:&amp;PecceiQuinn1977_1;&amp;PecceiQuinn1977_2">cite:&amp;PecceiQuinn1977_1;&amp;PecceiQuinn1977_2</a>, as well as the &apos;responses&apos;
+by Wilczek and Weinberg <a href="cite:&amp;AxionWilczek;&amp;AxionWeinberg">cite:&amp;AxionWilczek;&amp;AxionWeinberg</a>.
 </p>
 
 <p>
@@ -568,21 +693,21 @@ If your interest is in understanding the reasoning behind the origin
 of the strong CP problem via the QCD vacuum structure and the
 \(\mathrm{U}(1)\) problem, it may be worthwhile to look at (some of) the
 original papers. See Weinberg&apos;s paper introducing it
-(<a href="./bibliography.html#citeproc_bib_item_225">Weinberg 1975</a>) and &apos;t Hooft&apos;s paper on symmetry breaking via the
-Adler-Bell-Jackiw anomaly (<a href="./bibliography.html#citeproc_bib_item_111">’T Hooft 1976</a>) as the next logical
-step. In (<a href="./bibliography.html#citeproc_bib_item_113">Hooft 1986</a>) &apos;t Hooft then shows how instantons
+<a href="cite:&amp;PhysRevD.11.3583">cite:&amp;PhysRevD.11.3583</a> and &apos;t Hooft&apos;s paper on symmetry breaking via the
+Adler-Bell-Jackiw anomaly <a href="cite:&amp;tHooftU1">cite:&amp;tHooftU1</a> as the next logical
+step. In <a href="cite:&amp;hooft1986instantons">cite:&amp;hooft1986instantons</a> &apos;t Hooft then shows how instantons
 solve the \(\mathrm{U}(1)\) problem. In 1999 &apos;t Hooft also wrote a
-&apos;historical review&apos; (<a href="./bibliography.html#citeproc_bib_item_112">’T Hooft 1999</a>) about renormalization of gauge
+&apos;historical review&apos; <a href="cite:&amp;hooft1999glorious">cite:&amp;hooft1999glorious</a> about renormalization of gauge
 theories, which touches on the \(\mathrm{U}(1)\) problem as well. It may
 be easier to follow (as these things so often are in hindsight). 
 </p>
 
 <p>
 In the vein of review papers, Roberto Peccei wrote a nice review paper
-in 2008 (<a href="./bibliography.html#citeproc_bib_item_170">Peccei 2008b</a>) covering the connection between the
+in 2008 <a href="cite:&amp;Peccei_2008">cite:&amp;Peccei_2008</a> covering the connection between the
 \(\mathrm{U}(1)\) problem, the QCD vacuum structure, the strong CP
 problem and axions. Similarly, Jihn Kim (the <i>K</i> in the KSVZ model)
-wrote another very nice review in 2010 (<a href="./bibliography.html#citeproc_bib_item_130">Kim and Carosi 2010</a>). I would
+wrote another very nice review in 2010 <a href="cite:&amp;kim2010axions">cite:&amp;kim2010axions</a>. I would
 probably recommend to read these two for a good overview. They give
 enough references to dive deeper, if desired.
 </p>
@@ -591,28 +716,28 @@ enough references to dive deeper, if desired.
 On the side of axion detection, you should of course look into the two
 papers by Pierre Sikivie, introducing all our modern axion detection
 experiment techniques
-(<a href="./bibliography.html#citeproc_bib_item_211">Sikivie 1983</a>, <a href="./bibliography.html#citeproc_bib_item_212">1985</a>). Sikivie wrote
-another review in 2020 (<a href="./bibliography.html#citeproc_bib_item_213">Sikivie 2021</a>) covering search methods for
+<a href="cite:&amp;PhysRevLett.51.1415;&amp;PhysRevD.32.2988">cite:&amp;PhysRevLett.51.1415;&amp;PhysRevD.32.2988</a>. Sikivie wrote
+another review in 2020 <a href="cite:&amp;Sikivie2020">cite:&amp;Sikivie2020</a> covering search methods for
 invisible axions.
 </p>
 
 <p>
 Another great overview, covering both theory and experimental parts of
 the axion, are Igor Irastorza&apos;s notes here:
-(<a href="./bibliography.html#citeproc_bib_item_122">Irastorza 2022</a>). And there is also the text book
-&apos;Axions&apos; (<a href="./bibliography.html#citeproc_bib_item_139">Kuster, Raffelt, and Beltrán 2007</a>), which may be worth a look as a
+<a href="cite:&amp;10.21468/SciPostPhysLectNotes.45">cite:&amp;10.21468/SciPostPhysLectNotes.45</a>. And there is also the text book
+&apos;Axions&apos; <a href="cite:&amp;kuster2007axions">cite:&amp;kuster2007axions</a>, which may be worth a look as a
 summary of different aspects of axion physics. 
 </p>
 
 <p>
 If you only want to look into a single document covering all aspects
 of axions, from theory to experimental searches, look no further than
-the &apos;landscape of QCD axion models&apos; (<a href="./bibliography.html#citeproc_bib_item_153">Luzio, Giannotti, et al. 2020</a>), also mentioned
+the &apos;landscape of QCD axion models&apos; <a href="cite:&amp;DILUZIO20201">cite:&amp;DILUZIO20201</a>, also mentioned
 in the main text.
 </p>
 
 <p>
-Finally, in my master thesis (<a href="./bibliography.html#citeproc_bib_item_195">Schmidt 2016</a>) I attempted to
+Finally, in my master thesis <a href="cite:&amp;SchmidtMaster">cite:&amp;SchmidtMaster</a> I attempted to
 introduce the relevant physics for the axion (and chameleon) to a
 level satisfactory to me at the time. Whether I succeeded or not, you
 can be the judge. This may (or may not) be a good introduction if you
@@ -656,7 +781,7 @@ identically (due to the time reversal &apos;evolution&apos; in quotation marks).
 <div id="text-sec:theory:invisible_axion_models" class="outline-text-3">
 <dl class="org-dl">
 <dt>Kim-Shifman-Vainshtein-Zakharov model</dt><dd>The so called KSVZ model
-(<a href="./bibliography.html#citeproc_bib_item_129">Kim 1979</a>; <a href="./bibliography.html#citeproc_bib_item_208">Shifman, Vainshtein, and Zakharov 1980</a>) is the simplest invisible axion model. It
+<a href="cite:Kim_KSVZ,SHIFMAN_KSVZ">cite:Kim_KSVZ,SHIFMAN_KSVZ</a> is the simplest invisible axion model. It
 adds a scalar field \(σ\) and a superheavy quark \(Q\), which \(σ\)
 couples to via a Yukawa coupling. The main problem with the standard
 axion is that its energy scale is the electroweak scale \(v_F \approx
@@ -664,10 +789,10 @@ axion is that its energy scale is the electroweak scale \(v_F \approx
 effectively achieves a symmetry breaking scale \(f_a \gg v_F\) and
 thus results in an &apos;invisible axion&apos;. It contains a tree-level
 axion-photon coupling \(g_{aγ}\), but no axion-electron couplings. The
-latter can be found at one-loop level (<a href="./bibliography.html#citeproc_bib_item_214">Srednicki 1985</a>).</dd>
+latter can be found at one-loop level <a href="cite:SREDNICKI1985689">cite:SREDNICKI1985689</a>.</dd>
 
 <dt>Dine-Fischler-Srednicki-Zhitnitskii model</dt><dd>The DFZS axion model
-(<a href="./bibliography.html#citeproc_bib_item_84">Dine, Fischler, and Srednicki 1981</a>; <a href="./bibliography.html#citeproc_bib_item_237">Zhitnitskii 1980</a>) is another axion model, in which the
+<a href="cite:DINE_DFSZ,Zhitnitskii_DFSZ">cite:DINE_DFSZ,Zhitnitskii_DFSZ</a> is another axion model, in which the
 scalar field \(σ\) couples to two Higgs doublet fields, \(H_u\) and
 \(H_d\). It does not require an extra superheavy quark, in this case
 the coupling of the scalar to the doublets achieves the decoupling
@@ -708,17 +833,17 @@ of the existing models if needed.
 In principle other couplings exist, for example the axion-nucleon
 coupling \(g_N\). For brevity we ignore these as they are not relevant
 in the context of this thesis. Future helioscopes like IAXO may be
-able to be sensitive to at least \(g_N\) though (<a href="./bibliography.html#citeproc_bib_item_152">Luzio et al. 2022</a>).
+able to be sensitive to at least \(g_N\) though <a href="cite:di2022probing">cite:di2022probing</a>.
 </p></dd>
 </dl>
 </div>
-<div id="outline-container-org9795aa8" class="outline-4">
-<h4 id="org9795aa8">  <a href="#org9795aa8">  <span class="section-number-4">4.3.1.</span> Notes on KSVZ, DFSZ   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org9aa0886" class="outline-4">
+<h4 id="org9aa0886">  <a href="#org9aa0886">  <span class="section-number-4">4.3.1.</span> Notes on KSVZ, DFSZ   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-4-3-1" class="outline-text-4">
 <dl class="org-dl">
 <dt>KSVZ</dt><dd><p>
 The Lagrangian for this model can be written
-(<a href="./bibliography.html#citeproc_bib_item_208">Shifman, Vainshtein, and Zakharov 1980</a>)
+<a href="cite:SHIFMAN_KSVZ">cite:SHIFMAN_KSVZ</a>
 </p>
 \begin{equation}
   \mathcal{L}_{\text{KSVZ}} = \overline{Q}\slashed{D}Q - h \left(
@@ -765,8 +890,8 @@ The mass term is again similar to the standard axion and KSVZ axion
 where \(N_g\) is the number of quark generations of the theory. Again
 \(\nu_{\text{EW}}\) is replaced by \(⟨σ⟩\). One
 interesting property of the DSFZ axion is its coupling directly to
-electrons (and other leptons (<a href="./bibliography.html#citeproc_bib_item_130">Kim and Carosi 2010</a>, <a href="./bibliography.html#citeproc_bib_item_131">2019</a>)), given by
-(<a href="./bibliography.html#citeproc_bib_item_182">Redondo 2013</a>; <a href="./bibliography.html#citeproc_bib_item_169">Peccei 2008a</a>):
+electrons (and other leptons <a href="cite:kim2010axions,kim2010axions_erratum">cite:kim2010axions,kim2010axions_erratum</a>), given by
+<a href="cite:Redondo_2013,Peccei2008">cite:Redondo_2013,Peccei2008</a>:
 </p>
 \begin{equation}
   \mathcal{L}_{al} = -i \frac{\nu_d^2}{\nu^2_{\text{EW}}}
@@ -1004,12 +1129,12 @@ P_{a↦γ, \text{vacuum}} = ε_0 \hbar c^3 \left( \frac{g_{aγ} B L}{2} \right)^
 
 <p>
 A detailed derivation for the above can be found in
-(<a href="./bibliography.html#citeproc_bib_item_155">Masaki, Aoki, and Soda 2017</a>). <sup>  <a id="fnr.6" href="#fn.6" class="footref" role="doc-backlink">6</a></sup> An initial derivation
+<a href="cite:masaki2017photon">cite:masaki2017photon</a>. <sup>  <a id="fnr.6" href="#fn.6" class="footref" role="doc-backlink">6</a></sup> An initial derivation
 for the first axion helioscope prototype is found in
-(<a href="./bibliography.html#citeproc_bib_item_43">Van Bibber et al. 1989</a>) based on (<a href="./bibliography.html#citeproc_bib_item_181">Raffelt and Stodolsky 1988</a>). Sikivie gives
+<a href="cite:vanBibber1989">cite:vanBibber1989</a> based on <a href="cite:raffelt1988mixing">cite:raffelt1988mixing</a>. Sikivie gives
 expected rates in his groundbreaking papers about axion experiments,
-(<a href="./bibliography.html#citeproc_bib_item_211">Sikivie 1983</a>, <a href="./bibliography.html#citeproc_bib_item_212">1985</a>) but is extremely short on
-details. Another source in the form of (<a href="./bibliography.html#citeproc_bib_item_178">Raffelt 1996</a>) in
+<a href="cite:PhysRevLett.51.1415,PhysRevD.32.2988">cite:PhysRevLett.51.1415,PhysRevD.32.2988</a> but is extremely short on
+details. Another source in the form of <a href="cite:raffelt1996stars">cite:raffelt1996stars</a> in
 which G. Raffelt covers a very large number of topics relevant to axion
 searches.
 </p>
@@ -1024,7 +1149,7 @@ zero if \(m_γ = m_a\), which means the suppression effect of the \(\sinc\)
 term disappears. This is something that can be used to increase the
 conversion probability inside of a magnet, by filling it with a buffer
 gas (for example helium), as introduced in
-(<a href="./bibliography.html#citeproc_bib_item_181">Raffelt and Stodolsky 1988</a>; <a href="./bibliography.html#citeproc_bib_item_43">van Bibber et al. 1989</a>). However, one also needs to
+<a href="cite:raffelt1988mixing,vanBibber1989">cite:raffelt1988mixing,vanBibber1989</a>. However, one also needs to
 account for the attenuation effect of the gas on the produced
 X-rays. As such the derivation above needs to include this as part of
 the evolution of the field \(\vec{A}\) <sup>  <a id="fnr.7" href="#fn.7" class="footref" role="doc-backlink">7</a></sup>. By doing this and following the rest of the
@@ -1072,8 +1197,8 @@ both as a PDF as well as the original Org file plus the tangled source code.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org37b641f" class="outline-5">
-<h5 id="org37b641f">  <a href="#org37b641f">  <span class="section-number-5">4.4.1.1.</span> Simplification   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
+<div id="outline-container-orge3e9786" class="outline-5">
+<h5 id="orge3e9786">  <a href="#orge3e9786">  <span class="section-number-5">4.4.1.1.</span> Simplification   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
 <div id="text-4-4-1-1" class="outline-text-5">
 <p>
 The conversion probability simplifies to:
@@ -1086,8 +1211,8 @@ P_{a\rightarrow\gamma, \text{vacuum}} &amp;= \left(\frac{g_{a\gamma} B L}{2} \ri
 </div>
 </div>
 </div>
-<div id="outline-container-org1543e61" class="outline-4">
-<h4 id="org1543e61">  <a href="#org1543e61">  <span class="section-number-4">4.4.2.</span> Dropping an additional \(Δ\) term   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org1fb31bb" class="outline-4">
+<h4 id="org1fb31bb">  <a href="#org1fb31bb">  <span class="section-number-4">4.4.2.</span> Dropping an additional \(Δ\) term   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-4-4-2" class="outline-text-4">
 <p>
 Notation:
@@ -1135,18 +1260,18 @@ magnitude smaller than the first term. Let&apos;s check that:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> unchained
 
 defUnit<span style="color: #AE81FF;">(</span>GeV⁻¹<span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">q</span><span style="color: #AE81FF;">(</span>m_a: meV, ω: keV<span style="color: #AE81FF;">)</span>: keV =
-  <span style="color: #FD971F;">result</span> = <span style="color: #AE81FF;">(</span>m_a*m_a / <span style="color: #66D9EF;">(</span><span style="font-style: italic;">2</span> * ω<span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>.to<span style="color: #AE81FF;">(</span>keV<span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">q</span>  <span style="color: #AE81FF;">(</span>m_a: meV, ω: keV<span style="color: #AE81FF;">)</span>: keV =
+  <span style="color: #FD971F;">result</span> = <span style="color: #AE81FF;">(</span>m_a*m_a / <span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">2</span> * ω<span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span>.to<span style="color: #AE81FF;">(</span>keV<span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">Δ</span><span style="color: #AE81FF;">(</span>g_aγ: GeV⁻¹, <span style="color: #66D9EF;">B</span>: <span style="color: #66D9EF;">Tesla</span><span style="color: #AE81FF;">)</span>: keV =
-  <span style="color: #FD971F;">result</span> = <span style="color: #AE81FF;">(</span>-g_aγ * <span style="color: #66D9EF;">B</span>.toNaturalUnit<span style="color: #66D9EF;">()</span> / <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span>.to<span style="color: #AE81FF;">(</span>keV<span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">Δ</span>  <span style="color: #AE81FF;">(</span>g_aγ: GeV⁻¹, <span style="color: #66D9EF;">B</span>: <span style="color: #66D9EF;">Tesla</span>  <span style="color: #AE81FF;">)</span>: keV =
+  <span style="color: #FD971F;">result</span> = <span style="color: #AE81FF;">(</span>-g_aγ * <span style="color: #66D9EF;">B</span>.toNaturalUnit<span style="color: #66D9EF;">()</span> / <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span>.to<span style="color: #AE81FF;">(</span>keV<span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;q² = &quot;</span>, q<span style="color: #AE81FF;">(</span><span style="font-style: italic;">1</span>.meV, <span style="font-style: italic;">3</span>.keV<span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span>
-<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Δ² = &quot;</span>, <span style="color: #66D9EF;">Δ</span><span style="color: #AE81FF;">(</span>1e-<span style="font-style: italic;">12</span>.GeV⁻¹, <span style="font-style: italic;">9</span>.<span style="color: #66D9EF;">T</span><span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span>
-</pre>
+<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;q² = &quot;</span>, q<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">1</span>.meV, <span style="font-style: italic;">3</span>.keV<span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span>
+<span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Δ² = &quot;</span>, <span style="color: #66D9EF;">Δ</span>  <span style="color: #AE81FF;">(</span>1e-<span style="font-style: italic;">12</span>.GeV⁻¹, <span style="font-style: italic;">9</span>.<span style="color: #66D9EF;">T</span>  <span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span>
+</code></pre>
 </div>
 
 <p>
@@ -1154,8 +1279,8 @@ Yeah, as expected that&apos;s the reason.
 </p>
 </div>
 </div>
-<div id="outline-container-orgf5a3ac3" class="outline-4">
-<h4 id="orgf5a3ac3">  <a href="#orgf5a3ac3">  <span class="section-number-4">4.4.3.</span> Deriving the missing constants in the conversion probability <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org2817cba" class="outline-4">
+<h4 id="org2817cba">  <a href="#org2817cba">  <span class="section-number-4">4.4.3.</span> Deriving the missing constants in the conversion probability <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-4-4-3" class="outline-text-4">
 <ul class="org-ul">
 <li class="off"><code>[ ]</code> <b>Move this into an appendix?</b></li>
@@ -1241,8 +1366,8 @@ where now only \(g_{aγ}\) needs to be expressed in units of
 </p>
 </div>
 </div>
-<div id="outline-container-org6a04733" class="outline-4">
-<h4 id="org6a04733">  <a href="#org6a04733">  <span class="section-number-4">4.4.4.</span> Further notes on units of conversion probability   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org18c70a0" class="outline-4">
+<h4 id="org18c70a0">  <a href="#org18c70a0">  <span class="section-number-4">4.4.4.</span> Further notes on units of conversion probability   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-4-4-4" class="outline-text-4">
 <p>
 The conversion probability follows the derivation by Biljana and
@@ -1299,10 +1424,10 @@ In particular in these units, the conversion factors for tesla and
 meter are as follows:
 </p>
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> unchained
 <span style="color: #F92672;">echo</span> <span style="font-style: italic;">1</span>.<span style="color: #66D9EF;">T</span>, <span style="color: #E6DB74;">&quot; in natural units = &quot;</span>, <span style="font-style: italic;">1</span>.<span style="color: #66D9EF;">T</span>.toNaturalUnit<span style="color: #AE81FF;">()</span>
 <span style="color: #F92672;">echo</span> <span style="font-style: italic;">1</span>.m, <span style="color: #E6DB74;">&quot; in natural units = &quot;</span>, <span style="font-style: italic;">1</span>.m.toNaturalUnit<span style="color: #AE81FF;">()</span>
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -1330,8 +1455,8 @@ units. Therefore, feel free to use that to help with your conversions.
 </p>
 </div>
 </div>
-<div id="outline-container-org719b829" class="outline-4">
-<h4 id="org719b829">  <a href="#org719b829">  <span class="section-number-4">4.4.5.</span> Full simplification of conversion probability in vacuum   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org8af7413" class="outline-4">
+<h4 id="org8af7413">  <a href="#org8af7413">  <span class="section-number-4">4.4.5.</span> Full simplification of conversion probability in vacuum   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-4-4-5" class="outline-text-4">
 <p>
 The full simplification for the vacuum case from the buffer gas
@@ -1350,8 +1475,8 @@ P_{a\rightarrow\gamma, \text{vacuum}} &amp;= \left(\frac{g_{a\gamma} B L}{2} \ri
 \end{align*}
 </div>
 </div>
-<div id="outline-container-org6f3b920" class="outline-4">
-<h4 id="org6f3b920">  <a href="#org6f3b920">  <span class="section-number-4">4.4.6.</span> Details on the polarization of axion induced photons   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orgab61e8b" class="outline-4">
+<h4 id="orgab61e8b">  <a href="#orgab61e8b">  <span class="section-number-4">4.4.6.</span> Details on the polarization of axion induced photons   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-4-4-6" class="outline-text-4">
 <p>
 These notes refer to the notes by Bijlana and Kreso
@@ -1359,7 +1484,7 @@ These notes refer to the notes by Bijlana and Kreso
 </p>
 
 <p>
-<b>UPDATE</b>: <span class="timestamp-wrapper">  <span class="timestamp">&lt;2023-09-08 Fri 20:14&gt; </span></span> I just noticed the following sentence
+<b>UPDATE</b>: <span class="timestamp-wrapper">  <span class="timestamp">&lt;2023-09-08 Fri 20:14&gt;</span></span> I just noticed the following sentence
 in Biljana&apos;s notes:
 </p>
 <blockquote>
@@ -1496,22 +1621,22 @@ channels are viable.
 
 <p>
 One of the first papers to look at the implications of the axion in
-terms of astrophysical phenomena is (<a href="./bibliography.html#citeproc_bib_item_158">Mikaelian 1978</a>) by
+terms of astrophysical phenomena is <a href="cite:PhysRevD.18.3605">cite:PhysRevD.18.3605</a> by
 K. Mikaelian. G. Raffelt expanded on this later in
-(<a href="./bibliography.html#citeproc_bib_item_179">Raffelt 1986</a>) with calculations for the Compton and
+<a href="cite:raffelt1986astrophysical">cite:raffelt1986astrophysical</a> with calculations for the Compton and
 Bremsstrahlung production rates for DFSZ axion models. In
-(<a href="./bibliography.html#citeproc_bib_item_180">Raffelt 1988</a>) he further calculates the production rate for
+<a href="cite:raffelt1988plasmon">cite:raffelt1988plasmon</a> he further calculates the production rate for
 the Primakoff effect (and later reviews the physics
-(<a href="./bibliography.html#citeproc_bib_item_178">Raffelt 1996</a>)). J. Redondo combined all production processes
-in (<a href="./bibliography.html#citeproc_bib_item_182">Redondo 2013</a>) to compute a full solar axion flux based on the
+<a href="cite:raffelt1996stars">cite:raffelt1996stars</a>). J. Redondo combined all production processes
+in <a href="cite:Redondo_2013">cite:Redondo_2013</a> to compute a full solar axion flux based on the
 axion-electron coupling \(g_{ae}\) using numerical calculations of the
 expected metallicity contents at different points in the Sun. This is
 done by making use of the opacities for different elements at
 different pressures and temperatures as tabulated by the &apos;Opacity
 Project&apos;
-(<a href="./bibliography.html#citeproc_bib_item_217">Team 1995</a>; <a href="./bibliography.html#citeproc_bib_item_116">Hummer and Mihalas 1988</a>; <a href="./bibliography.html#citeproc_bib_item_204">Seaton 1987</a>, <a href="./bibliography.html#citeproc_bib_item_205">2005</a>; <a href="./bibliography.html#citeproc_bib_item_206">Seaton et al. 1994</a>; <a href="./bibliography.html#citeproc_bib_item_29">Badnell et al. 2005</a>),
+<a href="cite:team1995opacity,hummer1988equation,seaton1987atomic,seaton1994opacities,badnell2005updated,seaton2005mnras">cite:team1995opacity,hummer1988equation,seaton1987atomic,seaton1994opacities,badnell2005updated,seaton2005mnras</a>,
 based on the values provided by the numerical AGSS09
-(<a href="./bibliography.html#citeproc_bib_item_25">Asplund et al. 2009</a>) solar model. All these considered axion
+<a href="cite:&amp;agss09_chemical">cite:&amp;agss09_chemical</a> solar model. All these considered axion
 production channels are:
 </p>
 <ul class="org-ul">
@@ -1525,7 +1650,7 @@ energetic cases with photons are also called free-free radiation)
 \[
   e + Z \longrightarrow e + Z + a
   \]</li>
-<li>(\(ee\)) electron electron bremsstrahlung (<a href="./bibliography.html#citeproc_bib_item_179">Raffelt 1986</a>),
+<li>(\(ee\)) electron electron bremsstrahlung <a href="cite:raffelt1986astrophysical">cite:raffelt1986astrophysical</a>,
 \[
   e + e \longrightarrow e + e + a
   \]</li>
@@ -1534,7 +1659,7 @@ electron transitions)
 \[
   e + Z \longrightarrow a + Z^-
   \]</li>
-<li>(\(C\)) Compton scattering (<a href="./bibliography.html#citeproc_bib_item_179">Raffelt 1986</a>)
+<li>(\(C\)) Compton scattering <a href="cite:raffelt1986astrophysical">cite:raffelt1986astrophysical</a>
 \[
   e + \gamma \longrightarrow e + a
   \]</li>
@@ -1576,25 +1701,25 @@ are all contributing axion production channels. The superscripts
 correspond to the bullet points above. Most important without going
 into the details of how each \(Γ\) can be expressed, is that they scale
 with the coupling constant squared. \(g²_{aγ}\) for \(Γ^P_{e}\) and
-\(g²_{ae}\) for the others. In (<a href="./bibliography.html#citeproc_bib_item_182">Redondo 2013</a>) these production rates
+\(g²_{ae}\) for the others. In <a href="cite:Redondo_2013">cite:Redondo_2013</a> these production rates
 are expressed by relating them to the corresponding photon production
 rates for these processes, which are well known.
 </p>
 
 <p>
-For a detailed look, see (<a href="./bibliography.html#citeproc_bib_item_182">Redondo 2013</a>) and the master thesis of
-Johanna von Oy (<a href="./bibliography.html#citeproc_bib_item_161">Von Oy 2020</a>) in which she – among other things –
+For a detailed look, see <a href="cite:Redondo_2013">cite:Redondo_2013</a> and the master thesis of
+Johanna von Oy <a href="cite:vonOy_MSc">cite:vonOy_MSc</a> in which she – among other things –
 reproduced the calculations done by Redondo. Her work is used as part
 of this thesis to compute the axion production as required for the
 expected axion flux in the limit calculation (and provides the data
 for the plots in this section). The code responsible for computing the
-emission rates for different axion models is (<a href="./bibliography.html#citeproc_bib_item_162">Von Oy 2023</a>),
+emission rates for different axion models is <a href="cite:JvO_axionElectron">cite:JvO_axionElectron</a>,
 in particular the <code>readOpacityFile</code> program. It also uses the Opacity
 Project as the basis to compute the opacities for different elements.
 </p>
 
 <p>
-Fig. <a href="#fig:theory:solar_axion_flux:differential_flux">3(a)</a> shows the
+Fig. <a href="#fig:theory:solar_axion_flux:differential_flux">#fig:theory:solar_axion_flux:differential_flux</a> shows the
 differential axion flux arriving on Earth based on the different
 contributing interactions, in this case using \(g_{ae} =
 \num{1e-13}, g_{aγ} = \SI{1e-12}{GeV⁻¹}\). We see that the total flux
@@ -1609,11 +1734,11 @@ As a result of the expected extremely low mass of the axion, the
 expected solar axion spectrum for Primakoff only models is essentially
 a blackbody spectrum corresponding to the temperatures near the core
 of the Sun, \(\mathcal{O}(\SI{15e6}{K})\), see fig
-<a href="#fig:theory:solar_axion_flux:blackbody">3(b)</a> and compare it to the
+<a href="#fig:theory:solar_axion_flux:blackbody">#fig:theory:solar_axion_flux:blackbody</a> and compare it to the
 Primakoff flux on the left  <sup>  <a id="fnr.10" href="#fn.10" class="footref" role="doc-backlink">10</a></sup>. Partially for this reason, in many cases
 analytical expressions are given to describe the Primakoff axion flux,
 which are solutions obtained for specific solar models. One such
-recent result is from (<a href="./bibliography.html#citeproc_bib_item_76">Dafni et al. 2019</a>),
+recent result is from <a href="cite:weighingSolarAxion">cite:weighingSolarAxion</a>,
 </p>
 
 \begin{equation}
@@ -1624,21 +1749,23 @@ recent result is from (<a href="./bibliography.html#citeproc_bib_item_76">Dafni 
 \end{equation}
 <p>
 where \(Φ_{P10} = \SI{6.02e10}{keV⁻¹.cm⁻².s⁻¹}\) and \(E_a\) the energy of
-the axion in \(\si{keV}\). (<a href="./bibliography.html#citeproc_bib_item_76">Dafni et al. 2019</a>) also contains
+the axion in \(\si{keV}\). <a href="cite:weighingSolarAxion">cite:weighingSolarAxion</a> also contains
 analytic expressions for the Compton and Bremsstrahlungs
 components. For the atomic processes this is not possible.
 </p>
 
 
-<figure id="fig:theory:solar_axion_flux:flux_blackbody" class="figure-wrapper">
-<figure id="fig:theory:solar_axion_flux:differential_flux" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/axions/differential_solar_axion_flux_by_type.svg" data-width="99%" />  <figcaption>Figure 3(a): Differential axion flux</figcaption></figure> <figure id="fig:theory:solar_axion_flux:blackbody" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/blackbody_spectrum_solar_core.svg" data-width="99%" />  <figcaption>Figure 3(b): $\SI{15e6}{K}$ blackbody spectrum</figcaption></figure>
-<figcaption>Figure 3: <a href="#fig:theory:solar_axion_flux:differential_flux">3(a)</a>Differential solar axion flux based on the different interaction types using $g_{ae} = \num{1e-13}, g_{aγ} = \SI{1e-12}{GeV^{-1}}$. The Primakoff contribution was scaled up by a factor 100 to make it visible, as at these coupling constants
-the $g_{ae}$ contributions dominate. <a href="#fig:theory:solar_axion_flux:blackbody">3(b)</a> shows a blackbody spectrum corresponding to $\SI{15e6}{K}$, roughly the temperature at the solar core. Up to a scaling factor it is essentially the Primakoff flux.</figcaption>
-</figure>
+<p>
+&lt;figure class=&quot;figure-wrapper&quot; id=&quot;fig:theory:solar<sub>axion</sub><sub>flux</sub>:flux<sub>blackbody</sub>&quot;&gt;
+&lt;figure class=&quot;subfigure&quot; id=&quot;fig:theory:solar<sub>axion</sub><sub>flux</sub>:differential<sub>flux</sub>&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/axions/differential<sub>solar</sub><sub>axion</sub><sub>flux</sub><sub>by</sub><sub>type.svg</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;Differential axion flux&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:theory:solar<sub>axion</sub><sub>flux</sub>:blackbody&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/blackbody<sub>spectrum</sub><sub>solar</sub><sub>core.svg</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;\(\SI{15e6}{K}\) blackbody spectrum&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figcaption&gt;&lt;a href=&quot;#fig:theory:solar<sub>axion</sub><sub>flux</sub>:differential<sub>flux</sub>&quot;&gt;&lt;/a&gt;Differential solar axion flux based on the different interaction types using \(g_{ae} = \num{1e-13}, g_{aγ} = \SI{1e-12}{GeV^{-1}}\). The Primakoff contribution was scaled up by a factor 100 to make it visible, as at these coupling constants
+the \(g_{ae}\) contributions dominate. &lt;a href=&quot;#fig:theory:solar<sub>axion</sub><sub>flux</sub>:blackbody&quot;&gt;&lt;/a&gt; shows a blackbody spectrum corresponding to \(\SI{15e6}{K}\), roughly the temperature at the solar core. Up to a scaling factor it is essentially the Primakoff flux.&lt;/figcaption&gt;
+&lt;/figure&gt;
+</p>
 
 
 <p>
-Fig. <a href="#fig:theory:solar_axion_flux:flux_vs_energy_and_radius">4(a)</a> shows
+Fig. <a href="#fig:theory:solar_axion_flux:flux_vs_energy_and_radius">#fig:theory:solar_axion_flux:flux_vs_energy_and_radius</a> shows
 how the solar axion flux (for DFSZ models) depends both on the energy
 and the relative radius in the Sun. We can see clearly that the major
 part of the axion flux comes from a region between
@@ -1648,96 +1775,98 @@ dropping temperatures and densities at the upper end. Interesting
 substructure due to the details of the axion-electron coupling is
 visible. The radial component alone comparing it to KSVZ models is
 seen in
-fig. <a href="#fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz">4(b)</a>,
+fig. <a href="#fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz">#fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz</a>,
 where we can see that the DFSZ flux drops off significantly at a
 specific radius resulting in the net flux from slightly smaller radii.
 </p>
 
 
-<figure id="fig:theory:solar_axion_flux:flux_radial" class="figure-wrapper">
-<figure id="fig:theory:solar_axion_flux:flux_vs_energy_and_radius" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/axions/flux_by_energy_vs_radius_axion_electron.svg" data-width="99%" />  <figcaption>Figure 4(a): Flux</figcaption></figure> <figure id="fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/axions/solar_axion_radial_emission.svg" data-width="99%" />  <figcaption>Figure 4(b): Radial emission</figcaption></figure>
-<figcaption>Figure 4: <a href="#fig:theory:solar_axion_flux:flux_vs_energy_and_radius">4(a)</a>Solar axion flux for DFSZ models showing the flux dependence on both the energy and relative solar radius.
-Dominant contribution below $0.3 R_{\odot}$. <a href="#fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz">4(b)</a>Difference in the radial contributions of axion flux for KSVZ models against DFSZ models.
-DFSZ model production is constrained to slightly smaller radii.</figcaption>
-</figure>
+<p>
+&lt;figure class=&quot;figure-wrapper&quot; id=&quot;fig:theory:solar<sub>axion</sub><sub>flux</sub>:flux<sub>radial</sub>&quot;&gt;
+&lt;figure class=&quot;subfigure&quot; id=&quot;fig:theory:solar<sub>axion</sub><sub>flux</sub>:flux<sub>vs</sub><sub>energy</sub><sub>and</sub><sub>radius</sub>&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/axions/flux<sub>by</sub><sub>energy</sub><sub>vs</sub><sub>radius</sub><sub>axion</sub><sub>electron.svg</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;Flux&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:theory:solar<sub>axion</sub><sub>flux</sub>:radial<sub>dependence</sub><sub>ksvz</sub><sub>dfsz</sub>&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/axions/solar<sub>axion</sub><sub>radial</sub><sub>emission.svg</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;Radial emission&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figcaption&gt;&lt;a href=&quot;#fig:theory:solar<sub>axion</sub><sub>flux</sub>:flux<sub>vs</sub><sub>energy</sub><sub>and</sub><sub>radius</sub>&quot;&gt;&lt;/a&gt;Solar axion flux for DFSZ models showing the flux dependence on both the energy and relative solar radius.
+Dominant contribution below \(0.3 R_{\odot}\). &lt;a href=&quot;#fig:theory:solar<sub>axion</sub><sub>flux</sub>:radial<sub>dependence</sub><sub>ksvz</sub><sub>dfsz</sub>&quot;&gt;&lt;/a&gt;Difference in the radial contributions of axion flux for KSVZ models against DFSZ models.
+DFSZ model production is constrained to slightly smaller radii.&lt;/figcaption&gt;
+&lt;/figure&gt;
+</p>
 
 
 <p>
 The used solar model is an important part of the input for the
 calculation of the emission rate and thus differential
-flux. (<a href="./bibliography.html#citeproc_bib_item_109">Hoof, Jaeckel, and Thormaehlen 2021</a>) conclude – based on a similar code
-(<a href="./bibliography.html#citeproc_bib_item_110">Hoof and Thormaehlen 2021</a>) – that the statistical uncertainty of
+flux. <a href="cite:Hoof_2021">cite:Hoof_2021</a> conclude – based on a similar code
+<a href="cite:Hoof_SolarAxionFlux_2021">cite:Hoof_SolarAxionFlux_2021</a> – that the statistical uncertainty of
 the solar models is \(\mathcal{O}(\SI{1}{\%})\), while the systematic
 uncertainty can reach up to \(\mathcal{O}(\SI{5}{\%})\). This is an
 important consideration for the systematic uncertainties later on.
 </p>
 </div>
-<div id="outline-container-org97024f5" class="outline-4">
-<h4 id="org97024f5">  <a href="#org97024f5">  <span class="section-number-4">4.5.1.</span> Primakoff flux   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orgb2555c9" class="outline-4">
+<h4 id="orgb2555c9">  <a href="#orgb2555c9">  <span class="section-number-4">4.5.1.</span> Primakoff flux   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-4-5-1" class="outline-text-4">
 <p>
 Including analytical equation for flux… :)
 </p>
 
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> unchained, ggplotnim, math, chroma, ginger
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> unchained, ggplotnim, math, chroma, ginger
 defUnit<span style="color: #AE81FF;">(</span>keV⁻¹•m⁻²•yr⁻¹<span style="color: #AE81FF;">)</span>
 defUnit<span style="color: #AE81FF;">(</span>keV⁻¹•cm⁻²•s⁻¹<span style="color: #AE81FF;">)</span>
 defUnit<span style="color: #AE81FF;">(</span>GeV⁻¹<span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">axionFluxPrimakoff</span><span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">E_a</span>: keV, g_aγ: GeV⁻¹<span style="color: #AE81FF;">)</span>: keV⁻¹•cm⁻²•s⁻¹ =
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">axionFluxPrimakoff</span>  <span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">E_a</span>: keV, g_aγ: GeV⁻¹<span style="color: #AE81FF;">)</span>: keV⁻¹•cm⁻²•s⁻¹ =
   <span style="color: #E6DB74;">## dΦ_a/dE taken from paper about first CAST results cite:PhysRevLett.94.121301</span>
-  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">g</span>₁₀ = g_aγ / 1e-<span style="font-style: italic;">10</span>.GeV⁻¹ <span style="color: #75715E;"># </span><span style="color: #75715E;">* 10e10.GeV¹ #</span>
-  <span style="color: #FD971F;">result</span> = g₁₀^<span style="font-style: italic;">2</span> * <span style="font-style: italic;">3</span>.821e10.cm⁻²•s⁻¹•keV⁻¹ * <span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">E_a</span> / <span style="font-style: italic;">1</span>.keV<span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">3</span> / <span style="color: #AE81FF;">(</span>exp<span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">E_a</span> / <span style="color: #A6E22E;">(</span><span style="font-style: italic;">1</span>.<span style="font-style: italic;">103</span>.keV<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">)</span> - <span style="font-style: italic;">1</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">g</span>₁₀ = g_aγ / 1e-<span style="font-style: italic;">10</span>.GeV⁻¹ <span style="color: #75715E;"># </span>  <span style="color: #75715E;">* 10e10.GeV¹ #</span>
+  <span style="color: #FD971F;">result</span> = g₁₀^<span style="font-style: italic;">2</span> * <span style="font-style: italic;">3</span>.821e10.cm⁻²•s⁻¹•keV⁻¹ * <span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">E_a</span> / <span style="font-style: italic;">1</span>.keV<span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">3</span> / <span style="color: #AE81FF;">(</span>exp<span style="color: #66D9EF;">(</span>  <span style="color: #66D9EF;">E_a</span> / <span style="color: #A6E22E;">(</span>  <span style="font-style: italic;">1</span>.<span style="font-style: italic;">103</span>.keV<span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">)</span> - <span style="font-style: italic;">1</span>  <span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">axFluxPerYear</span><span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">E_a</span>: keV, g_aγ: GeV⁻¹<span style="color: #AE81FF;">)</span>: keV⁻¹•m⁻²•yr⁻¹ =
-  <span style="color: #FD971F;">result</span> = axionFluxPrimakoff<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">E_a</span>, g_aγ<span style="color: #AE81FF;">)</span>.to<span style="color: #AE81FF;">(</span>keV⁻¹•m⁻²•yr⁻¹<span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">axFluxPerYear</span>  <span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">E_a</span>: keV, g_aγ: GeV⁻¹<span style="color: #AE81FF;">)</span>: keV⁻¹•m⁻²•yr⁻¹ =
+  <span style="color: #FD971F;">result</span> = axionFluxPrimakoff<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">E_a</span>, g_aγ<span style="color: #AE81FF;">)</span>.to<span style="color: #AE81FF;">(</span>keV⁻¹•m⁻²•yr⁻¹<span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">axionFluxPrimakoffMasterThesis</span><span style="color: #AE81FF;">(</span>ω: keV, g_ay: GeV⁻¹<span style="color: #AE81FF;">)</span>: keV⁻¹•m⁻²•yr⁻¹ =
-  <span style="color: #75715E;"># </span><span style="color: #75715E;">axion flux produced by the Primakoff effect</span>
-  <span style="color: #75715E;"># </span><span style="color: #75715E;">in units of m^(-2) year^(-1) keV^(-1)</span>
-  <span style="color: #75715E;"># </span><span style="color: #75715E;">From the CAST 2013 paper on axion electron coupling, eq 3.1</span>
-  <span style="color: #FD971F;">result</span> = <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span> * 1e18.keV⁻¹•m⁻²•yr⁻¹ * <span style="color: #AE81FF;">(</span>g_ay / 1e-<span style="font-style: italic;">12</span>.GeV⁻¹<span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span> * pow<span style="color: #AE81FF;">(</span>ω / <span style="font-style: italic;">1</span>.keV, <span style="font-style: italic;">2</span>.<span style="font-style: italic;">450</span><span style="color: #AE81FF;">)</span> * exp<span style="color: #AE81FF;">(</span>-<span style="font-style: italic;">0</span>.<span style="font-style: italic;">829</span> * ω / <span style="font-style: italic;">1</span>.keV<span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">axionFluxPrimakoffMasterThesis</span>  <span style="color: #AE81FF;">(</span>ω: keV, g_ay: GeV⁻¹<span style="color: #AE81FF;">)</span>: keV⁻¹•m⁻²•yr⁻¹ =
+  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">axion flux produced by the Primakoff effect</span>
+  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">in units of m^(-2) year^(-1) keV^(-1)</span>
+  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">From the CAST 2013 paper on axion electron coupling, eq 3.1</span>
+  <span style="color: #FD971F;">result</span> = <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span> * 1e18.keV⁻¹•m⁻²•yr⁻¹ * <span style="color: #AE81FF;">(</span>g_ay / 1e-<span style="font-style: italic;">12</span>.GeV⁻¹<span style="color: #AE81FF;">)</span>^<span style="font-style: italic;">2</span> * pow<span style="color: #AE81FF;">(</span>ω / <span style="font-style: italic;">1</span>.keV, <span style="font-style: italic;">2</span>.<span style="font-style: italic;">450</span>  <span style="color: #AE81FF;">)</span> * exp<span style="color: #AE81FF;">(</span>-<span style="font-style: italic;">0</span>.<span style="font-style: italic;">829</span> * ω / <span style="font-style: italic;">1</span>.keV<span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">let</span> <span style="color: #66D9EF;">E</span> = linspace<span style="color: #AE81FF;">(</span>1e-<span style="font-style: italic;">3</span>, <span style="font-style: italic;">14</span>.<span style="font-style: italic;">0</span>, <span style="font-style: italic;">1000</span><span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= seqsToDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">E</span><span style="color: #AE81FF;">)</span>
-  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;Flux&quot;</span> ~ axionFluxPrimakoff<span style="color: #A6E22E;">(</span>`<span style="color: #66D9EF;">E</span>`.keV, 1e-<span style="font-style: italic;">11</span>.GeV⁻¹<span style="color: #A6E22E;">)</span>.<span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;FluxYr&quot;</span> ~ axFluxPerYear<span style="color: #A6E22E;">(</span>`<span style="color: #66D9EF;">E</span>`.keV, 1e-<span style="font-style: italic;">11</span>.GeV⁻¹<span style="color: #A6E22E;">)</span>.<span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;FluxMSc&quot;</span> ~ axionFluxPrimakoffMasterThesis<span style="color: #A6E22E;">(</span>`<span style="color: #66D9EF;">E</span>`.keV, 1e-<span style="font-style: italic;">11</span>.GeV⁻¹<span style="color: #A6E22E;">)</span>.<span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>    
-ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;E&quot;</span>, <span style="color: #E6DB74;">&quot;Flux&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+<span style="color: #F92672;">let</span> <span style="color: #66D9EF;">E</span> = linspace<span style="color: #AE81FF;">(</span>1e-<span style="font-style: italic;">3</span>, <span style="font-style: italic;">14</span>.<span style="font-style: italic;">0</span>, <span style="font-style: italic;">1000</span>  <span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= seqsToDf<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">E</span>  <span style="color: #AE81FF;">)</span>
+  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;Flux&quot;</span> ~ axionFluxPrimakoff<span style="color: #A6E22E;">(</span>`<span style="color: #66D9EF;">E</span>`.keV, 1e-<span style="font-style: italic;">11</span>.GeV⁻¹<span style="color: #A6E22E;">)</span>.<span style="color: #66D9EF;">float</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;FluxYr&quot;</span> ~ axFluxPerYear<span style="color: #A6E22E;">(</span>`<span style="color: #66D9EF;">E</span>`.keV, 1e-<span style="font-style: italic;">11</span>.GeV⁻¹<span style="color: #A6E22E;">)</span>.<span style="color: #66D9EF;">float</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;FluxMSc&quot;</span> ~ axionFluxPrimakoffMasterThesis<span style="color: #A6E22E;">(</span>`<span style="color: #66D9EF;">E</span>`.keV, 1e-<span style="font-style: italic;">11</span>.GeV⁻¹<span style="color: #A6E22E;">)</span>.<span style="color: #66D9EF;">float</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>    
+ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span>  <span style="color: #E6DB74;">&quot;E&quot;</span>, <span style="color: #E6DB74;">&quot;Flux&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
   geom_line<span style="color: #AE81FF;">()</span> +
-  <span style="color: #75715E;">#</span><span style="color: #75715E;">geom_line(aes = aes(y = &quot;FluxMSc&quot;), color = some(parseHex(&quot;0000FF&quot;))) + </span>
-  ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Solar axion flux due to Primakoff production, g_aγ = 10⁻¹¹·GeV⁻¹&quot;</span><span style="color: #AE81FF;">)</span> +
-  xlab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Energy [keV]&quot;</span><span style="color: #AE81FF;">)</span> +
-  <span style="color: #75715E;">#</span><span style="color: #75715E;">ylab(&quot;Axion flux [keV⁻¹·cm⁻²·s⁻¹]&quot;) +</span>
-  ylab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Axion flux [keV⁻¹·m⁻²·yr⁻¹]&quot;</span><span style="color: #AE81FF;">)</span> +  
-  ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/tmp/primakoff_axion_flux.pdf&quot;</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #75715E;">#</span>  <span style="color: #75715E;">geom_line(aes = aes(y = &quot;FluxMSc&quot;), color = some(parseHex(&quot;0000FF&quot;))) + </span>
+  ggtitle<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;Solar axion flux due to Primakoff production, g_aγ = 10⁻¹¹·GeV⁻¹&quot;</span>  <span style="color: #AE81FF;">)</span> +
+  xlab<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;Energy [keV]&quot;</span>  <span style="color: #AE81FF;">)</span> +
+  <span style="color: #75715E;">#</span>  <span style="color: #75715E;">ylab(&quot;Axion flux [keV⁻¹·cm⁻²·s⁻¹]&quot;) +</span>
+  ylab<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;Axion flux [keV⁻¹·m⁻²·yr⁻¹]&quot;</span>  <span style="color: #AE81FF;">)</span> +  
+  ggsave<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;/tmp/primakoff_axion_flux.pdf&quot;</span>  <span style="color: #AE81FF;">)</span>
 
-ggplot<span style="color: #AE81FF;">(</span>df.mutate<span style="color: #66D9EF;">(</span>f<span style="color: #A6E22E;">{</span><span style="color: #E6DB74;">&quot;Flux&quot;</span> ~ `<span style="color: #66D9EF;">Flux</span>` / 1e8<span style="color: #A6E22E;">}</span><span style="color: #66D9EF;">)</span>, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;E&quot;</span>, <span style="color: #E6DB74;">&quot;Flux&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+ggplot<span style="color: #AE81FF;">(</span>df.mutate<span style="color: #66D9EF;">(</span>f<span style="color: #A6E22E;">{</span>  <span style="color: #E6DB74;">&quot;Flux&quot;</span> ~ `<span style="color: #66D9EF;">Flux</span>` / 1e8<span style="color: #A6E22E;">}</span>  <span style="color: #66D9EF;">)</span>, aes<span style="color: #66D9EF;">(</span>  <span style="color: #E6DB74;">&quot;E&quot;</span>, <span style="color: #E6DB74;">&quot;Flux&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
   geom_line<span style="color: #AE81FF;">()</span> +
-  <span style="color: #75715E;">#</span><span style="color: #75715E;">xlab(&quot;Energy [keV]&quot;, tickFont = font(12.0), margin = 1.5) +</span>
-  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;\fontfamily{lmss}\selectfont Energy [$\si{\keV}$]&quot;</span>, margin = <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span>, font = font<span style="color: #66D9EF;">(</span><span style="font-style: italic;">16</span>.<span style="font-style: italic;">0</span><span style="color: #66D9EF;">)</span>,
-       tickFont = font<span style="color: #66D9EF;">(</span><span style="font-style: italic;">16</span>.<span style="font-style: italic;">0</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
-  xlim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">14</span><span style="color: #AE81FF;">)</span> + 
-  <span style="color: #75715E;">#</span><span style="color: #75715E;">ylab(&quot;Axion flux [10¹⁰ keV⁻¹·cm⁻²·s⁻¹]&quot;, margin = 1.5) +</span>
+  <span style="color: #75715E;">#</span>  <span style="color: #75715E;">xlab(&quot;Energy [keV]&quot;, tickFont = font(12.0), margin = 1.5) +</span>
+  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;\fontfamily{lmss}\selectfont Energy [$\si{\keV}$]&quot;</span>, margin = <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span>, font = font<span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">16</span>.<span style="font-style: italic;">0</span>  <span style="color: #66D9EF;">)</span>,
+       tickFont = font<span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">16</span>.<span style="font-style: italic;">0</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
+  xlim<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">0</span>, <span style="font-style: italic;">14</span>  <span style="color: #AE81FF;">)</span> + 
+  <span style="color: #75715E;">#</span>  <span style="color: #75715E;">ylab(&quot;Axion flux [10¹⁰ keV⁻¹·cm⁻²·s⁻¹]&quot;, margin = 1.5) +</span>
   ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;\fontfamily{lmss}\selectfont Axion flux [\SI[print-unity-mantissa=false]{1e11}{\keV^{-1} \cm^{-2} \second^{-1}}]&quot;</span>,
        margin = <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span>,
-       font = font<span style="color: #66D9EF;">(</span><span style="font-style: italic;">16</span>.<span style="font-style: italic;">0</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> + 
-  <span style="color: #75715E;">#     </span><span style="color: #75715E;">tickFont = font(12.0)) +</span>
-  <span style="color: #75715E;">#</span><span style="color: #75715E;">ggtitle(r&quot;Expected solar axion flux, g_aγ = 10⁻¹⁰ GeV⁻¹&quot;, titleFont = font(12.0)) +</span>
+       font = font<span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">16</span>.<span style="font-style: italic;">0</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> + 
+  <span style="color: #75715E;">#     </span>  <span style="color: #75715E;">tickFont = font(12.0)) +</span>
+  <span style="color: #75715E;">#</span>  <span style="color: #75715E;">ggtitle(r&quot;Expected solar axion flux, g_aγ = 10⁻¹⁰ GeV⁻¹&quot;, titleFont = font(12.0)) +</span>
   annotate<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;\fontfamily{lmss}\selectfont Expected solar axion flux&quot;</span> &amp;
-    r<span style="color: #E6DB74;">&quot;\\$g_{aγ} = \SI[print-unity-mantissa=false]{1e-11}{\GeV^{-1}}$&quot;</span>, <span style="color: #75715E;">#</span><span style="color: #75715E;">10⁻¹⁰ GeV⁻¹&quot;,</span>
+    r<span style="color: #E6DB74;">&quot;\\$g_{aγ} = \SI[print-unity-mantissa=false]{1e-11}{\GeV^{-1}}$&quot;</span>, <span style="color: #75715E;">#</span>  <span style="color: #75715E;">10⁻¹⁰ GeV⁻¹&quot;,</span>
            x = <span style="font-style: italic;">6</span>.<span style="font-style: italic;">2</span>, y = <span style="font-style: italic;">6</span>.<span style="font-style: italic;">2</span>, 
-           font = font<span style="color: #66D9EF;">(</span><span style="font-style: italic;">16</span>.<span style="font-style: italic;">0</span><span style="color: #66D9EF;">)</span>,
+           font = font<span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">16</span>.<span style="font-style: italic;">0</span>  <span style="color: #66D9EF;">)</span>,
            backgroundColor = transparent<span style="color: #AE81FF;">)</span> +
-  <span style="color: #75715E;">#</span><span style="color: #75715E;">ggtitle(r&quot;Expected solar axion flux, $g_{aγ} = \SI{1e-11}{\GeV^{-1}}$&quot;, titleFont = font(12.0)) + </span>
-  <span style="color: #75715E;">#</span><span style="color: #75715E;">ggsave(&quot;/tmp/cristina_primakoff_axion_flux.pdf&quot;, width = 400, height = 300) #, useTeX = true, standalone = true)</span>
-  ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/tmp/cristina_primakoff_axion_flux.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #75715E;">#</span>  <span style="color: #75715E;">ggtitle(r&quot;Expected solar axion flux, $g_{aγ} = \SI{1e-11}{\GeV^{-1}}$&quot;, titleFont = font(12.0)) + </span>
+  <span style="color: #75715E;">#</span>  <span style="color: #75715E;">ggsave(&quot;/tmp/cristina_primakoff_axion_flux.pdf&quot;, width = 400, height = 300) #, useTeX = true, standalone = true)</span>
+  ggsave<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;/tmp/cristina_primakoff_axion_flux.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span>  <span style="color: #AE81FF;">)</span>
   
 
 defUnit<span style="color: #AE81FF;">(</span>m⁻²•yr⁻¹<span style="color: #AE81FF;">)</span>  
 <span style="color: #F92672;">echo</span> <span style="font-style: italic;">1</span>.cm⁻²•s⁻¹.to<span style="color: #AE81FF;">(</span>m⁻²•yr⁻¹<span style="color: #AE81FF;">)</span>
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -1777,35 +1906,35 @@ First we produce the differential flux CSV file. For more details, see
 sec. <a href="./appendix_raytracing.html#sec:appendix:raytracing:generate_axion_image">37.4.3</a>.
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./readOpacityFile <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./readOpacityFile <span style="color: #E6DB74; font-weight: bold;">\</span>
     --suffix <span style="color: #E6DB74;">&quot;_0.989AU&quot;</span> <span style="color: #E6DB74; font-weight: bold;">\</span>
     --distanceSunEarth 0.9891144450781392.AU <span style="color: #E6DB74; font-weight: bold;">\</span>
     --fluxKind fkAxionElectronPhoton <span style="color: #E6DB74; font-weight: bold;">\</span>
     --plotPath ~/phd/Figs/readOpacityFile/ <span style="color: #E6DB74; font-weight: bold;">\</span>
     --outpath ~/phd/resources/readOpacityFile/
-</pre>
+</code></pre>
 </div>
 
 <p>
 Then the differential flux by type:
 </p>
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> ggplotnim
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> ggplotnim
 <span style="color: #F92672;">const</span> <span style="color: #FD971F;">fluxPath </span>= <span style="color: #E6DB74;">&quot;~/phd/resources/readOpacityFile/solar_axion_flux_differential_g_ae_1e-13_g_ag_1e-12_g_aN_1e-15_0.989AU.csv&quot;</span>
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fCol </span>= <span style="color: #E6DB74;">&quot;Flux / keV⁻¹ m⁻² yr⁻¹&quot;</span>
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= readCsv<span style="color: #AE81FF;">(</span>fluxPath<span style="color: #AE81FF;">)</span>
-  .filter<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #66D9EF;">string</span> -&gt; <span style="color: #66D9EF;">bool</span>: `<span style="color: #F92672;">type</span>` <span style="color: #F92672;">notin</span> <span style="color: #A6E22E;">[</span><span style="color: #E6DB74;">&quot;LP Flux&quot;</span>, <span style="color: #E6DB74;">&quot;TP Flux&quot;</span>, <span style="color: #E6DB74;">&quot;57Fe Flux&quot;</span><span style="color: #A6E22E;">]</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;diffFlux&quot;</span> ~ <span style="color: #A6E22E;">(</span><span style="color: #F92672;">if</span> <span style="color: #E6DB74;">(</span>idx<span style="color: #FD971F;">(</span><span style="color: #E6DB74;">&quot;type&quot;</span>, <span style="color: #66D9EF;">string</span><span style="color: #FD971F;">)</span> == <span style="color: #E6DB74;">&quot;Primakoff Flux&quot;</span><span style="color: #E6DB74;">)</span>: idx<span style="color: #E6DB74;">(</span>fCol<span style="color: #E6DB74;">)</span> * <span style="font-style: italic;">100</span> <span style="color: #F92672;">else</span>: idx<span style="color: #E6DB74;">(</span>fCol<span style="color: #E6DB74;">)</span><span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #66D9EF;">string</span>: <span style="color: #E6DB74;">&quot;type&quot;</span> ~ <span style="color: #A6E22E;">(</span><span style="color: #F92672;">if</span> <span style="color: #E6DB74;">(</span>`<span style="color: #F92672;">type</span>` == <span style="color: #E6DB74;">&quot;Primakoff Flux&quot;</span><span style="color: #E6DB74;">)</span>: <span style="color: #E6DB74;">&quot;Primakoff·100&quot;</span> <span style="color: #F92672;">else</span>: `<span style="color: #F92672;">type</span>`<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Energy [keV]&quot;</span>,f<span style="color: #A6E22E;">{</span>`diffFlux` / 1e20<span style="color: #A6E22E;">}</span>, color = <span style="color: #E6DB74;">&quot;type&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+  .filter<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #66D9EF;">string</span> -&gt; <span style="color: #66D9EF;">bool</span>: `<span style="color: #F92672;">type</span>` <span style="color: #F92672;">notin</span> <span style="color: #A6E22E;">[</span>  <span style="color: #E6DB74;">&quot;LP Flux&quot;</span>, <span style="color: #E6DB74;">&quot;TP Flux&quot;</span>, <span style="color: #E6DB74;">&quot;57Fe Flux&quot;</span>  <span style="color: #A6E22E;">]</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;diffFlux&quot;</span> ~ <span style="color: #A6E22E;">(</span>  <span style="color: #F92672;">if</span> <span style="color: #E6DB74;">(</span>idx<span style="color: #FD971F;">(</span>  <span style="color: #E6DB74;">&quot;type&quot;</span>, <span style="color: #66D9EF;">string</span>  <span style="color: #FD971F;">)</span> == <span style="color: #E6DB74;">&quot;Primakoff Flux&quot;</span>  <span style="color: #E6DB74;">)</span>: idx<span style="color: #E6DB74;">(</span>fCol<span style="color: #E6DB74;">)</span> * <span style="font-style: italic;">100</span> <span style="color: #F92672;">else</span>: idx<span style="color: #E6DB74;">(</span>fCol<span style="color: #E6DB74;">)</span>  <span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #66D9EF;">string</span>: <span style="color: #E6DB74;">&quot;type&quot;</span> ~ <span style="color: #A6E22E;">(</span>  <span style="color: #F92672;">if</span> <span style="color: #E6DB74;">(</span>`<span style="color: #F92672;">type</span>` == <span style="color: #E6DB74;">&quot;Primakoff Flux&quot;</span>  <span style="color: #E6DB74;">)</span>: <span style="color: #E6DB74;">&quot;Primakoff·100&quot;</span> <span style="color: #F92672;">else</span>: `<span style="color: #F92672;">type</span>`<span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span>  <span style="color: #E6DB74;">&quot;Energy [keV]&quot;</span>,f<span style="color: #A6E22E;">{</span>`diffFlux` / 1e20<span style="color: #A6E22E;">}</span>, color = <span style="color: #E6DB74;">&quot;type&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
   geom_line<span style="color: #AE81FF;">()</span> +
-  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Energy [$\si{keV}$]&quot;</span><span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Flux [$\SI{1e20}{keV^{-1}.m^{-2}.yr^{-1}}$]&quot;</span><span style="color: #AE81FF;">)</span> +
-  xlim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">15</span><span style="color: #AE81FF;">)</span> + 
-  ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Differential axion flux arriving on Earth&quot;</span><span style="color: #AE81FF;">)</span> +
-  themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = sideBySide<span style="color: #AE81FF;">)</span> +  <span style="color: #75715E;"># </span><span style="color: #75715E;">width 360?</span>
-  <span style="color: #75715E;"># </span><span style="color: #75715E;">ggshow(800, 480)</span>
-  ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;~/phd/Figs/axions/differential_solar_axion_flux_by_type.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span>, width = <span style="font-style: italic;">600</span>, height = <span style="font-style: italic;">360</span><span style="color: #AE81FF;">)</span>
-</pre>
+  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Energy [$\si{keV}$]&quot;</span>  <span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Flux [$\SI{1e20}{keV^{-1}.m^{-2}.yr^{-1}}$]&quot;</span>  <span style="color: #AE81FF;">)</span> +
+  xlim<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">0</span>, <span style="font-style: italic;">15</span>  <span style="color: #AE81FF;">)</span> + 
+  ggtitle<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;Differential axion flux arriving on Earth&quot;</span>  <span style="color: #AE81FF;">)</span> +
+  themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = sideBySide<span style="color: #AE81FF;">)</span> +  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">width 360?</span>
+  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">ggshow(800, 480)</span>
+  ggsave<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;~/phd/Figs/axions/differential_solar_axion_flux_by_type.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span>, width = <span style="font-style: italic;">600</span>, height = <span style="font-style: italic;">360</span>  <span style="color: #AE81FF;">)</span>
+</code></pre>
 </div>
 
 
@@ -1813,130 +1942,130 @@ ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;"
 Now the radial distribution of the flux by coupling constant.
 </p>
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> std / <span style="color: #AE81FF;">[</span>sequtils, algorithm<span style="color: #AE81FF;">]</span>
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> std / <span style="color: #AE81FF;">[</span>sequtils, algorithm<span style="color: #AE81FF;">]</span>
 <span style="color: #F92672;">import</span> ggplotnim, unchained
 <span style="color: #F92672;">import</span> ggplotnim/ggplot_sdl2
 <span style="color: #F92672;">type</span>
   <span style="color: #66D9EF;">FluxData</span>* = <span style="color: #F92672;">object</span>
-    <span style="color: #A6E22E; font-weight: bold; font-style: italic;">fRCdf*</span>: <span style="color: #66D9EF;">seq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">]</span>
-    <span style="color: #A6E22E; font-weight: bold; font-style: italic;">diffFluxR*</span>: <span style="color: #66D9EF;">seq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">]</span>
+    <span style="color: #A6E22E; font-weight: bold; font-style: italic;">fRCdf*</span>: <span style="color: #66D9EF;">seq</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">]</span>
+    <span style="color: #A6E22E; font-weight: bold; font-style: italic;">diffFluxR*</span>: <span style="color: #66D9EF;">seq</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #66D9EF;">seq</span>  <span style="color: #66D9EF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #66D9EF;">]</span>  <span style="color: #AE81FF;">]</span>
     <span style="color: #A6E22E; font-weight: bold; font-style: italic;">fluxesDf*</span>: <span style="color: #66D9EF;">DataFrame</span>
-    <span style="color: #A6E22E; font-weight: bold; font-style: italic;">radii*</span>: <span style="color: #66D9EF;">seq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">]</span>
+    <span style="color: #A6E22E; font-weight: bold; font-style: italic;">radii*</span>: <span style="color: #66D9EF;">seq</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">]</span>
     <span style="color: #A6E22E; font-weight: bold; font-style: italic;">energyMin*</span>: <span style="color: #66D9EF;">float</span>
     <span style="color: #A6E22E; font-weight: bold; font-style: italic;">energyMax*</span>: <span style="color: #66D9EF;">float</span>
 
 <span style="color: #F92672;">const</span>
   alpha = <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span> / <span style="font-style: italic;">137</span>.<span style="font-style: italic;">0</span>
-  g_ae = 1e-<span style="font-style: italic;">13</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">Redondo 2013: 0.511e-10</span>
-  gagamma = 1e-<span style="font-style: italic;">12</span> <span style="color: #75715E;">#</span><span style="color: #75715E;">the latter for DFSZ  #1e-9 #5e-10 #</span>
-  ganuclei = 1e-<span style="font-style: italic;">15</span> <span style="color: #75715E;">#</span><span style="color: #75715E;">1.475e-8 * m_a #KSVZ model #no units  #1e-7</span>
-  m_a = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0853</span> <span style="color: #75715E;">#</span><span style="color: #75715E;">eV</span>
-  m_e_keV = <span style="font-style: italic;">510</span>.<span style="font-style: italic;">998</span> <span style="color: #75715E;">#</span><span style="color: #75715E;">keV</span>
-  e_charge = sqrt<span style="color: #AE81FF;">(</span><span style="font-style: italic;">4</span>.<span style="font-style: italic;">0</span> * <span style="color: #66D9EF;">PI</span> * alpha<span style="color: #AE81FF;">)</span><span style="color: #75715E;">#</span><span style="color: #75715E;">1.0</span>
+  g_ae = 1e-<span style="font-style: italic;">13</span> <span style="color: #75715E;"># </span>  <span style="color: #75715E;">Redondo 2013: 0.511e-10</span>
+  gagamma = 1e-<span style="font-style: italic;">12</span> <span style="color: #75715E;">#</span>  <span style="color: #75715E;">the latter for DFSZ  #1e-9 #5e-10 #</span>
+  ganuclei = 1e-<span style="font-style: italic;">15</span> <span style="color: #75715E;">#</span>  <span style="color: #75715E;">1.475e-8 * m_a #KSVZ model #no units  #1e-7</span>
+  m_a = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0853</span> <span style="color: #75715E;">#</span>  <span style="color: #75715E;">eV</span>
+  m_e_keV = <span style="font-style: italic;">510</span>.<span style="font-style: italic;">998</span> <span style="color: #75715E;">#</span>  <span style="color: #75715E;">keV</span>
+  e_charge = sqrt<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">4</span>.<span style="font-style: italic;">0</span> * <span style="color: #66D9EF;">PI</span> * alpha<span style="color: #AE81FF;">)</span>  <span style="color: #75715E;">#</span>  <span style="color: #75715E;">1.0</span>
   kB = <span style="font-style: italic;">1</span>.380649e-<span style="font-style: italic;">23</span>
-  r_sun = <span style="font-style: italic;">696_342_000_000</span>.<span style="font-style: italic;">0</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">.km.to(mm).float # SOHO mission 2003 &amp; 2006</span>
-  hbar = <span style="font-style: italic;">6</span>.582119514e-<span style="font-style: italic;">25</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">in GeV * s</span>
-  keV2cm = <span style="font-style: italic;">1</span>.97327e-<span style="font-style: italic;">8</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">cm per keV^-1</span>
-  amu = <span style="font-style: italic;">1</span>.6605e-<span style="font-style: italic;">24</span> <span style="color: #75715E;">#</span><span style="color: #75715E;">grams</span>
+  r_sun = <span style="font-style: italic;">696_342_000_000</span>.<span style="font-style: italic;">0</span> <span style="color: #75715E;"># </span>  <span style="color: #75715E;">.km.to(mm).float # SOHO mission 2003 &amp; 2006</span>
+  hbar = <span style="font-style: italic;">6</span>.582119514e-<span style="font-style: italic;">25</span> <span style="color: #75715E;"># </span>  <span style="color: #75715E;">in GeV * s</span>
+  keV2cm = <span style="font-style: italic;">1</span>.97327e-<span style="font-style: italic;">8</span> <span style="color: #75715E;"># </span>  <span style="color: #75715E;">cm per keV^-1</span>
+  amu = <span style="font-style: italic;">1</span>.6605e-<span style="font-style: italic;">24</span> <span style="color: #75715E;">#</span>  <span style="color: #75715E;">grams</span>
   r_sunearth = <span style="font-style: italic;">150_000_000_000_000</span>.<span style="font-style: italic;">0</span>
 
-<span style="color: #F92672;">const</span> <span style="color: #FD971F;">factor </span>= pow<span style="color: #AE81FF;">(</span>r_sun * <span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span> / <span style="color: #66D9EF;">(</span>keV2cm<span style="color: #66D9EF;">)</span>, <span style="font-style: italic;">3</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> /
-               <span style="color: #AE81FF;">(</span>pow<span style="color: #66D9EF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span> * r_sunearth, <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span><span style="color: #66D9EF;">)</span> * <span style="color: #66D9EF;">(</span><span style="font-style: italic;">1</span>.0e6 * hbar<span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> /
-               <span style="color: #AE81FF;">(</span><span style="font-style: italic;">3</span>.1709791983765E-<span style="font-style: italic;">8</span> * <span style="font-style: italic;">1</span>.0e-<span style="font-style: italic;">4</span><span style="color: #AE81FF;">)</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">for units of 1/(keV y m²)</span>
+<span style="color: #F92672;">const</span> <span style="color: #FD971F;">factor </span>= pow<span style="color: #AE81FF;">(</span>r_sun * <span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span> / <span style="color: #66D9EF;">(</span>keV2cm<span style="color: #66D9EF;">)</span>, <span style="font-style: italic;">3</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span> /
+               <span style="color: #AE81FF;">(</span>pow<span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">0</span>.<span style="font-style: italic;">1</span> * r_sunearth, <span style="font-style: italic;">2</span>.<span style="font-style: italic;">0</span>  <span style="color: #66D9EF;">)</span> * <span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">1</span>.0e6 * hbar<span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> /
+               <span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">3</span>.1709791983765E-<span style="font-style: italic;">8</span> * <span style="font-style: italic;">1</span>.0e-<span style="font-style: italic;">4</span>  <span style="color: #AE81FF;">)</span> <span style="color: #75715E;"># </span>  <span style="color: #75715E;">for units of 1/(keV y m²)</span>
 
 <span style="color: #F92672;">import</span> ggplotnim
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E; font-weight: bold; font-style: italic;">getFluxRadiusCDF*</span><span style="color: #AE81FF;">(</span>path: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">FluxData</span> =
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E; font-weight: bold; font-style: italic;">getFluxRadiusCDF*</span>  <span style="color: #AE81FF;">(</span>path: <span style="color: #66D9EF;">string</span>  <span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">FluxData</span> =
   <span style="color: #F92672;">var</span> <span style="color: #FD971F;">emRatesDf </span>= readCsv<span style="color: #AE81FF;">(</span>path<span style="color: #AE81FF;">)</span>
-  <span style="color: #75715E;"># </span><span style="color: #75715E;">get all radii and energies from DF so that we don&apos;t need to compute them manually (risking to</span>
-  <span style="color: #75715E;"># </span><span style="color: #75715E;">messing something up!)</span>
-  <span style="color: #75715E;"># </span><span style="color: #75715E;">sort both just to make sure they really *are* in ascending order</span>
-  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">radii </span>= emRatesDf<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Radius&quot;</span><span style="color: #AE81FF;">]</span>
+  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">get all radii and energies from DF so that we don&apos;t need to compute them manually (risking to</span>
+  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">messing something up!)</span>
+  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">sort both just to make sure they really *are* in ascending order</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">radii </span>= emRatesDf<span style="color: #AE81FF;">[</span>  <span style="color: #E6DB74;">&quot;Radius&quot;</span>  <span style="color: #AE81FF;">]</span>
     .unique<span style="color: #AE81FF;">()</span>
-    .toTensor<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span>
+    .toTensor<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">)</span>
     .toSeq1D
-    .sorted<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">SortOrder</span>.<span style="color: #66D9EF;">Ascending</span><span style="color: #AE81FF;">)</span>
-  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">energies </span>= emRatesDf<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;Energy [keV]&quot;</span><span style="color: #AE81FF;">]</span>
+    .sorted<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">SortOrder</span>.<span style="color: #66D9EF;">Ascending</span>  <span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">energies </span>= emRatesDf<span style="color: #AE81FF;">[</span>  <span style="color: #E6DB74;">&quot;Energy [keV]&quot;</span>  <span style="color: #AE81FF;">]</span>
     .unique<span style="color: #AE81FF;">()</span>
-    .toTensor<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span>
+    .toTensor<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">)</span>
     .toSeq1D
-    .sorted<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">SortOrder</span>.<span style="color: #66D9EF;">Ascending</span><span style="color: #AE81FF;">)</span>
-  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">emRates </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">]()</span>
+    .sorted<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">SortOrder</span>.<span style="color: #66D9EF;">Ascending</span>  <span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">emRates </span>= <span style="color: #F92672;">newSeq</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #66D9EF;">seq</span>  <span style="color: #66D9EF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #66D9EF;">]</span>  <span style="color: #AE81FF;">]()</span>
   <span style="color: #E6DB74;">## group the &quot;solar model&quot; DF by the radius &amp; append the emission rates for all energies</span>
-  <span style="color: #E6DB74;">## to the `</span><span style="color: #AE81FF;">emRates</span><span style="color: #E6DB74;">`</span>
-  <span style="color: #F92672;">for</span> tup, subDf <span style="color: #F92672;">in</span> groups<span style="color: #AE81FF;">(</span>emRatesDf.group_by<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Radius&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>:
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">radius </span>= tup<span style="color: #AE81FF;">[</span><span style="font-style: italic;">0</span><span style="color: #AE81FF;">][</span><span style="font-style: italic;">1</span><span style="color: #AE81FF;">]</span>.<span style="color: #F92672;">toFloat</span>
-    <span style="color: #75715E;">#</span><span style="color: #75715E;">doAssert subDf[&quot;Energy [keV]&quot;, float].toSeq1D.mapIt(it.keV) == energies</span>
-    <span style="color: #75715E;">#</span><span style="color: #75715E;">doAssert radius == radii[k], &quot;Input DF not sorted correctly!&quot;</span>
-    emRates.<span style="color: #F92672;">add</span> subDf<span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;emRates&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">]</span>.toSeq1D
+  <span style="color: #E6DB74;">## to the `</span>  <span style="color: #AE81FF;">emRates</span>  <span style="color: #E6DB74;">`</span>
+  <span style="color: #F92672;">for</span> tup, subDf <span style="color: #F92672;">in</span> groups<span style="color: #AE81FF;">(</span>emRatesDf.group_by<span style="color: #66D9EF;">(</span>  <span style="color: #E6DB74;">&quot;Radius&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span>:
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">radius </span>= tup<span style="color: #AE81FF;">[</span>  <span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">][</span>  <span style="font-style: italic;">1</span>  <span style="color: #AE81FF;">]</span>.<span style="color: #F92672;">toFloat</span>
+    <span style="color: #75715E;">#</span>  <span style="color: #75715E;">doAssert subDf[&quot;Energy [keV]&quot;, float].toSeq1D.mapIt(it.keV) == energies</span>
+    <span style="color: #75715E;">#</span>  <span style="color: #75715E;">doAssert radius == radii[k], &quot;Input DF not sorted correctly!&quot;</span>
+    emRates.<span style="color: #F92672;">add</span> subDf<span style="color: #AE81FF;">[</span>  <span style="color: #E6DB74;">&quot;emRates&quot;</span>, <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">]</span>.toSeq1D
   <span style="color: #F92672;">var</span>
-    fluxRadiusCumSum: <span style="color: #66D9EF;">seq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">]</span> = <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">](</span>radii.<span style="color: #F92672;">len</span><span style="color: #AE81FF;">)</span>
+    fluxRadiusCumSum: <span style="color: #66D9EF;">seq</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">]</span> = <span style="color: #F92672;">newSeq</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">](</span>radii.<span style="color: #F92672;">len</span>  <span style="color: #AE81FF;">)</span>
     diffRadiusSum = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span>
 
-  <span style="color: #F92672;">template</span> <span style="color: #A6E22E;">toCdf</span><span style="color: #AE81FF;">(</span>x: <span style="color: #66D9EF;">untyped</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">untyped</span> =
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">integral </span>= x<span style="color: #AE81FF;">[</span>^<span style="font-style: italic;">1</span><span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">template</span> <span style="color: #A6E22E;">toCdf</span>  <span style="color: #AE81FF;">(</span>x: <span style="color: #66D9EF;">untyped</span>  <span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">untyped</span> =
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">integral </span>= x<span style="color: #AE81FF;">[</span>^<span style="font-style: italic;">1</span>  <span style="color: #AE81FF;">]</span>
     x.mapIt<span style="color: #AE81FF;">(</span> it / integral <span style="color: #AE81FF;">)</span>
 
   <span style="color: #F92672;">var</span> <span style="color: #FD971F;">fluxesDf </span>= newDataFrame<span style="color: #AE81FF;">()</span>
-  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">diffFluxR </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">seq</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">](</span>radii.<span style="color: #F92672;">len</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">var</span> <span style="color: #FD971F;">diffFluxR </span>= <span style="color: #F92672;">newSeq</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #66D9EF;">seq</span>  <span style="color: #66D9EF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #66D9EF;">]</span>  <span style="color: #AE81FF;">](</span>radii.<span style="color: #F92672;">len</span>  <span style="color: #AE81FF;">)</span>
   <span style="color: #F92672;">var</span> <span style="color: #FD971F;">rLast </span>= <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span>
   <span style="color: #F92672;">for</span> iRad, radius <span style="color: #F92672;">in</span> radii:
-    <span style="color: #75715E;"># </span><span style="color: #75715E;">emRates is seq of radii of energies</span>
+    <span style="color: #75715E;"># </span>  <span style="color: #75715E;">emRates is seq of radii of energies</span>
     <span style="color: #F92672;">let</span> <span style="color: #FD971F;">emRate </span>= emRates<span style="color: #AE81FF;">[</span>iRad<span style="color: #AE81FF;">]</span>
     <span style="color: #F92672;">var</span> <span style="color: #FD971F;">diffSum </span>= <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span>
-    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">diffFlux </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">](</span>energies.<span style="color: #F92672;">len</span><span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">var</span> <span style="color: #FD971F;">diffFlux </span>= <span style="color: #F92672;">newSeq</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">](</span>energies.<span style="color: #F92672;">len</span>  <span style="color: #AE81FF;">)</span>
     <span style="color: #F92672;">for</span> iEnergy, energy <span style="color: #F92672;">in</span> energies:
-      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dFlux </span>= emRate<span style="color: #AE81FF;">[</span>iEnergy<span style="color: #AE81FF;">]</span> * <span style="color: #AE81FF;">(</span>energy.<span style="color: #66D9EF;">float</span>*energy.<span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span> * radius*radius * <span style="color: #AE81FF;">(</span>radius - rLast<span style="color: #AE81FF;">)</span> * factor
+      <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dFlux </span>= emRate<span style="color: #AE81FF;">[</span>iEnergy<span style="color: #AE81FF;">]</span> * <span style="color: #AE81FF;">(</span>energy.<span style="color: #66D9EF;">float</span>*energy.<span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">)</span> * radius*radius * <span style="color: #AE81FF;">(</span>radius - rLast<span style="color: #AE81FF;">)</span> * factor
       diffFlux<span style="color: #AE81FF;">[</span>iEnergy<span style="color: #AE81FF;">]</span> = dFlux
       diffSum += dFlux
-    fluxesDf.<span style="color: #F92672;">add</span> toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;Energy&quot;</span> : energies.mapIt<span style="color: #A6E22E;">(</span>it.<span style="color: #66D9EF;">float</span><span style="color: #A6E22E;">)</span>, <span style="color: #E6DB74;">&quot;Flux&quot;</span> : diffFlux, <span style="color: #E6DB74;">&quot;Radius&quot;</span> : radius<span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>      
+    fluxesDf.<span style="color: #F92672;">add</span> toDf<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">{</span>  <span style="color: #E6DB74;">&quot;Energy&quot;</span> : energies.mapIt<span style="color: #A6E22E;">(</span>it.<span style="color: #66D9EF;">float</span>  <span style="color: #A6E22E;">)</span>, <span style="color: #E6DB74;">&quot;Flux&quot;</span> : diffFlux, <span style="color: #E6DB74;">&quot;Radius&quot;</span> : radius<span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>      
     diffRadiusSum += diffSum
     fluxRadiusCumSum<span style="color: #AE81FF;">[</span>iRad<span style="color: #AE81FF;">]</span> = diffRadiusSum
     diffFluxR<span style="color: #AE81FF;">[</span>iRad<span style="color: #AE81FF;">]</span> = diffFlux
     rLast = radius
-  <span style="color: #FD971F;">result</span> = <span style="color: #66D9EF;">FluxData</span><span style="color: #AE81FF;">(</span>fRCdf: fluxRadiusCumSum.toCdf<span style="color: #66D9EF;">()</span>,
+  <span style="color: #FD971F;">result</span> = <span style="color: #66D9EF;">FluxData</span>  <span style="color: #AE81FF;">(</span>fRCdf: fluxRadiusCumSum.toCdf<span style="color: #66D9EF;">()</span>,
                     fluxesDf: fluxesDf,
                     diffFluxR: diffFluxR,
                     radii: radii,
                     energyMin: energies.<span style="color: #F92672;">min</span>,
-                    energyMax: energies.<span style="color: #F92672;">max</span><span style="color: #AE81FF;">)</span>
+                    energyMax: energies.<span style="color: #F92672;">max</span>  <span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">fluxToDf</span><span style="color: #AE81FF;">(</span>data: <span style="color: #66D9EF;">FluxData</span>, typ: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
-  <span style="color: #FD971F;">result</span> = toDf<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">{</span> <span style="color: #E6DB74;">&quot;Radius&quot;</span> : data.radii,
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">fluxToDf</span>  <span style="color: #AE81FF;">(</span>data: <span style="color: #66D9EF;">FluxData</span>, typ: <span style="color: #66D9EF;">string</span>  <span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
+  <span style="color: #FD971F;">result</span> = toDf<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">{</span> <span style="color: #E6DB74;">&quot;Radius&quot;</span> : data.radii,
                   <span style="color: #E6DB74;">&quot;fluxPerRadius&quot;</span> : data.diffFluxR.mapIt<span style="color: #A6E22E;">(</span>it.sum<span style="color: #A6E22E;">)</span>,
-                  <span style="color: #E6DB74;">&quot;Type&quot;</span> : typ <span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-    .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;fluxPerRadius&quot;</span> ~ `fluxPerRadius` / col<span style="color: #A6E22E;">(</span><span style="color: #E6DB74;">&quot;fluxPerRadius&quot;</span><span style="color: #A6E22E;">)</span>.<span style="color: #F92672;">max</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
+                  <span style="color: #E6DB74;">&quot;Type&quot;</span> : typ <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+    .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #E6DB74;">&quot;fluxPerRadius&quot;</span> ~ `fluxPerRadius` / col<span style="color: #A6E22E;">(</span>  <span style="color: #E6DB74;">&quot;fluxPerRadius&quot;</span>  <span style="color: #A6E22E;">)</span>.<span style="color: #F92672;">max</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
 <span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">main </span>=
   <span style="color: #F92672;">const</span> <span style="color: #FD971F;">ksvzPath </span>= <span style="color: #E6DB74;">&quot;~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionPhoton_0.989AU.csv&quot;</span>
   <span style="color: #F92672;">const</span> <span style="color: #FD971F;">dfszPath </span>= <span style="color: #E6DB74;">&quot;~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv&quot;</span>
   <span style="color: #F92672;">let</span> <span style="color: #FD971F;">ksvz </span>= getFluxRadiusCdf<span style="color: #AE81FF;">(</span>ksvzPath<span style="color: #AE81FF;">)</span>
   <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dfsz </span>= getFluxRadiusCdf<span style="color: #AE81FF;">(</span>dfszPath<span style="color: #AE81FF;">)</span>
   <span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= newDataFrame<span style="color: #AE81FF;">()</span>
-  df.<span style="color: #F92672;">add</span> ksvz.fluxToDf<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;KSVZ&quot;</span><span style="color: #AE81FF;">)</span>; df.<span style="color: #F92672;">add</span> dfsz.fluxToDf<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;DFSZ&quot;</span><span style="color: #AE81FF;">)</span>
-  ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Radius&quot;</span>, <span style="color: #E6DB74;">&quot;fluxPerRadius&quot;</span>, color = <span style="color: #E6DB74;">&quot;Type&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+  df.<span style="color: #F92672;">add</span> ksvz.fluxToDf<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;KSVZ&quot;</span>  <span style="color: #AE81FF;">)</span>; df.<span style="color: #F92672;">add</span> dfsz.fluxToDf<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;DFSZ&quot;</span>  <span style="color: #AE81FF;">)</span>
+  ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span>  <span style="color: #E6DB74;">&quot;Radius&quot;</span>, <span style="color: #E6DB74;">&quot;fluxPerRadius&quot;</span>, color = <span style="color: #E6DB74;">&quot;Type&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
     geom_line<span style="color: #AE81FF;">()</span> +
-    xlab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Relative solar radius&quot;</span><span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Relative emission&quot;</span><span style="color: #AE81FF;">)</span> +
-    ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Radial emission: KSVZ ($g_{aγ}$), DFSZ ($g_{aγ}, g_{ae}$)&quot;</span>, titleFont = font<span style="color: #66D9EF;">(</span><span style="font-style: italic;">11</span>.<span style="font-style: italic;">0</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
-    themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = sideBySide<span style="color: #AE81FF;">)</span> + <span style="color: #75715E;"># </span><span style="color: #75715E;">golden ratio or height = 360, ?</span>
-    <span style="color: #75715E;">#</span><span style="color: #75715E;">ggshow() </span>
-    ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/axions/solar_axion_radial_emission.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span><span style="color: #AE81FF;">)</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">, width = 800, height = 480)</span>
+    xlab<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;Relative solar radius&quot;</span>  <span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;Relative emission&quot;</span>  <span style="color: #AE81FF;">)</span> +
+    ggtitle<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;Radial emission: KSVZ ($g_{aγ}$), DFSZ ($g_{aγ}, g_{ae}$)&quot;</span>, titleFont = font<span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">11</span>.<span style="font-style: italic;">0</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
+    themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = sideBySide<span style="color: #AE81FF;">)</span> + <span style="color: #75715E;"># </span>  <span style="color: #75715E;">golden ratio or height = 360, ?</span>
+    <span style="color: #75715E;">#</span>  <span style="color: #75715E;">ggshow() </span>
+    ggsave<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/axions/solar_axion_radial_emission.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span>  <span style="color: #AE81FF;">)</span> <span style="color: #75715E;"># </span>  <span style="color: #75715E;">, width = 800, height = 480)</span>
 
   <span style="color: #F92672;">echo</span> dfsz.fluxesDf
   <span style="color: #F92672;">let</span> <span style="color: #FD971F;">dfFlux </span>= dfsz.fluxesDf
-    .filter<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>`<span style="color: #66D9EF;">Energy</span>` &lt;= <span style="font-style: italic;">10</span>.<span style="font-style: italic;">0</span> <span style="color: #F92672;">and</span> `<span style="color: #66D9EF;">Radius</span>` &lt;= <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-  ggplot<span style="color: #AE81FF;">(</span>dfFlux, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;Energy&quot;</span>, <span style="color: #E6DB74;">&quot;Radius&quot;</span>, fill = <span style="color: #E6DB74;">&quot;Flux&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+    .filter<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>`<span style="color: #66D9EF;">Energy</span>` &lt;= <span style="font-style: italic;">10</span>.<span style="font-style: italic;">0</span> <span style="color: #F92672;">and</span> `<span style="color: #66D9EF;">Radius</span>` &lt;= <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+  ggplot<span style="color: #AE81FF;">(</span>dfFlux, aes<span style="color: #66D9EF;">(</span>  <span style="color: #E6DB74;">&quot;Energy&quot;</span>, <span style="color: #E6DB74;">&quot;Radius&quot;</span>, fill = <span style="color: #E6DB74;">&quot;Flux&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
     geom_raster<span style="color: #AE81FF;">()</span> +
-    scale_fill_continuous<span style="color: #AE81FF;">(</span>scale = <span style="color: #66D9EF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span>, percentile<span style="color: #A6E22E;">(</span>dfFlux<span style="color: #E6DB74;">[</span><span style="color: #E6DB74;">&quot;Flux&quot;</span>, <span style="color: #66D9EF;">float</span><span style="color: #E6DB74;">]</span>, <span style="font-style: italic;">99</span><span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
-    ggtitle<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;Flux by energy and fraction of solar radius&quot;</span><span style="color: #AE81FF;">)</span> +
-    xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Energy [$\si{keV}$]&quot;</span><span style="color: #AE81FF;">)</span> +
-    ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Relative solar radius&quot;</span><span style="color: #AE81FF;">)</span> +
-    themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = sideBySide<span style="color: #AE81FF;">)</span> + <span style="color: #75715E;"># </span><span style="color: #75715E;">golden ratio or height = 360, ?    </span>
-    xlim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">10</span><span style="color: #AE81FF;">)</span> + ylim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span><span style="color: #AE81FF;">)</span> +
-    legendPosition<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">72</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> + 
-    ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/axions/flux_by_energy_vs_radius_axion_electron.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span><span style="color: #AE81FF;">)</span>
-    <span style="color: #75715E;">#</span><span style="color: #75715E;">ggshow() # 640, 480)</span>
+    scale_fill_continuous<span style="color: #AE81FF;">(</span>scale = <span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span>, percentile<span style="color: #A6E22E;">(</span>dfFlux<span style="color: #E6DB74;">[</span>  <span style="color: #E6DB74;">&quot;Flux&quot;</span>, <span style="color: #66D9EF;">float</span>  <span style="color: #E6DB74;">]</span>, <span style="font-style: italic;">99</span>  <span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
+    ggtitle<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;Flux by energy and fraction of solar radius&quot;</span>  <span style="color: #AE81FF;">)</span> +
+    xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Energy [$\si{keV}$]&quot;</span>  <span style="color: #AE81FF;">)</span> +
+    ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Relative solar radius&quot;</span>  <span style="color: #AE81FF;">)</span> +
+    themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = sideBySide<span style="color: #AE81FF;">)</span> + <span style="color: #75715E;"># </span>  <span style="color: #75715E;">golden ratio or height = 360, ?    </span>
+    xlim<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">0</span>, <span style="font-style: italic;">10</span>  <span style="color: #AE81FF;">)</span> + ylim<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">0</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>  <span style="color: #AE81FF;">)</span> +
+    legendPosition<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">0</span>.<span style="font-style: italic;">72</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span> + 
+    ggsave<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/axions/flux_by_energy_vs_radius_axion_electron.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span>  <span style="color: #AE81FF;">)</span>
+    <span style="color: #75715E;">#</span>  <span style="color: #75715E;">ggshow() # 640, 480)</span>
     
 main<span style="color: #AE81FF;">()</span> 
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -1953,8 +2082,8 @@ sampling issue, I would assume it comes out of the solar model.
 </p>
 </div>
 </div>
-<div id="outline-container-org2d66356" class="outline-4">
-<h4 id="org2d66356">  <a href="#org2d66356">  <span class="section-number-4">4.5.3.</span> Black body radiation in solar core   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orge440a0c" class="outline-4">
+<h4 id="orge440a0c">  <a href="#orge440a0c">  <span class="section-number-4">4.5.3.</span> Black body radiation in solar core   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-4-5-3" class="outline-text-4">
 <p>
 Let&apos;s compute the black body radiation for the solar core and see if
@@ -1979,47 +2108,47 @@ constant. Let&apos;s see what this looks like for \(T =
 </p>
 
 
-<figure id="orgfd25492">
+<figure id="orgc0c8993">
 <img alt="blackbody_spectrum_solar_core.svg" class="org-svg" src="./figs/home/basti/phd/Figs/blackbody_spectrum_solar_core.svg" />
 
 </figure>
 
 
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> ggplotnim, unchained, sequtils
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> ggplotnim, unchained, sequtils
 <span style="color: #F92672;">import</span> ggplotnim / ggplot_sdl2
 
-<span style="color: #75715E;">#</span><span style="color: #75715E;">defUnit(s⁻¹)</span>
-<span style="color: #75715E;">#</span><span style="color: #75715E;">defUnit(μs⁻¹)</span>
-defUnit<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Watt</span>•Steradian⁻¹•Meter⁻²•NanoMeter⁻¹<span style="color: #AE81FF;">)</span>
-defUnit<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Joule</span>•Meter⁻²•Steradian⁻¹<span style="color: #AE81FF;">)</span>
+<span style="color: #75715E;">#</span>  <span style="color: #75715E;">defUnit(s⁻¹)</span>
+<span style="color: #75715E;">#</span>  <span style="color: #75715E;">defUnit(μs⁻¹)</span>
+defUnit<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">Watt</span>•Steradian⁻¹•Meter⁻²•NanoMeter⁻¹<span style="color: #AE81FF;">)</span>
+defUnit<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">Joule</span>•Meter⁻²•Steradian⁻¹<span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">let</span> <span style="color: #66D9EF;">T_sun</span> = <span style="font-style: italic;">15</span>.<span style="color: #66D9EF;">MegaKelvin</span>.to<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Kelvin</span><span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">let</span> <span style="color: #66D9EF;">T_sun</span> = <span style="font-style: italic;">15</span>.<span style="color: #66D9EF;">MegaKelvin</span>.to<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">Kelvin</span>  <span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">blackBody</span><span style="color: #AE81FF;">(</span>ν: s⁻¹, <span style="color: #66D9EF;">T</span>: <span style="color: #66D9EF;">Kelvin</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">Joule</span>•Meter⁻²•Steradian⁻¹ =
-  <span style="color: #FD971F;">result</span> = <span style="color: #AE81FF;">(</span><span style="font-style: italic;">2</span> * hp * ν^<span style="font-style: italic;">3</span> / c^<span style="font-style: italic;">2</span> / <span style="color: #66D9EF;">(</span>exp<span style="color: #A6E22E;">(</span>hp * ν / <span style="color: #E6DB74;">(</span>k_B * <span style="color: #66D9EF;">T</span><span style="color: #E6DB74;">)</span><span style="color: #A6E22E;">)</span> - <span style="font-style: italic;">1</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>.to<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Joule</span>•Meter⁻²•Steradian⁻¹<span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">blackBody</span>  <span style="color: #AE81FF;">(</span>ν: s⁻¹, <span style="color: #66D9EF;">T</span>: <span style="color: #66D9EF;">Kelvin</span>  <span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">Joule</span>•Meter⁻²•Steradian⁻¹ =
+  <span style="color: #FD971F;">result</span> = <span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">2</span> * hp * ν^<span style="font-style: italic;">3</span> / c^<span style="font-style: italic;">2</span> / <span style="color: #66D9EF;">(</span>exp<span style="color: #A6E22E;">(</span>hp * ν / <span style="color: #E6DB74;">(</span>k_B * <span style="color: #66D9EF;">T</span>  <span style="color: #E6DB74;">)</span>  <span style="color: #A6E22E;">)</span> - <span style="font-style: italic;">1</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span>.to<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">Joule</span>•Meter⁻²•Steradian⁻¹<span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">xrayEnergyToFreq</span><span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">E</span>: keV<span style="color: #AE81FF;">)</span>: s⁻¹ = 
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">xrayEnergyToFreq</span>  <span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">E</span>: keV<span style="color: #AE81FF;">)</span>: s⁻¹ = 
   <span style="color: #E6DB74;">## converts the input energy in keV to a correct frequency</span>
-  <span style="color: #FD971F;">result</span> = <span style="color: #66D9EF;">E</span>.to<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">Joule</span><span style="color: #AE81FF;">)</span> / hp
+  <span style="color: #FD971F;">result</span> = <span style="color: #66D9EF;">E</span>.to<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">Joule</span>  <span style="color: #AE81FF;">)</span> / hp
 <span style="color: #F92672;">echo</span> <span style="font-style: italic;">1</span>.keV.xrayEnergyToFreq
 <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Solar core temperature &quot;</span>, <span style="color: #66D9EF;">T_Sun</span>, <span style="color: #E6DB74;">&quot; in keV : &quot;</span>, <span style="color: #66D9EF;">T_Sun</span>.toNaturalUnit<span style="color: #AE81FF;">()</span>.to<span style="color: #AE81FF;">(</span>keV<span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">echo</span> blackBody<span style="color: #AE81FF;">(</span><span style="font-style: italic;">1</span>.μHz.to<span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">Hz</span><span style="color: #66D9EF;">)</span>, <span style="color: #66D9EF;">T_sun</span><span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">echo</span> blackBody<span style="color: #AE81FF;">(</span><span style="font-style: italic;">1</span>.keV.xrayEnergyToFreq, <span style="color: #66D9EF;">T_sun</span><span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">echo</span> blackBody<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">1</span>.μHz.to<span style="color: #66D9EF;">(</span>  <span style="color: #66D9EF;">Hz</span>  <span style="color: #66D9EF;">)</span>, <span style="color: #66D9EF;">T_sun</span>  <span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">echo</span> blackBody<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">1</span>.keV.xrayEnergyToFreq, <span style="color: #66D9EF;">T_sun</span>  <span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">let</span> <span style="color: #FD971F;">energies </span>= linspace<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">01</span>, <span style="font-style: italic;">15</span>.<span style="font-style: italic;">0</span>, <span style="font-style: italic;">1000</span><span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">let</span> <span style="color: #FD971F;">radiance </span>= energies.mapIt<span style="color: #AE81FF;">(</span>blackBody<span style="color: #66D9EF;">(</span>it.keV.xrayEnergyToFreq, <span style="color: #66D9EF;">T_sun</span><span style="color: #66D9EF;">)</span>.<span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">energies </span>= linspace<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">0</span>.<span style="font-style: italic;">01</span>, <span style="font-style: italic;">15</span>.<span style="font-style: italic;">0</span>, <span style="font-style: italic;">1000</span>  <span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">let</span> <span style="color: #FD971F;">radiance </span>= energies.mapIt<span style="color: #AE81FF;">(</span>blackBody<span style="color: #66D9EF;">(</span>it.keV.xrayEnergyToFreq, <span style="color: #66D9EF;">T_sun</span>  <span style="color: #66D9EF;">)</span>.<span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">)</span>
 <span style="color: #F92672;">let</span> <span style="color: #FD971F;">df </span>= seqsToDf<span style="color: #AE81FF;">(</span>energies, radiance<span style="color: #AE81FF;">)</span>
-ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;energies&quot;</span>, <span style="color: #E6DB74;">&quot;radiance&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> + 
+ggplot<span style="color: #AE81FF;">(</span>df, aes<span style="color: #66D9EF;">(</span>  <span style="color: #E6DB74;">&quot;energies&quot;</span>, <span style="color: #E6DB74;">&quot;radiance&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> + 
   geom_line<span style="color: #AE81FF;">()</span> + 
-  ggtitle<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Black body radiation @ $T = \SI{15e6}{K}$&quot;</span><span style="color: #AE81FF;">)</span> +
-  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Energy [$\si{keV}$]&quot;</span><span style="color: #AE81FF;">)</span> +
-  ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Radiance [$\si{J.m^{-2}.sr^{-1}}$]&quot;</span><span style="color: #AE81FF;">)</span> +
-  xlim<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span>, <span style="font-style: italic;">15</span><span style="color: #AE81FF;">)</span> +
-  themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = sideBySide<span style="color: #AE81FF;">)</span> + <span style="color: #75715E;"># </span><span style="color: #75715E;">golden ratio or height = 360, ?</span>
-  <span style="color: #75715E;">#</span><span style="color: #75715E;">ggshow() </span>
-  ggsave<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span>, width = <span style="font-style: italic;">600</span>, height = <span style="font-style: italic;">360</span><span style="color: #AE81FF;">)</span>
-</pre>
+  ggtitle<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Black body radiation @ $T = \SI{15e6}{K}$&quot;</span>  <span style="color: #AE81FF;">)</span> +
+  xlab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Energy [$\si{keV}$]&quot;</span>  <span style="color: #AE81FF;">)</span> +
+  ylab<span style="color: #AE81FF;">(</span>r<span style="color: #E6DB74;">&quot;Radiance [$\si{J.m^{-2}.sr^{-1}}$]&quot;</span>  <span style="color: #AE81FF;">)</span> +
+  xlim<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">0</span>, <span style="font-style: italic;">15</span>  <span style="color: #AE81FF;">)</span> +
+  themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = sideBySide<span style="color: #AE81FF;">)</span> + <span style="color: #75715E;"># </span>  <span style="color: #75715E;">golden ratio or height = 360, ?</span>
+  <span style="color: #75715E;">#</span>  <span style="color: #75715E;">ggshow() </span>
+  ggsave<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;/home/basti/phd/Figs/blackbody_spectrum_solar_core.pdf&quot;</span>, useTeX = <span style="color: #AE81FF;">true</span>, standalone = <span style="color: #AE81FF;">true</span>, width = <span style="font-style: italic;">600</span>, height = <span style="font-style: italic;">360</span>  <span style="color: #AE81FF;">)</span>
+</code></pre>
 </div>
 </div>
 </div>
@@ -2032,8 +2161,8 @@ Chameleons are a different type of hypothetical particle. A scalar
 particle arising from extensions to general relativity, which acts as
 a &quot;fifth force&quot; and can be used to model dark energy. We will not go
 into detail about the underlying theory here. Refer to
-(<a href="./bibliography.html#citeproc_bib_item_224">Waterhouse 2006</a>) for an in-depth introduction to
-chameleon gravity and (<a href="./bibliography.html#citeproc_bib_item_52">Brax and Davis 2015</a>) on how they differ from
+<a href="cite:&amp;waterhouse2006chameleons">cite:&amp;waterhouse2006chameleons</a> for an in-depth introduction to
+chameleon gravity and <a href="cite:&amp;brax15_distinguish">cite:&amp;brax15_distinguish</a> on how they differ from
 other modified gravity models.
 </p>
 
@@ -2050,19 +2179,19 @@ between the inner radiative zone and outer convective zone, at around
 \(0.7 · R_{\odot}\) in the Sun. This leads to strong magnetic fields at
 low enough densities. Due to the much lower temperatures present in
 the solar tachocline compared to the solar core, the peak of the solar
-chameleon spectrum is below \(\SI{1}{keV}\). See (<a href="./bibliography.html#citeproc_bib_item_51">Brax, Lindner, and Zioutas 2012</a>)
-and (<a href="./bibliography.html#citeproc_bib_item_8">Anastassopoulos et al. 2015</a>) for details about the chameleon
+chameleon spectrum is below \(\SI{1}{keV}\). See <a href="cite:&amp;brax12_chameleons">cite:&amp;brax12_chameleons</a>
+and <a href="cite:&amp;chameleons_sdd_cast">cite:&amp;chameleons_sdd_cast</a> for details about the chameleon
 production in the tachocline region and resulting spectrum.
 </p>
 
 <p>
 Their possible detection with CAST was proposed in 2012
-(<a href="./bibliography.html#citeproc_bib_item_51">Brax, Lindner, and Zioutas 2012</a>), with actual searches being performed
+<a href="cite:&amp;brax12_chameleons">cite:&amp;brax12_chameleons</a>, with actual searches being performed
 initially with a Silicon Drift Detector (SDD)
-(<a href="./bibliography.html#citeproc_bib_item_8">Anastassopoulos et al. 2015</a>) and later with a GridPix detector using data
-taken in 2014/15 (<a href="./bibliography.html#citeproc_bib_item_65">Christoph Krieger 2018</a>; <a href="./bibliography.html#citeproc_bib_item_9">Anastassopoulos et al. 2019</a>). In
+<a href="cite:&amp;chameleons_sdd_cast">cite:&amp;chameleons_sdd_cast</a> and later with a GridPix detector using data
+taken in 2014/15 <a href="cite:&amp;krieger2018search;&amp;krieger_chameleon_jcap">cite:&amp;krieger2018search;&amp;krieger_chameleon_jcap</a>. In
 addition, the KWISP (Kinetic WISP) detector
-(<a href="./bibliography.html#citeproc_bib_item_74">Cuendis et al. 2019</a>; <a href="./bibliography.html#citeproc_bib_item_30">Baier, n.d.</a>) was deployed at CAST, attempting
+<a href="cite:&amp;kwisp_first_results;&amp;justin_phd">cite:&amp;kwisp_first_results;&amp;justin_phd</a> was deployed at CAST, attempting
 search for the chameleon via their chameleon-matter coupling \(β_m\),
 which should lead to a chameleons interacting with a force sensor
 (without conversion to X-rays in the CAST magnet).
@@ -2073,14 +2202,14 @@ As the chameleon flux is highly dependent on details of solar physics
 that are understood to a much lesser extent than the temperature and
 composition in the solar core (required for axions), uncertainty on
 chameleon results is much larger. See also
-(<a href="./bibliography.html#citeproc_bib_item_236">Zanzi and Ricci 2015</a>) for a discussion of chameleon
+<a href="cite:&amp;zanzi15_chamel_field_solar_physic">cite:&amp;zanzi15_chamel_field_solar_physic</a> for a discussion of chameleon
 fields in the context of solar physics. 
 </p>
 
 <p>
 The conversion probability for back conversion into X-rays in a
 magnetic field, assuming coherent conversion, is given by
-(<a href="./bibliography.html#citeproc_bib_item_51">Brax, Lindner, and Zioutas 2012</a>):
+<a href="cite:brax12_chameleons">cite:brax12_chameleons</a>:
 </p>
 
 \begin{equation}
@@ -2132,7 +2261,7 @@ succinct overview of the general ideas and reference the best current
 limits on the relevant coupling constants in the regions of interest
 for this thesis. A great, frequently updated overview of the current
 best axion limits is maintained by Ciaran O&apos;Hare, available here
-(<a href="./bibliography.html#citeproc_bib_item_163">O’HARE 2020</a>). Generally, axion couplings can be
+<a href="cite:ciaran_o_hare_2020_3932430">cite:ciaran_o_hare_2020_3932430</a>. Generally, axion couplings can be
 probed by three main avenues:
 </p>
 
@@ -2158,7 +2287,7 @@ axion mass of cold axions part of the dark matter halo. While
 relying on astrophysically produced axions, the intent is direct
 detection. Recent interest in axions also means data from WIMP
 experiments like the XENON collaboration
-(<a href="./bibliography.html#citeproc_bib_item_21">Aprile et al. 2017</a>) is being analyzed for axion
+<a href="cite:&amp;aprile17_xenon_dark_matter_exper">cite:&amp;aprile17_xenon_dark_matter_exper</a> is being analyzed for axion
 signatures. Haloscopes and helioscopes depend on the axion-photon
 coupling \(g_{aγ}\), while WIMP experiments may consider the
 axion-electron \(g_{ae}\) or axion-nucleon \(g_{aN}\) couplings. For the
@@ -2170,7 +2299,7 @@ couplings.</dd>
 laboratory experiments, which both attempt to first <span class="underline">produce</span> axions
 and then <span class="underline">detect</span> them. This idea is commonly done in so called
 &apos;light shining through the wall&apos; (LSW) experiments like the ALPS
-experiment at DESY (<a href="./bibliography.html#citeproc_bib_item_57">Bähre et al. 2013</a>). Here, a
+experiment at DESY <a href="cite:&amp;baehre13_any_light_partic_searc_ii">cite:&amp;baehre13_any_light_partic_searc_ii</a>. Here, a
 laser cavity in a magnetic field is intended as an axion production
 facility. These produced axions would leave the cavities, propagate
 through some kind of wall (e.g. lead) and enter a second set of
@@ -2191,7 +2320,7 @@ via \(g_{aγ}\) in the CAST magnet.
 
 <p>
 The current best limit on the axion-photon coupling from laboratory
-experiments is from the CAST Nature paper in 2017 (<a href="./bibliography.html#citeproc_bib_item_68">Collaboration and others 2017</a>),
+experiments is from the CAST Nature paper in 2017 <a href="cite:cast_nature">cite:cast_nature</a>,
 providing a bound of
 </p>
 
@@ -2204,7 +2333,7 @@ g_{aγ, \text{Nature}} &lt; \SI{6.6e-11}{GeV^{−1}} \text{ at } \SI{95}{\%} \te
 <p>
 Similarly, for the product on the axion-electron and axion-photon
 couplings, the best limit from a helioscope experiment is also from
-CAST in 2013 (<a href="./bibliography.html#citeproc_bib_item_37">Barth et al. 2013</a>). This limit is
+CAST in 2013 <a href="cite:Barth_2013">cite:Barth_2013</a>. This limit is
 </p>
 
 <p>
@@ -2223,16 +2352,16 @@ red-giant branch (TRGB) stars is the most stringent way to restrict
 the axion-electron coupling \(g_{ae}\) alone. This is because axion
 production would induce more cooling, which would lead to a larger
 core mass at helium burning ignition, resulting in brighter TRGB
-stars. (<a href="./bibliography.html#citeproc_bib_item_60">Capozzi and Raffelt 2020</a>) calculate a limit
+stars. <a href="cite:&amp;capozzi20_axion_neutr_bound_improv_with">cite:&amp;capozzi20_axion_neutr_bound_improv_with</a> calculate a limit
 of \(g_{ae} = \num{1.3e-13} \text{ at } \SI{95}{\%} \text{ CL}\). A
 similar limit is obtained in
-(<a href="./bibliography.html#citeproc_bib_item_215">Straniero et al. 2020</a>). (<a href="./bibliography.html#citeproc_bib_item_40">Bertolami et al. 2014</a>)
+<a href="cite:&amp;straniero20_rgb_tip_galac_globul_clust">cite:&amp;straniero20_rgb_tip_galac_globul_clust</a>. <a href="cite:&amp;bertolami14_revis_axion_bound_from_galac">cite:&amp;bertolami14_revis_axion_bound_from_galac</a>
 compute a comparable limit from the White Dwarf luminosity
 function. However, for purely astrophysical coupling constraints the
 strong assumptions needing to be made about the underlying physical
 processes imply these limits are by themselves not sufficient. In fact
 there is reason to believe at least some of the current astrohpysical
-bounds are overestimated. In (<a href="./bibliography.html#citeproc_bib_item_80">Dennis and Sakstein 2023</a>) the authors use a
+bounds are overestimated. In <a href="cite:&amp;dennis2023tip">cite:&amp;dennis2023tip</a> the authors use a
 machine learning (ML) model to predict the brightness of TRGB stars to
 allow for much faster simulations of the parameter space relevant for
 such bounds. Using Markov Chain Monte Carlo models based on the ML
@@ -2245,9 +2374,9 @@ may still be allowed.
 <p>
 Finally, observations from X-ray telescope can also be used for limits
 on the product of \(g_{ae}·g_{aγ}\). This has been done in
-(<a href="./bibliography.html#citeproc_bib_item_81">Dessert, Long, and Safdi 2019</a>) based on data from the Suzaku mission and
+<a href="cite:&amp;PhysRevLett.123.061104">cite:&amp;PhysRevLett.123.061104</a> based on data from the Suzaku mission and
 followed up on by the same authors in
-(<a href="./bibliography.html#citeproc_bib_item_82">Dessert, Long, and Safdi 2022</a>) using data from the Chandra
+<a href="cite:&amp;dessert22_no_eviden_axion_from_obser">cite:&amp;dessert22_no_eviden_axion_from_obser</a> using data from the Chandra
 mission. In the latter they compute an exceptionally strong limit of
 </p>
 
@@ -2265,14 +2394,14 @@ valid for axion masses below \(m_a \lesssim \SI{5e-6}{eV}\).
 <dt>Chameleons</dt><dd>The current best bound on the chameleon-photon
 coupling was obtained using a previous GridPix detector with data
 taken at CAST in 2014/15. The observed limit obtained by C. Krieger in
-(<a href="./bibliography.html#citeproc_bib_item_65">Christoph Krieger 2018</a>; <a href="./bibliography.html#citeproc_bib_item_9">Anastassopoulos et al. 2019</a>) is
+<a href="cite:&amp;krieger2018search;&amp;krieger_chameleon_jcap">cite:&amp;krieger2018search;&amp;krieger_chameleon_jcap</a> is
 \[
   β_{γ, \text{Krieger}} = \num{5.74e10} \text{ at } \SI{95}{\%} \text{ CL}.
   \]</dd>
 </dl>
 </div>
-<div id="outline-container-org901a7fd" class="outline-4">
-<h4 id="org901a7fd">  <a href="#org901a7fd">  <span class="section-number-4">4.7.1.</span> Potential solar axion hints</a></h4>
+<div id="outline-container-orgb45e0f9" class="outline-4">
+<h4 id="orgb45e0f9">  <a href="#orgb45e0f9">  <span class="section-number-4">4.7.1.</span> Potential solar axion hints</a></h4>
 <div id="text-4-7-1" class="outline-text-4">
 <p>
 For completeness a few words about previous results which do not
@@ -2284,10 +2413,10 @@ axion signals.
 One of the first credible hints of such a solar axion signal comes
 from the XMM Newton telescope. Seasonal variation in the X-ray flux at
 a level of \(11σ\) is observed. The explanation provided in
-(<a href="./bibliography.html#citeproc_bib_item_88">Fraser et al. 2014</a>) is axion reconversion into
+<a href="cite:&amp;fraser14_poten_solar_axion_signat_x">cite:&amp;fraser14_poten_solar_axion_signat_x</a> is axion reconversion into
 X-rays in Earth&apos;s magnetic field. While criticism exists
-(<a href="./bibliography.html#citeproc_bib_item_187">Roncadelli and Tavecchio 2015</a>), there is anyhow recent interest
-in this signal (<a href="./bibliography.html#citeproc_bib_item_93">Ge et al. 2022</a>), this time due to
+<a href="cite:&amp;roncadelli15_no_axion_from_sun">cite:&amp;roncadelli15_no_axion_from_sun</a>, there is anyhow recent interest
+in this signal <a href="cite:&amp;ge22_x_ray_annual_modul_obser">cite:&amp;ge22_x_ray_annual_modul_obser</a>, this time due to
 axion quark nuggets (AQN). An AQN explanation would produce a signal
 up to \(\SI{100}{keV}\) outside the XMM Newton sensitive range. The
 authors propose to check archival data of the Nuclear Spectroscopic
@@ -2296,7 +2425,7 @@ telescope for such seasonal variations.
 </p>
 
 <p>
-Further, while the CAST Nature result (<a href="./bibliography.html#citeproc_bib_item_68">Collaboration and others 2017</a>) provides the
+Further, while the CAST Nature result <a href="cite:&amp;cast_nature">cite:&amp;cast_nature</a> provides the
 current best limit on the axion-photon coupling, its axion candidate
 dataset actually shows a signal excess at \SI{3}{keV} at a \(3σ\)
 level. Statistical effects or possibly not perfectly accounted for
@@ -2307,7 +2436,7 @@ during tracking data is more likely.
 <p>
 In 2020 the XENON collaboration announced having seen an excess in
 their electron recoil counts at energies compatible with a solar axion
-signal (<a href="./bibliography.html#citeproc_bib_item_19">Aprile et al. 2020</a>). A possible
+signal <a href="cite:aprile20_exces_elect_recoil_event_xenon">cite:aprile20_exces_elect_recoil_event_xenon</a>. A possible
 explanation not requiring solar axions was given as trace amounts of
 tritium below their sensitivity threshold. This garnered a lot of
 attention, because while only of \(3.4σ\) significance it was the first
@@ -2315,19 +2444,19 @@ hint of a potential solar axion signal published by a large
 collaboration as such. However, combining the resulting axion coupling
 with astrophysical results indicates a more likely non axion origin for
 the signal
-(<a href="./bibliography.html#citeproc_bib_item_26">Athron et al. 2021</a>; cite: <a href="./bibliography.html#citeproc_bib_item_151">Luzio, Fedele, et al. 2020</a>).
+<a href="cite:&amp;athron21_global_fits_axion_like_partic;cite:&amp;luzio20_solar_axion_cannot_explain_xenon_exces">cite:&amp;athron21_global_fits_axion_like_partic;cite:&amp;luzio20_solar_axion_cannot_explain_xenon_exces</a>.
 With the release the first XENONnT results in 2022
-(<a href="./bibliography.html#citeproc_bib_item_20">Aprile et al. 2022</a>) about new physics in
+<a href="cite:&amp;aprile22_searc_new_physic_elect_recoil">cite:&amp;aprile22_searc_new_physic_elect_recoil</a> about new physics in
 which no excess is visible, the old result is ruled out. Add to that,
 the LUX-ZEPLIN collaboration, a similar xenon filled experiment,
 recently published their results on new physics. Although not as
 sensitive as XENONnT, but more sensitive than XENON1T, no excess was
-observed there either (<a href="./bibliography.html#citeproc_bib_item_1">Aalbers et al. 2023</a>). 
+observed there either <a href="cite:&amp;lux_zeppelin_2023">cite:&amp;lux_zeppelin_2023</a>. 
 </p>
 </div>
 </div>
-<div id="outline-container-org96c533e" class="outline-4">
-<h4 id="org96c533e">  <a href="#org96c533e">  <span class="section-number-4">4.7.2.</span> A few more words on haloscopes   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orge0d7ef6" class="outline-4">
+<h4 id="orge0d7ef6">  <a href="#orge0d7ef6">  <span class="section-number-4">4.7.2.</span> A few more words on haloscopes   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-4-7-2" class="outline-text-4">
 <p>
 A haloscope is a type of axion experiment consisting of a (typically
@@ -2466,6 +2595,17 @@ sensitivity loss.
 </p></div></div>
 
 </div>
+<div id="preamble" class="status">
+
+<button class="toc-toggle" id="tocToggle" aria-label="Toggle table of contents">☰</button>
+<div class="theme-selector-wrapper">
+  <select class="theme-selector" id="themeSelector" aria-label="Select theme">
+    <!-- Options populated by JavaScript -->
+  </select>
+</div>
+<div class="toc-backdrop" id="tocBackdrop"></div>
+</div>
+
 <div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
 </div>
 </body>

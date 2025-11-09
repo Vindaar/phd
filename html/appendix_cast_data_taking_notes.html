@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--  2025-02-01 Sat 13:23  -->
+<!--  2025-11-09 Sun 15:13  -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>‎</title>
@@ -9,6 +9,9 @@
 <meta name="generator" content="Org Mode" />
 
 <link type="text/css" rel="stylesheet" href="org_html_export.css" />
+
+<link type="font/woff2" crossorigin="" rel="preload" href="/fonts/Baskervville-VariableFont_wght.woff2" as="font" />
+
 <script type="text/javascript">
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -71,6 +74,128 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             });
+        }
+    });
+});
+
+// Mobile TOC Toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    var tocToggle = document.getElementById('tocToggle');
+    var toc = document.getElementById('table-of-contents');
+    var backdrop = document.getElementById('tocBackdrop');
+
+    if (tocToggle && toc && backdrop) {
+        // Toggle TOC when hamburger button is clicked
+        tocToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toc.classList.toggle('active');
+            backdrop.classList.toggle('active');
+        });
+
+        // Close TOC when backdrop is clicked
+        backdrop.addEventListener('click', function() {
+            toc.classList.remove('active');
+            backdrop.classList.remove('active');
+        });
+
+        // Close TOC when a link inside it is clicked
+        var tocLinks = toc.querySelectorAll('a');
+        tocLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            });
+        });
+
+        // Close TOC with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && toc.classList.contains('active')) {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            }
+        });
+    }
+});
+
+// Theme Selector functionality with system preference detection
+document.addEventListener('DOMContentLoaded', function() {
+    var themeSelector = document.getElementById('themeSelector');
+    var body = document.body;
+
+    // Define available themes
+    var themes = {
+        'light': { name: 'Light', type: 'light', class: 'light-theme' },
+        'monokai-soft': { name: 'Monokai (Soft Text)', type: 'dark', class: 'theme-monokai-soft-text' },
+        'monokai-neutral-toc': { name: 'Monokai (Neutral TOC)', type: 'dark', class: 'theme-monokai-white-text' },
+        'dracula': { name: 'Dracula', type: 'dark', class: 'theme-dracula' },
+        'gruvbox': { name: 'Gruvbox', type: 'dark', class: 'theme-gruvbox' },
+        'tokyo-night': { name: 'Tokyo Night', type: 'dark', class: 'theme-tokyo-night' },
+        'andromeda': { name: 'Andromeda', type: 'dark', class: 'theme-andromeda' },
+    };
+
+    // Get system preference
+    var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var systemThemeType = systemPrefersDark ? 'dark' : 'light';
+
+    // Populate dropdown - system-preferred type first
+    var darkThemes = [];
+    var lightThemes = [];
+
+    for (var key in themes) {
+        var theme = themes[key];
+        if (theme.type === 'dark') {
+            darkThemes.push({ key: key, theme: theme });
+        } else {
+            lightThemes.push({ key: key, theme: theme });
+        }
+    }
+
+    var orderedThemes = systemPrefersDark ? darkThemes.concat(lightThemes) : lightThemes.concat(darkThemes);
+
+    orderedThemes.forEach(function(item) {
+        var option = document.createElement('option');
+        option.value = item.key;
+        option.textContent = item.theme.name + ' (' + item.theme.type + ')';
+        themeSelector.appendChild(option);
+    });
+
+    // Check for saved theme preference
+    var savedTheme = localStorage.getItem('theme');
+    var currentTheme = savedTheme || (systemPrefersDark ? 'monokai-soft' : 'light');
+
+    // Apply current theme
+    function applyTheme(themeKey) {
+        // Remove all theme classes
+        for (var key in themes) {
+            body.classList.remove(themes[key].class);
+        }
+        // Add selected theme class
+        if (themes[themeKey]) {
+            body.classList.add(themes[themeKey].class);
+        }
+    }
+
+    applyTheme(currentTheme);
+    themeSelector.value = currentTheme;
+
+    // Handle theme changes
+    if (themeSelector) {
+        themeSelector.addEventListener('change', function() {
+            var selectedTheme = this.value;
+            applyTheme(selectedTheme);
+            localStorage.setItem('theme', selectedTheme);
+            console.log('Switched to theme:', themes[selectedTheme].name);
+        });
+    }
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        // Only auto-switch if user hasn't manually set a preference
+        if (!localStorage.getItem('theme')) {
+            var newTheme = e.matches ? 'monokai-soft' : 'light';
+            applyTheme(newTheme);
+            themeSelector.value = newTheme;
+            console.log('System switched to', e.matches ? 'dark' : 'light', 'theme');
         }
     });
 });
@@ -140,9 +265,9 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
 <li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
 <ul>
-<li>  <a href="./about_thesis.html#orgfe77eb6">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#orgf40a93d">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#org607bd89">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org5d5ca24">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgd071881">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgccd0201">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
@@ -176,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
-<li>  <a href="./septemboard.html#org2a0c0f4">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#org49593cc">7.6. Detector readout system</a></li>
 <li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
 <li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
 <li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
@@ -240,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
 <li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
-<li>  <a href="./limit.html#org5995639">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgc3e5f13">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org34c85eb">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org5c2677d">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
 <li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
@@ -249,8 +374,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
 <li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
 <li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
-<li>  <a href="./limit.html#org75d3b34">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgfcbf364">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org4fec592">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgc8fc2b2">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
@@ -288,33 +413,33 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_run_list.html#orgb52235a">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_run_list.html#orgf971eee">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd947e01">22.1. Run table</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgf8afac6">22.2. Data runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgfe96ddc">22.3. Calibration runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgac5a852">22.4. Automatically generated run list</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd5cdef1">22.5. Automatically calculated total run times</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#org2406344">22.6. InGrid temperature from shift forms</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgae4e0fb">22.1. Run table</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org1c94b8e">22.2. Data runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5613f30">22.3. Calibration runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5ee0a43">22.4. Automatically generated run list</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgb06ce92">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org23e9775">22.6. InGrid temperature from shift forms</a></li>
 </ul>
 </li>
 <li><a href="./appendix_cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge32a9e1">23.1. Virtex V6 cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge17b088">23.2. Detector cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org93c1c60">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org9625327">23.4. Setting up the chips in TOS</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org2ef941f">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#orga68ff49">23.2. Detector cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org0145cca">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org5e669ea">23.4. Setting up the chips in TOS</a></li>
 </ul>
 </li>
 <li><a href="./appendix_vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_vacuum_contamination.html#org3cd49bd">24.1. Calculation of vacuum volume</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc39e76f">24.2. Calculation of potential influx of gas</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc67dc29">24.3. Consider pumping of pumps</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgbac7f48">24.4. Calculation of possible contamination</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#orga39142b">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9050e58">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9f3bf66">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9adc478">24.4. Calculation of possible contamination</a></li>
 </ul>
 </li>
 <li><a href="./appendix_detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
@@ -325,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_detector_lab.html#orgc899fb3">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_detector_lab.html#org616f0be">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
@@ -334,13 +459,13 @@ document.addEventListener('DOMContentLoaded', function () {
 <li><a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
-<li>  <a href="./appendix_fit_by_run_justification.html#org13d2559">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fit_by_run_justification.html#orgf376779">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#org78be87a">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#orgdadd742">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org8ff2c41">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org4569db5">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
@@ -349,25 +474,25 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_occupancy.html#org71d0d19">29.1. Run-2</a></li>
-<li>  <a href="./appendix_occupancy.html#orgcbfcb5e">29.2. Run-3</a></li>
-<li>  <a href="./appendix_occupancy.html#org3a727ee">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_occupancy.html#org0c07dc3">29.1. Run-2</a></li>
+<li>  <a href="./appendix_occupancy.html#orgfd35f3d">29.2. Run-3</a></li>
+<li>  <a href="./appendix_occupancy.html#org575f0d0">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
-<li>  <a href="./appendix_fadc.html#org595d68a">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fadc.html#org359350e">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
 </ul>
 </li>
 <li><a href="./appendix_background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
-<li>  <a href="./appendix_background_rates.html#org6b8736f">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org7827cf1">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org88d5321">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#orge495bc9">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org152406e">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org4f4f786">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
@@ -381,27 +506,27 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_software.html#orge51f988">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_software.html#org378ccdf">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgf327581">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgdd3f2b1">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
-<li>  <a href="./appendix_software.html#org92b1f48">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+<li>  <a href="./appendix_software.html#org544765d">34.4. Other libraries relevant for TimepixAnalysis</a></li>
 </ul>
 </li>
 <li><a href="./appendix_full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgc87960b">35.1. Raw data parsing and reconstruction</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org652a080">35.2. Parse and reconstruct the CDL data</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org5831301">35.3. Add tracking information to background files</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org904d73c">35.4. Using <code>runAnalysisChain</code></a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgb4de31c">35.5. Applying a classifier</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org9252218">35.6. Computing limits</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org501eca1">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org552659c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org8581c7e">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgeb8db11">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgaaebe4e">35.5. Applying a classifier</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgde50894">35.6. Computing limits</a></li>
 </ul>
 </li>
 <li><a href="./appendix_average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#org89ae1e7">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc035fda">36.2. Calculate conversion point numerically</a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc101b38">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orga91983c">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#org02d2b56">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orgf60ccf9">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
@@ -410,10 +535,10 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
-<li>  <a href="./appendix_raytracing.html#orgdb277d0">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org33f56e2">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org66d4b31">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#orgab3dcf7">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org3755681">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgc57967b">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org2ddc502">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgfd56f1c">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Ack">Ack</span>  </span></a></li>
@@ -447,8 +572,8 @@ notes about chip settings etc. (in case there were changes).
 </ul></li>
 </ul>
 </div>
-<div id="outline-container-orgd947e01" class="outline-3">
-<h3 id="orgd947e01">  <a href="#orgd947e01">  <span class="section-number-3">22.1.</span> Run table</a></h3>
+<div id="outline-container-orgae4e0fb" class="outline-3">
+<h3 id="orgae4e0fb">  <a href="#orgae4e0fb">  <span class="section-number-3">22.1.</span> Run table</a></h3>
 <div id="text-22-1" class="outline-text-3">
 <p>
 This section contains a table of the different runs, which identifies
@@ -464,8 +589,8 @@ The type column describes the run as either
 <li>&apos;x&apos; == experimental, related to development, problems etc</li>
 </ul>
 </div>
-<div id="outline-container-orge6ac91c" class="outline-4">
-<h4 id="orge6ac91c">  <a href="#orge6ac91c">  <span class="section-number-4">22.1.1.</span> Run in 2017</a></h4>
+<div id="outline-container-org6ded920" class="outline-4">
+<h4 id="org6ded920">  <a href="#org6ded920">  <span class="section-number-4">22.1.1.</span> Run in 2017</a></h4>
 <div id="text-22-1-1" class="outline-text-4">
 <table>
 
@@ -1030,8 +1155,8 @@ The type column describes the run as either
 </table>
 </div>
 </div>
-<div id="outline-container-orgccb90bc" class="outline-4">
-<h4 id="orgccb90bc">  <a href="#orgccb90bc">  <span class="section-number-4">22.1.2.</span> Run 1 in 2018</a></h4>
+<div id="outline-container-orgb1f7ace" class="outline-4">
+<h4 id="orgb1f7ace">  <a href="#orgb1f7ace">  <span class="section-number-4">22.1.2.</span> Run 1 in 2018</a></h4>
 <div id="text-22-1-2" class="outline-text-4">
 <table>
 
@@ -1657,12 +1782,12 @@ X* =</code> X-ray finger run
 </p>
 </div>
 </div>
-<div id="outline-container-org8519602" class="outline-4">
-<h4 id="org8519602">  <a href="#org8519602">  <span class="section-number-4">22.1.3.</span> Run 2 in 2018</a></h4>
+<div id="outline-container-orgf108d1f" class="outline-4">
+<h4 id="orgf108d1f">  <a href="#orgf108d1f">  <span class="section-number-4">22.1.3.</span> Run 2 in 2018</a></h4>
 <div id="text-22-1-3" class="outline-text-4">
 <p>
 Data taking for the second data taking period starts on
-<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-20 Sat 18:33&gt; </span></span> with a 2h calibration run after the detector
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-20 Sat 18:33&gt;</span></span> with a 2h calibration run after the detector
 was finally fixed on <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-10-19 Fri&gt;</span></span>. The issue was a bad soldering
 joint on the Phoenix connector on the intermediate board.
 </p>
@@ -2848,8 +2973,8 @@ and then 189 at the end of the 2017/18 data taking in Apr 2018. See
 </p>
 </div>
 </div>
-<div id="outline-container-org86ac199" class="outline-4">
-<h4 id="org86ac199">  <a href="#org86ac199">  <span class="section-number-4">22.1.4.</span> Total run time</a></h4>
+<div id="outline-container-orgb84924c" class="outline-4">
+<h4 id="orgb84924c">  <a href="#orgb84924c">  <span class="section-number-4">22.1.4.</span> Total run time</a></h4>
 <div id="text-22-1-4" class="outline-text-4">
 <p>
 After Run 96:
@@ -2959,8 +3084,8 @@ calibration: 105.5 h
 </div>
 </div>
 </div>
-<div id="outline-container-orgf8afac6" class="outline-3">
-<h3 id="orgf8afac6">  <a href="#orgf8afac6">  <span class="section-number-3">22.2.</span> Data runs</a></h3>
+<div id="outline-container-org1c94b8e" class="outline-3">
+<h3 id="org1c94b8e">  <a href="#org1c94b8e">  <span class="section-number-3">22.2.</span> Data runs</a></h3>
 <div id="text-22-2" class="outline-text-3">
 <p>
 This section covers the data runs, which took place.
@@ -3045,7 +3170,7 @@ All runs below are without the aforementioned error.
 
 <p>
 <b>NOTE:</b> During Run 89 the byobu buffer containing TOS got stuck on
-<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-12 Sun 19:35&gt; </span></span> due to &lt;F7&gt; being pressed (which eventually
+<span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-12 Sun 19:35&gt;</span></span> due to &lt;F7&gt; being pressed (which eventually
 pauses the thread). Was called by Cristian at <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-11-13 Mon 05:55&gt;</span></span>
 roughly. I fixed the issue. Therefore the length given in the table is
 misleading, as it does not show the actual time of data taking of that
@@ -3086,7 +3211,7 @@ the run is so long.
 <b>NOTE:</b> Regarding Run 97, morning shift on 25/11/17, from the elog:
 </p>
 <div class="org-src-container">
-<pre class="src src-nil">Remarks: At approx. 7:02 there was an error message in the Slow
+<pre class="src src-nil">  <code>Remarks: At approx. 7:02 there was an error message in the Slow
 Control program indicating that some file could not be saved because
 there was not enough memory. After about a minute, the Slow Control PC
 restarted by itself. At about the same time, an error message appeared
@@ -3095,7 +3220,7 @@ not communicate with the Slow Control program in order to read
 proximity sensor data. After the restart of the Slow control PC and
 Slow control program, things went back to normal. Because of all that,
 we lost first 3-4 minutes of tracking
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -3165,8 +3290,8 @@ integration time from 50 to 100 ns again. Happened at around
 <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-12-15 Fri 10:20&gt;</span></span>. Maybe 5 min later.
 </p>
 </div>
-<div id="outline-container-orgf54cac0" class="outline-4">
-<h4 id="orgf54cac0">  <a href="#orgf54cac0">  <span class="section-number-4">22.2.1.</span> Notes 2018</a></h4>
+<div id="outline-container-orgf3c6281" class="outline-4">
+<h4 id="orgf3c6281">  <a href="#orgf3c6281">  <span class="section-number-4">22.2.1.</span> Notes 2018</a></h4>
 <div id="text-22-2-1" class="outline-text-4">
 <p>
 After Run 137 (first run of 2018) I did a calibration run only to
@@ -3201,8 +3326,8 @@ Change is reflected in CAST calibration Git repository, in fsr<sub>as</sub><sub>
 folder!
 </p>
 </div>
-<div id="outline-container-org3dc0181" class="outline-5">
-<h5 id="org3dc0181">  <a href="#org3dc0181">  <span class="section-number-5">22.2.1.1.</span> Power Problem</a></h5>
+<div id="outline-container-org4c6c939" class="outline-5">
+<h5 id="org4c6c939">  <a href="#org4c6c939">  <span class="section-number-5">22.2.1.1.</span> Power Problem</a></h5>
 <div id="text-22-2-1-1" class="outline-text-5">
 <p>
 Problem due to power supply, causing what looked like changes to the
@@ -3215,20 +3340,20 @@ See the following mail for a short explanation:
 </p>
 </div>
 </div>
-<div id="outline-container-org73a1984" class="outline-5">
-<h5 id="org73a1984">  <a href="#org73a1984">  <span class="section-number-5">22.2.1.2.</span> Run 297 and 298</a></h5>
+<div id="outline-container-orgd7be2c0" class="outline-5">
+<h5 id="orgd7be2c0">  <a href="#orgd7be2c0">  <span class="section-number-5">22.2.1.2.</span> Run 297 and 298</a></h5>
 <div id="text-22-2-1-2" class="outline-text-5">
 <p>
 There was some pretty crazy noise in run 297 (see Sergios video on
-WhatsApp), so I disabled the FADC on <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-13 Thu 18:40&gt; </span></span> for Run
+WhatsApp), so I disabled the FADC on <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-13 Thu 18:40&gt;</span></span> for Run
 298, since I&apos;m heading down to CERN on <span class="timestamp-wrapper">  <span class="timestamp">&lt;2018-12-14 Fri&gt;</span></span>.
 </p>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgfe96ddc" class="outline-3">
-<h3 id="orgfe96ddc">  <a href="#orgfe96ddc">  <span class="section-number-3">22.3.</span> Calibration runs</a></h3>
+<div id="outline-container-org5613f30" class="outline-3">
+<h3 id="org5613f30">  <a href="#org5613f30">  <span class="section-number-3">22.3.</span> Calibration runs</a></h3>
 <div id="text-22-3" class="outline-text-3">
 <p>
 This scetion covers the calibration runs, which took place.
@@ -3251,8 +3376,8 @@ This scetion covers the calibration runs, which took place.
 </p>
 </div>
 </div>
-<div id="outline-container-orgac5a852" class="outline-3">
-<h3 id="orgac5a852">  <a href="#orgac5a852">  <span class="section-number-3">22.4.</span> Automatically generated run list</a></h3>
+<div id="outline-container-org5ee0a43" class="outline-3">
+<h3 id="org5ee0a43">  <a href="#org5ee0a43">  <span class="section-number-3">22.4.</span> Automatically generated run list</a></h3>
 <div id="text-22-4" class="outline-text-3">
 <p>
 The following run list is created by the <code>writeRunList</code> tool:
@@ -5587,20 +5712,20 @@ based on the tracking logs.
 </table>
 </div>
 </div>
-<div id="outline-container-orgd5cdef1" class="outline-3">
-<h3 id="orgd5cdef1">  <a href="#orgd5cdef1">  <span class="section-number-3">22.5.</span> Automatically calculated total run times</a></h3>
+<div id="outline-container-orgb06ce92" class="outline-3">
+<h3 id="orgb06ce92">  <a href="#orgb06ce92">  <span class="section-number-3">22.5.</span> Automatically calculated total run times</a></h3>
 <div id="text-22-5" class="outline-text-3">
 <p>
 Run period 2 (= 2017/18): 
 </p>
 <div class="org-src-container">
-<pre class="src src-nil">Type: rtBackground
+<pre class="src src-nil">  <code>Type: rtBackground
          trackingDuration: 4 days, 10 hours, and 20 seconds
          nonTrackingDuration: 14 weeks, 2 days, 1 hour, 23 minutes, and 18 seconds
 Type: rtCalibration
          trackingDuration: 0 nanoseconds
          nonTrackingDuration: 4 days, 11 hours, 25 minutes, and 20 seconds
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -5614,13 +5739,13 @@ Tracking data: 106 h
 Run period 3 (= Oct-Dec 2018):
 </p>
 <div class="org-src-container">
-<pre class="src src-nil">Type: rtBackground
+<pre class="src src-nil">  <code>Type: rtBackground
          trackingDuration: 3 days, 2 hours, 17 minutes, and 53 seconds
          nonTrackingDuration: 6 weeks, 4 days, 20 hours, 54 minutes, and 29 seconds
 Type: rtCalibration
          trackingDuration: 0 nanoseconds
          nonTrackingDuration: 3 days, 15 hours, 3 minutes, and 45 seconds
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -5638,8 +5763,8 @@ Tracking data: 180.29 h
 </p>
 </div>
 </div>
-<div id="outline-container-org2406344" class="outline-3">
-<h3 id="org2406344">  <a href="#org2406344">  <span class="section-number-3">22.6.</span> InGrid temperature from shift forms</a></h3>
+<div id="outline-container-org23e9775" class="outline-3">
+<h3 id="org23e9775">  <a href="#org23e9775">  <span class="section-number-3">22.6.</span> InGrid temperature from shift forms</a></h3>
 <div id="text-22-6" class="outline-text-3">
 <p>
 Due to the bug in TOS that caused the temperature log files to be
@@ -6529,6 +6654,17 @@ There are also pictures of every shift form in my googlo photos.
 </div>
 </div>
 
+
+<div id="preamble" class="status">
+
+<button class="toc-toggle" id="tocToggle" aria-label="Toggle table of contents">☰</button>
+<div class="theme-selector-wrapper">
+  <select class="theme-selector" id="themeSelector" aria-label="Select theme">
+    <!-- Options populated by JavaScript -->
+  </select>
+</div>
+<div class="toc-backdrop" id="tocBackdrop"></div>
+</div>
 
 <div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
 </div>

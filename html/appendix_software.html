@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--  2025-02-01 Sat 13:23  -->
+<!--  2025-11-09 Sun 15:13  -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>‎</title>
@@ -9,6 +9,9 @@
 <meta name="generator" content="Org Mode" />
 
 <link type="text/css" rel="stylesheet" href="org_html_export.css" />
+
+<link type="font/woff2" crossorigin="" rel="preload" href="/fonts/Baskervville-VariableFont_wght.woff2" as="font" />
+
 <script type="text/javascript">
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -71,6 +74,128 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             });
+        }
+    });
+});
+
+// Mobile TOC Toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    var tocToggle = document.getElementById('tocToggle');
+    var toc = document.getElementById('table-of-contents');
+    var backdrop = document.getElementById('tocBackdrop');
+
+    if (tocToggle && toc && backdrop) {
+        // Toggle TOC when hamburger button is clicked
+        tocToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toc.classList.toggle('active');
+            backdrop.classList.toggle('active');
+        });
+
+        // Close TOC when backdrop is clicked
+        backdrop.addEventListener('click', function() {
+            toc.classList.remove('active');
+            backdrop.classList.remove('active');
+        });
+
+        // Close TOC when a link inside it is clicked
+        var tocLinks = toc.querySelectorAll('a');
+        tocLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            });
+        });
+
+        // Close TOC with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && toc.classList.contains('active')) {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            }
+        });
+    }
+});
+
+// Theme Selector functionality with system preference detection
+document.addEventListener('DOMContentLoaded', function() {
+    var themeSelector = document.getElementById('themeSelector');
+    var body = document.body;
+
+    // Define available themes
+    var themes = {
+        'light': { name: 'Light', type: 'light', class: 'light-theme' },
+        'monokai-soft': { name: 'Monokai (Soft Text)', type: 'dark', class: 'theme-monokai-soft-text' },
+        'monokai-neutral-toc': { name: 'Monokai (Neutral TOC)', type: 'dark', class: 'theme-monokai-white-text' },
+        'dracula': { name: 'Dracula', type: 'dark', class: 'theme-dracula' },
+        'gruvbox': { name: 'Gruvbox', type: 'dark', class: 'theme-gruvbox' },
+        'tokyo-night': { name: 'Tokyo Night', type: 'dark', class: 'theme-tokyo-night' },
+        'andromeda': { name: 'Andromeda', type: 'dark', class: 'theme-andromeda' },
+    };
+
+    // Get system preference
+    var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var systemThemeType = systemPrefersDark ? 'dark' : 'light';
+
+    // Populate dropdown - system-preferred type first
+    var darkThemes = [];
+    var lightThemes = [];
+
+    for (var key in themes) {
+        var theme = themes[key];
+        if (theme.type === 'dark') {
+            darkThemes.push({ key: key, theme: theme });
+        } else {
+            lightThemes.push({ key: key, theme: theme });
+        }
+    }
+
+    var orderedThemes = systemPrefersDark ? darkThemes.concat(lightThemes) : lightThemes.concat(darkThemes);
+
+    orderedThemes.forEach(function(item) {
+        var option = document.createElement('option');
+        option.value = item.key;
+        option.textContent = item.theme.name + ' (' + item.theme.type + ')';
+        themeSelector.appendChild(option);
+    });
+
+    // Check for saved theme preference
+    var savedTheme = localStorage.getItem('theme');
+    var currentTheme = savedTheme || (systemPrefersDark ? 'monokai-soft' : 'light');
+
+    // Apply current theme
+    function applyTheme(themeKey) {
+        // Remove all theme classes
+        for (var key in themes) {
+            body.classList.remove(themes[key].class);
+        }
+        // Add selected theme class
+        if (themes[themeKey]) {
+            body.classList.add(themes[themeKey].class);
+        }
+    }
+
+    applyTheme(currentTheme);
+    themeSelector.value = currentTheme;
+
+    // Handle theme changes
+    if (themeSelector) {
+        themeSelector.addEventListener('change', function() {
+            var selectedTheme = this.value;
+            applyTheme(selectedTheme);
+            localStorage.setItem('theme', selectedTheme);
+            console.log('Switched to theme:', themes[selectedTheme].name);
+        });
+    }
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        // Only auto-switch if user hasn't manually set a preference
+        if (!localStorage.getItem('theme')) {
+            var newTheme = e.matches ? 'monokai-soft' : 'light';
+            applyTheme(newTheme);
+            themeSelector.value = newTheme;
+            console.log('System switched to', e.matches ? 'dark' : 'light', 'theme');
         }
     });
 });
@@ -140,9 +265,9 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
 <li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
 <ul>
-<li>  <a href="./about_thesis.html#orgfe77eb6">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#orgf40a93d">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#org607bd89">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org5d5ca24">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgd071881">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgccd0201">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
@@ -176,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
-<li>  <a href="./septemboard.html#org2a0c0f4">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#org49593cc">7.6. Detector readout system</a></li>
 <li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
 <li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
 <li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
@@ -240,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
 <li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
-<li>  <a href="./limit.html#org5995639">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgc3e5f13">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org34c85eb">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org5c2677d">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
 <li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
@@ -249,8 +374,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
 <li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
 <li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
-<li>  <a href="./limit.html#org75d3b34">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgfcbf364">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org4fec592">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgc8fc2b2">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
@@ -288,33 +413,33 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_run_list.html#orgb52235a">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_run_list.html#orgf971eee">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd947e01">22.1. Run table</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgf8afac6">22.2. Data runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgfe96ddc">22.3. Calibration runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgac5a852">22.4. Automatically generated run list</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd5cdef1">22.5. Automatically calculated total run times</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#org2406344">22.6. InGrid temperature from shift forms</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgae4e0fb">22.1. Run table</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org1c94b8e">22.2. Data runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5613f30">22.3. Calibration runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5ee0a43">22.4. Automatically generated run list</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgb06ce92">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org23e9775">22.6. InGrid temperature from shift forms</a></li>
 </ul>
 </li>
 <li><a href="./appendix_cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge32a9e1">23.1. Virtex V6 cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge17b088">23.2. Detector cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org93c1c60">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org9625327">23.4. Setting up the chips in TOS</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org2ef941f">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#orga68ff49">23.2. Detector cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org0145cca">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org5e669ea">23.4. Setting up the chips in TOS</a></li>
 </ul>
 </li>
 <li><a href="./appendix_vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_vacuum_contamination.html#org3cd49bd">24.1. Calculation of vacuum volume</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc39e76f">24.2. Calculation of potential influx of gas</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc67dc29">24.3. Consider pumping of pumps</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgbac7f48">24.4. Calculation of possible contamination</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#orga39142b">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9050e58">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9f3bf66">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9adc478">24.4. Calculation of possible contamination</a></li>
 </ul>
 </li>
 <li><a href="./appendix_detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
@@ -325,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_detector_lab.html#orgc899fb3">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_detector_lab.html#org616f0be">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
@@ -334,13 +459,13 @@ document.addEventListener('DOMContentLoaded', function () {
 <li><a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
-<li>  <a href="./appendix_fit_by_run_justification.html#org13d2559">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fit_by_run_justification.html#orgf376779">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#org78be87a">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#orgdadd742">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org8ff2c41">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org4569db5">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
@@ -349,25 +474,25 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_occupancy.html#org71d0d19">29.1. Run-2</a></li>
-<li>  <a href="./appendix_occupancy.html#orgcbfcb5e">29.2. Run-3</a></li>
-<li>  <a href="./appendix_occupancy.html#org3a727ee">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_occupancy.html#org0c07dc3">29.1. Run-2</a></li>
+<li>  <a href="./appendix_occupancy.html#orgfd35f3d">29.2. Run-3</a></li>
+<li>  <a href="./appendix_occupancy.html#org575f0d0">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
-<li>  <a href="./appendix_fadc.html#org595d68a">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fadc.html#org359350e">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
 </ul>
 </li>
 <li><a href="./appendix_background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
-<li>  <a href="./appendix_background_rates.html#org6b8736f">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org7827cf1">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org88d5321">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#orge495bc9">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org152406e">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org4f4f786">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
@@ -381,27 +506,27 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_software.html#orge51f988">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_software.html#org378ccdf">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgf327581">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgdd3f2b1">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
-<li>  <a href="./appendix_software.html#org92b1f48">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+<li>  <a href="./appendix_software.html#org544765d">34.4. Other libraries relevant for TimepixAnalysis</a></li>
 </ul>
 </li>
 <li><a href="./appendix_full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgc87960b">35.1. Raw data parsing and reconstruction</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org652a080">35.2. Parse and reconstruct the CDL data</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org5831301">35.3. Add tracking information to background files</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org904d73c">35.4. Using <code>runAnalysisChain</code></a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgb4de31c">35.5. Applying a classifier</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org9252218">35.6. Computing limits</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org501eca1">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org552659c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org8581c7e">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgeb8db11">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgaaebe4e">35.5. Applying a classifier</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgde50894">35.6. Computing limits</a></li>
 </ul>
 </li>
 <li><a href="./appendix_average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#org89ae1e7">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc035fda">36.2. Calculate conversion point numerically</a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc101b38">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orga91983c">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#org02d2b56">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orgf60ccf9">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
@@ -410,10 +535,10 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
-<li>  <a href="./appendix_raytracing.html#orgdb277d0">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org33f56e2">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org66d4b31">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#orgab3dcf7">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org3755681">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgc57967b">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org2ddc502">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgfd56f1c">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Ack">Ack</span>  </span></a></li>
@@ -438,8 +563,8 @@ for your own data,</li>
 <li>wish to further process data produced by these tools with your own software.</li>
 </ul>
 </div>
-<div id="outline-container-orge51f988" class="outline-3">
-<h3 id="orge51f988">  <a href="#orge51f988">  <span class="section-number-3">34.1.</span> Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
+<div id="outline-container-orgf327581" class="outline-3">
+<h3 id="orgf327581">  <a href="#orgf327581">  <span class="section-number-3">34.1.</span> Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
 <div id="text-34-1" class="outline-text-3">
 <p>
 Some of you may wonder why I wrote all this code in order to analyze
@@ -452,7 +577,7 @@ The reason boils down to 2 main points:
 </p>
 
 <ol class="org-ol">
-<li>Christoph (<a href="./bibliography.html#citeproc_bib_item_65">Christoph Krieger 2018</a>) used the software framework
+<li>Christoph <a href="cite:&amp;krieger2018search">cite:&amp;krieger2018search</a> used the software framework
 <a href="https://ilcsoft.desy.de/portal/software_packages/marlintpc/">MarlinTPC</a> (see also <sup>  <a id="fnr.1" href="#fn.1" class="footref" role="doc-backlink">1</a></sup>). It is an extension
 to the <a href="https://github.com/iLCSoft/Marlin">&apos;Marlin&apos;</a> framework intended for the application of TPCs in
 the context of the International Linear Collider (ILC).
@@ -525,8 +650,8 @@ point.
 </p>
 </div>
 </div>
-<div id="outline-container-org378ccdf" class="outline-3">
-<h3 id="org378ccdf">  <a href="#org378ccdf">  <span class="section-number-3">34.2.</span> Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
+<div id="outline-container-orgdd3f2b1" class="outline-3">
+<h3 id="orgdd3f2b1">  <a href="#orgdd3f2b1">  <span class="section-number-3">34.2.</span> Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
 <div id="text-34-2" class="outline-text-3">
 <p>
 As briefly mentioned already in the main body, Nim is a – relatively
@@ -549,7 +674,7 @@ coming after me.
 <div id="text-sec:appendix:timepix_analysis" class="outline-text-3">
 <p>
 Introduced in the main part, in sec. <a href="./reconstruction.html#sec:reco:tpa">9.1</a>, <code>TimepixAnalysis</code>
-(<a href="./bibliography.html#citeproc_bib_item_198">Schmidt 2022</a>) is the name for the repository containing a large collection
+<a href="cite:&amp;TPA">cite:&amp;TPA</a> is the name for the repository containing a large collection
 of different programs for the data reconstruction and analysis of
 Timepix based detectors.
 </p>
@@ -558,7 +683,7 @@ Timepix based detectors.
 Generally, the <code>README</code> in the repository gives an overview of all the
 relevant programs, installation instructions and more. For further
 details therefore check there or simply open an issue in the
-repository (<a href="./bibliography.html#citeproc_bib_item_198">Schmidt 2022</a>).
+repository <a href="cite:&amp;TPA">cite:&amp;TPA</a>.
 </p>
 
 <p>
@@ -579,8 +704,8 @@ the repository, but that makes it trickier to link to.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org6c97849" class="outline-4">
-<h4 id="org6c97849">  <a href="#org6c97849">  <span class="section-number-4">34.3.1.</span> Common points between all TimepixAnalysis programs</a></h4>
+<div id="outline-container-org21c7d60" class="outline-4">
+<h4 id="org21c7d60">  <a href="#org21c7d60">  <span class="section-number-4">34.3.1.</span> Common points between all TimepixAnalysis programs</a></h4>
 <div id="text-34-3-1" class="outline-text-4">
 <p>
 All programs in the TimepixAnalysis repository are command line
@@ -604,8 +729,8 @@ example, running the first program of the analysis pipeline
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">raw_data_manipulation -h
-</pre>
+<pre class="src src-sh">  <code>raw_data_manipulation -h
+</code></pre>
 </div>
 
 <p>
@@ -624,7 +749,7 @@ information about this, it is mentioned where important.
 </p>
 
 <div class="org-src-container">
-<label class="org-src-name"><span class="listing-number">Listing 16: </span>Example help output of the <code>raw_data_manipulation</code> program when run with <code>-h</code> or <code>--help</code> (some options were removed here to shorten the output).</label><pre id="list:raw_data_manipulation_help" class="src src-sh">Usage:
+<label class="org-src-name"><span class="listing-number">Listing 16: </span>Example help output of the <code>raw_data_manipulation</code> program when run with <code>-h</code> or <code>--help</code> (some options were removed here to shorten the output).</label><pre id="list:raw_data_manipulation_help" class="src src-sh">  <code>Usage:
   main [REQUIRED,optional-params]
 Version: 44c0c91 built on: 2023-12-06 at 13:01:35
 Options:
@@ -658,16 +783,16 @@ Options:
                                            to TPA format instead of a Tpx1 run
                                            directory
   ...                                         
-</pre>
+</code></pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org9665e7f" class="outline-4">
-<h4 id="org9665e7f">  <a href="#org9665e7f">  <span class="section-number-4">34.3.2.</span> Dependencies</a></h4>
+<div id="outline-container-orgecf7ba0" class="outline-4">
+<h4 id="orgecf7ba0">  <a href="#orgecf7ba0">  <span class="section-number-4">34.3.2.</span> Dependencies</a></h4>
 <div id="text-34-3-2" class="outline-text-4">
 <p>
 TimepixAnalysis mainly has a single noteworthy external dependency,
-namely the HDF5 (<a href="./bibliography.html#citeproc_bib_item_218">The HDF Group 1997</a>) library. The vast majority of code (inside
+namely the HDF5 <a href="cite:&amp;hdf5">cite:&amp;hdf5</a> library. The vast majority of code (inside
 the repository itself and its dependencies) is pure Nim. Two
 optimization libraries written in C <code>mpfit</code>
 (Levenberg-Marquardt) <sup>  <a id="fnr.4" href="#fn.4" class="footref" role="doc-backlink">4</a></sup> and NLopt <sup>  <a id="fnr.5" href="#fn.5" class="footref" role="doc-backlink">5</a></sup> are wrapped from
@@ -678,8 +803,8 @@ README.
 
 <p>
 For those programs related to the multilayer perceptron (MLP) training
-or usage, PyTorch (<a href="./bibliography.html#citeproc_bib_item_166">Paszke et al. 2019</a>) is an
-additional dependency via (<a href="./bibliography.html#citeproc_bib_item_203">SciNim contributors 2023</a>). Flambeau installs a suitable
+or usage, PyTorch <a href="cite:&amp;Paszke_PyTorch_An_Imperative_2019">cite:&amp;Paszke_PyTorch_An_Imperative_2019</a> is an
+additional dependency via <a href="cite:&amp;flambeau">cite:&amp;flambeau</a>. Flambeau installs a suitable
 PyTorch version for you. 
 </p>
 
@@ -689,8 +814,8 @@ and a working BLAS and LAPACK installation.
 </p>
 </div>
 </div>
-<div id="outline-container-org43053d1" class="outline-4">
-<h4 id="org43053d1">  <a href="#org43053d1">  <span class="section-number-4">34.3.3.</span> Compilation</a></h4>
+<div id="outline-container-org3685079" class="outline-4">
+<h4 id="org3685079">  <a href="#org3685079">  <span class="section-number-4">34.3.3.</span> Compilation</a></h4>
 <div id="text-34-3-3" class="outline-text-4">
 <p>
 Nim being a compiled language means we need to compile the programs
@@ -705,8 +830,8 @@ as a classifier is compiled in.
 Generally, compilation is done via:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">nim c -d:release foo.nim
-</pre>
+<pre class="src src-sh">  <code>nim c -d:release foo.nim
+</code></pre>
 </div>
 <p>
 where <code>foo.nim</code> is any of the programs below. <code>-d:release</code> tells the
@@ -726,14 +851,14 @@ Unless otherwise specified, each program mentioned below is located in
 </p>
 </div>
 </div>
-<div id="outline-container-org2ffcc9a" class="outline-4">
-<h4 id="org2ffcc9a">  <a href="#org2ffcc9a">  <span class="section-number-4">34.3.4.</span> <code>raw_data_manipulation</code></a></h4>
+<div id="outline-container-orgddce9e8" class="outline-4">
+<h4 id="orgddce9e8">  <a href="#orgddce9e8">  <span class="section-number-4">34.3.4.</span> <code>raw_data_manipulation</code></a></h4>
 <div id="text-34-3-4" class="outline-text-4">
 <p>
 <code>raw_data_manipulation</code> is the first step of the analysis
 pipeline. Essentially, it is a parsing stage of the data generated by
 TOS (see section <a href="./daq.html#sec:daq:tos_output_format">17.2.1</a> for an explanation of it)
-and storing it in a compressed HDF5 (<a href="./bibliography.html#citeproc_bib_item_218">The HDF Group 1997</a>) data file.
+and storing it in a compressed HDF5 <a href="cite:&amp;hdf5">cite:&amp;hdf5</a> data file.
 </p>
 
 <p>
@@ -787,33 +912,33 @@ reading individual columns from these is inefficient.
 </p>
 
 <div class="org-src-container">
-<label class="org-src-name"><span class="listing-number">Listing 17: </span>An abstract overview of the general layout of the generated HDF5 files. Each entry shown that has any children is an HDF5 group. Every leaf node is an HDF5 dataset. The data is ordered by availability. Each run is a separate group. Within all chips have their own groups with data associated to that chip. The common datasets are those that contain data from the TOS event header. FADC data stored as the raw memory dumps from the FADC files (for which fewer than regular TOS data files exist).</label><pre id="code:reco:abstract_hdf5_layout" class="src src-toml">- runs
+<label class="org-src-name"><span class="listing-number">Listing 17: </span>An abstract overview of the general layout of the generated HDF5 files. Each entry shown that has any children is an HDF5 group. Every leaf node is an HDF5 dataset. The data is ordered by availability. Each run is a separate group. Within all chips have their own groups with data associated to that chip. The common datasets are those that contain data from the TOS event header. FADC data stored as the raw memory dumps from the FADC files (for which fewer than regular TOS data files exist).</label><pre id="code:reco:abstract_hdf5_layout" class="src src-toml">  <code>- runs
   - run_&lt;number&gt;
-    - chip_0 <span style="color: #75715E;"># </span><span style="color: #75715E;">one for each chip in the event</span>
-      - Hits <span style="color: #75715E;"># </span><span style="color: #75715E;">number of hits in each event</span>
-      - Occupancy <span style="color: #75715E;"># </span><span style="color: #75715E;">a 2D occupancy map of this run</span>
-      - ToT <span style="color: #75715E;"># </span><span style="color: #75715E;">all ToT values of this run</span>
-      - raw_ch <span style="color: #75715E;"># </span><span style="color: #75715E;">the ToT/ToA values recorded for each event (ragged data)</span>
-      - raw_x <span style="color: #75715E;"># </span><span style="color: #75715E;">the x coordinates recorded for each event (ragged data)</span>
-      - raw_y <span style="color: #75715E;"># </span><span style="color: #75715E;">the y coordinates recorded for each event (ragged data)</span>
-    - chip_i <span style="color: #75715E;"># </span><span style="color: #75715E;">all other chips</span>
+    - chip_0 <span style="color: #75715E;"># </span>  <span style="color: #75715E;">one for each chip in the event</span>
+      - Hits <span style="color: #75715E;"># </span>  <span style="color: #75715E;">number of hits in each event</span>
+      - Occupancy <span style="color: #75715E;"># </span>  <span style="color: #75715E;">a 2D occupancy map of this run</span>
+      - ToT <span style="color: #75715E;"># </span>  <span style="color: #75715E;">all ToT values of this run</span>
+      - raw_ch <span style="color: #75715E;"># </span>  <span style="color: #75715E;">the ToT/ToA values recorded for each event (ragged data)</span>
+      - raw_x <span style="color: #75715E;"># </span>  <span style="color: #75715E;">the x coordinates recorded for each event (ragged data)</span>
+      - raw_y <span style="color: #75715E;"># </span>  <span style="color: #75715E;">the y coordinates recorded for each event (ragged data)</span>
+    - chip_i <span style="color: #75715E;"># </span>  <span style="color: #75715E;">all other chips</span>
       - ...
-    - fadc <span style="color: #75715E;"># </span><span style="color: #75715E;">if available</span>
-      - eventNumber <span style="color: #75715E;"># </span><span style="color: #75715E;">event number of each entry</span>
-                    <span style="color: #75715E;"># </span><span style="color: #75715E;">(not all events have FADC data)</span>
-      - raw_fadc <span style="color: #75715E;"># </span><span style="color: #75715E;">raw FADC data (uncorrected, all 10240 registers)</span>
-      - trigger_record <span style="color: #75715E;"># </span><span style="color: #75715E;">temporal correction factor for each event</span>
-    - fadcReadout <span style="color: #75715E;"># </span><span style="color: #75715E;">flag if FADC was readout in each event</span>
-    - fadcTriggerClock <span style="color: #75715E;"># </span><span style="color: #75715E;">clock cycle FADC triggered</span>
-    - szintillator trigger clocks <span style="color: #75715E;"># </span><span style="color: #75715E;">datasets for each scintillator</span>
-    - timestamp <span style="color: #75715E;"># </span><span style="color: #75715E;">timestamp of each event</span>
-  - run_i <span style="color: #75715E;"># </span><span style="color: #75715E;">all other runs</span>
+    - fadc <span style="color: #75715E;"># </span>  <span style="color: #75715E;">if available</span>
+      - eventNumber <span style="color: #75715E;"># </span>  <span style="color: #75715E;">event number of each entry</span>
+                    <span style="color: #75715E;"># </span>  <span style="color: #75715E;">(not all events have FADC data)</span>
+      - raw_fadc <span style="color: #75715E;"># </span>  <span style="color: #75715E;">raw FADC data (uncorrected, all 10240 registers)</span>
+      - trigger_record <span style="color: #75715E;"># </span>  <span style="color: #75715E;">temporal correction factor for each event</span>
+    - fadcReadout <span style="color: #75715E;"># </span>  <span style="color: #75715E;">flag if FADC was readout in each event</span>
+    - fadcTriggerClock <span style="color: #75715E;"># </span>  <span style="color: #75715E;">clock cycle FADC triggered</span>
+    - szintillator trigger clocks <span style="color: #75715E;"># </span>  <span style="color: #75715E;">datasets for each scintillator</span>
+    - timestamp <span style="color: #75715E;"># </span>  <span style="color: #75715E;">timestamp of each event</span>
+  - run_i <span style="color: #75715E;"># </span>  <span style="color: #75715E;">all other runs</span>
     - ...
-</pre>
+</code></pre>
 </div>
 </div>
 <ol class="org-ol">
-<li><a id="orgb8d3463"> </a>Notes on data layout   <span class="tag">  <span class="extended">extended</span></span><br />
+<li><a id="org6a71db6"> </a>Notes on data layout   <span class="tag">  <span class="extended">extended</span></span><br />
 <div id="text-34-3-4-1-1" class="outline-text-6">
 <p>
 Of course we could generate the layout from real data files. Either
@@ -866,11 +991,11 @@ background runs.</dd>
 cluster in the input file.</dd>
 </dl>
 </div>
-<div id="outline-container-org00b00bd" class="outline-5">
-<h5 id="org00b00bd">  <a href="#org00b00bd">  <span class="section-number-5">34.3.5.1.</span> Command line interface of <code>reconstruction</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
+<div id="outline-container-org1e14e52" class="outline-5">
+<h5 id="org1e14e52">  <a href="#org1e14e52">  <span class="section-number-5">34.3.5.1.</span> Command line interface of <code>reconstruction</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
 <div id="text-34-3-5-1" class="outline-text-5">
 <div class="org-src-container">
-<label class="org-src-name"><span class="listing-number">Listing 18: </span>Usage of the <code>reconstruction</code> tool. Input is in the form of a run directory / a directory containing multiple run directories. The parsed output is stored in compressed HDF5 files.</label><pre id="list:reconstruction_help" class="src src-sh">Usage:
+<label class="org-src-name"><span class="listing-number">Listing 18: </span>Usage of the <code>reconstruction</code> tool. Input is in the form of a run directory / a directory containing multiple run directories. The parsed output is stored in compressed HDF5 files.</label><pre id="list:reconstruction_help" class="src src-sh">  <code>Usage:
   main [REQUIRED,optional-params]
 InGrid reconstruction and energy calibration.  NOTE: When calling reconstruction
 without any of the --only_ flags, the input file has to be a H5 file resulting
@@ -942,7 +1067,7 @@ Options:
 <span style="color: #E6DB74;">                                                     file to use.</span>
 
 <span style="color: #E6DB74;">  -p=, --plotOutPath=   string              none     set plotOutPath</span>
-</pre>
+</code></pre>
 </div>
 </div>
 </div>
@@ -974,25 +1099,25 @@ similar fashion to the equivalent for <code>raw_data_manipulation</code> before.
 </p>
 
 <div class="org-src-container">
-<label class="org-src-name"><span class="listing-number">Listing 19: </span>Abstract overview of the data layout of the <code>reconstruction</code> HDF5 output. It is essentially the same layout as the <code>raw_data_manipulation</code> HDF5 files, but contains more datasets, due to larger number of properties.</label><pre id="code:reco:abstract_reco_hdf5_layout" class="src src-toml">- reconstruction
+<label class="org-src-name"><span class="listing-number">Listing 19: </span>Abstract overview of the data layout of the <code>reconstruction</code> HDF5 output. It is essentially the same layout as the <code>raw_data_manipulation</code> HDF5 files, but contains more datasets, due to larger number of properties.</label><pre id="code:reco:abstract_reco_hdf5_layout" class="src src-toml">  <code>- reconstruction
   - run_&lt;number&gt;
-    - chip_0 <span style="color: #75715E;"># </span><span style="color: #75715E;">one for each chip in the event</span>
+    - chip_0 <span style="color: #75715E;"># </span>  <span style="color: #75715E;">one for each chip in the event</span>
       - datasets for each property
       - optional datasets for calibrations
-    - chip_i <span style="color: #75715E;"># </span><span style="color: #75715E;">all other chips</span>
+    - chip_i <span style="color: #75715E;"># </span>  <span style="color: #75715E;">all other chips</span>
       - ...
-    - fadc <span style="color: #75715E;"># </span><span style="color: #75715E;">if available</span>
+    - fadc <span style="color: #75715E;"># </span>  <span style="color: #75715E;">if available</span>
       - datasets for each FADC property
-    - common datasets <span style="color: #75715E;"># </span><span style="color: #75715E;">copied from `raw_data_manipulation` input </span>
-  - run_i <span style="color: #75715E;"># </span><span style="color: #75715E;">all other runs</span>
+    - common datasets <span style="color: #75715E;"># </span>  <span style="color: #75715E;">copied from `raw_data_manipulation` input </span>
+  - run_i <span style="color: #75715E;"># </span>  <span style="color: #75715E;">all other runs</span>
     - ...
-</pre>
+</code></pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgbcae735" class="outline-4">
-<h4 id="orgbcae735">  <a href="#orgbcae735">  <span class="section-number-4">34.3.6.</span> <code>cdl_spectrum_creation</code></a></h4>
+<div id="outline-container-org2280232" class="outline-4">
+<h4 id="org2280232">  <a href="#org2280232">  <span class="section-number-4">34.3.6.</span> <code>cdl_spectrum_creation</code></a></h4>
 <div id="text-34-3-6" class="outline-text-4">
 <p>
 This is a helper program responsible for the treatment of the X-ray
@@ -1014,8 +1139,8 @@ produce the reference distributions for each cluster property used.
 </p>
 </div>
 </div>
-<div id="outline-container-org57e585b" class="outline-4">
-<h4 id="org57e585b">  <a href="#org57e585b">  <span class="section-number-4">34.3.7.</span> <code>likelihood</code></a></h4>
+<div id="outline-container-orgd8bc5fc" class="outline-4">
+<h4 id="orgd8bc5fc">  <a href="#orgd8bc5fc">  <span class="section-number-4">34.3.7.</span> <code>likelihood</code></a></h4>
 <div id="text-34-3-7" class="outline-text-4">
 <p>
 The <code>likelihood</code> program is the (historically named) tool that applies
@@ -1046,8 +1171,8 @@ sec. <a href="./background.html#sec:background:estimate_veto_efficiency">12.5.5<
 </p>
 </div>
 </div>
-<div id="outline-container-org0669083" class="outline-4">
-<h4 id="org0669083">  <a href="#org0669083">  <span class="section-number-4">34.3.8.</span> <code>determineDiffusion</code> directory</a></h4>
+<div id="outline-container-orge089fe6" class="outline-4">
+<h4 id="orge089fe6">  <a href="#orge089fe6">  <span class="section-number-4">34.3.8.</span> <code>determineDiffusion</code> directory</a></h4>
 <div id="text-34-3-8" class="outline-text-4">
 <p>
 The <code>Analysis/ingrid/determineDiffusion</code> directory contains the
@@ -1058,8 +1183,8 @@ compiled as a standalone program or be used as a library.
 </p>
 </div>
 </div>
-<div id="outline-container-org7f2d021" class="outline-4">
-<h4 id="org7f2d021">  <a href="#org7f2d021">  <span class="section-number-4">34.3.9.</span> <code>nn</code> directory</a></h4>
+<div id="outline-container-org1ef3836" class="outline-4">
+<h4 id="org1ef3836">  <a href="#org1ef3836">  <span class="section-number-4">34.3.9.</span> <code>nn</code> directory</a></h4>
 <div id="text-34-3-9" class="outline-text-4">
 <p>
 The <code>Analysis/ingrid/nn</code> subdirectory in the TimepixAnalysis
@@ -1127,14 +1252,14 @@ calibration data).
 </p>
 
 <div class="org-src-container">
-<label class="org-src-name"><span class="listing-number">Listing 20: </span>Example of a <code>runPeriod.toml</code> file.</label><pre id="list:ingrid_database:run_period_config" class="src src-toml"><span style="color: #FD971F;">title</span> = <span style="color: #E6DB74;">&quot;Run period 2 of CAST, 2017/18&quot;</span>
-<span style="color: #75715E;"># </span><span style="color: #75715E;">list of the run periods defined in the file</span>
+<label class="org-src-name"><span class="listing-number">Listing 20: </span>Example of a <code>runPeriod.toml</code> file.</label><pre id="list:ingrid_database:run_period_config" class="src src-toml">  <code>  <span style="color: #FD971F;">title</span> = <span style="color: #E6DB74;">&quot;Run period 2 of CAST, 2017/18&quot;</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">list of the run periods defined in the file</span>
 <span style="color: #FD971F;">runPeriods</span> = [<span style="color: #E6DB74;">&quot;Run2&quot;</span>]
 
 [<span style="color: #66D9EF;">Run2</span>]
 <span style="color: #FD971F;">start</span> = 2017-10-30
 <span style="color: #FD971F;">stop</span> = 2018-04-11
-<span style="color: #75715E;"># </span><span style="color: #75715E;">either as a sequence of run numbers</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">either as a sequence of run numbers</span>
 <span style="color: #FD971F;">validRuns</span> = [ 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89
   90, 91, 92, 93, 94, 95, 96, 97, 98, 99,100,101,102,103
   104,105,106,107,108,109,110,111,112,113,114,115,116,117
@@ -1143,19 +1268,19 @@ calibration data).
   162,163,164,165,166,167,168,169,170,171,172,173,174,175
   176,177,178,179,180,181,182,183,184,185,186,187,188,189
 ]
-<span style="color: #75715E;"># </span><span style="color: #75715E;">or as simply a range given as start and stop values</span>
+<span style="color: #75715E;"># </span>  <span style="color: #75715E;">or as simply a range given as start and stop values</span>
 <span style="color: #FD971F;">firstRun</span> = 76
 <span style="color: #FD971F;">lastRun</span> = 189
-</pre>
+</code></pre>
 </div>
 
 <div class="org-src-container">
-<label class="org-src-name"><span class="listing-number">Listing 21: </span>An example of a <code>chipInfo.txt</code> file describing a single chip for a run period.</label><pre id="list:ingrid_database:chip_info" class="src src-sh">chipName: H10 W69
+<label class="org-src-name"><span class="listing-number">Listing 21: </span>An example of a <code>chipInfo.txt</code> file describing a single chip for a run period.</label><pre id="list:ingrid_database:chip_info" class="src src-sh">  <code>chipName: H10 W69
 runPeriod: Run2
 board: SeptemH
 chipNumber: 3
 Info: This calibration data is valid for Run 2 starting until March 2018!
-</pre>
+</code></pre>
 </div>
 </div>
 </div>
@@ -1189,8 +1314,8 @@ The CAST log files relevant for the Septemboard detector can be found
 together with the Septemboard CAST data.
 </p>
 </div>
-<div id="outline-container-orgab52785" class="outline-5">
-<h5 id="orgab52785">  <a href="#orgab52785">  <span class="section-number-5">34.3.11.1.</span> Adding tracking information to HDF5 files   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
+<div id="outline-container-orge802343" class="outline-5">
+<h5 id="orge802343">  <a href="#orge802343">  <span class="section-number-5">34.3.11.1.</span> Adding tracking information to HDF5 files   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
 <div id="text-34-3-11-1" class="outline-text-5">
 <p>
 See sec. <a href="./appendix_cast_operations.html#sec:cast:log_files:add_tracking_info">20.6.1</a> on how to use
@@ -1199,8 +1324,8 @@ See sec. <a href="./appendix_cast_operations.html#sec:cast:log_files:add_trackin
 </div>
 </div>
 </div>
-<div id="outline-container-orgd0307bb" class="outline-4">
-<h4 id="orgd0307bb">  <a href="#orgd0307bb">  <span class="section-number-4">34.3.12.</span> <code>mcmc_limit_calculation</code></a></h4>
+<div id="outline-container-orgbfaf897" class="outline-4">
+<h4 id="orgbfaf897">  <a href="#orgbfaf897">  <span class="section-number-4">34.3.12.</span> <code>mcmc_limit_calculation</code></a></h4>
 <div id="text-34-3-12" class="outline-text-4">
 <p>
 <code>mcmc_limit_calculation</code> is the &apos;final&apos; tool relevant for this
@@ -1210,8 +1335,8 @@ Markov Chain Monte Carlo (MCMC) as explained in detail in chapter
 </p>
 </div>
 </div>
-<div id="outline-container-org853c4a7" class="outline-4">
-<h4 id="org853c4a7">  <a href="#org853c4a7">  <span class="section-number-4">34.3.13.</span> <code>Tools</code> directory</a></h4>
+<div id="outline-container-org947f164" class="outline-4">
+<h4 id="org947f164">  <a href="#org947f164">  <span class="section-number-4">34.3.13.</span> <code>Tools</code> directory</a></h4>
 <div id="text-34-3-13" class="outline-text-4">
 <p>
 Multitude of tools for various things that were analyzed over the
@@ -1220,8 +1345,8 @@ Septemboard gas mixture and detection efficiency.
 </p>
 </div>
 </div>
-<div id="outline-container-org340aea3" class="outline-4">
-<h4 id="org340aea3">  <a href="#org340aea3">  <span class="section-number-4">34.3.14.</span> <code>resources</code> directory</a></h4>
+<div id="outline-container-org5589f79" class="outline-4">
+<h4 id="org5589f79">  <a href="#org5589f79">  <span class="section-number-4">34.3.14.</span> <code>resources</code> directory</a></h4>
 <div id="text-34-3-14" class="outline-text-4">
 <p>
 A large number of resources required or simply useful about different
@@ -1230,8 +1355,8 @@ to be part of a non LFS git repository.
 </p>
 </div>
 </div>
-<div id="outline-container-orge667c15" class="outline-4">
-<h4 id="orge667c15">  <a href="#orge667c15">  <span class="section-number-4">34.3.15.</span> <code>Plotting</code> directory</a></h4>
+<div id="outline-container-org79f11b3" class="outline-4">
+<h4 id="org79f11b3">  <a href="#org79f11b3">  <span class="section-number-4">34.3.15.</span> <code>Plotting</code> directory</a></h4>
 <div id="text-34-3-15" class="outline-text-4">
 <p>
 From a practical analysis point of view, the <a href="https://github.com/Vindaar/TimepixAnalysis/tree/master/Plotting">  <code>Plotting</code></a> directory is
@@ -1240,8 +1365,8 @@ different tools to visualize data at various stages of the analysis
 pipeline. The most relevant are mentioned briefly here.
 </p>
 </div>
-<div id="outline-container-org311acc0" class="outline-5">
-<h5 id="org311acc0">  <a href="#org311acc0">  <span class="section-number-5">34.3.15.1.</span> <code>plotBackgroundClusters</code></a></h5>
+<div id="outline-container-org7a5817d" class="outline-5">
+<h5 id="org7a5817d">  <a href="#org7a5817d">  <span class="section-number-5">34.3.15.1.</span> <code>plotBackgroundClusters</code></a></h5>
 <div id="text-34-3-15-1" class="outline-text-5">
 <p>
 <a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/plotBackgroundClusters/plotBackgroundClusters.nim">  <code>plotBackgroundCluster</code></a> produces plots of the distribution of cluster
@@ -1251,8 +1376,8 @@ and fig. <a href="#fig:background:background_suppression_comparison">#fig:backgr
 </p>
 </div>
 </div>
-<div id="outline-container-org0399ad7" class="outline-5">
-<h5 id="org0399ad7">  <a href="#org0399ad7">  <span class="section-number-5">34.3.15.2.</span> <code>plotBackgroundRate</code></a></h5>
+<div id="outline-container-orgb997bb5" class="outline-5">
+<h5 id="orgb997bb5">  <a href="#orgb997bb5">  <span class="section-number-5">34.3.15.2.</span> <code>plotBackgroundRate</code></a></h5>
 <div id="text-34-3-15-2" class="outline-text-5">
 <p>
 <a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/plotBackgroundRate/plotBackgroundRate.nim">  <code>plotBackgroundRate</code></a> is the main tool to visualize background (or raw
@@ -1262,8 +1387,8 @@ it. Input files are reconstructed HDF5 files or the result of the
 </p>
 </div>
 </div>
-<div id="outline-container-org245cdd0" class="outline-5">
-<h5 id="org245cdd0">  <a href="#org245cdd0">  <span class="section-number-5">34.3.15.3.</span> <code>plotCalibration</code></a></h5>
+<div id="outline-container-orgb379091" class="outline-5">
+<h5 id="orgb379091">  <a href="#orgb379091">  <span class="section-number-5">34.3.15.3.</span> <code>plotCalibration</code></a></h5>
 <div id="text-34-3-15-3" class="outline-text-5">
 <p>
 <a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/plotCalibration/plotCalibration.nim">  <code>plotCalibration</code></a> is a tool to produce visualizations of the different
@@ -1273,8 +1398,8 @@ with it.
 </p>
 </div>
 </div>
-<div id="outline-container-orge6fa074" class="outline-5">
-<h5 id="orge6fa074">  <a href="#orge6fa074">  <span class="section-number-5">34.3.15.4.</span> <code>plotData</code></a></h5>
+<div id="outline-container-org66b3e20" class="outline-5">
+<h5 id="org66b3e20">  <a href="#org66b3e20">  <span class="section-number-5">34.3.15.4.</span> <code>plotData</code></a></h5>
 <div id="text-34-3-15-4" class="outline-text-5">
 <p>
 <a href="https://github.com/Vindaar/TimepixAnalysis/blob/master/Plotting/karaPlot/plotData.nim">  <code>plotData</code></a> is a very versatile tool to produce a variety of different
@@ -1303,8 +1428,8 @@ pleasing visualizations though.
 </div>
 </div>
 </div>
-<div id="outline-container-org92b1f48" class="outline-3">
-<h3 id="org92b1f48">  <a href="#org92b1f48">  <span class="section-number-3">34.4.</span> Other libraries relevant for TimepixAnalysis</a></h3>
+<div id="outline-container-org544765d" class="outline-3">
+<h3 id="org544765d">  <a href="#org544765d">  <span class="section-number-3">34.4.</span> Other libraries relevant for TimepixAnalysis</a></h3>
 <div id="text-34-4" class="outline-text-3">
 <p>
 A few other libraries not part of the TimepixAnalysis repository bear
@@ -1315,7 +1440,7 @@ mentioning, due to their importance. They were written alongside TimepixAnalysis
 <dt>  <a href="https://github.com/Vindaar/ggplotnim">ggplotnim</a></dt><dd>A <code>ggplot2</code> <sup>  <a id="fnr.7" href="#fn.7" class="footref" role="doc-backlink">7</a></sup> inspired plotting library. All
 plots in this thesis are produced with it.</dd>
 <dt>  <a href="https://github.com/SciNim/Datamancer">Datamancer</a></dt><dd>A <code>dpylr</code> <sup>  <a id="fnr.8" href="#fn.8" class="footref" role="doc-backlink">8</a></sup> inspired data frame library.</dd>
-<dt>  <a href="https://github.com/Vindaar/nimhdf5">nimhdf5</a></dt><dd>A high level interface to the HDF5 (<a href="./bibliography.html#citeproc_bib_item_218">The HDF Group 1997</a>) library,
+<dt>  <a href="https://github.com/Vindaar/nimhdf5">nimhdf5</a></dt><dd>A high level interface to the HDF5 <a href="cite:&amp;hdf5">cite:&amp;hdf5</a> library,
 somewhat similar to <code>h5py</code> <sup>  <a id="fnr.9" href="#fn.9" class="footref" role="doc-backlink">9</a></sup> for Python.</dd>
 <dt>  <a href="https://github.com/SciNim/Unchained">Unchained</a></dt><dd>A library to perform zero runtime overhead,
 compile-time checking and conversion of physical
@@ -1373,6 +1498,17 @@ columns etc.).
 </p></div></div>
 
 </div>
+<div id="preamble" class="status">
+
+<button class="toc-toggle" id="tocToggle" aria-label="Toggle table of contents">☰</button>
+<div class="theme-selector-wrapper">
+  <select class="theme-selector" id="themeSelector" aria-label="Select theme">
+    <!-- Options populated by JavaScript -->
+  </select>
+</div>
+<div class="toc-backdrop" id="tocBackdrop"></div>
+</div>
+
 <div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
 </div>
 </body>

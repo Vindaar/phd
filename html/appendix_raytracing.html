@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!--  2025-02-01 Sat 13:23  -->
+<!--  2025-11-09 Sun 15:13  -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>‎</title>
@@ -9,6 +9,9 @@
 <meta name="generator" content="Org Mode" />
 
 <link type="text/css" rel="stylesheet" href="org_html_export.css" />
+
+<link type="font/woff2" crossorigin="" rel="preload" href="/fonts/Baskervville-VariableFont_wght.woff2" as="font" />
+
 <script type="text/javascript">
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -71,6 +74,128 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             });
+        }
+    });
+});
+
+// Mobile TOC Toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    var tocToggle = document.getElementById('tocToggle');
+    var toc = document.getElementById('table-of-contents');
+    var backdrop = document.getElementById('tocBackdrop');
+
+    if (tocToggle && toc && backdrop) {
+        // Toggle TOC when hamburger button is clicked
+        tocToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toc.classList.toggle('active');
+            backdrop.classList.toggle('active');
+        });
+
+        // Close TOC when backdrop is clicked
+        backdrop.addEventListener('click', function() {
+            toc.classList.remove('active');
+            backdrop.classList.remove('active');
+        });
+
+        // Close TOC when a link inside it is clicked
+        var tocLinks = toc.querySelectorAll('a');
+        tocLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            });
+        });
+
+        // Close TOC with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && toc.classList.contains('active')) {
+                toc.classList.remove('active');
+                backdrop.classList.remove('active');
+            }
+        });
+    }
+});
+
+// Theme Selector functionality with system preference detection
+document.addEventListener('DOMContentLoaded', function() {
+    var themeSelector = document.getElementById('themeSelector');
+    var body = document.body;
+
+    // Define available themes
+    var themes = {
+        'light': { name: 'Light', type: 'light', class: 'light-theme' },
+        'monokai-soft': { name: 'Monokai (Soft Text)', type: 'dark', class: 'theme-monokai-soft-text' },
+        'monokai-neutral-toc': { name: 'Monokai (Neutral TOC)', type: 'dark', class: 'theme-monokai-white-text' },
+        'dracula': { name: 'Dracula', type: 'dark', class: 'theme-dracula' },
+        'gruvbox': { name: 'Gruvbox', type: 'dark', class: 'theme-gruvbox' },
+        'tokyo-night': { name: 'Tokyo Night', type: 'dark', class: 'theme-tokyo-night' },
+        'andromeda': { name: 'Andromeda', type: 'dark', class: 'theme-andromeda' },
+    };
+
+    // Get system preference
+    var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var systemThemeType = systemPrefersDark ? 'dark' : 'light';
+
+    // Populate dropdown - system-preferred type first
+    var darkThemes = [];
+    var lightThemes = [];
+
+    for (var key in themes) {
+        var theme = themes[key];
+        if (theme.type === 'dark') {
+            darkThemes.push({ key: key, theme: theme });
+        } else {
+            lightThemes.push({ key: key, theme: theme });
+        }
+    }
+
+    var orderedThemes = systemPrefersDark ? darkThemes.concat(lightThemes) : lightThemes.concat(darkThemes);
+
+    orderedThemes.forEach(function(item) {
+        var option = document.createElement('option');
+        option.value = item.key;
+        option.textContent = item.theme.name + ' (' + item.theme.type + ')';
+        themeSelector.appendChild(option);
+    });
+
+    // Check for saved theme preference
+    var savedTheme = localStorage.getItem('theme');
+    var currentTheme = savedTheme || (systemPrefersDark ? 'monokai-soft' : 'light');
+
+    // Apply current theme
+    function applyTheme(themeKey) {
+        // Remove all theme classes
+        for (var key in themes) {
+            body.classList.remove(themes[key].class);
+        }
+        // Add selected theme class
+        if (themes[themeKey]) {
+            body.classList.add(themes[themeKey].class);
+        }
+    }
+
+    applyTheme(currentTheme);
+    themeSelector.value = currentTheme;
+
+    // Handle theme changes
+    if (themeSelector) {
+        themeSelector.addEventListener('change', function() {
+            var selectedTheme = this.value;
+            applyTheme(selectedTheme);
+            localStorage.setItem('theme', selectedTheme);
+            console.log('Switched to theme:', themes[selectedTheme].name);
+        });
+    }
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        // Only auto-switch if user hasn't manually set a preference
+        if (!localStorage.getItem('theme')) {
+            var newTheme = e.matches ? 'monokai-soft' : 'light';
+            applyTheme(newTheme);
+            themeSelector.value = newTheme;
+            console.log('System switched to', e.matches ? 'dark' : 'light', 'theme');
         }
     });
 });
@@ -140,9 +265,9 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./introduction.html#sec:introduction">2. Introduction   <span class="tag">    <span class="Intro">Intro</span>  </span></a></li>
 <li><a href="./about_thesis.html#sec:about_thesis">3. About this thesis   <span class="tag">  <span class="Intro">Intro</span></span></a>
 <ul>
-<li>  <a href="./about_thesis.html#orgfe77eb6">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#orgf40a93d">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./about_thesis.html#org607bd89">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#org5d5ca24">3.1. Extended notes for the extended thesis <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgd071881">3.2. Why Org mode   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./about_thesis.html#orgccd0201">3.3. Notes for future PhD students and IAXO analyses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./theory.html#sec:theory">4. Theory of axions   <span class="tag">  <span class="Theory">Theory</span></span></a>
@@ -176,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./septemboard.html#sec:detector:gridpix">7.3. GridPix</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_2014_15">7.4. 2014 / 2015 GridPix detector for CAST</a></li>
 <li>  <a href="./septemboard.html#sec:detector:detector_overview">7.5. Septemboard detector overview</a></li>
-<li>  <a href="./septemboard.html#org2a0c0f4">7.6. Detector readout system</a></li>
+<li>  <a href="./septemboard.html#org49593cc">7.6. Detector readout system</a></li>
 <li>  <a href="./septemboard.html#sec:detector:scintillators">7.7. Scintillator vetoes</a></li>
 <li>  <a href="./septemboard.html#sec:detector:fadc">7.8. FADC</a></li>
 <li>  <a href="./septemboard.html#sec:detector:sin_window">7.9. SiN window</a></li>
@@ -240,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:method_expected_limit">13.5. Limit method - toy candidate sets and expected limits</a></li>
 <li>  <a href="./limit.html#sec:limit:method_systematics">13.6. Limit method - extending \(\mathcal{L}\) for systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:method_mcmc">13.7. Limit method - evaluating \(\mathcal{L}\) with nuisance parameters</a></li>
-<li>  <a href="./limit.html#org5995639">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgc3e5f13">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org34c85eb">13.8. Note about likelihood integral   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org5c2677d">13.9. Derivation of short form of \(\mathcal{L}\) <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./limit.html#sec:limit:ingredients">13.10. Likelihood ingredients in detail</a></li>
 <li>  <a href="./limit.html#sec:limit:systematics">13.11. Systematics</a></li>
 <li>  <a href="./limit.html#sec:limit:mcmc_calc_limit">13.12. MCMC to sample the distribution and compute a limit</a></li>
@@ -249,8 +374,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./limit.html#sec:limit:candidates">13.14. Solar tracking candidates</a></li>
 <li>  <a href="./limit.html#sec:limit:observed_limit">13.15. Observed limit - \(g_{ae}\)</a></li>
 <li>  <a href="./limit.html#sec:limit:other_couplings">13.16. Other coupling constants</a></li>
-<li>  <a href="./limit.html#org75d3b34">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./limit.html#orgfcbf364">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#org4fec592">13.17. Comparison to 2013 limit (using their method)   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./limit.html#orgc8fc2b2">13.18. Observed limit for different axion masses   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./outlook.html#sec:outlook">14. Outlook</a></li>
@@ -288,33 +413,33 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_run_list.html#sec:appendix:cast_run_list">21. CAST data taking run list   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_run_list.html#orgb52235a">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_run_list.html#orgf971eee">21.1. Full version   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_cast_data_taking_notes.html#sec:appendix:cast_data_taking_notes">22. CAST data taking notes <code>[0/1]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd947e01">22.1. Run table</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgf8afac6">22.2. Data runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgfe96ddc">22.3. Calibration runs</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgac5a852">22.4. Automatically generated run list</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#orgd5cdef1">22.5. Automatically calculated total run times</a></li>
-<li>  <a href="./appendix_cast_data_taking_notes.html#org2406344">22.6. InGrid temperature from shift forms</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgae4e0fb">22.1. Run table</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org1c94b8e">22.2. Data runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5613f30">22.3. Calibration runs</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org5ee0a43">22.4. Automatically generated run list</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#orgb06ce92">22.5. Automatically calculated total run times</a></li>
+<li>  <a href="./appendix_cast_data_taking_notes.html#org23e9775">22.6. InGrid temperature from shift forms</a></li>
 </ul>
 </li>
 <li><a href="./appendix_cabling_and_softwar_setup.html#sec:appendix:cabling_and_softwar_setup">23. Cabling &amp; software setup <code>[/]</code>   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge32a9e1">23.1. Virtex V6 cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#orge17b088">23.2. Detector cabling</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org93c1c60">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
-<li>  <a href="./appendix_cabling_and_softwar_setup.html#org9625327">23.4. Setting up the chips in TOS</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org2ef941f">23.1. Virtex V6 cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#orga68ff49">23.2. Detector cabling</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org0145cca">23.3. Vivado / ISE on void linux &amp; flashing Virtex V6</a></li>
+<li>  <a href="./appendix_cabling_and_softwar_setup.html#org5e669ea">23.4. Setting up the chips in TOS</a></li>
 </ul>
 </li>
 <li><a href="./appendix_vacuum_contamination.html#sec:appendix:vacuum_contamination">24. Window rupture and vacuum contamination   <span class="tag"><span class="Appendix">Appendix</span> <span class="extended">extended</span></span></a>
 <ul>
-<li>  <a href="./appendix_vacuum_contamination.html#org3cd49bd">24.1. Calculation of vacuum volume</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc39e76f">24.2. Calculation of potential influx of gas</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgc67dc29">24.3. Consider pumping of pumps</a></li>
-<li>  <a href="./appendix_vacuum_contamination.html#orgbac7f48">24.4. Calculation of possible contamination</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#orga39142b">24.1. Calculation of vacuum volume</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9050e58">24.2. Calculation of potential influx of gas</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9f3bf66">24.3. Consider pumping of pumps</a></li>
+<li>  <a href="./appendix_vacuum_contamination.html#org9adc478">24.4. Calculation of possible contamination</a></li>
 </ul>
 </li>
 <li><a href="./appendix_detector_time_behavior.html#sec:appendix:detector_time_behavior">25. Detector behavior over time   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
@@ -325,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_cast_detector_lab.html#sec:appendix:cast_detector_lab">26. CAST Detector Lab data   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_cast_detector_lab.html#orgc899fb3">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_cast_detector_lab.html#org616f0be">26.1. Generate all spectrum plots split by run   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl_spectra_by_run">26.2. All spectra split by run</a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits">26.3. All CDL spectra with line fits   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_cast_detector_lab.html#sec:appendix:cdl:all_spectra_fits_by_run">26.4. All CDL spectra with line fits by run</a></li>
@@ -334,13 +459,13 @@ document.addEventListener('DOMContentLoaded', function () {
 <li><a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run_justification">27. CAST Detector Lab variations and fitting by run   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fit_by_run_justification.html#sec:appendix:fit_by_run:gas_gain_var_cluster_prop">27.1. Influence of gas gain variations on cluster properties</a></li>
-<li>  <a href="./appendix_fit_by_run_justification.html#org13d2559">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fit_by_run_justification.html#orgf376779">27.2. Data overview with pixel spectra <code>[/]</code>   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra">28. Morphing of CDL reference spectra   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#org78be87a">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_morphing_cdl_spectra.html#orgdadd742">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org8ff2c41">28.1. Generate all morphing / tile related plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_morphing_cdl_spectra.html#org4569db5">28.2. Generate plot comparing likelihood behavior   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:tilemaps">28.3. Tilemap of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:interpolation_raster">28.4. Interpolation of each likelihood dataset</a></li>
 <li>  <a href="./appendix_morphing_cdl_spectra.html#sec:appendix:morphing_cdl_spectra:binwise_linear">28.5. Binwise linear interpolations for each likelihood dataset</a></li>
@@ -349,25 +474,25 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_occupancy.html#sec:appendix:occupancy">29. Occupancy maps   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_occupancy.html#org71d0d19">29.1. Run-2</a></li>
-<li>  <a href="./appendix_occupancy.html#orgcbfcb5e">29.2. Run-3</a></li>
-<li>  <a href="./appendix_occupancy.html#org3a727ee">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_occupancy.html#org0c07dc3">29.1. Run-2</a></li>
+<li>  <a href="./appendix_occupancy.html#orgfd35f3d">29.2. Run-3</a></li>
+<li>  <a href="./appendix_occupancy.html#org575f0d0">29.3. Generate occupancy map plots   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_fadc.html#sec:appendix:fadc">30. FADC   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc:rise_fall">30.1. FADC rise and fall time</a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:background:fadc">30.2. FADC veto</a></li>
-<li>  <a href="./appendix_fadc.html#org595d68a">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_fadc.html#org359350e">30.3. Generate plot of rise time vs skewness   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_fadc.html#sec:appendix:fadc_veto_empirical_cluster_length">30.4. Expected cluster size</a></li>
 </ul>
 </li>
 <li><a href="./appendix_background_rates.html#sec:appendix:background_rates">31. Raw data and background rates   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
 <li>  <a href="./appendix_background_rates.html#sec:appendix:background_rates:full_chip">31.1. Background rates over full chip</a></li>
-<li>  <a href="./appendix_background_rates.html#org6b8736f">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org7827cf1">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_background_rates.html#org88d5321">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#orge495bc9">31.2. Generate rate without any vetoes over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org152406e">31.3. Generate background rates over full chip   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_background_rates.html#org4f4f786">31.4. Generate table of background rates for all setups   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_background_interpolation_chip_area.html#sec:appendix:background_interpolation_chip_area">32. Background interpolation chip cutout correction   <span class="tag">    <span class="Appendix">Appendix</span>  </span></a></li>
@@ -381,27 +506,27 @@ document.addEventListener('DOMContentLoaded', function () {
 </li>
 <li><a href="./appendix_software.html#sec:appendix:software">34. Software   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_software.html#orge51f988">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_software.html#org378ccdf">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgf327581">34.1. Why did I start writing my own analysis framework?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_software.html#orgdd3f2b1">34.2. Nim   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 <li>  <a href="./appendix_software.html#sec:appendix:timepix_analysis">34.3. TimepixAnalysis</a></li>
-<li>  <a href="./appendix_software.html#org92b1f48">34.4. Other libraries relevant for TimepixAnalysis</a></li>
+<li>  <a href="./appendix_software.html#org544765d">34.4. Other libraries relevant for TimepixAnalysis</a></li>
 </ul>
 </li>
 <li><a href="./appendix_full_data_reconstruction.html#sec:appendix:full_data_reconstruction">35. Full data reconstruction   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgc87960b">35.1. Raw data parsing and reconstruction</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org652a080">35.2. Parse and reconstruct the CDL data</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org5831301">35.3. Add tracking information to background files</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org904d73c">35.4. Using <code>runAnalysisChain</code></a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#orgb4de31c">35.5. Applying a classifier</a></li>
-<li>  <a href="./appendix_full_data_reconstruction.html#org9252218">35.6. Computing limits</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org501eca1">35.1. Raw data parsing and reconstruction</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org552659c">35.2. Parse and reconstruct the CDL data</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#org8581c7e">35.3. Add tracking information to background files</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgeb8db11">35.4. Using <code>runAnalysisChain</code></a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgaaebe4e">35.5. Applying a classifier</a></li>
+<li>  <a href="./appendix_full_data_reconstruction.html#orgde50894">35.6. Computing limits</a></li>
 </ul>
 </li>
 <li><a href="./appendix_average_depth_xrays_argon.html#sec:appendix:average_depth_xrays_argon">36. Average distance X-rays travel in argon at CAST conditions   <span class="tag">  <span class="Appendix">Appendix</span></span></a>
 <ul>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#org89ae1e7">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc035fda">36.2. Calculate conversion point numerically</a></li>
-<li>  <a href="./appendix_average_depth_xrays_argon.html#orgc101b38">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orga91983c">36.1. Reference to original document   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#org02d2b56">36.2. Calculate conversion point numerically</a></li>
+<li>  <a href="./appendix_average_depth_xrays_argon.html#orgf60ccf9">36.3. Compiling and running the code   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li><a href="./appendix_raytracing.html#sec:appendix:raytracing">37. Raytracing   <span class="tag"><span class="Software">Software</span> <span class="Appendix">Appendix</span></span></a>
@@ -410,10 +535,10 @@ document.addEventListener('DOMContentLoaded', function () {
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:llnl_telescope">37.2. A few more details about the LLNL telescope</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:panter">37.3. Comparison of TrAXer results with PANTER measurements</a></li>
 <li>  <a href="./appendix_raytracing.html#sec:appendix:raytracing:axion_image">37.4. Computing an axion image with TrAXer</a></li>
-<li>  <a href="./appendix_raytracing.html#orgdb277d0">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org33f56e2">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#org66d4b31">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
-<li>  <a href="./appendix_raytracing.html#orgab3dcf7">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org3755681">37.5. Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgc57967b">37.6. <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#org2ddc502">37.7. Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
+<li>  <a href="./appendix_raytracing.html#orgfd56f1c">37.8. Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></li>
 </ul>
 </li>
 <li>  <a href="./appendix_acknowledgments.html#sec:appendix:acknowledgments">38. Acknowledgments   <span class="tag">    <span class="Ack">Ack</span>  </span></a></li>
@@ -436,7 +561,7 @@ telescope, sec. <a href="./appendix_raytracing.html#sec:appendix:raytracing:axio
 <p>
 Raytracing is a technique for the rendering of computer-generated
 images <sup>  <a id="fnr.1" href="#fn.1" class="footref" role="doc-backlink">1</a></sup>. The classical raytracing algorithm goes back to a
-paper by Turner Whitted in 1979 (<a href="./bibliography.html#citeproc_bib_item_229">Whitted 1979</a>). It is essentially a
+paper by Turner Whitted in 1979 <a href="cite:&amp;whitted79">cite:&amp;whitted79</a>. It is essentially a
 recursive algorithm, which shoots rays (&quot;photons&quot;) from a camera into
 a scene of 3D objects. Interactions with the objects follows
 geometrical optics. The ray equation
@@ -464,7 +589,7 @@ stopped.
 <p>
 Building on this more sophisticated methods were invented, in
 particular the &apos;path tracing&apos; algorithm and the introduction of the
-&apos;rendering equation&apos; (<a href="./bibliography.html#citeproc_bib_item_127">Kajiya 1986</a>; <a href="./bibliography.html#citeproc_bib_item_118">Immel, Cohen, and Greenberg 1986</a>). Here the geometrical
+&apos;rendering equation&apos; <a href="cite:kajiya86,immel86">cite:kajiya86,immel86</a>. Here the geometrical
 optics approximation is replaced by the concepts of radiometry (power,
 irradiance, radiance, spectral radiance and so on) embedding the
 concept in more robust physical terms. At the heart of it, the
@@ -534,7 +659,7 @@ light transport equation in particular, is the extreme computational
 cost. Monte Carlo based approaches to sample only relevant directions
 and space partitioning data structures are employed to reduce this
 cost. One of the seminal documents of modern Monte Carlo based
-rendering is Eric Veach&apos;s PhD thesis (<a href="./bibliography.html#citeproc_bib_item_220">Veach 1998</a>), which the
+rendering is Eric Veach&apos;s PhD thesis <a href="cite:&amp;veach1998robust">cite:&amp;veach1998robust</a>, which the
 notation used above is based on. If you are interested in the topic I
 highly recommend at least a cursory look at it.
 </p>
@@ -558,23 +683,25 @@ in compute performance, partially due to specific hardware features
 and a large part due to usage of machine learning (to denoise and
 upsample images and further reconstruct missing rays using ML). For an
 overview of the developments in the movie industry to its adoption of
-path tracing, have a look at (<a href="./bibliography.html#citeproc_bib_item_64">Christensen and Jarosz 2016</a>). To understand
+path tracing, have a look at <a href="cite:&amp;christensen16path">cite:&amp;christensen16path</a>. To understand
 how path tracing is implemented in video games on modern GPUs, see the
 &apos;Raytracing Gems&apos; series
-(<a href="./bibliography.html#citeproc_bib_item_102">Haines and Akenine-Möller 2019</a>; <a href="./bibliography.html#citeproc_bib_item_3">Adam Marrs and Wald 2021</a>).
+<a href="cite:raytracingGemsHaines2019,raytracingGemsIIMarrs2021">cite:raytracingGemsHaines2019,raytracingGemsIIMarrs2021</a>.
 </p>
 </div>
 <div id="outline-container-sec:appendix:raytracing:traxer" class="outline-3">
 <h3 id="sec:appendix:raytracing:traxer">  <a href="#sec:appendix:raytracing:traxer">  <span class="section-number-3">37.1.</span> TrAXer - An interactive axion raytracer</a></h3>
 <div id="text-sec:appendix:raytracing:traxer" class="outline-text-3">
-<figure id="fig:appendix:raytracing:example_screenshots" class="figure-wrapper">
-<figure id="fig:appendix:raytracing:riow_example" class="subfigure" data-width="51%">  <img src="./figs/home/basti/phd/Figs/raytracing/raytracing_in_one_weekend.png" data-width="99%" />  <figcaption>Figure 1(a): RTOW spheres example</figcaption></figure> <figure id="fig:appendix:raytracing:cast_setup_example" class="subfigure" data-width="46%">  <img src="./figs/home/basti/phd/Figs/raytracing/traxer_cast_llnl_setup_sun.png" data-width="99%" />  <figcaption>Figure 1(b): CAST setup</figcaption></figure>
-<figcaption>Figure 1: <a href="#fig:appendix:raytracing:riow_example">1(a)</a> is the reproduction of the final result of the book &apos;Ray Tracing in One Weekend&apos; (RTOW) (<a href="./bibliography.html#citeproc_bib_item_209">Shirley 2020</a>)  I originally followed. <a href="#fig:appendix:raytracing:cast_setup_example">1(b)</a> is a very narrow angle of view on the CAST setup. In the bottom left is the image sensor
+<p>
+&lt;figure class=&quot;figure-wrapper&quot; id=&quot;fig:appendix:raytracing:example<sub>screenshots</sub>&quot;&gt;
+&lt;figure class=&quot;subfigure&quot; id=&quot;fig:appendix:raytracing:riow<sub>example</sub>&quot; data-width=&quot;51%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/raytracing/raytracing<sub>in</sub><sub>one</sub><sub>weekend.png</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;RTOW spheres example&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:appendix:raytracing:cast<sub>setup</sub><sub>example</sub>&quot; data-width=&quot;46%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/raytracing/traxer<sub>cast</sub><sub>llnl</sub><sub>setup</sub><sub>sun.png</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;CAST setup&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figcaption&gt;&lt;a href=&quot;#fig:appendix:raytracing:riow<sub>example</sub>&quot;&gt;&lt;/a&gt; is the reproduction of the final result of the book &apos;Ray Tracing in One Weekend&apos; (RTOW) <a href="cite:&amp;Shirley2020RTW1">cite:&amp;Shirley2020RTW1</a>  I originally followed. &lt;a href=&quot;#fig:appendix:raytracing:cast<sub>setup</sub><sub>example</sub>&quot;&gt;&lt;/a&gt; is a very narrow angle of view on the CAST setup. In the bottom left is the image sensor
           with the size of a GridPix. In the middle with a reddish color is the LLNL telescope sitting
           in front of the CAST magnet bore. On the right is the Sun.
           Note that only the essential parts are simulated floating in the air. The angle and view from
-          above makes the image sensor look a bit odd.</figcaption>
-</figure>
+          above makes the image sensor look a bit odd.&lt;/figcaption&gt;
+&lt;/figure&gt;
+</p>
 
 
 <p>
@@ -584,7 +711,7 @@ make it an interesting solution to light propagation problems, which
 are difficult if not impossible to solve numerically. Calculation of
 the expected image produced by the X-ray telescope for a realistic
 X-ray telescope and solar axion emission is one such problem. In
-(<a href="./bibliography.html#citeproc_bib_item_65">Christoph Krieger 2018</a>) Christoph Krieger already wrote a basic
+<a href="cite:&amp;krieger2018search">cite:&amp;krieger2018search</a> Christoph Krieger already wrote a basic
 hardcoded <sup>  <a id="fnr.4" href="#fn.4" class="footref" role="doc-backlink">4</a></sup> raytracer for the 2014/15 data taking behind
 the ABRIXAS telescope. He approximated the ABRIXAS telescope as a
 simple lens.
@@ -594,7 +721,7 @@ simple lens.
 For the data taking with the detector of this thesis behind the LLNL
 telescope, a more precise solution was desired. As such Johanna von Oy
 wrote a new raytracer for this purpose as part of her master thesis
-(<a href="./bibliography.html#citeproc_bib_item_161">Von Oy 2020</a>). However, although this code (<a href="./bibliography.html#citeproc_bib_item_162">Von Oy 2023</a>)
+<a href="cite:&amp;vonOy_MSc">cite:&amp;vonOy_MSc</a>. However, although this code <a href="cite:&amp;JvO_axionElectron">cite:&amp;JvO_axionElectron</a>
 correctly simulates the LLNL (and as a matter of fact also other
 telescopes) based on their correct layer descriptions, it still uses a
 similar hardcoded <sup>  <a id="fnr.4" href="#fn.4" class="footref" role="doc-backlink">4</a></sup> approach, making it inflexible for
@@ -605,9 +732,9 @@ verifying the code for correctness very difficult.
 <p>
 What started mainly as a toy project I wrote out of curiosity
 following the popular &apos;Ray Tracing in One Weekend&apos; (RTOW)
-(<a href="./bibliography.html#citeproc_bib_item_209">Shirley 2020</a>) book <sup>  <a id="fnr.5" href="#fn.5" class="footref" role="doc-backlink">5</a></sup>, anyhow made me
+<a href="cite:&amp;Shirley2020RTW1">cite:&amp;Shirley2020RTW1</a> book <sup>  <a id="fnr.5" href="#fn.5" class="footref" role="doc-backlink">5</a></sup>, anyhow made me
 appreciate the advantage of a generic raytracer (see
-fig. <a href="#fig:appendix:raytracing:riow_example">1(a)</a> for the final result of
+fig. <a href="#fig:appendix:raytracing:riow_example">#fig:appendix:raytracing:riow_example</a> for the final result of
 that book, created by this project). Generic meaning that the scene to
 be rendered is described by objects placed in simulated 3D world
 space. This reduces the amount of code that needs to be checked for
@@ -622,14 +749,14 @@ raytracer!).
 
 <p>
 As a personal addition to the RTOW project, I implemented rendering to
-an SDL2 (<a href="./bibliography.html#citeproc_bib_item_245">“SDL - Simple DirectMedia Layer,” n.d.</a>) window and handling mouse and keyboard inputs to
+an SDL2 <a href="cite:SDL2">cite:SDL2</a> window and handling mouse and keyboard inputs to
 produce an interactive real-time raytracer (this was early 2021). This
 sparked the idea to use the same approach for our axion raytracer. I
 pitched the idea to Johanna, but did not manage to convince
 her <sup>  <a id="fnr.6" href="#fn.6" class="footref" role="doc-backlink">6</a></sup>. While working on finalizing the axion image
 and X-ray finger simulations for this thesis, several big
 discrepancies between our raytracing results and those used for the
-CAST Nature paper in 2017 (<a href="./bibliography.html#citeproc_bib_item_68">Collaboration and others 2017</a>) were noticed. The latter
+CAST Nature paper in 2017 <a href="cite:&amp;cast_nature">cite:&amp;cast_nature</a> were noticed. The latter
 were done by Michael Pivovaroff at LLNL using a private in-house
 raytracer <sup>  <a id="fnr.7" href="#fn.7" class="footref" role="doc-backlink">7</a></sup>. The need to better verify the correctness of
 our own raytracing simulation lead me down the path of finishing the
@@ -637,12 +764,12 @@ project of turning the RTOW based raytracer into an axion X-ray
 raytracer. This way verifying correctness was easier. Some additional
 features of the second book of the ROTW series were added (light
 sources among others) and other aspects were inspired by Physically
-Based Rendering (<a href="./bibliography.html#citeproc_bib_item_174">Pharr, Jakob, and Humphreys 2016</a>) (in particular the idea of
+Based Rendering <a href="cite:&amp;pharr2016physically">cite:&amp;pharr2016physically</a> (in particular the idea of
 propagating multiple energies in each ray).
 </p>
 
 <p>
-The result is <code>TrAXer</code> (<a href="./bibliography.html#citeproc_bib_item_196">Schmidt 2023</a>), an interactive real-time visible
+The result is <code>TrAXer</code> <a href="cite:traxer">cite:traxer</a>, an interactive real-time visible
 light and X-ray raytracer. In essence it is two raytracers in
 one. First, a &apos;normal&apos; visible light raytracer, which the camera
 uses. Secondly, an X-ray raytracer. Both use the same raytracing
@@ -660,7 +787,7 @@ adding another object as an X-ray target (another material), which the
 X-ray sampling will be biased towards. There is further a specific
 X-ray material an object can be made of, which behaves as expected
 when hit by an X-ray, calculated using
-(<a href="./bibliography.html#citeproc_bib_item_199">Schmidt and SciNim contributors 2022</a>). Behavior is described by the
+<a href="cite:&amp;Schmidt_xrayAttenuation_2022">cite:&amp;Schmidt_xrayAttenuation_2022</a>. Behavior is described by the
 reflectivity computed via the Fresnel equations as discussed in
 sec. <a href="./theory_detector.html#sec:theory:xray_reflectivity">6.1.2</a>. To simulate reflectivity of the
 LLNL telescope, the depth graded multilayers of the different layers
@@ -680,7 +807,7 @@ of the image sensor, mapped to the Viridis color scale.
 
 <p>
 These things are visible in the example screenshot showing the &quot;CAST&quot;
-scene in fig. <a href="#fig:appendix:raytracing:cast_setup_example">1(b)</a>. The view is
+scene in fig. <a href="#fig:appendix:raytracing:cast_setup_example">#fig:appendix:raytracing:cast_setup_example</a>. The view is
 seen from behind and above the setup with a narrow field of view
 (like a telephoto lens). Only relevant pieces of the setup are placed
 into the scene (partially for performance, although bounding volume
@@ -696,8 +823,8 @@ object of the scene is floating above the earth, combined with the
 telephoto like view, the sensor looks a bit odd. <sup>  <a id="fnr.8" href="#fn.8" class="footref" role="doc-backlink">8</a></sup>
 </p>
 </div>
-<div id="outline-container-org99f3dc9" class="outline-4">
-<h4 id="org99f3dc9">  <a href="#org99f3dc9">  <span class="section-number-4">37.1.1.</span> Discrepancies raytracer and LLNL raytracer   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org869957f" class="outline-4">
+<h4 id="org869957f">  <a href="#org869957f">  <span class="section-number-4">37.1.1.</span> Discrepancies raytracer and LLNL raytracer   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-1-1" class="outline-text-4">
 <ul class="org-ul">
 <li class="off"><code>[ ]</code> LINK TO DOCUMENT ANSWER TO IGOR!
@@ -705,8 +832,8 @@ telephoto like view, the sensor looks a bit odd. <sup>  <a id="fnr.8" href="#fn.
 </ul>
 </div>
 </div>
-<div id="outline-container-org29d966d" class="outline-4">
-<h4 id="org29d966d">  <a href="#org29d966d">  <span class="section-number-4">37.1.2.</span> Produce screenshots of TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orgd450c9e" class="outline-4">
+<h4 id="orgd450c9e">  <a href="#orgd450c9e">  <span class="section-number-4">37.1.2.</span> Produce screenshots of TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-1-2" class="outline-text-4">
 <p>
 This is simply a manual matter of running <code>TrAXer</code> with the desired
@@ -724,16 +851,16 @@ For example to produce an example screenshot showcasing the original
 &apos;Raytracing in One Weekend&apos; final image, we can do:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer --width 1200 --speed 10.0 --nJobs 32 --maxDepth 10 --spheres
-</pre>
+<pre class="src src-sh">  <code>./raytracer --width 1200 --speed 10.0 --nJobs 32 --maxDepth 10 --spheres
+</code></pre>
 </div>
 <p>
 and take a screenshot from:
 </p>
 <div class="org-src-container">
-<pre class="src src-nil">Now looking at: (Point: [-4.278876423185614, 1.499472514352247, -5.283379080542512])
+<pre class="src src-nil">  <code>Now looking at: (Point: [-4.278876423185614, 1.499472514352247, -5.283379080542512])
 from : (Point: [-4.825481106391748, 1.938486638958975, -5.996463871218145]), yaw = 5.366388980384832, pitch = -0.4545011087932843
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -777,7 +904,7 @@ CAST related?
 For example to simulate the &apos;realistic&apos;
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint --sourceKind skSun <span style="color: #E6DB74; font-weight: bold;">\</span>
     --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe.csv <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -785,7 +912,7 @@ For example to simulate the &apos;realistic&apos;
     --sensorKind sSum <span style="color: #E6DB74; font-weight: bold;">\</span>
     --usePerfectMirror=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreWindow
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -799,7 +926,7 @@ at (lookAt) (Point: [-207.4532559830788, 75.71290478850352, -2002.527759745671])
 </blockquote>
 
 
-<figure id="orgd3a15d1">
+<figure id="orga3bd8c3">
 <img alt="traxer_cast_llnl_setup_sun.png" src="./figs/home/basti/phd/Figs/raytracing/traxer_cast_llnl_setup_sun.png" />
 
 </figure>
@@ -820,10 +947,10 @@ Michael Pivovaroff from LLNL.
 
 <p>
 Its design follows the technology developed for the NuSTAR mission
-(<a href="./bibliography.html#citeproc_bib_item_104">Harrison et al. 2013</a>, <a href="./bibliography.html#citeproc_bib_item_103">2006</a>; <a href="./bibliography.html#citeproc_bib_item_134">Koglin et al. 2009</a>; <a href="./bibliography.html#citeproc_bib_item_70">Craig et al. 2011</a>; <a href="./bibliography.html#citeproc_bib_item_101">Hailey et al. 2010</a>).
+<a href="cite:Harrison_2013,Harrison2006,nustar_design_performance,nustar_fabrication,nustar_overview_status">cite:Harrison_2013,Harrison2006,nustar_design_performance,nustar_fabrication,nustar_overview_status</a>.
 This means it is not a true Wolter optic (meaning parabolic and
 hyperbolic mirrors), but instead uses a cone approximation
-(<a href="./bibliography.html#citeproc_bib_item_173">Petre and Serlemitsos 1985</a>), which are easier to produce and in particular for CAST
+<a href="cite:Petre:85">cite:Petre:85</a>, which are easier to produce and in particular for CAST
 provide more than enough angular resolution.
 </p>
 
@@ -834,7 +961,7 @@ length of \(\SI{225}{mm}\) and thickness of \(d_{\text{glass}} =
 thermally-formed (&quot;slumped&quot;) into the conical shapes. Production of
 the mirrors happened at the National Space Institute at the Technical
 University of Denmark (DTU Space) as part of the PhD thesis of Anders
-Jakobsen (<a href="./bibliography.html#citeproc_bib_item_123">Jakobsen 2015</a>). The first sets of layers \(i\) describe
+Jakobsen <a href="cite:anders_phd">cite:anders_phd</a>. The first sets of layers \(i\) describe
 truncated coni with a remaining height of \(\SI{225}{mm}\), an arc angle
 of \(\SI{30}{°}\), a radius on the opening end <sup>  <a id="fnr.9" href="#fn.9" class="footref" role="doc-backlink">9</a></sup> of
 \(R_{1,i}\) and a cone angle of \(α_i\). That is for each layer a
@@ -910,14 +1037,14 @@ second shell of angle \(3α\)). The virtual radius is the radius at the
 point if one extends the incoming ray through the first set of mirrors
 and reflects at a single virtual mirror of an angle \(4α\) precisely at
 the midpoint of the telescope. This is illustrated in
-fig. <a href="#fig:appendix:llnl_schematic_explanation">3</a>, which is an adapted
-version of fig. 4.6 from A. Jakobsen&apos;s PhD thesis (<a href="./bibliography.html#citeproc_bib_item_123">Jakobsen 2015</a>) to
+fig. <a href="#fig:appendix:llnl_schematic_explanation">2</a>, which is an adapted
+version of fig. 4.6 from A. Jakobsen&apos;s PhD thesis <a href="cite:&amp;anders_phd">cite:&amp;anders_phd</a> to
 better illustrate this.
 </p>
 
 <p>
 In addition to the PhD thesis mentioned, there is a paper
-(<a href="./bibliography.html#citeproc_bib_item_28">Aznar et al. 2015</a>) about the telescope for CAST
+<a href="cite:llnl_telescope_first_cast_results">cite:llnl_telescope_first_cast_results</a> about the telescope for CAST
 and initial results. <b>Note though</b>, that <i>both</i> the PhD thesis and the
 paper contain contradicting and wrong information about the details of
 the telescope design. Neither (nor combined do they) describe the real
@@ -926,7 +1053,7 @@ communication with Jaime Ruz and Julia Vogel we were able to both
 clear up confusions and find the original numbers of the telescope
 that were actually built. Table <a href="#tab:appendix:llnl_overview">37</a> gives an
 overview of the telescope design. It is adapted from
-(<a href="./bibliography.html#citeproc_bib_item_28">Aznar et al. 2015</a>), but modified to use the
+<a href="cite:llnl_telescope_first_cast_results">cite:llnl_telescope_first_cast_results</a>, but modified to use the
 correct numbers. Then in tab. <a href="#tab:appendix:llnl_as_built">38</a> is the list
 of all layers and their corresponding radii in detail as given to me
 by Jaime Ruz. 
@@ -1191,7 +1318,7 @@ by Jaime Ruz.
 <figure id="fig:appendix:llnl_schematic_explanation">
 <img alt="llnl_layers_explanation.svg" class="org-svg" src="./figs/home/basti/org/Figs/llnlExplanation/llnl_layers_explanation.svg" />
 
-<figcaption>Figure 3: <span class="figure-number">Figure 203: </span>Schematic of the reflection of an X-ray on a single layer of the telescope. Angles are exaggerated (\(α = \SI{5}{°}\) here). The virtual reflection point is the relevant point to consider when calculating the focal length.</figcaption>
+<figcaption>Figure 2: <span class="figure-number">Figure 203: </span>Schematic of the reflection of an X-ray on a single layer of the telescope. Angles are exaggerated (\(α = \SI{5}{°}\) here). The virtual reflection point is the relevant point to consider when calculating the focal length.</figcaption>
 </figure>
 
 <p>
@@ -1335,12 +1462,12 @@ set to 1.
 <p>
 Calculation of the reflectivity follows the equations also mentioned
 in the theory section. The reflectivities of each layer are calculated
-with (<a href="./bibliography.html#citeproc_bib_item_199">Schmidt and SciNim contributors 2022</a>), which is used as part of the
+with <a href="cite:&amp;Schmidt_xrayAttenuation_2022">cite:&amp;Schmidt_xrayAttenuation_2022</a>, which is used as part of the
 material description in <code>TrAXer</code>.
 </p>
 </div>
-<div id="outline-container-org0ea9204" class="outline-4">
-<h4 id="org0ea9204">  <a href="#org0ea9204">  <span class="section-number-4">37.2.1.</span> Calculate angles and focal length based on Wolter equation for telescope data files   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orgcd86bef" class="outline-4">
+<h4 id="orgcd86bef">  <a href="#orgcd86bef">  <span class="section-number-4">37.2.1.</span> Calculate angles and focal length based on Wolter equation for telescope data files   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-2-1" class="outline-text-4">
 <p>
 The following, initially adapted from
@@ -1381,54 +1508,54 @@ main section above.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> math, sequtils, datamancer
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> math, sequtils, datamancer
 <span style="color: #F92672;">const</span> <span style="color: #FD971F;">lMirror </span>= <span style="font-style: italic;">225</span>.<span style="font-style: italic;">0</span>
 <span style="color: #F92672;">const</span> <span style="color: #FD971F;">xSep </span>= <span style="font-style: italic;">4</span>.<span style="font-style: italic;">0</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">calcAngle</span><span style="color: #AE81FF;">(</span>r1, r2: <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">float</span> =
-  <span style="color: #FD971F;">result</span> = arcsin<span style="color: #AE81FF;">(</span><span style="color: #F92672;">abs</span><span style="color: #66D9EF;">(</span>r1 - r2<span style="color: #66D9EF;">)</span> / lMirror<span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">calcAngle</span>  <span style="color: #AE81FF;">(</span>r1, r2: <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">float</span> =
+  <span style="color: #FD971F;">result</span> = arcsin<span style="color: #AE81FF;">(</span>  <span style="color: #F92672;">abs</span>  <span style="color: #66D9EF;">(</span>r1 - r2<span style="color: #66D9EF;">)</span> / lMirror<span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">calcR3</span><span style="color: #AE81FF;">(</span>r1, lMirror: <span style="color: #66D9EF;">float</span>, α: <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">float</span> =
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">calcR3</span>  <span style="color: #AE81FF;">(</span>r1, lMirror: <span style="color: #66D9EF;">float</span>, α: <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">float</span> =
   <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r2 </span>= r1 - lMirror * sin<span style="color: #AE81FF;">(</span>α<span style="color: #AE81FF;">)</span>
   <span style="color: #FD971F;">result</span> = r2 - <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span> * xSep * tan<span style="color: #AE81FF;">(</span>α<span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">printTab</span><span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span>: <span style="color: #66D9EF;">openArray</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span> =
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">printTab</span>  <span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span>: <span style="color: #66D9EF;">openArray</span>  <span style="color: #66D9EF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #66D9EF;">]</span>  <span style="color: #AE81FF;">)</span> =
   <span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= newDataFrame<span style="color: #AE81FF;">()</span>
   <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> <span style="font-style: italic;">0</span> ..&lt; <span style="color: #66D9EF;">R1s</span>.<span style="color: #F92672;">len</span>:
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r1 </span>= <span style="color: #66D9EF;">R1s</span><span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r2 </span>= <span style="color: #66D9EF;">R2s</span><span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r1 </span>= <span style="color: #66D9EF;">R1s</span>  <span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r2 </span>= <span style="color: #66D9EF;">R2s</span>  <span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
     <span style="color: #F92672;">let</span> <span style="color: #FD971F;">α </span>= calcAngle<span style="color: #AE81FF;">(</span>r1, r2<span style="color: #AE81FF;">)</span>
     <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r3 </span>= calcR3<span style="color: #AE81FF;">(</span>r1, lMirror, α<span style="color: #AE81FF;">)</span>
     <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r1minus </span>= r1 - sin<span style="color: #AE81FF;">(</span>α<span style="color: #AE81FF;">)</span> * lMirror/<span style="font-style: italic;">2</span>
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fr3 </span>= r3 / tan<span style="color: #AE81FF;">(</span><span style="font-style: italic;">4</span> * α<span style="color: #AE81FF;">)</span>
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fr1m </span>= r1minus / tan<span style="color: #AE81FF;">(</span><span style="font-style: italic;">4</span> * α<span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fr3 </span>= r3 / tan<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">4</span> * α<span style="color: #AE81FF;">)</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">fr1m </span>= r1minus / tan<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">4</span> * α<span style="color: #AE81FF;">)</span>
     df.<span style="color: #F92672;">add</span> <span style="color: #AE81FF;">(</span>i: i+<span style="font-style: italic;">1</span>, f_R3: fr3.<span style="color: #66D9EF;">float</span>, f_R1m: fr1m.<span style="color: #66D9EF;">float</span>, α: α.radToDeg, <span style="color: #66D9EF;">R3</span>: r3<span style="color: #AE81FF;">)</span>
   <span style="color: #F92672;">echo</span> df.toOrgTable
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">printBuiltTab</span><span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span>: <span style="color: #66D9EF;">openArray</span><span style="color: #66D9EF;">[</span><span style="color: #66D9EF;">float</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span> =
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">printBuiltTab</span>  <span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span>: <span style="color: #66D9EF;">openArray</span>  <span style="color: #66D9EF;">[</span>  <span style="color: #66D9EF;">float</span>  <span style="color: #66D9EF;">]</span>  <span style="color: #AE81FF;">)</span> =
   <span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= newDataFrame<span style="color: #AE81FF;">()</span>
   <span style="color: #F92672;">for</span> i <span style="color: #F92672;">in</span> <span style="font-style: italic;">0</span> ..&lt; <span style="color: #66D9EF;">R1s</span>.<span style="color: #F92672;">len</span>:
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r1 </span>= <span style="color: #66D9EF;">R1s</span><span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r2 </span>= <span style="color: #66D9EF;">R2s</span><span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r4 </span>= <span style="color: #66D9EF;">R4s</span><span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
-    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r5 </span>= <span style="color: #66D9EF;">R5s</span><span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r1 </span>= <span style="color: #66D9EF;">R1s</span>  <span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r2 </span>= <span style="color: #66D9EF;">R2s</span>  <span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r4 </span>= <span style="color: #66D9EF;">R4s</span>  <span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
+    <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r5 </span>= <span style="color: #66D9EF;">R5s</span>  <span style="color: #AE81FF;">[</span>i<span style="color: #AE81FF;">]</span>
     <span style="color: #F92672;">let</span> <span style="color: #FD971F;">α </span>= calcAngle<span style="color: #AE81FF;">(</span>r1, r2<span style="color: #AE81FF;">)</span>
     <span style="color: #F92672;">let</span> <span style="color: #FD971F;">α3 </span>= calcAngle<span style="color: #AE81FF;">(</span>r4, r5<span style="color: #AE81FF;">)</span>    
     <span style="color: #F92672;">let</span> <span style="color: #FD971F;">r3 </span>= calcR3<span style="color: #AE81FF;">(</span>r1, lMirror, α<span style="color: #AE81FF;">)</span>
     df.<span style="color: #F92672;">add</span> <span style="color: #AE81FF;">(</span>i: i+<span style="font-style: italic;">1</span>, <span style="color: #66D9EF;">R1</span>: r1, <span style="color: #66D9EF;">R2</span>: r2, <span style="color: #66D9EF;">R3</span>: r3, <span style="color: #66D9EF;">R4</span>: r4, <span style="color: #66D9EF;">R5</span>: r5, α: α.radToDeg, α3: α3.radToDeg<span style="color: #AE81FF;">)</span>
-  <span style="color: #F92672;">echo</span> df.rename<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;3α&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;α3&quot;</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>.toOrgTable<span style="color: #AE81FF;">(</span>precision = <span style="font-style: italic;">6</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">echo</span> df.rename<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #E6DB74;">&quot;3α&quot;</span> &lt;- <span style="color: #E6DB74;">&quot;α3&quot;</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>.toOrgTable<span style="color: #AE81FF;">(</span>precision = <span style="font-style: italic;">6</span>  <span style="color: #AE81FF;">)</span>
 
 <span style="color: #F92672;">block</span> <span style="color: #66D9EF;">AndersPhD</span>:
-  <span style="color: #F92672;">let</span> <span style="color: #66D9EF;">R1s</span> = @<span style="color: #AE81FF;">[</span><span style="font-style: italic;">63</span>.<span style="font-style: italic;">006</span>, <span style="font-style: italic;">65</span>.<span style="font-style: italic;">606</span>, <span style="font-style: italic;">68</span>.<span style="font-style: italic;">305</span>, <span style="font-style: italic;">71</span>.<span style="font-style: italic;">105</span>, <span style="font-style: italic;">74</span>.<span style="font-style: italic;">011</span>, <span style="font-style: italic;">77</span>.<span style="font-style: italic;">027</span>, <span style="font-style: italic;">80</span>.<span style="font-style: italic;">157</span>,
-              <span style="font-style: italic;">83</span>.<span style="font-style: italic;">405</span>, <span style="font-style: italic;">86</span>.<span style="font-style: italic;">775</span>, <span style="font-style: italic;">90</span>.<span style="font-style: italic;">272</span>, <span style="font-style: italic;">93</span>.<span style="font-style: italic;">902</span>, <span style="font-style: italic;">97</span>.<span style="font-style: italic;">668</span>, <span style="font-style: italic;">101</span>.<span style="font-style: italic;">576</span>, <span style="font-style: italic;">105</span>.<span style="font-style: italic;">632</span><span style="color: #AE81FF;">]</span>
-  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">αs </span>= @<span style="color: #AE81FF;">[</span><span style="font-style: italic;">0</span>.<span style="font-style: italic;">579</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">603</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">628</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">654</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">680</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">708</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">737</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">767</span>,
-             <span style="font-style: italic;">0</span>.<span style="font-style: italic;">798</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">830</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">863</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">898</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">933</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">970</span><span style="color: #AE81FF;">]</span>
-  <span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">calcR2</span><span style="color: #AE81FF;">(</span>r1, α: <span style="color: #66D9EF;">float</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">float</span> = r1 - sin<span style="color: #AE81FF;">(</span>α.degToRad<span style="color: #AE81FF;">)</span> * lMirror
-  <span style="color: #F92672;">let</span> <span style="color: #66D9EF;">R2s</span> = toSeq<span style="color: #AE81FF;">(</span><span style="font-style: italic;">0</span> ..&lt; <span style="color: #66D9EF;">R1s</span>.<span style="color: #F92672;">len</span><span style="color: #AE81FF;">)</span>.mapIt<span style="color: #AE81FF;">(</span>calcR2<span style="color: #66D9EF;">(</span><span style="color: #66D9EF;">R1s</span><span style="color: #A6E22E;">[</span>it<span style="color: #A6E22E;">]</span>, αs<span style="color: #A6E22E;">[</span>it<span style="color: #A6E22E;">]</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #F92672;">let</span> <span style="color: #66D9EF;">R1s</span> = @<span style="color: #AE81FF;">[</span>  <span style="font-style: italic;">63</span>.<span style="font-style: italic;">006</span>, <span style="font-style: italic;">65</span>.<span style="font-style: italic;">606</span>, <span style="font-style: italic;">68</span>.<span style="font-style: italic;">305</span>, <span style="font-style: italic;">71</span>.<span style="font-style: italic;">105</span>, <span style="font-style: italic;">74</span>.<span style="font-style: italic;">011</span>, <span style="font-style: italic;">77</span>.<span style="font-style: italic;">027</span>, <span style="font-style: italic;">80</span>.<span style="font-style: italic;">157</span>,
+              <span style="font-style: italic;">83</span>.<span style="font-style: italic;">405</span>, <span style="font-style: italic;">86</span>.<span style="font-style: italic;">775</span>, <span style="font-style: italic;">90</span>.<span style="font-style: italic;">272</span>, <span style="font-style: italic;">93</span>.<span style="font-style: italic;">902</span>, <span style="font-style: italic;">97</span>.<span style="font-style: italic;">668</span>, <span style="font-style: italic;">101</span>.<span style="font-style: italic;">576</span>, <span style="font-style: italic;">105</span>.<span style="font-style: italic;">632</span>  <span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">let</span> <span style="color: #FD971F;">αs </span>= @<span style="color: #AE81FF;">[</span>  <span style="font-style: italic;">0</span>.<span style="font-style: italic;">579</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">603</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">628</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">654</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">680</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">708</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">737</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">767</span>,
+             <span style="font-style: italic;">0</span>.<span style="font-style: italic;">798</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">830</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">863</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">898</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">933</span>, <span style="font-style: italic;">0</span>.<span style="font-style: italic;">970</span>  <span style="color: #AE81FF;">]</span>
+  <span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">calcR2</span>  <span style="color: #AE81FF;">(</span>r1, α: <span style="color: #66D9EF;">float</span>  <span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">float</span> = r1 - sin<span style="color: #AE81FF;">(</span>α.degToRad<span style="color: #AE81FF;">)</span> * lMirror
+  <span style="color: #F92672;">let</span> <span style="color: #66D9EF;">R2s</span> = toSeq<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">0</span> ..&lt; <span style="color: #66D9EF;">R1s</span>.<span style="color: #F92672;">len</span>  <span style="color: #AE81FF;">)</span>.mapIt<span style="color: #AE81FF;">(</span>calcR2<span style="color: #66D9EF;">(</span>  <span style="color: #66D9EF;">R1s</span>  <span style="color: #A6E22E;">[</span>it<span style="color: #A6E22E;">]</span>, αs<span style="color: #A6E22E;">[</span>it<span style="color: #A6E22E;">]</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span>
   <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Using values from Anders PhD thesis&quot;</span>
-  printTab<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">[]</span>, <span style="color: #66D9EF;">[]</span><span style="color: #AE81FF;">)</span>
+  printTab<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">[]</span>, <span style="color: #66D9EF;">[]</span>  <span style="color: #AE81FF;">)</span>
   
-<span style="color: #F92672;">block</span> <span style="color: #66D9EF;">AsDesigned</span>: <span style="color: #75715E;"># </span><span style="color: #75715E;">`</span><span style="color: #AE81FF;">cast20l4_f1500mm_asDesigned.txt</span><span style="color: #75715E;">`</span>
+<span style="color: #F92672;">block</span> <span style="color: #66D9EF;">AsDesigned</span>: <span style="color: #75715E;"># </span>  <span style="color: #75715E;">`</span>  <span style="color: #AE81FF;">cast20l4_f1500mm_asDesigned.txt</span>  <span style="color: #75715E;">`</span>
   <span style="color: #F92672;">let</span> <span style="color: #66D9EF;">R1s</span> = <span style="color: #AE81FF;">[</span> <span style="font-style: italic;">63</span>.<span style="font-style: italic;">2412</span>, <span style="font-style: italic;">65</span>.<span style="font-style: italic;">8741</span>, <span style="font-style: italic;">68</span>.<span style="font-style: italic;">6075</span>, <span style="font-style: italic;">71</span>.<span style="font-style: italic;">4450</span>, <span style="font-style: italic;">74</span>.<span style="font-style: italic;">3908</span>, <span style="font-style: italic;">77</span>.<span style="font-style: italic;">4488</span>, <span style="font-style: italic;">80</span>.<span style="font-style: italic;">6233</span>,
               <span style="font-style: italic;">83</span>.<span style="font-style: italic;">9188</span>, <span style="font-style: italic;">87</span>.<span style="font-style: italic;">3398</span>, <span style="font-style: italic;">90</span>.<span style="font-style: italic;">8911</span>, <span style="font-style: italic;">94</span>.<span style="font-style: italic;">5775</span>, <span style="font-style: italic;">98</span>.<span style="font-style: italic;">4043</span>, <span style="font-style: italic;">102</span>.<span style="font-style: italic;">377</span> <span style="color: #AE81FF;">]</span>
   <span style="color: #F92672;">let</span> <span style="color: #66D9EF;">R2s</span> = <span style="color: #AE81FF;">[</span> <span style="font-style: italic;">60</span>.<span style="font-style: italic;">9149</span>, <span style="font-style: italic;">63</span>.<span style="font-style: italic;">4511</span>, <span style="font-style: italic;">66</span>.<span style="font-style: italic;">0840</span>, <span style="font-style: italic;">68</span>.<span style="font-style: italic;">8173</span>, <span style="font-style: italic;">71</span>.<span style="font-style: italic;">6549</span>, <span style="font-style: italic;">74</span>.<span style="font-style: italic;">6006</span>, <span style="font-style: italic;">77</span>.<span style="font-style: italic;">6586</span>,
@@ -1440,10 +1567,10 @@ main section above.
   <span style="color: #F92672;">let</span> <span style="color: #FD971F;">diffs </span>= <span style="color: #AE81FF;">[</span> <span style="font-style: italic;">10</span>.<span style="font-style: italic;">3390</span>, <span style="font-style: italic;">10</span>.<span style="font-style: italic;">7690</span>, <span style="font-style: italic;">11</span>.<span style="font-style: italic;">2150</span>, <span style="font-style: italic;">11</span>.<span style="font-style: italic;">6780</span>, <span style="font-style: italic;">12</span>.<span style="font-style: italic;">1590</span>, <span style="font-style: italic;">12</span>.<span style="font-style: italic;">6580</span>, <span style="font-style: italic;">13</span>.<span style="font-style: italic;">1760</span>,
                 <span style="font-style: italic;">13</span>.<span style="font-style: italic;">7130</span>, <span style="font-style: italic;">14</span>.<span style="font-style: italic;">2710</span>, <span style="font-style: italic;">14</span>.<span style="font-style: italic;">8500</span>, <span style="font-style: italic;">15</span>.<span style="font-style: italic;">4510</span>, <span style="font-style: italic;">16</span>.<span style="font-style: italic;">0740</span>, <span style="font-style: italic;">16</span>.<span style="font-style: italic;">7210</span> <span style="color: #AE81FF;">]</span>
   <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Using values from .txt file &apos;as designed&apos;&quot;</span>
-  printTab<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span><span style="color: #AE81FF;">)</span>
+  printTab<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span>  <span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">block</span> <span style="color: #66D9EF;">AsBuilt</span>: <span style="color: #75715E;"># </span><span style="color: #75715E;">`</span><span style="color: #AE81FF;">cast20l4_f1500mm_asBuilt.txt</span><span style="color: #75715E;">`</span>
-  <span style="color: #75715E;"># </span><span style="color: #75715E;">These are the numbers from the &quot;as built&quot; text file</span>
+<span style="color: #F92672;">block</span> <span style="color: #66D9EF;">AsBuilt</span>: <span style="color: #75715E;"># </span>  <span style="color: #75715E;">`</span>  <span style="color: #AE81FF;">cast20l4_f1500mm_asBuilt.txt</span>  <span style="color: #75715E;">`</span>
+  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">These are the numbers from the &quot;as built&quot; text file</span>
   <span style="color: #F92672;">let</span> <span style="color: #66D9EF;">R1s</span> = <span style="color: #AE81FF;">[</span> <span style="font-style: italic;">63</span>.<span style="font-style: italic;">2384</span>, <span style="font-style: italic;">65</span>.<span style="font-style: italic;">8700</span>, <span style="font-style: italic;">68</span>.<span style="font-style: italic;">6059</span>, <span style="font-style: italic;">71</span>.<span style="font-style: italic;">4175</span>, <span style="font-style: italic;">74</span>.<span style="font-style: italic;">4006</span>, <span style="font-style: italic;">77</span>.<span style="font-style: italic;">4496</span>, <span style="font-style: italic;">80</span>.<span style="font-style: italic;">6099</span>, 
               <span style="font-style: italic;">83</span>.<span style="font-style: italic;">9198</span>, <span style="font-style: italic;">87</span>.<span style="font-style: italic;">3402</span>, <span style="font-style: italic;">90</span>.<span style="font-style: italic;">8910</span>, <span style="font-style: italic;">94</span>.<span style="font-style: italic;">5780</span>, <span style="font-style: italic;">98</span>.<span style="font-style: italic;">3908</span>, <span style="font-style: italic;">102</span>.<span style="font-style: italic;">381</span> <span style="color: #AE81FF;">]</span>
   <span style="color: #F92672;">let</span> <span style="color: #66D9EF;">R2s</span> = <span style="color: #AE81FF;">[</span> <span style="font-style: italic;">60</span>.<span style="font-style: italic;">9121</span>, <span style="font-style: italic;">63</span>.<span style="font-style: italic;">4470</span>, <span style="font-style: italic;">66</span>.<span style="font-style: italic;">0824</span>, <span style="font-style: italic;">68</span>.<span style="font-style: italic;">7898</span>, <span style="font-style: italic;">71</span>.<span style="font-style: italic;">6647</span>, <span style="font-style: italic;">74</span>.<span style="font-style: italic;">6014</span>, <span style="font-style: italic;">77</span>.<span style="font-style: italic;">6452</span>,
@@ -1452,16 +1579,16 @@ main section above.
               <span style="font-style: italic;">80</span>.<span style="font-style: italic;">7305</span>, <span style="font-style: italic;">84</span>.<span style="font-style: italic;">0137</span>, <span style="font-style: italic;">87</span>.<span style="font-style: italic;">4316</span>, <span style="font-style: italic;">90</span>.<span style="font-style: italic;">9865</span>, <span style="font-style: italic;">94</span>.<span style="font-style: italic;">6549</span>, <span style="font-style: italic;">98</span>.<span style="font-style: italic;">4879</span> <span style="color: #AE81FF;">]</span>
   <span style="color: #F92672;">let</span> <span style="color: #66D9EF;">R5s</span> = <span style="color: #AE81FF;">[</span> <span style="font-style: italic;">53</span>.<span style="font-style: italic;">8823</span>, <span style="font-style: italic;">56</span>.<span style="font-style: italic;">0483</span>, <span style="font-style: italic;">58</span>.<span style="font-style: italic;">3908</span>, <span style="font-style: italic;">60</span>.<span style="font-style: italic;">7934</span>, <span style="font-style: italic;">63</span>.<span style="font-style: italic;">3473</span>, <span style="font-style: italic;">65</span>.<span style="font-style: italic;">9515</span>, <span style="font-style: italic;">68</span>.<span style="font-style: italic;">6513</span>,
               <span style="font-style: italic;">71</span>.<span style="font-style: italic;">4688</span>, <span style="font-style: italic;">74</span>.<span style="font-style: italic;">3748</span>, <span style="font-style: italic;">77</span>.<span style="font-style: italic;">4012</span>, <span style="font-style: italic;">80</span>.<span style="font-style: italic;">5497</span>, <span style="font-style: italic;">83</span>.<span style="font-style: italic;">7962</span>, <span style="font-style: italic;">87</span>.<span style="font-style: italic;">1914</span> <span style="color: #AE81FF;">]</span>
-              <span style="color: #75715E;"># </span><span style="color: #75715E;">this last one should be the difference between R5 and R1</span>
+              <span style="color: #75715E;"># </span>  <span style="color: #75715E;">this last one should be the difference between R5 and R1</span>
   <span style="color: #F92672;">let</span> <span style="color: #FD971F;">diffs </span>= <span style="color: #AE81FF;">[</span> <span style="font-style: italic;">10</span>.<span style="font-style: italic;">339</span>, <span style="font-style: italic;">10</span>.<span style="font-style: italic;">769</span>, <span style="font-style: italic;">11</span>.<span style="font-style: italic;">216</span>, <span style="font-style: italic;">11</span>.<span style="font-style: italic;">679</span>, <span style="font-style: italic;">12</span>.<span style="font-style: italic;">160</span>, <span style="font-style: italic;">12</span>.<span style="font-style: italic;">659</span>, <span style="font-style: italic;">13</span>.<span style="font-style: italic;">176</span>,
                 <span style="font-style: italic;">13</span>.<span style="font-style: italic;">714</span>, <span style="font-style: italic;">14</span>.<span style="font-style: italic;">272</span>, <span style="font-style: italic;">14</span>.<span style="font-style: italic;">851</span>, <span style="font-style: italic;">15</span>.<span style="font-style: italic;">452</span>, <span style="font-style: italic;">16</span>.<span style="font-style: italic;">076</span>, <span style="font-style: italic;">16</span>.<span style="font-style: italic;">725</span>  <span style="color: #AE81FF;">]</span>
   <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Using values from .txt file &apos;as built&apos;&quot;</span>
-  printTab<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span><span style="color: #AE81FF;">)</span>
+  printTab<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span>  <span style="color: #AE81FF;">)</span>
 
-  <span style="color: #75715E;"># </span><span style="color: #75715E;">And now print the table to use in thesis</span>
+  <span style="color: #75715E;"># </span>  <span style="color: #75715E;">And now print the table to use in thesis</span>
   <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Overview of radii and angles of telescope was built:&quot;</span>
-  printBuiltTab<span style="color: #AE81FF;">(</span><span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span><span style="color: #AE81FF;">)</span>
-</pre>
+  printBuiltTab<span style="color: #AE81FF;">(</span>  <span style="color: #66D9EF;">R1s</span>, <span style="color: #66D9EF;">R2s</span>, <span style="color: #66D9EF;">R4s</span>, <span style="color: #66D9EF;">R5s</span>  <span style="color: #AE81FF;">)</span>
+</code></pre>
 </div>
 <p>
 Using values from Anders PhD thesis
@@ -2063,7 +2190,7 @@ Overview of radii and angles of telescope was built:
 <p>
 The LLNL telescope was tested and characterized at the PANTER X-ray test facility in
 Munich in July 2016. It was reported on these tests during the
-\(62^{\text{nd}}\) CAST collaboration meeting (CCM) on <span class="timestamp-wrapper">  <span class="timestamp">&lt;2016-09-26 Mon&gt; </span></span> and
+\(62^{\text{nd}}\) CAST collaboration meeting (CCM) on <span class="timestamp-wrapper">  <span class="timestamp">&lt;2016-09-26 Mon&gt;</span></span> and
 again in the CCM on <span class="timestamp-wrapper">  <span class="timestamp">&lt;2017-01-23 Mon&gt;</span></span>. <sup>  <a id="fnr.13" href="#fn.13" class="footref" role="doc-backlink">13</a></sup> These results are
 valuable to us, because they can be used as a cross-check to verify
 our <code>TrAXer</code> based raytracing simulations.
@@ -2108,7 +2235,7 @@ corresponding to \(\SI{50}{\%}\).
 
 <p>
 Let&apos;s consider the aluminum Kα
-lines. Fig. <a href="#fig:appendix:raytracing:comparison_alKalpha">4</a> compares
+lines. Fig. <a href="#fig:appendix:raytracing:comparison_alKalpha">#fig:appendix:raytracing:comparison_alKalpha</a> compares
 the PANTER data, with the LLNL raytracing result and our raytracing
 result. <sup>  <a id="fnr.15" href="#fn.15" class="footref" role="doc-backlink">15</a></sup> All three plots show the inner
 \(\num{3}·\SI{3}{mm²}\) of the image. Generally, the agreement is very
@@ -2116,16 +2243,18 @@ good. The &quot;bow tie&quot; shape can be seen in all three figures.
 </p>
 
 
-<figure id="fig:appendix:raytracing:comparison_alKalpha" class="figure-wrapper">
-<figure id="fig:appendix:raytracing:panter_data_alK" class="subfigure" data-width="29%">  <img src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/PANTER_LLNL_CCM_slide_11_cropped_panter_data.svg" data-width="94%" />  <figcaption>Figure 4(a): PANTER data</figcaption></figure> <figure id="fig:appendix:raytracing:simulation_alK" class="subfigure" data-width="29%">  <img src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/PANTER_LLNL_CCM_slide_11_cropped_simulation.svg" data-width="94%" />  <figcaption>Figure 4(b): LLNL simulation</figcaption></figure> <figure id="fig:appendix:raytracing:traxer_sim_alK" class="subfigure" data-width="38%">  <img src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_fWidth0.3.svg" data-width="99%" />  <figcaption>Figure 4(c): TrAXer</figcaption></figure>
-<figcaption>Figure 4: <a href="#fig:appendix:raytracing:panter_data_alK">4(a)</a>: Data of the telescope taken at PANTER. <a href="#fig:appendix:raytracing:simulation_alK">4(b)</a>: Raytracing simulation performed by M. Pivovaroff at LLNL. Both of these are taken from
-          the CCM in Jan 2017, slide 11. <a href="#fig:appendix:raytracing:traxer_sim_alK">4(c)</a>: Simulation performed with TrAXer. All three plots show the inner $\num{3}·\SI{3}{mm²}$ of the image.</figcaption>
-</figure>
+<p>
+&lt;figure class=&quot;figure-wrapper&quot; id=&quot;fig:appendix:raytracing:comparison<sub>alKalpha</sub>&quot;&gt;
+&lt;figure class=&quot;subfigure&quot; id=&quot;fig:appendix:raytracing:panter<sub>data</sub><sub>alK</sub>&quot; data-width=&quot;29%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/raytracing/llnlPanter/PANTER<sub>LLNL</sub><sub>CCM</sub><sub>slide</sub><sub>11</sub><sub>cropped</sub><sub>panter</sub><sub>data.svg</sub>&quot; data-width=&quot;94%&quot; &gt;&lt;figcaption&gt;PANTER data&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:appendix:raytracing:simulation<sub>alK</sub>&quot; data-width=&quot;29%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/raytracing/llnlPanter/PANTER<sub>LLNL</sub><sub>CCM</sub><sub>slide</sub><sub>11</sub><sub>cropped</sub><sub>simulation.svg</sub>&quot; data-width=&quot;94%&quot; &gt;&lt;figcaption&gt;LLNL simulation&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:appendix:raytracing:traxer<sub>sim</sub><sub>alK</sub>&quot; data-width=&quot;38%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter<sub>source</sub><sub>Al</sub><sub>Kalpha</sub><sub>imperfect</sub><sub>mirrors</sub><sub>3x3mm</sub><sub>fWidth0.3.svg</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;TrAXer&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figcaption&gt;&lt;a href=&quot;#fig:appendix:raytracing:panter<sub>data</sub><sub>alK</sub>&quot;&gt;&lt;/a&gt;: Data of the telescope taken at PANTER. &lt;a href=&quot;#fig:appendix:raytracing:simulation<sub>alK</sub>&quot;&gt;&lt;/a&gt;: Raytracing simulation performed by M. Pivovaroff at LLNL. Both of these are taken from
+          the CCM in Jan 2017, slide 11. &lt;a href=&quot;#fig:appendix:raytracing:traxer<sub>sim</sub><sub>alK</sub>&quot;&gt;&lt;/a&gt;: Simulation performed with TrAXer. All three plots show the inner \(\num{3}·\SI{3}{mm²}\) of the image.&lt;/figcaption&gt;
+&lt;/figure&gt;
+</p>
 
 
 <p>
 Computing the encircled energy function yields a figure as shown in
-fig. <a href="#fig:appendix:raytracing:traxer_encircled_energy_function">5</a>. We see
+fig. <a href="#fig:appendix:raytracing:traxer_encircled_energy_function">3</a>. We see
 the HPD shown as the red line at a radius of \(r_{\text{HPD}} \approx \SI{0.79}{mm}\). This
 is converted to an HPD in arc seconds via
 </p>
@@ -2158,7 +2287,7 @@ determined.
 <figure id="fig:appendix:raytracing:traxer_encircled_energy_function">
 <img alt="panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.svg" />
 
-<figcaption>Figure 5: <span class="figure-number">Figure 204: </span>Encircled energy function of the aluminum Kα line, corresponding to the data of fig. <a href="#fig:appendix:raytracing:traxer_sim_alK">4(c)</a>. The HPD comes out to \(\SI{186.45}{\arcsecond}\).</figcaption>
+<figcaption>Figure 3: <span class="figure-number">Figure 204: </span>Encircled energy function of the aluminum Kα line, corresponding to the data of fig. <a href="#fig:appendix:raytracing:traxer_sim_alK">#fig:appendix:raytracing:traxer_sim_alK</a>. The HPD comes out to \(\SI{186.45}{\arcsecond}\).</figcaption>
 </figure>
 
 <table id="tab:appendix:llnl_panter_eef_hpd_measurements">
@@ -2348,6 +2477,21 @@ determined.
 <td class="org-right">518.51</td>
 </tr>
 </tbody>
+<tbody>
+<tr>
+<td class="org-left">TrAXer vs Data. % Deviation</td>
+<td class="org-right">2.6020067</td>
+<td class="org-right"> </td>
+<td class="org-right"> </td>
+</tr>
+
+<tr>
+<td class="org-left">TrAXer vs PANTER model</td>
+<td class="org-right">1.9202658</td>
+<td class="org-right"> </td>
+<td class="org-right"> </td>
+</tr>
+</tbody>
 </table>
 </div>
 <div id="outline-container-sec:appendix:raytracing:figure_error_model" class="outline-4">
@@ -2417,31 +2561,33 @@ values.
 
 <p>
 Ideally of course, one would use a map of the real surface roughness
-of each mirror shell (as done in (<a href="./bibliography.html#citeproc_bib_item_53">Brejnholt 2012</a>) for the NuSTAR
+of each mirror shell (as done in <a href="cite:&amp;nustar_dtu_phd">cite:&amp;nustar_dtu_phd</a> for the NuSTAR
 telescope using <code>MT_RAYOR</code>) and use that as the basis for more
 accurate reflection on the surface.
 </p>
 
 <p>
 See
-fig. <a href="#fig:appendix:raytracing:comparison_traxer_perfect_imperfect">6</a>
+fig. <a href="#fig:appendix:raytracing:comparison_traxer_perfect_imperfect">#fig:appendix:raytracing:comparison_traxer_perfect_imperfect</a>
 for a comparison of the image without any figure error (assuming
 perfect mirrors) and the final figure errors (which are the ones used
 in the table and plots of the previous section). The right plot shows
 the same data as seen in
-fig. <a href="#fig:appendix:raytracing:traxer_sim_alK">4(c)</a> above. The difference
+fig. <a href="#fig:appendix:raytracing:traxer_sim_alK">#fig:appendix:raytracing:traxer_sim_alK</a> above. The difference
 is massive in the sharpness of the data.
 </p>
 
 
-<figure id="fig:appendix:raytracing:comparison_traxer_perfect_imperfect" class="figure-wrapper">
-<figure id="fig:appendix:raytracing:traxer_alK_perfect" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_fWidth0.5.svg" data-width="99%" />  <figcaption>Figure 6(a): Perfect mirrors</figcaption></figure> <figure id="fig:appendix:raytracing:traxer_alK_imperfect" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_fWidth0.5.svg" data-width="99%" />  <figcaption>Figure 6(b): Imperfect mirrors</figcaption></figure>
-<figcaption>Figure 6: <a href="#fig:appendix:raytracing:traxer_alK_perfect">6(a)</a>: TrAXer simulation for Al Kα without any figure error. The resulting image is
-          extremely well defined. <a href="#fig:appendix:raytracing:traxer_alK_imperfect">6(b)</a>: TrAXer simulation of Al Kα including a figure error. This is the same image as shown in <a href="#fig:appendix:raytracing:traxer_sim_alK">4(c)</a>.</figcaption>
-</figure>
+<p>
+&lt;figure class=&quot;figure-wrapper&quot; id=&quot;fig:appendix:raytracing:comparison<sub>traxer</sub><sub>perfect</sub><sub>imperfect</sub>&quot;&gt;
+&lt;figure class=&quot;subfigure&quot; id=&quot;fig:appendix:raytracing:traxer<sub>alK</sub><sub>perfect</sub>&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter<sub>source</sub><sub>Al</sub><sub>Kalpha</sub><sub>perfect</sub><sub>mirrors</sub><sub>3x3mm</sub><sub>fWidth0.5.svg</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;Perfect mirrors&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:appendix:raytracing:traxer<sub>alK</sub><sub>imperfect</sub>&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter<sub>source</sub><sub>Al</sub><sub>Kalpha</sub><sub>imperfect</sub><sub>mirrors</sub><sub>3x3mm</sub><sub>fWidth0.5.svg</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;Imperfect mirrors&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figcaption&gt;&lt;a href=&quot;#fig:appendix:raytracing:traxer<sub>alK</sub><sub>perfect</sub>&quot;&gt;&lt;/a&gt;: TrAXer simulation for Al Kα without any figure error. The resulting image is
+          extremely well defined. &lt;a href=&quot;#fig:appendix:raytracing:traxer<sub>alK</sub><sub>imperfect</sub>&quot;&gt;&lt;/a&gt;: TrAXer simulation of Al Kα including a figure error. This is the same image as shown in &lt;a href=&quot;#fig:appendix:raytracing:traxer<sub>sim</sub><sub>alK</sub>&quot;&gt;&lt;/a&gt;.&lt;/figcaption&gt;
+&lt;/figure&gt;
+</p>
 </div>
-<div id="outline-container-org6f42a77" class="outline-5">
-<h5 id="org6f42a77">  <a href="#org6f42a77">  <span class="section-number-5">37.3.1.1.</span> Determining the optimal parameters   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
+<div id="outline-container-org45492aa" class="outline-5">
+<h5 id="org45492aa">  <a href="#org45492aa">  <span class="section-number-5">37.3.1.1.</span> Determining the optimal parameters   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
 <div id="text-37-3-1-1" class="outline-text-5">
 <p>
 The optimal parameters that we use nowadays, are determined by
@@ -2450,15 +2596,15 @@ starting with the Al Kα line.
 
 <p>
 The program performing the optimization is <code>optimize_figure_error.nim</code>
-in the TrAXer repository (<a href="./bibliography.html#citeproc_bib_item_196">Schmidt 2023</a>).
+in the TrAXer repository <a href="cite:&amp;traxer">cite:&amp;traxer</a>.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./optimize_figure_error <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./optimize_figure_error <span style="color: #E6DB74; font-weight: bold;">\</span>
     --hpd 206 --c80 397 --c90 568 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --bufOutdir out_GN_DIRECT_L <span style="color: #E6DB74; font-weight: bold;">\</span>
     --shmFile /dev/shm/image_sensor_GN_DIRECT_L.dat
-</pre>
+</code></pre>
 </div>
 <p>
 which calls the raytracer with a set of fuzzing parameters, computes
@@ -2476,15 +2622,15 @@ See the NLopt documentation about the algorithm here:
 To run the program you need to first compile the raytracer,
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">nim c -d:<span style="color: #FD971F;">ThreadPoolSize</span>=32 -d:danger raytracer.nim
-</pre>
+<pre class="src src-sh">  <code>nim c -d:<span style="color: #FD971F;">ThreadPoolSize</span>=32 -d:danger raytracer.nim
+</code></pre>
 </div>
 <p>
 and the <code>calc_eef</code> helper:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">nim c -d:danger calc_eef.nim
-</pre>
+<pre class="src src-sh">  <code>nim c -d:danger calc_eef.nim
+</code></pre>
 </div>
 <p>
 after checking out the repository.
@@ -2492,8 +2638,8 @@ after checking out the repository.
 </div>
 </div>
 </div>
-<div id="outline-container-orgbaaa7c8" class="outline-4">
-<h4 id="orgbaaa7c8">  <a href="#orgbaaa7c8">  <span class="section-number-4">37.3.2.</span> More notes   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org008aca1" class="outline-4">
+<h4 id="org008aca1">  <a href="#org008aca1">  <span class="section-number-4">37.3.2.</span> More notes   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-3-2" class="outline-text-4">
 <p>
 See the following documents for more information about the LLNL
@@ -2515,8 +2661,8 @@ about these PANTER / TrAXer comparisons.
 </ul>
 </div>
 </div>
-<div id="outline-container-orge12f9c8" class="outline-4">
-<h4 id="orge12f9c8">  <a href="#orge12f9c8">  <span class="section-number-4">37.3.3.</span> Half-power diameter definition / calculation   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org4bfcddc" class="outline-4">
+<h4 id="org4bfcddc">  <a href="#org4bfcddc">  <span class="section-number-4">37.3.3.</span> Half-power diameter definition / calculation   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-3-3" class="outline-text-4">
 <p>
 The slides from the \(62^{\text{nd}}\) CCM contain the following
@@ -2538,19 +2684,19 @@ explanation about how the HPD should be calculated on slide 10:
 
 <p>
 The slide in the CCM from Jan 2017 showing their EEFs is slide 17,
-fig. <a href="#fig:appendix:raytracing:lln_traxer_compare:radial_cdfs_eef_slide17">7</a>.
+fig. <a href="#fig:appendix:raytracing:lln_traxer_compare:radial_cdfs_eef_slide17">4</a>.
 </p>
 
 
 <figure id="fig:appendix:raytracing:lln_traxer_compare:radial_cdfs_eef_slide17">
 <img alt="PANTER_LLNL_CCM_slide_17.svg" class="org-svg" src="./figs/home/basti/org/Figs/statusAndProgress/LLNL_telescope/PANTER_LLNL_CCM_slide_17.svg" />
 
-<figcaption>Figure 7: <span class="figure-number">Figure 205: </span>Radial cumulative distribution functions of the signal, in other words &apos;energy encircled function&apos; (EEF) for the three fluorescence lines.</figcaption>
+<figcaption>Figure 4: <span class="figure-number">Figure 205: </span>Radial cumulative distribution functions of the signal, in other words &apos;energy encircled function&apos; (EEF) for the three fluorescence lines.</figcaption>
 </figure>
 </div>
 </div>
-<div id="outline-container-orga057c54" class="outline-4">
-<h4 id="orga057c54">  <a href="#orga057c54">  <span class="section-number-4">37.3.4.</span> Comparison of slices along short axis   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orgd0d30ea" class="outline-4">
+<h4 id="orgd0d30ea">  <a href="#orgd0d30ea">  <span class="section-number-4">37.3.4.</span> Comparison of slices along short axis   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-3-4" class="outline-text-4">
 <p>
 The CCM presentation from Jan 2017 contains also plots that sum the
@@ -2571,7 +2717,7 @@ See slide 12,
 namely the plot in the bottom right. It is quite hard to get precise
 numbers from it, but the 50% amplitude is roughly near the
 \(\SI{0.1}{mm}\) mark. Reproducing a similar plot with our data, yields
-fig. <a href="#fig:appendix:raytracing:traxer_alKalpha_short_axis_sum">8</a>. We see
+fig. <a href="#fig:appendix:raytracing:traxer_alKalpha_short_axis_sum">5</a>. We see
 that the \(\SI{50}{\%}\) mark here is at \(\SI{0.13}{mm}\). Maybe this is
 a slight indication for a somewhat too wide result. But well. The
 actual problem with the HPD as mentioned in the main text still remains.
@@ -2581,12 +2727,12 @@ actual problem with the HPD as mentioned in the main text still remains.
 <figure id="fig:appendix:raytracing:traxer_alKalpha_short_axis_sum">
 <img alt="panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_x.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_x.svg" />
 
-<figcaption>Figure 8: <span class="figure-number">Figure 206: </span>Cut along the short axis, summing the long axis for each bin for aluminium Kα. This yields a \(\SI{50}{\%}\) amplitude width of about \(\SI{0.13}{mm}\).</figcaption>
+<figcaption>Figure 5: <span class="figure-number">Figure 206: </span>Cut along the short axis, summing the long axis for each bin for aluminium Kα. This yields a \(\SI{50}{\%}\) amplitude width of about \(\SI{0.13}{mm}\).</figcaption>
 </figure>
 </div>
 </div>
-<div id="outline-container-org72ea748" class="outline-4">
-<h4 id="org72ea748">  <a href="#org72ea748">  <span class="section-number-4">37.3.5.</span> More on figure errors   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org1843184" class="outline-4">
+<h4 id="org1843184">  <a href="#org1843184">  <span class="section-number-4">37.3.5.</span> More on figure errors   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-3-5" class="outline-text-4">
 <p>
 One of the main issues with figure errors – aside from not being very
@@ -2605,18 +2751,18 @@ surfaces from a real measurement.
 </p>
 </div>
 </div>
-<div id="outline-container-orgbac647a" class="outline-4">
-<h4 id="orgbac647a">  <a href="#orgbac647a">  <span class="section-number-4">37.3.6.</span> Produce \(\ce{Al}Kα\) plot from <code>TrAXer</code> data   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orga14c03a" class="outline-4">
+<h4 id="orga14c03a">  <a href="#orga14c03a">  <span class="section-number-4">37.3.6.</span> Produce \(\ce{Al}Kα\) plot from <code>TrAXer</code> data   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-3-6" class="outline-text-4">
 <p>
 (We define a simple helper script to extract the last bits of output
 from the raytracing program
 </p>
 <div class="org-src-container">
-<pre id="nim-head" class="src src-nim"><span style="color: #F92672;">import</span> strutils
+<pre id="nim-head" class="src src-nim">  <code>  <span style="color: #F92672;">import</span> strutils
 <span style="color: #F92672;">for</span> l <span style="color: #F92672;">in</span> data.<span style="color: #F92672;">len</span> - <span style="color: #F92672;">lines</span> ..&lt; data.<span style="color: #F92672;">len</span>:
-  <span style="color: #F92672;">echo</span> data<span style="color: #AE81FF;">[</span>l<span style="color: #AE81FF;">]</span>.join<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot; &quot;</span><span style="color: #AE81FF;">)</span>
-</pre>
+  <span style="color: #F92672;">echo</span> data<span style="color: #AE81FF;">[</span>l<span style="color: #AE81FF;">]</span>.join<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot; &quot;</span>  <span style="color: #AE81FF;">)</span>
+</code></pre>
 </div>
 <p>
 )
@@ -2634,14 +2780,14 @@ The HPD values are extracted from the output of <code>plotBinary</code> or from
 the <code>*_hpd_via_eef.pdf</code> plot annotations.
 </p>
 </div>
-<div id="outline-container-org10bfe91" class="outline-5">
-<h5 id="org10bfe91">  <a href="#org10bfe91">  <span class="section-number-5">37.3.6.1.</span> Al Kα</a></h5>
+<div id="outline-container-org877e321" class="outline-5">
+<h5 id="org877e321">  <a href="#org877e321">  <span class="section-number-5">37.3.6.1.</span> Al Kα</a></h5>
 <div id="text-37-3-6-1" class="outline-text-5">
 <p>
 Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energyMax</code>.
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceKind skXrayFinger <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -2656,7 +2802,7 @@ Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energy
     --sourceOnOpticalAxis <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreMagnet <span style="color: #E6DB74; font-weight: bold;">\</span>
     --targetRadius 40.mm
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -2678,7 +2824,7 @@ side by side and then with <code>F_WIDTH=0.9</code> for the HPD plot and with
 <code>F_WIDTH=0.5</code> for the perfect/imperfect comparison):
 </p>
 <div class="org-src-container">
-<pre class="src src-sh"><span style="color: #FD971F;">F_WIDTH</span>=0.3333333 <span style="color: #FD971F;">USE_TEX</span>=true ./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>  <span style="color: #FD971F;">F_WIDTH</span>=0.3333333 <span style="color: #FD971F;">USE_TEX</span>=true ./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-12T12:56:26+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -2702,52 +2848,52 @@ side by side and then with <code>F_WIDTH=0.9</code> for the HPD plot and with
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Al Kα, 1.49 keV, 3x3 mm, figure errors, source optical axis&quot;</span> <span style="color: #E6DB74; font-weight: bold;">\</span>
     --xrange 1.5
-</pre>
+</code></pre>
 </div>
 
 
-<figure id="orge66104b">
+<figure id="org1cc3117">
 <img alt="panter_source_Al_Kalpha_imperfect_mirrors_3x3mm.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm.svg" />
 
-<figcaption>Figure 9: <span class="figure-number">Figure 207: </span>Our result Al Kα as 3x3 mm with imperfect mirrors</figcaption>
+<figcaption>Figure 6: <span class="figure-number">Figure 207: </span>Our result Al Kα as 3x3 mm with imperfect mirrors</figcaption>
 </figure>
 
 
-<figure id="org7d93c14">
+<figure id="orgc90c60d">
 <img alt="panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_log10.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_log10.svg" />
 
-<figcaption>Figure 10: <span class="figure-number">Figure 208: </span>Our result Al Kα as 3x3 mm with imperfect mirrors, log10</figcaption>
+<figcaption>Figure 7: <span class="figure-number">Figure 208: </span>Our result Al Kα as 3x3 mm with imperfect mirrors, log10</figcaption>
 </figure>
 
 
-<figure id="orgd6d5a29">
+<figure id="orgad5644e">
 <img alt="panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_x.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_x.svg" />
 
-<figcaption>Figure 11: <span class="figure-number">Figure 209: </span>HPD in X for imperfect mirrors of Al Kα</figcaption>
+<figcaption>Figure 8: <span class="figure-number">Figure 209: </span>HPD in X for imperfect mirrors of Al Kα</figcaption>
 </figure>
 
 
-<figure id="org1e3bcb0">
+<figure id="org5b56f36">
 <img alt="panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_y.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_y.svg" />
 
-<figcaption>Figure 12: <span class="figure-number">Figure 210: </span>HPD in Y for imperfect mirrors of Al Kα</figcaption>
+<figcaption>Figure 9: <span class="figure-number">Figure 210: </span>HPD in Y for imperfect mirrors of Al Kα</figcaption>
 </figure>
 
 
-<figure id="orgd13c634">
+<figure id="org92e08f3">
 <img alt="panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.svg" />
 
-<figcaption>Figure 13: <span class="figure-number">Figure 211: </span>HPD of Al Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
+<figcaption>Figure 10: <span class="figure-number">Figure 211: </span>HPD of Al Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
 </figure>
 </div>
 <ol class="org-ol">
-<li><a id="orgd90c204"> </a>Perfect mirrors<br />
+<li><a id="orgccc4335"> </a>Perfect mirrors<br />
 <div id="text-37-3-6-1-1" class="outline-text-6">
 <p>
 Perfect mirror:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceKind skXrayFinger <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -2762,7 +2908,7 @@ Perfect mirror:
     --sourceOnOpticalAxis <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreMagnet <span style="color: #E6DB74; font-weight: bold;">\</span>
     --targetRadius 40.mm
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -2775,7 +2921,7 @@ Perfect mirror:
 Create the plots (only in 3x3 mm):
 </p>
 <div class="org-src-container">
-<pre class="src src-sh"><span style="color: #FD971F;">F_WIDTH</span>=0.5 <span style="color: #FD971F;">USE_TEX</span>=true ./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>  <span style="color: #FD971F;">F_WIDTH</span>=0.5 <span style="color: #FD971F;">USE_TEX</span>=true ./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-11T09:31:09+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -2783,7 +2929,7 @@ Create the plots (only in 3x3 mm):
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Al Kα, 1.49 keV, 3x3 mm, source optical axis&quot;</span> <span style="color: #E6DB74; font-weight: bold;">\</span>
     --xrange 1.5
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -2791,51 +2937,51 @@ Produces the following figures:
 </p>
 
 
-<figure id="org8607100">
+<figure id="org6c8c9a1">
 <img alt="panter_source_Al_Kalpha_perfect_mirrors_3x3mm.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm.svg" />
 
-<figcaption>Figure 14: <span class="figure-number">Figure 212: </span>Our result Al Kα as 3x3 mm with perfect mirrors</figcaption>
+<figcaption>Figure 11: <span class="figure-number">Figure 212: </span>Our result Al Kα as 3x3 mm with perfect mirrors</figcaption>
 </figure>
 
 
-<figure id="org95fbc20">
+<figure id="orgb0b476e">
 <img alt="panter_source_Al_Kalpha_perfect_mirrors_3x3mm_log10.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_log10.svg" />
 
-<figcaption>Figure 15: <span class="figure-number">Figure 213: </span>Our result Al Kα as 3x3 mm with perfect mirrors, log10</figcaption>
+<figcaption>Figure 12: <span class="figure-number">Figure 213: </span>Our result Al Kα as 3x3 mm with perfect mirrors, log10</figcaption>
 </figure>
 
 
-<figure id="org82692db">
+<figure id="orge31d765">
 <img alt="panter_source_Al_Kalpha_perfect_mirrors_3x3mm_hpd_x.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_hpd_x.svg" />
 
-<figcaption>Figure 16: <span class="figure-number">Figure 214: </span>HPD in X for perfect mirrors of Al Kα</figcaption>
+<figcaption>Figure 13: <span class="figure-number">Figure 214: </span>HPD in X for perfect mirrors of Al Kα</figcaption>
 </figure>
 
 
-<figure id="orgbff21a9">
+<figure id="orgbf14a39">
 <img alt="panter_source_Al_Kalpha_perfect_mirrors_3x3mm_hpd_y.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_hpd_y.svg" />
 
-<figcaption>Figure 17: <span class="figure-number">Figure 215: </span>HPD in Y for perfect mirrors of Al Kα</figcaption>
+<figcaption>Figure 14: <span class="figure-number">Figure 215: </span>HPD in Y for perfect mirrors of Al Kα</figcaption>
 </figure>
 
 
-<figure id="orgcb0702f">
+<figure id="org884f37a">
 <img alt="panter_source_Al_Kalpha_perfect_mirrors_3x3mm_hpd_via_eef_50.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Al_Kalpha_perfect_mirrors_3x3mm_hpd_via_eef_50.svg" />
 
-<figcaption>Figure 18: <span class="figure-number">Figure 216: </span>HPD of Al Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
+<figcaption>Figure 15: <span class="figure-number">Figure 216: </span>HPD of Al Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
 </figure>
 </div>
 </li>
 </ol>
 </div>
-<div id="outline-container-orgfd5f102" class="outline-5">
-<h5 id="orgfd5f102">  <a href="#orgfd5f102">  <span class="section-number-5">37.3.6.2.</span> Ti Kα</a></h5>
+<div id="outline-container-org116f709" class="outline-5">
+<h5 id="org116f709">  <a href="#org116f709">  <span class="section-number-5">37.3.6.2.</span> Ti Kα</a></h5>
 <div id="text-37-3-6-2" class="outline-text-5">
 <p>
 Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energyMax</code>.
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceKind skXrayFinger <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -2850,7 +2996,7 @@ Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energy
     --sourceOnOpticalAxis <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreMagnet <span style="color: #E6DB74; font-weight: bold;">\</span>
     --targetRadius 40.mm
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -2861,7 +3007,7 @@ Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energy
 
 
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-12T12:58:39+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -2869,52 +3015,52 @@ Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energy
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Ti Kα, 4.51 keV, 3x3 mm, figure errors, source optical axis&quot;</span> <span style="color: #E6DB74; font-weight: bold;">\</span>
     --xrange 1.5
-</pre>
+</code></pre>
 </div>
 
 
-<figure id="org41096c2">
+<figure id="org9dc6e04">
 <img alt="panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm.svg" />
 
-<figcaption>Figure 19: <span class="figure-number">Figure 217: </span>Our result Ti Kα as 3x3 mm with imperfect mirrors</figcaption>
+<figcaption>Figure 16: <span class="figure-number">Figure 217: </span>Our result Ti Kα as 3x3 mm with imperfect mirrors</figcaption>
 </figure>
 
 
-<figure id="orgb0ffc84">
+<figure id="orgfb82ed7">
 <img alt="panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_log10.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_log10.svg" />
 
-<figcaption>Figure 20: <span class="figure-number">Figure 218: </span>Our result Ti Kα as 3x3 mm with imperfect mirrors, log10</figcaption>
+<figcaption>Figure 17: <span class="figure-number">Figure 218: </span>Our result Ti Kα as 3x3 mm with imperfect mirrors, log10</figcaption>
 </figure>
 
 
-<figure id="orgff405a5">
+<figure id="org29bd2c9">
 <img alt="panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_hpd_x.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_hpd_x.svg" />
 
-<figcaption>Figure 21: <span class="figure-number">Figure 219: </span>HPD in X for imperfect mirrors of Ti Kα</figcaption>
+<figcaption>Figure 18: <span class="figure-number">Figure 219: </span>HPD in X for imperfect mirrors of Ti Kα</figcaption>
 </figure>
 
 
-<figure id="org434cfdc">
+<figure id="org185bbd1">
 <img alt="panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_hpd_y.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_hpd_y.svg" />
 
-<figcaption>Figure 22: <span class="figure-number">Figure 220: </span>HPD in Y for imperfect mirrors of Ti Kα</figcaption>
+<figcaption>Figure 19: <span class="figure-number">Figure 220: </span>HPD in Y for imperfect mirrors of Ti Kα</figcaption>
 </figure>
 
 
-<figure id="orgf285c01">
+<figure id="org1e94605">
 <img alt="panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.svg" />
 
-<figcaption>Figure 23: <span class="figure-number">Figure 221: </span>HPD of Ti Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
+<figcaption>Figure 20: <span class="figure-number">Figure 221: </span>HPD of Ti Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
 </figure>
 </div>
 <ol class="org-ol">
-<li><a id="org24db1b5"> </a>Perfect mirrors<br />
+<li><a id="org8a91c42"> </a>Perfect mirrors<br />
 <div id="text-37-3-6-2-1" class="outline-text-6">
 <p>
 Perfect mirror:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceKind skXrayFinger <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -2929,7 +3075,7 @@ Perfect mirror:
     --sourceOnOpticalAxis <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreMagnet <span style="color: #E6DB74; font-weight: bold;">\</span>
     --targetRadius 40.mm
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -2939,7 +3085,7 @@ Perfect mirror:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-11T09:37:15+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -2947,55 +3093,55 @@ Perfect mirror:
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Ti Kα, 4.51 keV, 3x3 mm, source optical axis&quot;</span> <span style="color: #E6DB74; font-weight: bold;">\</span>
     --xrange 1.5
-</pre>
+</code></pre>
 </div>
 
 
-<figure id="orgdd68c74">
+<figure id="org753fd30">
 <img alt="panter_source_Ti_Kalpha_perfect_mirrors_3x3mm.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm.svg" />
 
-<figcaption>Figure 24: <span class="figure-number">Figure 222: </span>Our result Ti Kα as 3x3 mm with perfect mirrors</figcaption>
+<figcaption>Figure 21: <span class="figure-number">Figure 222: </span>Our result Ti Kα as 3x3 mm with perfect mirrors</figcaption>
 </figure>
 
 
-<figure id="org4a4d662">
+<figure id="org8649b35">
 <img alt="panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_log10.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_log10.svg" />
 
-<figcaption>Figure 25: <span class="figure-number">Figure 223: </span>Our result Ti Kα as 3x3 mm with perfect mirrors, log10</figcaption>
+<figcaption>Figure 22: <span class="figure-number">Figure 223: </span>Our result Ti Kα as 3x3 mm with perfect mirrors, log10</figcaption>
 </figure>
 
 
-<figure id="org008bc36">
+<figure id="org799584c">
 <img alt="panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_hpd_x.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_hpd_x.svg" />
 
-<figcaption>Figure 26: <span class="figure-number">Figure 224: </span>HPD in X for perfect mirrors of Ti Kα</figcaption>
+<figcaption>Figure 23: <span class="figure-number">Figure 224: </span>HPD in X for perfect mirrors of Ti Kα</figcaption>
 </figure>
 
 
-<figure id="org3e8b877">
+<figure id="orga9292b1">
 <img alt="panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_hpd_y.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_hpd_y.svg" />
 
-<figcaption>Figure 27: <span class="figure-number">Figure 225: </span>HPD in Y for perfect mirrors of Ti Kα</figcaption>
+<figcaption>Figure 24: <span class="figure-number">Figure 225: </span>HPD in Y for perfect mirrors of Ti Kα</figcaption>
 </figure>
 
 
-<figure id="orged993c3">
+<figure id="org5c20833">
 <img alt="panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_hpd_via_eef_50.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Ti_Kalpha_perfect_mirrors_3x3mm_hpd_via_eef_50.svg" />
 
-<figcaption>Figure 28: <span class="figure-number">Figure 226: </span>HPD of Ti Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
+<figcaption>Figure 25: <span class="figure-number">Figure 226: </span>HPD of Ti Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
 </figure>
 </div>
 </li>
 </ol>
 </div>
-<div id="outline-container-orga37e8f1" class="outline-5">
-<h5 id="orga37e8f1">  <a href="#orga37e8f1">  <span class="section-number-5">37.3.6.3.</span> Fe Kα</a></h5>
+<div id="outline-container-org77a5f44" class="outline-5">
+<h5 id="org77a5f44">  <a href="#org77a5f44">  <span class="section-number-5">37.3.6.3.</span> Fe Kα</a></h5>
 <div id="text-37-3-6-3" class="outline-text-5">
 <p>
 Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energyMax</code>.
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceKind skXrayFinger <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3010,7 +3156,7 @@ Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energy
     --sourceOnOpticalAxis <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreMagnet <span style="color: #E6DB74; font-weight: bold;">\</span>
     --targetRadius 40.mm
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -3020,7 +3166,7 @@ Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energy
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-12T12:59:52+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3028,52 +3174,52 @@ Run the <code>raytracer</code>, note the <code>energyMin</code> and <code>energy
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Fe Kα, 6.41 keV, 3x3 mm, figure errors, source optical axis&quot;</span> <span style="color: #E6DB74; font-weight: bold;">\</span>
     --xrange 1.5
-</pre>
+</code></pre>
 </div>
 
 
-<figure id="org740c99c">
+<figure id="org9bc97e8">
 <img alt="panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm.svg" />
 
-<figcaption>Figure 29: <span class="figure-number">Figure 227: </span>Our result Fe Kα as 3x3 mm with imperfect mirrors</figcaption>
+<figcaption>Figure 26: <span class="figure-number">Figure 227: </span>Our result Fe Kα as 3x3 mm with imperfect mirrors</figcaption>
 </figure>
 
 
-<figure id="orgbf7d443">
+<figure id="orga3d380f">
 <img alt="panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_log10.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_log10.svg" />
 
-<figcaption>Figure 30: <span class="figure-number">Figure 228: </span>Our result Fe Kα as 3x3 mm with imperfect mirrors, log10</figcaption>
+<figcaption>Figure 27: <span class="figure-number">Figure 228: </span>Our result Fe Kα as 3x3 mm with imperfect mirrors, log10</figcaption>
 </figure>
 
 
-<figure id="org19a6e09">
+<figure id="org78975ac">
 <img alt="panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_hpd_x.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_hpd_x.svg" />
 
-<figcaption>Figure 31: <span class="figure-number">Figure 229: </span>HPD in X for imperfect mirrors of Fe Kα</figcaption>
+<figcaption>Figure 28: <span class="figure-number">Figure 229: </span>HPD in X for imperfect mirrors of Fe Kα</figcaption>
 </figure>
 
 
-<figure id="orga284f99">
+<figure id="org003ce56">
 <img alt="panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_hpd_y.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_hpd_y.svg" />
 
-<figcaption>Figure 32: <span class="figure-number">Figure 230: </span>HPD in Y for imperfect mirrors of Fe Kα</figcaption>
+<figcaption>Figure 29: <span class="figure-number">Figure 230: </span>HPD in Y for imperfect mirrors of Fe Kα</figcaption>
 </figure>
 
 
-<figure id="org276aba0">
+<figure id="orgab7a653">
 <img alt="panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_imperfect_mirrors_3x3mm_hpd_via_eef_50.svg" />
 
-<figcaption>Figure 33: <span class="figure-number">Figure 231: </span>HPD of Fe Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
+<figcaption>Figure 30: <span class="figure-number">Figure 231: </span>HPD of Fe Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
 </figure>
 </div>
 <ol class="org-ol">
-<li><a id="orgc62bcb8"> </a>Perfect mirrors<br />
+<li><a id="org9003e92"> </a>Perfect mirrors<br />
 <div id="text-37-3-6-3-1" class="outline-text-6">
 <p>
 Perfect mirror:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceKind skXrayFinger <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3088,7 +3234,7 @@ Perfect mirror:
     --sourceOnOpticalAxis <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreMagnet <span style="color: #E6DB74; font-weight: bold;">\</span>
     --targetRadius 40.mm
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -3098,7 +3244,7 @@ Perfect mirror:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-11T09:41:47+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3106,42 +3252,42 @@ Perfect mirror:
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Fe Kα, 6.41 keV, 3x3 mm, source optical axis&quot;</span> <span style="color: #E6DB74; font-weight: bold;">\</span>
     --xrange 1.5
-</pre>
+</code></pre>
 </div>
 
 
-<figure id="org033cf0d">
+<figure id="org9f10b32">
 <img alt="panter_source_Fe_Kalpha_perfect_mirrors_3x3mm.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm.svg" />
 
-<figcaption>Figure 34: <span class="figure-number">Figure 232: </span>Our result Fe Kα as 3x3 mm with perfect mirrors</figcaption>
+<figcaption>Figure 31: <span class="figure-number">Figure 232: </span>Our result Fe Kα as 3x3 mm with perfect mirrors</figcaption>
 </figure>
 
 
-<figure id="org5005163">
+<figure id="org0c9b230">
 <img alt="panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_log10.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_log10.svg" />
 
-<figcaption>Figure 35: <span class="figure-number">Figure 233: </span>Our result Fe Kα as 3x3 mm with perfect mirrors, log10</figcaption>
+<figcaption>Figure 32: <span class="figure-number">Figure 233: </span>Our result Fe Kα as 3x3 mm with perfect mirrors, log10</figcaption>
 </figure>
 
 
-<figure id="orge1ad128">
+<figure id="org2d5e665">
 <img alt="panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_hpd_x.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_hpd_x.svg" />
 
-<figcaption>Figure 36: <span class="figure-number">Figure 234: </span>HPD in X for perfect mirrors of Fe Kα</figcaption>
+<figcaption>Figure 33: <span class="figure-number">Figure 234: </span>HPD in X for perfect mirrors of Fe Kα</figcaption>
 </figure>
 
 
-<figure id="org3272c70">
+<figure id="orgd8f9006">
 <img alt="panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_hpd_y.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_hpd_y.svg" />
 
-<figcaption>Figure 37: <span class="figure-number">Figure 235: </span>HPD in Y for perfect mirrors of Fe Kα</figcaption>
+<figcaption>Figure 34: <span class="figure-number">Figure 235: </span>HPD in Y for perfect mirrors of Fe Kα</figcaption>
 </figure>
 
 
-<figure id="orgc7c95d9">
+<figure id="orgfd45454">
 <img alt="panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_hpd_via_eef_50.svg" class="org-svg" src="./figs/home/basti/phd/Figs/raytracing/llnlPanter/panter_source_Fe_Kalpha_perfect_mirrors_3x3mm_hpd_via_eef_50.svg" />
 
-<figcaption>Figure 38: <span class="figure-number">Figure 236: </span>HPD of Fe Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
+<figcaption>Figure 35: <span class="figure-number">Figure 236: </span>HPD of Fe Kα computed from the EEF (radial cumulative distribution function, encircled energy)</figcaption>
 </figure>
 </div>
 </li>
@@ -3158,7 +3304,7 @@ raytracer produces compatible results to PANTER measurements and the
 LLNL raytracing results. In particular for the axion-electron coupling
 we do not wish to reuse the raytracing prediction for the solar axion
 image computed by Michael Pivovaroff at LLNL, as used in the CAST
-Nature 2017 paper (<a href="./bibliography.html#citeproc_bib_item_68">Collaboration and others 2017</a>) paper. <sup>  <a id="fnr.18" href="#fn.18" class="footref" role="doc-backlink">18</a></sup> This is
+Nature 2017 paper <a href="cite:&amp;cast_nature">cite:&amp;cast_nature</a> paper. <sup>  <a id="fnr.18" href="#fn.18" class="footref" role="doc-backlink">18</a></sup> This is
 because of the different radial emission profile (compare
 fig. <a href="#fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz">#fig:theory:solar_axion_flux:radial_dependence_ksvz_dfsz</a>). And
 for the chameleon, due to its production in the solar tachocline, this
@@ -3167,15 +3313,15 @@ is of course absolutely mandatory.
 
 <p>
 To simulate the solar axion image, we use the scene already shown in
-fig. <a href="#fig:appendix:raytracing:cast_setup_example">1(b)</a>. The Sun is
+fig. <a href="#fig:appendix:raytracing:cast_setup_example">#fig:appendix:raytracing:cast_setup_example</a>. The Sun is
 placed as an X-ray emitter <sup>  <a id="fnr.19" href="#fn.19" class="footref" role="doc-backlink">19</a></sup> at \(\SI{0.989}{AU}\)
 away <sup>  <a id="fnr.20" href="#fn.20" class="footref" role="doc-backlink">20</a></sup> from the telescope. It emits X-rays of energies and
 from radii corresponding to the distribution seen in
 fig. <a href="#fig:theory:solar_axion_flux:flux_vs_energy_and_radius">#fig:theory:solar_axion_flux:flux_vs_energy_and_radius</a>
-calculated using the opacity calculation code (<a href="./bibliography.html#citeproc_bib_item_162">Von Oy 2023</a>)
+calculated using the opacity calculation code <a href="cite:&amp;JvO_axionElectron">cite:&amp;JvO_axionElectron</a>
 also developed by Johanna von Oy during her master thesis
-(<a href="./bibliography.html#citeproc_bib_item_161">Von Oy 2020</a>). The calculations are based on the AGSS09 solar model
-(<a href="./bibliography.html#citeproc_bib_item_25">Asplund et al. 2009</a>; <a href="./bibliography.html#citeproc_bib_item_207">Serenelli et al. 2009</a>). The telescope is rotated under
+<a href="cite:&amp;vonOy_MSc">cite:&amp;vonOy_MSc</a>. The calculations are based on the AGSS09 solar model
+<a href="cite:agss09_chemical,agss09_new_solar">cite:agss09_chemical,agss09_new_solar</a>. The telescope is rotated under
 the angle it was installed at CAST, as deduced from the X-ray finger
 taken at CAST, fig. <a href="#fig:cast:xray_finger_centers">#fig:cast:xray_finger_centers</a> (about
 \(\SI{14}{°}\)). The image sensor is placed slightly in front of the
@@ -3189,8 +3335,8 @@ sec. <a href="./limit.html#sec:limit:median_absorption_depth">13.10.5</a> and ca
 
 <p>
 With all these in place, the axion image comes out as seen in
-fig. <a href="#fig:appendix:raytracing:traxer_solar_axion_image">39(a)</a>. In
-comparison fig. <a href="#fig:appendix:raytracing:llnl_solar_axion_image">39(b)</a>
+fig. <a href="#fig:appendix:raytracing:traxer_solar_axion_image">#fig:appendix:raytracing:traxer_solar_axion_image</a>. In
+comparison fig. <a href="#fig:appendix:raytracing:llnl_solar_axion_image">#fig:appendix:raytracing:llnl_solar_axion_image</a>
 shows the axion image as computed by the LLNL raytracing code (albeit
 only for the axion-photon coupling and related emission). The
 similarity between the two images is implying our raytracing
@@ -3204,14 +3350,16 @@ front of the focal point.
 </p>
 
 
-<figure id="fig:appendix:raytracing:comparison_traxer_llnl_axion_image" class="figure-wrapper">
-<figure id="fig:appendix:raytracing:traxer_solar_axion_image" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.svg" data-width="99%" />  <figcaption>Figure 39(a): TrAXer</figcaption></figure> <figure id="fig:appendix:raytracing:llnl_solar_axion_image" class="subfigure" data-width="49%">  <img src="./figs/home/basti/phd/Figs/raytracing/raytracing_axion_image_llnl_jaime_all_energies.svg" data-width="99%" />  <figcaption>Figure 39(b): LLNL</figcaption></figure>
-<figcaption>Figure 39: <a href="#fig:appendix:raytracing:traxer_solar_axion_image">39(a)</a>: TrAXer simulation of the solar axion image using the correct Sun-Earth distance with the
-          image sensor placed $\SI{1492.93}{mm}$ away from the telescope center. <a href="#fig:appendix:raytracing:llnl_solar_axion_image">39(b)</a>: Corresponding raytracing simulation done at LLNL, however for axion-photon production only.</figcaption>
-</figure>
+<p>
+&lt;figure class=&quot;figure-wrapper&quot; id=&quot;fig:appendix:raytracing:comparison<sub>traxer</sub><sub>llnl</sub><sub>axion</sub><sub>image</sub>&quot;&gt;
+&lt;figure class=&quot;subfigure&quot; id=&quot;fig:appendix:raytracing:traxer<sub>solar</sub><sub>axion</sub><sub>image</sub>&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/raytracing/solar<sub>axion</sub><sub>image</sub><sub>fkAxionElectronPhoton</sub><sub>0.989AU</sub><sub>1492.93mm.svg</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;TrAXer&lt;/figcaption&gt;&lt;/figure&gt; &lt;figure class=&quot;subfigure&quot; id=&quot;fig:appendix:raytracing:llnl<sub>solar</sub><sub>axion</sub><sub>image</sub>&quot; data-width=&quot;49%&quot;&gt;&lt;img src=&quot;./figs/home/basti/phd/Figs/raytracing/raytracing<sub>axion</sub><sub>image</sub><sub>llnl</sub><sub>jaime</sub><sub>all</sub><sub>energies.svg</sub>&quot; data-width=&quot;99%&quot; &gt;&lt;figcaption&gt;LLNL&lt;/figcaption&gt;&lt;/figure&gt;
+&lt;figcaption&gt;&lt;a href=&quot;#fig:appendix:raytracing:traxer<sub>solar</sub><sub>axion</sub><sub>image</sub>&quot;&gt;&lt;/a&gt;: TrAXer simulation of the solar axion image using the correct Sun-Earth distance with the
+          image sensor placed \(\SI{1492.93}{mm}\) away from the telescope center. &lt;a href=&quot;#fig:appendix:raytracing:llnl<sub>solar</sub><sub>axion</sub><sub>image</sub>&quot;&gt;&lt;/a&gt;: Corresponding raytracing simulation done at LLNL, however for axion-photon production only.&lt;/figcaption&gt;
+&lt;/figure&gt;
+</p>
 </div>
-<div id="outline-container-org72ec509" class="outline-4">
-<h4 id="org72ec509">  <a href="#org72ec509">  <span class="section-number-4">37.4.1.</span> Further thoughts on the (missing?) bow tie   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org282439d" class="outline-4">
+<h4 id="org282439d">  <a href="#org282439d">  <span class="section-number-4">37.4.1.</span> Further thoughts on the (missing?) bow tie   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-4-1" class="outline-text-4">
 <p>
 The bow tie feature in the raytracing images is partially present even
@@ -3222,8 +3370,8 @@ smoother process, resulting in the bow tie shape.
 </p>
 </div>
 </div>
-<div id="outline-container-orgb373df5" class="outline-4">
-<h4 id="orgb373df5">  <a href="#orgb373df5">  <span class="section-number-4">37.4.2.</span> Note on conversion point   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-org23076df" class="outline-4">
+<h4 id="org23076df">  <a href="#org23076df">  <span class="section-number-4">37.4.2.</span> Note on conversion point   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-4-2" class="outline-text-4">
 <p>
 The calculation for the conversion point was mentioned in
@@ -3249,15 +3397,15 @@ from the Sun.
 </p>
 
 <p>
-Make sure to get the (<a href="./bibliography.html#citeproc_bib_item_162">Von Oy 2023</a>) code:
+Make sure to get the <a href="cite:&amp;JvO_axionElectron">cite:&amp;JvO_axionElectron</a> code:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh"><span style="color: #F92672;">cd</span> &lt;path/of/choice&gt;
+<pre class="src src-sh">  <code>  <span style="color: #F92672;">cd</span> &lt;path/of/choice&gt;
 git clone https://github.com/jovoy/AxionElectronLimit.git
 <span style="color: #F92672;">cd</span> AxionElectronLimit
 <span style="color: #F92672;">cd</span> src
 nim c -d:danger readOpacityFile
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -3270,8 +3418,8 @@ found in
 by setting the
 </p>
 <div class="org-src-container">
-<pre class="src src-toml"><span style="color: #FD971F;">opcdPath</span>         = <span style="color: #E6DB74;">&quot;/home/basti/CastData/data/&quot;</span>
-</pre>
+<pre class="src src-toml">  <code>  <span style="color: #FD971F;">opcdPath</span>         = <span style="color: #E6DB74;">&quot;/home/basti/CastData/data/&quot;</span>
+</code></pre>
 </div>
 <p>
 field under <code>[ReadOpacityFile]</code> to the correct directory. The
@@ -3287,13 +3435,13 @@ If you do not have a <code>config.toml</code> file, just create a copy of the
 Now we can run <code>readOpacityFile</code>:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./readOpacityFile <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./readOpacityFile <span style="color: #E6DB74; font-weight: bold;">\</span>
     --suffix <span style="color: #E6DB74;">&quot;_0.989AU&quot;</span> <span style="color: #E6DB74; font-weight: bold;">\</span>
     --distanceSunEarth 0.9891144450781392.AU <span style="color: #E6DB74; font-weight: bold;">\</span>
     --fluxKind fkAxionElectronPhoton <span style="color: #E6DB74; font-weight: bold;">\</span>
     --plotPath ~/phd/Figs/readOpacityFile/ <span style="color: #E6DB74; font-weight: bold;">\</span>
     --outpath ~/phd/resources/readOpacityFile/
-</pre>
+</code></pre>
 </div>
 <p>
 where we insert the correct distance from Sun to Earth, see
@@ -3314,14 +3462,14 @@ can run the raytracer, in this case in the focal point:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint --sourceKind skSun <span style="color: #E6DB74; font-weight: bold;">\</span>
     --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sensorKind sSum <span style="color: #E6DB74; font-weight: bold;">\</span>
     --usePerfectMirror=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreWindow
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -3355,28 +3503,28 @@ possible based on the atomic scattering factors.
 Time to produce a plot of the image:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-10T12:40:44+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
     --out ~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_old_figure_errors.pdf <span style="color: #E6DB74; font-weight: bold;">\</span>
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Solar axion image at 0.989 AU from Sun (old figure errors)&quot;</span>
-</pre>
+</code></pre>
 </div>
 
 <p>
 With the new fuzzing logic:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-12T16:12:11+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
     --out ~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU.pdf <span style="color: #E6DB74; font-weight: bold;">\</span>
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Solar axion image at 0.989 AU from Sun (imperfect mirrors)&quot;</span>
-</pre>
+</code></pre>
 </div>
 
 
@@ -3386,14 +3534,14 @@ For comparison let&apos;s also run the code without any figure errors:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint --sourceKind skSun <span style="color: #E6DB74; font-weight: bold;">\</span>
     --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sensorKind sSum <span style="color: #E6DB74; font-weight: bold;">\</span>
     --usePerfectMirror=true <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreWindow
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -3403,14 +3551,14 @@ For comparison let&apos;s also run the code without any figure errors:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-10T12:45:29+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
     --out ~/phd/Figs/raytracing/solar_axion_image_perfect_mirrors_fkAxionElectronPhoton_0.989AU.pdf <span style="color: #E6DB74; font-weight: bold;">\</span>
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Solar axion image at 0.989 AU from Sun, perfect mirrors&quot;</span>
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -3420,7 +3568,7 @@ likely conversion of X-rays, i.e. at \(\SI{1492.93}{mm}\) instead of
 get the correct placement:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint --sourceKind skSun <span style="color: #E6DB74; font-weight: bold;">\</span>
     --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3428,7 +3576,7 @@ get the correct placement:
     --usePerfectMirror=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --rayAt 0.995286666667 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreWindow
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -3448,18 +3596,18 @@ get the correct placement:
 Which we also plot:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-10T20:38:55+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
     --out ~/phd/Figs/raytracing/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm_old_figure_error.pdf <span style="color: #E6DB74; font-weight: bold;">\</span>
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Solar axion image at 0.989 AU from Sun, 1492.93 mm (old figure error)&quot;</span>
-</pre>
+</code></pre>
 </div>
 
 <div class="org-src-container">
-<pre class="src src-sh"><span style="color: #FD971F;">F_WIDTH</span>=0.5 <span style="color: #FD971F;">USE_TEX</span>=true ./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>  <span style="color: #FD971F;">F_WIDTH</span>=0.5 <span style="color: #FD971F;">USE_TEX</span>=true ./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-12T16:23:18+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3467,7 +3615,7 @@ Which we also plot:
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --gridpixOutfile ~/phd/resources/axionImages/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm.csv <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Solar axion image at 0.989 AU from Sun, 1492.93 mm&quot;</span>
-</pre>
+</code></pre>
 </div>
 
 
@@ -3522,8 +3670,8 @@ final \(\SI{1492.93}{mm}\) found in
 <a href="./Figs/raytracing/axion_image_assuming_1.5cm_behind_window/">./Figs/raytracing/axion_image_assuming_1.5cm_behind_window/</a>
 </p>
 </div>
-<div id="outline-container-org7b547d7" class="outline-5">
-<h5 id="org7b547d7">  <a href="#org7b547d7">  <span class="section-number-5">37.4.3.1.</span> What does the axion image look like without any orthogonal fuzzing?   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
+<div id="outline-container-org4f41c59" class="outline-5">
+<h5 id="org4f41c59">  <a href="#org4f41c59">  <span class="section-number-5">37.4.3.1.</span> What does the axion image look like without any orthogonal fuzzing?   <span class="tag">    <span class="extended">extended</span>  </span></a></h5>
 <div id="text-37-4-3-1" class="outline-text-5">
 <p>
 This thought just occurred to me, because the LLNL raytracing image
@@ -3531,14 +3679,14 @@ still has more of a &apos;waist&apos; in the center.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh"><span style="color: #FD971F;">FUZZ_ORTH</span>=0.0 ./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>  <span style="color: #FD971F;">FUZZ_ORTH</span>=0.0 ./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 15 --maxDepth 5 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint --sourceKind skSun <span style="color: #E6DB74; font-weight: bold;">\</span>
     --solarModelFile ~/CastData/ExternCode/AxionElectronLimit/resources/solar_model_dataframe_fluxKind_fkAxionElectronPhoton_0.989AU.csv <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sensorKind sSum <span style="color: #E6DB74; font-weight: bold;">\</span>
     --usePerfectMirror=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreWindow
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -3548,14 +3696,14 @@ still has more of a &apos;waist&apos; in the center.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-12T16:29:50+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
     --out /tmp/solar_axion_image_fkAxionElectronPhoton_0.989AU_1492.93mm_no_orth_fuzz.pdf <span style="color: #E6DB74; font-weight: bold;">\</span>
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Solar axion image at 0.989 AU from Sun, 1492.93 mm (no orth fuzz)&quot;</span>
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -3564,8 +3712,8 @@ Ok, the plot looks near identical. :)
 </div>
 </div>
 </div>
-<div id="outline-container-orgbf364d6" class="outline-4">
-<h4 id="orgbf364d6">  <a href="#orgbf364d6">  <span class="section-number-4">37.4.4.</span> Generating the plot of the LLNL axion image   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
+<div id="outline-container-orga50d7ea" class="outline-4">
+<h4 id="orga50d7ea">  <a href="#orga50d7ea">  <span class="section-number-4">37.4.4.</span> Generating the plot of the LLNL axion image   <span class="tag">    <span class="extended">extended</span>  </span></a></h4>
 <div id="text-37-4-4" class="outline-text-4">
 <p>
 The origin of the raytracing plot is
@@ -3579,53 +3727,53 @@ requires the text data of the LLNL raytracing simulations.
 </ul>
 
 <div class="org-src-container">
-<pre class="src src-nim"><span style="color: #F92672;">import</span> ggplotnim, seqmath
+<pre class="src src-nim">  <code>  <span style="color: #F92672;">import</span> ggplotnim, seqmath
 <span style="color: #F92672;">import</span> std / <span style="color: #AE81FF;">[</span>os, sequtils, strutils<span style="color: #AE81FF;">]</span>
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">readRT</span><span style="color: #AE81FF;">(</span>p: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
-  <span style="color: #FD971F;">result</span> = readCsv<span style="color: #AE81FF;">(</span>p, sep = <span style="color: #E6DB74;">&apos; &apos;</span>, skipLines = <span style="font-style: italic;">4</span>, colNames = @<span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;y&quot;</span>, <span style="color: #E6DB74;">&quot;z&quot;</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
-  <span style="color: #FD971F;">result</span><span style="color: #AE81FF;">[</span><span style="color: #E6DB74;">&quot;File&quot;</span><span style="color: #AE81FF;">]</span> = p  
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">meanData</span><span style="color: #AE81FF;">(</span>df: <span style="color: #66D9EF;">DataFrame</span><span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
-  <span style="color: #FD971F;">result</span> = df.mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;x&quot;</span> ~ `x` - mean<span style="color: #A6E22E;">(</span>col<span style="color: #E6DB74;">(</span><span style="color: #E6DB74;">&quot;x&quot;</span><span style="color: #E6DB74;">)</span><span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span>,
-                     f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;y&quot;</span> ~ `y` - mean<span style="color: #A6E22E;">(</span>col<span style="color: #E6DB74;">(</span><span style="color: #E6DB74;">&quot;y&quot;</span><span style="color: #E6DB74;">)</span><span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">customSideBySide</span><span style="color: #AE81FF;">()</span>: <span style="color: #66D9EF;">Theme</span> =
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">readRT</span>  <span style="color: #AE81FF;">(</span>p: <span style="color: #66D9EF;">string</span>  <span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
+  <span style="color: #FD971F;">result</span> = readCsv<span style="color: #AE81FF;">(</span>p, sep = <span style="color: #E6DB74;">&apos; &apos;</span>, skipLines = <span style="font-style: italic;">4</span>, colNames = @<span style="color: #66D9EF;">[</span>  <span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;y&quot;</span>, <span style="color: #E6DB74;">&quot;z&quot;</span>  <span style="color: #66D9EF;">]</span>  <span style="color: #AE81FF;">)</span>
+  <span style="color: #FD971F;">result</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #E6DB74;">&quot;File&quot;</span>  <span style="color: #AE81FF;">]</span> = p  
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">meanData</span>  <span style="color: #AE81FF;">(</span>df: <span style="color: #66D9EF;">DataFrame</span>  <span style="color: #AE81FF;">)</span>: <span style="color: #66D9EF;">DataFrame</span> =
+  <span style="color: #FD971F;">result</span> = df.mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #E6DB74;">&quot;x&quot;</span> ~ `x` - mean<span style="color: #A6E22E;">(</span>col<span style="color: #E6DB74;">(</span>  <span style="color: #E6DB74;">&quot;x&quot;</span>  <span style="color: #E6DB74;">)</span>  <span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">}</span>,
+                     f<span style="color: #66D9EF;">{</span>  <span style="color: #E6DB74;">&quot;y&quot;</span> ~ `y` - mean<span style="color: #A6E22E;">(</span>col<span style="color: #E6DB74;">(</span>  <span style="color: #E6DB74;">&quot;y&quot;</span>  <span style="color: #E6DB74;">)</span>  <span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">customSideBySide</span>  <span style="color: #AE81FF;">()</span>: <span style="color: #66D9EF;">Theme</span> =
   <span style="color: #FD971F;">result</span> = sideBySide<span style="color: #AE81FF;">()</span>
-  <span style="color: #FD971F;">result</span>.titleFont = some<span style="color: #AE81FF;">(</span>font<span style="color: #66D9EF;">(</span><span style="font-style: italic;">8</span>.<span style="font-style: italic;">0</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span>
+  <span style="color: #FD971F;">result</span>.titleFont = some<span style="color: #AE81FF;">(</span>font<span style="color: #66D9EF;">(</span>  <span style="font-style: italic;">8</span>.<span style="font-style: italic;">0</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span>
 
-<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">plots</span><span style="color: #AE81FF;">(</span>df: <span style="color: #66D9EF;">DataFrame</span>, title, outfile: <span style="color: #66D9EF;">string</span><span style="color: #AE81FF;">)</span> =
+<span style="color: #F92672;">proc</span> <span style="color: #A6E22E;">plots</span>  <span style="color: #AE81FF;">(</span>df: <span style="color: #66D9EF;">DataFrame</span>, title, outfile: <span style="color: #66D9EF;">string</span>  <span style="color: #AE81FF;">)</span> =
   <span style="color: #F92672;">var</span> <span style="color: #FD971F;">customInferno </span>= inferno<span style="color: #AE81FF;">()</span>
-  customInferno.colors<span style="color: #AE81FF;">[</span><span style="font-style: italic;">0</span><span style="color: #AE81FF;">]</span> = <span style="font-style: italic;">0</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">transparent</span>
-  ggplot<span style="color: #AE81FF;">(</span>df.filter<span style="color: #66D9EF;">(</span>f<span style="color: #A6E22E;">{</span>`x` &gt;= -<span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span> <span style="color: #F92672;">and</span> `x` &lt;= <span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span> <span style="color: #F92672;">and</span> `y` &gt;= -<span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span> <span style="color: #F92672;">and</span> `y` &lt;= <span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span><span style="color: #A6E22E;">}</span><span style="color: #66D9EF;">)</span>,
-         aes<span style="color: #66D9EF;">(</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;y&quot;</span>, fill = <span style="color: #E6DB74;">&quot;z&quot;</span><span style="color: #66D9EF;">)</span><span style="color: #AE81FF;">)</span> +
+  customInferno.colors<span style="color: #AE81FF;">[</span>  <span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">]</span> = <span style="font-style: italic;">0</span> <span style="color: #75715E;"># </span>  <span style="color: #75715E;">transparent</span>
+  ggplot<span style="color: #AE81FF;">(</span>df.filter<span style="color: #66D9EF;">(</span>f<span style="color: #A6E22E;">{</span>`x` &gt;= -<span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span> <span style="color: #F92672;">and</span> `x` &lt;= <span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span> <span style="color: #F92672;">and</span> `y` &gt;= -<span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span> <span style="color: #F92672;">and</span> `y` &lt;= <span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span>  <span style="color: #A6E22E;">}</span>  <span style="color: #66D9EF;">)</span>,
+         aes<span style="color: #66D9EF;">(</span>  <span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;y&quot;</span>, fill = <span style="color: #E6DB74;">&quot;z&quot;</span>  <span style="color: #66D9EF;">)</span>  <span style="color: #AE81FF;">)</span> +
     geom_raster<span style="color: #AE81FF;">()</span> +
     scale_fill_gradient<span style="color: #AE81FF;">(</span>customInferno<span style="color: #AE81FF;">)</span> +
-    xlab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;x [mm]&quot;</span><span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;y [mm]&quot;</span><span style="color: #AE81FF;">)</span> +
-    xlim<span style="color: #AE81FF;">(</span>-<span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span>, <span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> + ylim<span style="color: #AE81FF;">(</span>-<span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span>, <span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> +
-    coord_fixed<span style="color: #AE81FF;">(</span><span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span><span style="color: #AE81FF;">)</span> + 
+    xlab<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;x [mm]&quot;</span>  <span style="color: #AE81FF;">)</span> + ylab<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;y [mm]&quot;</span>  <span style="color: #AE81FF;">)</span> +
+    xlim<span style="color: #AE81FF;">(</span>-<span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span>, <span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span> + ylim<span style="color: #AE81FF;">(</span>-<span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span>, <span style="font-style: italic;">7</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span> +
+    coord_fixed<span style="color: #AE81FF;">(</span>  <span style="font-style: italic;">1</span>.<span style="font-style: italic;">0</span>  <span style="color: #AE81FF;">)</span> + 
     ggtitle<span style="color: #AE81FF;">(</span>title<span style="color: #AE81FF;">)</span> +
-    themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = customSideBySide, useTeX = <span style="color: #AE81FF;">true</span><span style="color: #AE81FF;">)</span> + 
+    themeLatex<span style="color: #AE81FF;">(</span>fWidth = <span style="font-style: italic;">0</span>.<span style="font-style: italic;">5</span>, width = <span style="font-style: italic;">600</span>, baseTheme = customSideBySide, useTeX = <span style="color: #AE81FF;">true</span>  <span style="color: #AE81FF;">)</span> + 
     ggsave<span style="color: #AE81FF;">(</span>outfile<span style="color: #AE81FF;">)</span>
   
-<span style="color: #F92672;">var</span> <span style="color: #FD971F;">dfs </span>= <span style="color: #F92672;">newSeq</span><span style="color: #AE81FF;">[</span><span style="color: #66D9EF;">DataFrame</span><span style="color: #AE81FF;">]()</span>
-<span style="color: #F92672;">for</span> f <span style="color: #F92672;">in</span> walkFiles<span style="color: #AE81FF;">(</span><span style="color: #E6DB74;">&quot;/home/basti/org/resources/llnl_cast_nature_jaime_data/2016_DEC_Final_CAST_XRT/*2Dmap.txt&quot;</span><span style="color: #AE81FF;">)</span>:
+<span style="color: #F92672;">var</span> <span style="color: #FD971F;">dfs </span>= <span style="color: #F92672;">newSeq</span>  <span style="color: #AE81FF;">[</span>  <span style="color: #66D9EF;">DataFrame</span>  <span style="color: #AE81FF;">]()</span>
+<span style="color: #F92672;">for</span> f <span style="color: #F92672;">in</span> walkFiles<span style="color: #AE81FF;">(</span>  <span style="color: #E6DB74;">&quot;/home/basti/org/resources/llnl_cast_nature_jaime_data/2016_DEC_Final_CAST_XRT/*2Dmap.txt&quot;</span>  <span style="color: #AE81FF;">)</span>:
   <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Reading: &quot;</span>, f
   dfs.<span style="color: #F92672;">add</span> readRT<span style="color: #AE81FF;">(</span>f<span style="color: #AE81FF;">)</span>
 <span style="color: #F92672;">echo</span> <span style="color: #E6DB74;">&quot;Summarize&quot;</span>
 <span style="color: #F92672;">var</span> <span style="color: #FD971F;">df </span>= dfs.assignStack<span style="color: #AE81FF;">()</span>
-df = df.group_by<span style="color: #AE81FF;">(</span>@<span style="color: #66D9EF;">[</span><span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;y&quot;</span><span style="color: #66D9EF;">]</span><span style="color: #AE81FF;">)</span>
-  .summarize<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;z&quot;</span> &lt;&lt; sum<span style="color: #A6E22E;">(</span>`z`<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span>,
-             f<span style="color: #66D9EF;">{</span><span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;zMean&quot;</span> &lt;&lt; mean<span style="color: #A6E22E;">(</span>`z`<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span>
-  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span><span style="color: #E6DB74;">&quot;y&quot;</span> ~ col<span style="color: #A6E22E;">(</span><span style="color: #E6DB74;">&quot;y&quot;</span><span style="color: #A6E22E;">)</span>.<span style="color: #F92672;">max</span> - idx<span style="color: #A6E22E;">(</span>`y`<span style="color: #A6E22E;">)</span><span style="color: #66D9EF;">}</span><span style="color: #AE81FF;">)</span> <span style="color: #75715E;"># </span><span style="color: #75715E;">invert the y axis</span>
+df = df.group_by<span style="color: #AE81FF;">(</span>@<span style="color: #66D9EF;">[</span>  <span style="color: #E6DB74;">&quot;x&quot;</span>, <span style="color: #E6DB74;">&quot;y&quot;</span>  <span style="color: #66D9EF;">]</span>  <span style="color: #AE81FF;">)</span>
+  .summarize<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;z&quot;</span> &lt;&lt; sum<span style="color: #A6E22E;">(</span>`z`<span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">}</span>,
+             f<span style="color: #66D9EF;">{</span>  <span style="color: #66D9EF;">float</span>: <span style="color: #E6DB74;">&quot;zMean&quot;</span> &lt;&lt; mean<span style="color: #A6E22E;">(</span>`z`<span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span>
+  .mutate<span style="color: #AE81FF;">(</span>f<span style="color: #66D9EF;">{</span>  <span style="color: #E6DB74;">&quot;y&quot;</span> ~ col<span style="color: #A6E22E;">(</span>  <span style="color: #E6DB74;">&quot;y&quot;</span>  <span style="color: #A6E22E;">)</span>.<span style="color: #F92672;">max</span> - idx<span style="color: #A6E22E;">(</span>`y`<span style="color: #A6E22E;">)</span>  <span style="color: #66D9EF;">}</span>  <span style="color: #AE81FF;">)</span> <span style="color: #75715E;"># </span>  <span style="color: #75715E;">invert the y axis</span>
 df = df.meanData<span style="color: #AE81FF;">()</span>
 plots<span style="color: #AE81FF;">(</span>df,
       <span style="color: #E6DB74;">&quot;LLNL raytracing of axion image (sum all energies)&quot;</span>,
-      <span style="color: #E6DB74;">&quot;~/phd/Figs/raytracing/raytracing_axion_image_llnl_jaime_all_energies.pdf&quot;</span><span style="color: #AE81FF;">)</span>
-</pre>
+      <span style="color: #E6DB74;">&quot;~/phd/Figs/raytracing/raytracing_axion_image_llnl_jaime_all_energies.pdf&quot;</span>  <span style="color: #AE81FF;">)</span>
+</code></pre>
 </div>
 </div>
 </div>
 </div>
-<div id="outline-container-orgdb277d0" class="outline-3">
-<h3 id="orgdb277d0">  <a href="#orgdb277d0">  <span class="section-number-3">37.5.</span> Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
+<div id="outline-container-org3755681" class="outline-3">
+<h3 id="org3755681">  <a href="#org3755681">  <span class="section-number-3">37.5.</span> Reproducing an X-ray finger run with TrAXer   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
 <div id="text-37-5" class="outline-text-3">
 <p>
 We can of course also attempt to reproduce an X-ray finger run using
@@ -3651,7 +3799,7 @@ dimensions or distance of the X-ray finger used at CAST very well.
 -&gt; Decide final arguments
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceKind skXrayFinger <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3660,7 +3808,7 @@ dimensions or distance of the X-ray finger used at CAST very well.
     --usePerfectMirror=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceDistance 10.m <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceRadius 2.0.mm 
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -3676,25 +3824,25 @@ in at the center of the magnet bore instead of the optical axis.
 
 
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-12T17:16:36+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
     --out ~/phd/Figs/raytracing/xray_finger_10m_2mm_3keV.pdf <span style="color: #E6DB74; font-weight: bold;">\</span>
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;X-ray finger in 10 m distance, 2 mm radius at 2.5-3.5 keV&quot;</span>
-</pre>
+</code></pre>
 </div>
 
 
 <p>
 And now using 14.2 m and 3 mm source, which is what is mentioned in
-(<a href="./bibliography.html#citeproc_bib_item_123">Jakobsen 2015</a>) under fig. 4.32. While I don&apos;t understand how these
+<a href="cite:&amp;anders_phd">cite:&amp;anders_phd</a> under fig. 4.32. While I don&apos;t understand how these
 numbers are supposed to make sense, they produce a better image.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceKind skXrayFinger <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3703,7 +3851,7 @@ numbers are supposed to make sense, they produce a better image.
     --usePerfectMirror=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceDistance 14.2.m <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceRadius 3.0.mm 
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -3713,14 +3861,14 @@ numbers are supposed to make sense, they produce a better image.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-12T17:21:37+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
     --out ~/phd/Figs/raytracing/xray_finger_14.2m_3mm_3keV.pdf <span style="color: #E6DB74; font-weight: bold;">\</span>
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;X-ray finger in 14.2 m distance, 3 mm radius at 2.5-3.5 keV&quot;</span>
-</pre>
+</code></pre>
 </div>
 
 <p>
@@ -3755,8 +3903,8 @@ shows a near perfect match! So all in all this is a success!
 </p>
 </div>
 </div>
-<div id="outline-container-org33f56e2" class="outline-3">
-<h3 id="org33f56e2">  <a href="#org33f56e2">  <span class="section-number-3">37.6.</span> <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
+<div id="outline-container-orgc57967b" class="outline-3">
+<h3 id="orgc57967b">  <a href="#orgc57967b">  <span class="section-number-3">37.6.</span> <span class="done DONE">DONE</span> Can we finish our interactive ray tracer?   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
 <div id="text-37-6" class="outline-text-3">
 <p>
 Need:
@@ -3790,8 +3938,8 @@ instead of a weekend. :)
 </p>
 </div>
 </div>
-<div id="outline-container-org66d4b31" class="outline-3">
-<h3 id="org66d4b31">  <a href="#org66d4b31">  <span class="section-number-3">37.7.</span> Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
+<div id="outline-container-org2ddc502" class="outline-3">
+<h3 id="org2ddc502">  <a href="#org2ddc502">  <span class="section-number-3">37.7.</span> Rerunning Al Kα after replacing target   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
 <div id="text-37-7" class="outline-text-3">
 <p>
 I moved the &quot;light target&quot; to the end of the magnet (on the telescope
@@ -3812,7 +3960,7 @@ to rerun them tomorrow!!!
 </ul>
 
 <div class="org-src-container">
-<pre class="src src-sh">./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./raytracer <span style="color: #E6DB74; font-weight: bold;">\</span>
     --width 1200 --speed 10.0 --nJobs 32 --vfov 45 --maxDepth 10 <span style="color: #E6DB74; font-weight: bold;">\</span>
     --llnl --focalPoint <span style="color: #E6DB74; font-weight: bold;">\</span>
     --sourceKind skXrayFinger <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3827,7 +3975,7 @@ to rerun them tomorrow!!!
     --sourceOnOpticalAxis <span style="color: #E6DB74; font-weight: bold;">\</span>
     --ignoreMagnet <span style="color: #E6DB74; font-weight: bold;">\</span>
     --targetRadius 40.mm
-</pre>
+</code></pre>
 </div>
 <p>
 [INFO] Writing buffers to binary files.
@@ -3847,7 +3995,7 @@ And then with the produced binary files we can plot them and compute
 the HPDs:
 </p>
 <div class="org-src-container">
-<pre class="src src-sh">./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
+<pre class="src src-sh">  <code>./plotBinary <span style="color: #E6DB74; font-weight: bold;">\</span>
     --dtype float <span style="color: #E6DB74; font-weight: bold;">\</span>
     -f out/image_sensor_0_2023-11-11T09:26:25+01:00__dx_14.0_dy_14.0_dz_0.1_type_float_len_1000000_width_1000_height_1000.dat <span style="color: #E6DB74; font-weight: bold;">\</span>
     --invertY <span style="color: #E6DB74; font-weight: bold;">\</span>
@@ -3855,12 +4003,12 @@ the HPDs:
     --inPixels=false <span style="color: #E6DB74; font-weight: bold;">\</span>
     --title <span style="color: #E6DB74;">&quot;Al Kα, 1.49 keV, 3x3 mm, figure errors, source optical axis&quot;</span> <span style="color: #E6DB74; font-weight: bold;">\</span>
     --xrange 1.5
-</pre>
+</code></pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgab3dcf7" class="outline-3">
-<h3 id="orgab3dcf7">  <a href="#orgab3dcf7">  <span class="section-number-3">37.8.</span> Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
+<div id="outline-container-orgfd56f1c" class="outline-3">
+<h3 id="orgfd56f1c">  <a href="#orgfd56f1c">  <span class="section-number-3">37.8.</span> Figure error development notes   <span class="tag">    <span class="extended">extended</span>  </span></a></h3>
 <div id="text-37-8" class="outline-text-3">
 <p>
 For my development notes taken when I fixed the implementation to what
@@ -3906,11 +4054,11 @@ pursue it at the time.
 
 <div class="footdef"><sup>  <a id="fn.7" href="#fnr.7" class="footnum" role="doc-backlink">7</a></sup> <div class="footpara" role="doc-footnote">  <p class="footpara">
 At least that is my understanding. There are two public
-X-ray raytracing packages I am aware of, <code>McXtrace</code> (<a href="#citeproc_bib_item_133">Knudsen et al. 2013</a>) and
-<code>MT_RAYOR</code> (<a href="#citeproc_bib_item_244">“MT\_RAYOR - a Raytracing System for X-Ray Telescopes,” n.d.</a>). There is a chance <code>MT_RAYOR</code> may have been
+X-ray raytracing packages I am aware of, <code>McXtrace</code> <a href="cite:mc_xtrace">cite:mc_xtrace</a> and
+<code>MT_RAYOR</code> <a href="cite:mt_rayor">cite:mt_rayor</a>. There is a chance <code>MT_RAYOR</code> may have been
 used, because it is written in an interpreted programming language,
-&apos;Yorick&apos; (<a href="#citeproc_bib_item_247">“Yorick - Interpreted Programming Language,” n.d.</a>), developed at LLNL. And it was used for NuSTAR
-raytracing simulations in the past (<a href="#citeproc_bib_item_53">Brejnholt 2012</a>).
+&apos;Yorick&apos; <a href="cite:yorick">cite:yorick</a>, developed at LLNL. And it was used for NuSTAR
+raytracing simulations in the past <a href="cite:nustar_dtu_phd">cite:nustar_dtu_phd</a>.
 </p></div></div>
 
 <div class="footdef"><sup>  <a id="fn.8" href="#fnr.8" class="footnum" role="doc-backlink">8</a></sup> <div class="footpara" role="doc-footnote">  <p class="footpara">
@@ -3944,7 +4092,7 @@ annotations and more wrong (or outdated?) numbers.
 Let me be very clear: by no means I am trying to demean
 Anders work! These things happen. It is just a shame to not have any
 public, accurate information about the telescope. In particular the
-paper (<a href="#citeproc_bib_item_28">Aznar et al. 2015</a>) should have received an errata.
+paper <a href="cite:&amp;llnl_telescope_first_cast_results">cite:&amp;llnl_telescope_first_cast_results</a> should have received an errata.
 </p></div></div>
 
 <div class="footdef"><sup>  <a id="fn.13" href="#fnr.13" class="footnum" role="doc-backlink">13</a></sup> <div class="footpara" role="doc-footnote">  <p class="footpara">
@@ -3968,9 +4116,9 @@ not included.
 
 <div class="footdef"><sup>  <a id="fn.16" href="#fnr.16" class="footnum" role="doc-backlink">16</a></sup> <div class="footpara" role="doc-footnote">  <p class="footpara">
 To be precise the <code>NLOPT_GN_DIRECT_L</code> algorithm of the
-NLopt (<a href="#citeproc_bib_item_124">Johnson 2007</a>) library, an implementation of the locally biased
+NLopt <a href="cite:NLopt">cite:NLopt</a> library, an implementation of the locally biased
 &apos;DIviding RECTangles&apos; algorithm
-(<a href="#citeproc_bib_item_125">Jones, Perttunen, and Stuckman 1993</a>; <a href="#citeproc_bib_item_91">Gablonsky and Kelley 2001</a>). The algorithm performs a
+<a href="cite:jones93_direct,gablonsky01_direct_L">cite:jones93_direct,gablonsky01_direct_L</a>. The algorithm performs a
 hyperrectangle search of the bounded parameter space. Note that many
 other algorithms would work fine too, but we want a global search
 algorithm, as there are possibly different local minima in how the
@@ -4003,6 +4151,17 @@ sec. <a href="#sec:limit:ingredients:solar_axion_flux">13.10.2</a>.
 </p></div></div>
 
 </div>
+<div id="preamble" class="status">
+
+<button class="toc-toggle" id="tocToggle" aria-label="Toggle table of contents">☰</button>
+<div class="theme-selector-wrapper">
+  <select class="theme-selector" id="themeSelector" aria-label="Select theme">
+    <!-- Options populated by JavaScript -->
+  </select>
+</div>
+<div class="toc-backdrop" id="tocBackdrop"></div>
+</div>
+
 <div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
 </div>
 </body>
