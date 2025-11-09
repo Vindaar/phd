@@ -113,7 +113,20 @@ proc initOutputFile(path, name, head: string, body: XmlNode, toc: string, footno
   result = OutputFile(path: path, name: name, header: head, body: body, toc: toc, footnotes: footnotes)
 
 proc writeHint(): string =
+  ## Writes the hint message about clicking on extended sections and adds the table of content
+  ## hamburger menu and theme selector.
   result = """
+<div id="preamble" class="status">
+
+<button class="toc-toggle" id="tocToggle" aria-label="Toggle table of contents">☰</button>
+<div class="theme-selector-wrapper">
+  <select class="theme-selector" id="themeSelector" aria-label="Select theme">
+    <!-- Options populated by JavaScript -->
+  </select>
+</div>
+<div class="toc-backdrop" id="tocBackdrop"></div>
+</div>
+
 <div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
 """
 
