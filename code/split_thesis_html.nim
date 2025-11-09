@@ -127,7 +127,9 @@ proc writeHint(): string =
 <div class="toc-backdrop" id="tocBackdrop"></div>
 </div>
 
-<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it</div>
+<div class="hint-message">Click on any heading marked '<span class="extended">extended</span>' to open it<br>
+Change the '<span class="extended">theme</span>' of the page here:
+</div>
 """
 
 proc writeOutputFile(o: OutputFile) =
